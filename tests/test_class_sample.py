@@ -3,6 +3,7 @@ import context # allows imports directly from src
 
 # import any extra stuff from src here as "import file_or_module"
 
+
 class TestClassSample(unittest.TestCase):
     """Sample test class.
 
@@ -24,3 +25,7 @@ class TestClassSample(unittest.TestCase):
     def tearDown(self):
         """Runs after all test methods."""
         pass
+
+
+if __name__ == "__main__":
+    unittest.main()
