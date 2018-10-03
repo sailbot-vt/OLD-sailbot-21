@@ -8,7 +8,7 @@
 
 ### Installation Instructions
 
-1. Ensure that you have [Git](https://git-scm.com/downloads) and a version of [Python 3.7](https://www.python.org/downloads/) installed on your computer by running `git --version` and `python3.6 --version`. If either command does not give you a version number, you do not have the respective software.
+1. Ensure that you have [Git](https://git-scm.com/downloads) and a version of [Python 3.7](https://www.python.org/downloads/) installed on your computer by running `git --version` and `python3.7 --version`. If either command does not give you a version number, you do not have the respective software.
 
 2. Move to the directory where you would like to store your local copy of the code, and clone the repository by running `git clone git@github.com:vt-sailbot/sailbot-19.git`.
 
