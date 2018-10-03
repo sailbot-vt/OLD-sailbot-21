@@ -1,5 +1,5 @@
 # Virtual environment (Should be installed separately)
-p3_6env/
+p3_7env/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
