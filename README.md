@@ -1,8 +1,8 @@
 # sailbot-19
 
-[![Build status](https://travis-ci.com/vt-sailbot/sailbot-19.svg?branch=master)]()
-[![License information](https://img.shields.io/badge/license-MIT-lightgrey.svg)]()
-[![Python version](https://img.shields.io/badge/python-3.7-blue.svg)]()
+[![Build status](https://travis-ci.com/vt-sailbot/sailbot-19.svg?branch=master)](https://travis-ci.com/vt-sailbot/sailbot-19)
+[![License information](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://github.com/vt-sailbot/sailbot-19/blob/master/LICENSE)
+[![Python version](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/)
 
 > The VT SailBOT team repository for the 2018-2019 school year.
 
