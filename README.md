@@ -6,6 +6,10 @@
 
 > The VT SailBOT team repository for the 2018-2019 school year.
 
+### Architecture
+
+The software design document detailing the system architecture can be found [here](https://docs.google.com/document/d/1JsAZn4CWerVZ45uQ7lLZehaZM9W0XL9Jg_lDHFKbvsM/edit?usp=sharing).
+
 ### Installation Instructions
 
 1. Ensure that you have [Git](https://git-scm.com/downloads) and a version of [Python 3.7](https://www.python.org/downloads/) installed on your computer by running `git --version` and `python3.7 --version`. If either command does not give you a version number, you do not have the respective software.
