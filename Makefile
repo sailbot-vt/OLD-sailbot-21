@@ -3,8 +3,8 @@ init:
 	pip install -r requirements.txt; \
 
 test:
-    export ENV = test; \
 	source ./p3_7env/bin/activate; \
+	export ENV test; \
 	python -m unittest discover -vcs tests; \
 
 .PHONY: init test
