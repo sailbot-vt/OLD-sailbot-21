@@ -1,14 +1,10 @@
+from os import environ
 from abc import ABC, abstractmethod
 
 
 class RCReceiver(ABC):
-    def read_receiver(self):
-        """Reads receiver input."""
-        self._read_input()
-
-
     @abstractmethod
-    def _read_input(self):
+    def read_input(self):
         """Reads input from the RC receiver."""
         pass
 
@@ -30,4 +26,38 @@ class RCReceiver(ABC):
         """
         pass
 
-class OurReceiver(RCReceiver)
+
+class TestableRCReceiver(RCReceiver):
+    def read_input(self):
+        pass
+
+    def _scale_rudder_input(self, raw_value=0):
+        pass
+
+    def _scale_trim_input(self, raw_value=0):
+        pass
+
+
+class OurRCReceiver(RCReceiver):
+    def read_input(self):
+        pass
+
+    def _scale_rudder_input(self, raw_value=0):
+        pass
+
+    def _scale_trim_input(self, raw_value=0):
+        pass
+
+
+def make_rc_receiver():
+    """Generates the appropriate implementation of RCReceiver.
+
+    Implements the abstract factory pattern, except calls constructors instead of factory methods.
+
+    Returns:
+    The correct RCReceiver for the environment.
+    """
+    if environ["ENV"] == "test":
+        return TestReceiver()
+    else:
+        return OurReceiver()

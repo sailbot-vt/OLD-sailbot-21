@@ -1,14 +1,9 @@
 from abc import ABC, abstractmethod
-from enum import Enum
-
-
-class NavigationMode(Enum):
-    """Semantically represents the navigation mode."""
-    MANUAL = 0
+from navigation_mode import NavigationMode
 
 
 class RCBroadcaster(ABC):
-    """An abstract class to hide the interface with the pub/sub messaging system.
+    """An abstract class to hide the interface required to notify the rest of the system of RC input events.
     Messages are async to prevent them from blocking each other, since RC input may need a high priority."""
 
     @abstractmethod
@@ -39,6 +34,21 @@ class RCBroadcaster(ABC):
         pass
 
 
+class TestBroadcaster(RCBroadcaster):
+    """A broadcaster built to test methods that need to broadcast."""
+    async def change_trim(self, degrees_in=0):
+        # Fake a message to change the trim
+        pass
+
+    async def move_rudder(self, degrees_starboard=0):
+        # Fake a message to move the rudder
+        pass
+
+    async def change_mode(self, mode=NavigationMode.MANUAL.value):
+        # Fake a message to change the mode
+        pass
+
+
 class RCMessenger(RCBroadcaster):
     """Implements an interface with the pub/sub messaging system to broadcast RC input."""
 
@@ -53,3 +63,12 @@ class RCMessenger(RCBroadcaster):
     async def change_mode(self, mode=NavigationMode.MANUAL.value):
         # Send a message to change the mode
         pass
+
+def make_broadcaster():
+    """Creates a new, implementation-relevant RCBroadcaster.
+
+    Implements the abstract factory pattern, except calls constructors instead of factory methods.
+
+    Returns:
+    The correct RCBroadcaster for the environment."""
+    pass
