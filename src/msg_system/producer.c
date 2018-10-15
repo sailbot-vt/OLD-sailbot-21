@@ -37,6 +37,8 @@ int publish_data(int channelName, int dataSize, int data[]) {
 
     memcpy(dataPtr,data, dataSize);
 
+    //signal relay
+    
     return 0;
 }
 

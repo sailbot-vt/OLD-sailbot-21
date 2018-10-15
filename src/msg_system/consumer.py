@@ -17,9 +17,10 @@ class consumer(ABC):
         data_callback -- Method to execute upon receiving signal from relay... This method will be passed the dereferenced data from shared memory
         """
 
-#      cython_register_to_consume_data(channel_name, data_callback)
+#       cython_register_to_consume_data(channel_name, data_callback)
+        pass
     
-    
+    @abstractmethod
     def data_callback(self, data):
         """
         This method is instantiated upon receiving a signal from the relay
