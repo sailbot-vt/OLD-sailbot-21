@@ -1,14 +1,9 @@
-import context
 import unittest
 
-from rc_input import rc_receiver_reader
-
+import src.rc_input.rc_receiver
 
 class RCReceiverReaderTests(unittest.TestCase):
     """Tests methods in RCMessenger"""
-
-    def test_tick(self):
-        assert True
 
     def test_read_input(self):
         assert True

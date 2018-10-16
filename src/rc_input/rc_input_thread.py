@@ -1,7 +1,7 @@
 from threading import Timer
 from functools import partial
-from rc_receiver import make_rc_receiver
-from rc_broadcasting import make_broadcaster
+from src.rc_input.rc_receiver import make_rc_receiver
+from src.rc_input.rc_broadcasting import make_broadcaster
 
 
 # Frequency of RC input read in seconds

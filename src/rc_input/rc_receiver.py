@@ -38,7 +38,7 @@ class TestableRCReceiver(RCReceiver):
         pass
 
 
-class OurRCReceiver(RCReceiver):
+class FSR6BRCReceiver(RCReceiver):
     def read_input(self):
         pass
 
@@ -58,6 +58,7 @@ def make_rc_receiver():
     The correct RCReceiver for the environment.
     """
     if environ["ENV"] == "test":
-        return TestReceiver()
+        return TestableRCReceiver()
     else:
-        return OurReceiver()
+        import Adafruit_BBIO.GPIO as GPIO
+        return FSR6BRCReceiver()
