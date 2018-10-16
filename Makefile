@@ -5,6 +5,6 @@ init:
 test:
 	source ./p3_7env/bin/activate; \
 	export ENV test; \
-	python -m unittest discover -vcs src/tests; \
+	python -m unittest discover -vcs tests; \
 
 .PHONY: init test
