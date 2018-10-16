@@ -36,7 +36,7 @@ class consumer(ABC):
 
 class example_consumer_class(consumer):
     """
-    Inherits from consumer abstract base class
+    Inherits from consumer base class
     """
     def register_to_consume_data(self, channel_name):
         """
