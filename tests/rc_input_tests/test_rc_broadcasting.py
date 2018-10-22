@@ -1,7 +1,6 @@
-import context
 import unittest
 
-from rc_input import rc_broadcasting
+import src.rc_input.rc_broadcasting
 
 
 class RCBroadcastingTests(unittest.TestCase):

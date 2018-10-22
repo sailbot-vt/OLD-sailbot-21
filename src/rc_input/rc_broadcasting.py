@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from navigation_mode import NavigationMode
+from src.navigation_mode import NavigationMode
 
 
 class RCBroadcaster(ABC):
@@ -63,6 +63,7 @@ class RCMessenger(RCBroadcaster):
     async def change_mode(self, mode=NavigationMode.MANUAL.value):
         # Send a message to change the mode
         pass
+
 
 def make_broadcaster():
     """Creates a new, implementation-relevant RCBroadcaster.

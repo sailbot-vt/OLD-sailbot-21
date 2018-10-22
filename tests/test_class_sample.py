@@ -1,7 +1,4 @@
 import unittest
-import context # allows imports directly from src
-
-# import any extra stuff from src here as "import file_or_module"
 
 
 class TestClassSample(unittest.TestCase):
