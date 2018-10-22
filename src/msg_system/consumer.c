@@ -6,20 +6,29 @@
 #define DATASIZE 100
 
 void insert_consumer();
+void display();
 int consumer_data[ DATASIZE ];
 
 
 int register_to_consume_data(int channelName, void *data_callback) {
-    
-    insert_consumer(channelName, data_callback);
+   
+    void (*callback)(int*);
 
-    printf("registering consumer");
+    callback = &data_callback;
+
+    insert_consumer(channelName, callback);
+
+    printf("registering consumer %p\n", callback);
+
+    display();
 
     return 0;
 }
 
 void data_callback(int *dataPtr) {
 
+    printf("data callback called\n");
+    
     memcpy(&consumer_data, (* dataPtr), DATASIZE);
 
     printf("data_callback has been called back with data");

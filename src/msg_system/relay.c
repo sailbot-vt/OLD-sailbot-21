@@ -25,7 +25,7 @@ int rc;
 struct channelTable {
     int *dataPtr;
     int channelName;
-    int consumers [NUM_CONSUMERS];
+    void* consumers [NUM_CONSUMERS];
 };
 
 struct channelTable* hashArray[SIZE];
@@ -58,6 +58,8 @@ void insert_producer(int channelName, int *dataPtr) {
     struct channelTable *item = (struct channelTable*) malloc(sizeof(struct channelTable));
     item->dataPtr = dataPtr;
     item->channelName = channelName;
+    void *consumers [ NUM_CONSUMERS ] = {};
+    strcpy(item->consumers, consumers);
 
     int hashIndex = hashCode(channelName);		//get the hash
 
@@ -70,7 +72,7 @@ void insert_producer(int channelName, int *dataPtr) {
     hashArray[hashIndex] = item;
 }
 
-void insert_consumer(int channelName, int consumer) {
+void insert_consumer(int channelName, void* consumer) {
     
     int hashIndex = hashCode(channelName);
     while(hashArray[hashIndex] != NULL && hashArray[hashIndex]->channelName != channelName) {
@@ -78,11 +80,13 @@ void insert_consumer(int channelName, int consumer) {
         hashIndex %= SIZE;
     }
 
+    printf("consumer = %p\n", consumer);
     int i;
     for(i=0;i < NUM_CONSUMERS; i++) {
         
         if(hashArray[hashIndex]->consumers[i] == NULL) {
 	    hashArray[hashIndex]->consumers[i] == consumer;
+	    return;
 	}
     }
 }
@@ -111,11 +115,17 @@ struct channelTable* delete(struct channelTable* item) {
 
 void display() {
     int i = 0;
-
+    int n = 0;
     for(i = 0; i<SIZE; i++) {
 
-        if(hashArray[i] != NULL)
-	    printf(" (%d,%p)", hashArray[i]->channelName, hashArray[i]->dataPtr);
+        if(hashArray[i] != NULL) {
+	    printf(" (%d,%p,%p)", hashArray[i]->channelName, hashArray[i]->dataPtr,hashArray[i]->consumers);
+	    for(n=0; n < NUM_CONSUMERS; n++) {
+                if (hashArray[i]->consumers[n] != NULL) {
+		    printf(" (%p) ", hashArray[i]->consumers[n]);
+		}
+	    }
+	}
         else
 	    printf(" ~~ ");
     }
@@ -128,17 +138,16 @@ void *notify_consumers(int channelName,int *dataPtr) {
     strcpy(consumers, search(channelName)->consumers);
     pthread_t threads [sizeof(consumers)];
     
-    printf("Inside of notify_consumers\n");
+    printf("Inside of notify_consumers %i\n", sizeof(consumers));
 
     int i;
     for(i=0; i < sizeof(consumers) / sizeof(int); i++) {
-//	rc = pthread_create(&threads[i], NULL, &consumers[i], (int *) data);
-        rc = pthread_create(&threads[i], NULL, &consumers[i], (int *) dataPtr);  
+	
+	rc = pthread_create(&threads[i], NULL, &(consumers[i]), (int *) dataPtr);  
     	if (rc)  {
 	    printf("Error: unable to create thread");
 	}
     }
-    pthread_exit(NULL);
 }
 int create_buffer(int channelName, int dataSize) {
     
@@ -148,9 +157,9 @@ int create_buffer(int channelName, int dataSize) {
 
     insert_producer(channelName, dataPtr);
 
-    pthread_t threads[1];
+//    pthread_t threads[1];
 
-    pthread_create(&threads[0], NULL, &notify_consumers, (int *) channelName);
+//    pthread_create(&threads[0], NULL, &notify_consumers, (int *) channelName);
 
     return dataPtr;
 

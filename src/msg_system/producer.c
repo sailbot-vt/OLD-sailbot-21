@@ -11,6 +11,8 @@ static int *dataPtr;
 int create_buffer();
 void display();
 
+extern void* notify_consumers();
+
 struct channelTable {
     int *dataPtr;
     int channelName;
@@ -33,12 +35,14 @@ int publish_data(int channelName, int dataSize, int data[]) {
 	
     dataPtr = search(channelName)->dataPtr;
 
-    printf("dataPtr = %p\n", dataPtr);
-
     memcpy(dataPtr,data, dataSize);
 
-    //signal relay
-    
+//    pthread_t threads[1];
+
+//    pthread_create(&threads[0], NULL, &notify_consumers, (int *) channelName);
+
+    notify_consumers(channelName);
+
     return 0;
 }
 

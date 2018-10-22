@@ -8,11 +8,12 @@ int register_to_consume_data();
 void data_callback();
 
 int channelName = 'sample';
+int channelName2 = 'diff';
 int dataSize = 100;
 
 
 int main() {
-    
+
     int num;
     int n;
     int data[dataSize];
@@ -24,8 +25,6 @@ int main() {
 
     register_to_produce_data(channelName, dataSize);
     register_to_consume_data(channelName, data_callback);
-
-    printf("\n\nSTILL RUNNING\n\n\n");
 
     publish_data(channelName, dataSize, data);
 
