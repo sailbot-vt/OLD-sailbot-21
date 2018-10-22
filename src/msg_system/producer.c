@@ -42,7 +42,7 @@ int publish_data(int channelName, int dataSize, int data[]) {
     return 0;
 }
 
-int n = 0;
+/*int n = 0;
 
 int main() {
 
@@ -62,3 +62,4 @@ int main() {
     publish_data(channelName, dataSize, data);
 
 }
+*/
