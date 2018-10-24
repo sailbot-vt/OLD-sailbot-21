@@ -70,6 +70,9 @@ class FSR6BRCReceiver(RCReceiver):
 
         Keyword arguments:
         inputs – Inputs to be processed. A dictionary with keys 'RUDDER', 'TRIM', and 'MODE'
+
+        Returns:
+        A new dictionary of inputs with standard units.
         """
         return {
             "RUDDER": FSR6BRCReceiver._scale_rudder_input(raw_value=input_values["RUDDER"]),
@@ -83,6 +86,9 @@ class FSR6BRCReceiver(RCReceiver):
 
         Keyword arguments:
         raw_value -- The raw rudder input.
+
+        Returns:
+        The rudder input in degrees to starboard.
         """
         return raw_value
 
@@ -92,15 +98,21 @@ class FSR6BRCReceiver(RCReceiver):
 
         Keyword arguments:
         raw_value -- The raw trim input.
+
+        Returns:
+        The trim input in degrees trimming in.
         """
         return raw_value
 
     @staticmethod
     def _transform_mode(input_voltage=0):
-        """Gets the navigation_mode value corresponding to the input voltage.
+        """Maps an input voltage to a navigation mode.
 
         Keyword arguments:
         input_voltage -- The input voltage.
+
+        Returns:
+        The navigation mode corresponding to the input voltage.
         """
         return NavigationMode.MANUAL
 
