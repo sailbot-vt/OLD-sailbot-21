@@ -1,5 +1,5 @@
-class RudderServoController(Servo):
-    """Extends the Servo class with specifics to the Rudder application
+class RudderServoController():
+    """
     The Rudder has a negative min value and positive max value.
     """
 
