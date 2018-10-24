@@ -1,9 +1,9 @@
 import unittest
-
 import src.rc_input.rc_receiver
 
-class RCReceiverReaderTests(unittest.TestCase):
-    """Tests methods in RCMessenger"""
+
+class RCReceiverTests(unittest.TestCase):
+    """Tests methods in RCReceiver"""
 
     def test_read_input(self):
         assert True

@@ -1,10 +1,9 @@
 import unittest
-
 import src.rc_input.rc_broadcasting
 
 
 class RCBroadcastingTests(unittest.TestCase):
-    """Tests methods in RCMessenger"""
+    """Tests methods in RCBroadcasting"""
 
     def test_change_trim(self):
         assert True
