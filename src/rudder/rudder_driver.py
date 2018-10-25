@@ -9,6 +9,14 @@ Expected messgae to be object such that:
 from threading import Thread
 import RudderServoController
 
+""" I don't know where to put these constants
+Most need to be determined by testing"""
+pwm_pin = 1 #Need to figure out
+duty_max = 0
+duty_min = 0
+angle_max = 180
+angle_min = -180
+mechanical_advantage = 1
 
 class rudderThread(Thread):
     """ Thead to subscribe and move the servo as such."""
@@ -23,7 +31,7 @@ class rudderThread(Thread):
         Entry point.
         Not sure if this will run multiple times
         """
-        rudder_control = rudder_servo_controller()"""TODO: add arguments"""
+        rudder_control = rudder_servo_controller(pwm_pin, duty_min, duty_max, angle_min, angle_max, mechanical_advantage)
         subscriber = rudder_consumer()
 
 
