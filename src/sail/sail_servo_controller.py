@@ -1,4 +1,4 @@
-class SailServoController:
+class SailServoController():
     """
     The sail has no negative values as 0 is parralel with the keel and
     positive can be either direction as the wind decides.
