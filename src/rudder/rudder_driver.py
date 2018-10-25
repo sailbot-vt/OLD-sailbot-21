@@ -7,6 +7,7 @@ Expected messgae to be object such that:
     -For TRIM_SAIL positive brings the winch in.
 """
 from threading import Thread
+from consumer import consumer
 import RudderServoController
 
 """ I don't know where to put these constants
@@ -18,7 +19,7 @@ angle_max = 180
 angle_min = -180
 mechanical_advantage = 1
 
-class rudderThread(Thread):
+class RudderThread(Thread):
     """ Thead to subscribe and move the servo as such."""
     def __init__(self):
         """
@@ -31,13 +32,21 @@ class rudderThread(Thread):
         Entry point.
         Not sure if this will run multiple times
         """
-        rudder_control = rudder_servo_controller(pwm_pin, duty_min, duty_max, angle_min, angle_max, mechanical_advantage)
-        subscriber = rudder_consumer()
+        rudder_control = RudderServoController(pwm_pin, duty_min, duty_max, angle_min, angle_max, mechanical_advantage)
+        subscriber = RudderConsumer()
+        subscriber.register_to_consume_data("RCComand")
 
 
-class rudder_consumer(consumer):
+class RudderConsumer(consumer):
+    """
+    Acts as a subscriber for the rudder. Extends consumer.
+    """
     def register_to_consume_data(self, channel_name):
         pass
     def data_callback(self, data):
-        delta_rudder_angle = data.TURN_RUDDER
-        rudder_control.change_rudder_angle(delta_rudder_angle)
+        """
+        Function that is called when data is sent on the channel.
+        """
+        if not data.TURN_RUDDER is None:
+            delta_rudder_angle = data.TURN_RUDDER
+            rudder_control.change_rudder_angle(delta_rudder_angle)

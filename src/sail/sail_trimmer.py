@@ -7,6 +7,7 @@ Expected messgae to be object such that:
     -For TRIM_SAIL positive brings the winch in.
 """
 from threading import Thread
+from consumer import consumer
 import SailServoController
 
 """ I don't know where to put these constants
@@ -19,7 +20,7 @@ angle_min = -180
 mechanical_advantage = 1
 
 
-class sailThread(Thread):
+class SailThread(Thread):
     """ Thead to subscribe and move the servo as such."""
     def __init__(self):
         """
@@ -33,12 +34,14 @@ class sailThread(Thread):
         Not sure if this will run multiple times
         """
         sail_control = sail_servo_controller(pwm_pin,duty_min,duty_max,angle_min,angle_max)
-        subscriber = sail_consumer()
+        subscriber = SailConsumer()
+        subscriber.register_to_consume_data("RCComand")
 
 
-class sail_consumer(consumer):
+class SailConsumer(consumer):
     def register_to_consume_data(self, channel_name):
         pass
     def data_callback(self, data):
-        delta_sail_angle = data.TRIM_SAIL
-        sail_control.change_sail_angle(delta_sail_angle)
+        if not data.TRIM_SAIL is None:
+            delta_sail_angle = data.TRIM_SAIL
+            sail_control.change_sail_angle(delta_sail_angle)
