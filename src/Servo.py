@@ -1,5 +1,5 @@
 
-class Servo()
+class Servo:
     """
     Import the Adafruit_BBIO PWM library.
     General sero class to control a general servo.
@@ -29,7 +29,7 @@ class Servo()
         self.duty_span = duty_max-duty_min
         self.angle_min = angle_min
         self.angle_max = angle_max
-        PWM.start(self.pwm_pin,(100-duty_min), 60.0)
+        PWM.start(self.pwm_pin,(100 - duty_min), 60.0)
         self.current_angle = goto(0)
 
     def goto(self, angle):
@@ -49,9 +49,9 @@ class Servo()
         - Returns the angle that the servo went to
         """
         constrained_angle = constrain(self.angel_min, self.angle_max, angle)
-        PWM.set_duty_cycle(self.pwm_pin, calc_duty_cycle(constrained_angle)
-        self.current_angle = constraied_angle;
-        return constrain_angle
+        PWM.set_duty_cycle(self.pwm_pin, calc_duty_cycle(constrained_angle))
+        self.current_angle = constrained_angle;
+        return constrained_angle
 
     def changeServoAngle(self, deltaAngle):
         """
@@ -64,9 +64,9 @@ class Servo()
         Side effects:
         - Changes the current_angle varaible of the object
         """
-        self.current_angle = goto(self.current_angle+deltaAngle)
+        self.current_angle = goto(self.current_angle + deltaAngle)
 
-    def calc_duty_cycle(angle):
+    def calc_duty_cycle(self, angle):
         """
         Method to calculate the duty cycle given the attributes of the servo.
 
@@ -76,9 +76,9 @@ class Servo()
         Returns:
         duty_cycle - The duty cycle for the given angle.
         """
-        return 100 - ((angle / 180) * duty_span + self.duty_min)
+        return 100 - ((angle / 180) * self.duty_span + self.duty_min)
 
-    def constrain(min, max, angle):
+    def constrain(self, min, max, angle):
         """
         Method to constrain angles to between the min and max values
 
@@ -86,8 +86,6 @@ class Servo()
         min -- the lowest allowed value for the angle
         max -- the highest allowed value for the angle
         angle -- the unconstrained angle to be constrained
-
-
         """
         if(angle>max):
             return max

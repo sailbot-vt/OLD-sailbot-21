@@ -1,4 +1,4 @@
-class RudderServoController():
+class RudderServoController:
     """
     The Rudder has a negative min value and positive max value.
     """
@@ -51,10 +51,10 @@ class RudderServoController():
         Returns:
         The constrained_angle
         """
-        if (rudder_angle*self.mechanical_advantage > servo.angle_max):
-            return servo.angle_max/self.mechanical_advantage
-        if (rudder_angle*self.mechanical_advantage < servo.angle_min):
-            return servo.angle_min/self.mechanical_advantage
+        if (rudder_angle * self.mechanical_advantage > servo.angle_max):
+            return servo.angle_max / self.mechanical_advantage
+        if (rudder_angle * self.mechanical_advantage < servo.angle_min):
+            return servo.angle_min / self.mechanical_advantage
         return rudder_angle
 
 
@@ -86,4 +86,4 @@ class RudderServoController():
         Side effects:
         Calls the rudder_goto method with the constrained angle
         """
-        rudder_goto(constrain_rudder_angle(current_rudder_angle+delta_rudder_angle))
+        rudder_goto(constrain_rudder_angle(current_rudder_angle + delta_rudder_angle))

@@ -1,4 +1,4 @@
-class SailServoController():
+class SailServoController:
     """
     The sail has no negative values as 0 is parralel with the keel and
     positive can be either direction as the wind decides.
@@ -39,7 +39,7 @@ class SailServoController():
         Returns:
         The angle of the servo that correspondes to the sail angle
         """
-        return servo.angle_min + (servo.angle_max-self.angle_min)*(sail_angle/90)
+        return servo.angle_min + (servo.angle_max - self.angle_min) * (sail_angle/90)
 
     def constrain_sail_angle(sail_angle):
         """
