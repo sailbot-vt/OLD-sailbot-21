@@ -21,11 +21,6 @@ mechanical_advantage = 1
 
 class RudderThread(Thread):
     """ Thead to subscribe and move the servo as such."""
-    def __init__(self):
-        """
-        Create the thead
-        """
-        Thread.__init__(self)
 
     def run(self):
         """
