@@ -7,7 +7,7 @@ class RCBroadcaster(ABC):
     Messages are async to prevent them from blocking each other, since RC input may need a high priority."""
 
     @abstractmethod
-    async def change_trim(self, degrees_in=0):
+    def change_trim(self, degrees_in=0):
         """Broadcasts changes in trim to the system.
 
         Keyword arguments:
@@ -16,7 +16,7 @@ class RCBroadcaster(ABC):
         pass
 
     @abstractmethod
-    async def move_rudder(self, degrees_starboard=0):
+    def move_rudder(self, degrees_starboard=0):
         """Broadcasts rudder movements to the system.
 
         Keyword arguments:
@@ -25,7 +25,7 @@ class RCBroadcaster(ABC):
         pass
 
     @abstractmethod
-    async def change_mode(self, mode=NavigationMode.MANUAL.value):
+    def change_mode(self, mode=NavigationMode.MANUAL.value):
         """Broadcasts mode changes to the system.
 
         Keyword arguments:
@@ -34,33 +34,35 @@ class RCBroadcaster(ABC):
         pass
 
 
-class TestBroadcaster(RCBroadcaster):
+class TestableBroadcaster(RCBroadcaster):
     """A broadcaster built to test methods that need to broadcast."""
-    async def change_trim(self, degrees_in=0):
-        # Fake a message to change the trim
-        pass
+    def __init__(self):
+        self.rudder_signals = []
+        self.trim_signals = []
+        self.mode_signals = []
 
-    async def move_rudder(self, degrees_starboard=0):
-        # Fake a message to move the rudder
-        pass
+    def change_trim(self, degrees_in=0):
+        self.trim_signals.append(degrees_in)
 
-    async def change_mode(self, mode=NavigationMode.MANUAL.value):
-        # Fake a message to change the mode
-        pass
+    def move_rudder(self, degrees_starboard=0):
+        self.rudder_signals.append(degrees_starboard)
+
+    def change_mode(self, mode=NavigationMode.MANUAL.value):
+        self.mode_signals.append(mode)
 
 
 class RCMessenger(RCBroadcaster):
     """Implements an interface with the pub/sub messaging system to broadcast RC input."""
 
-    async def change_trim(self, degrees_in=0):
+    def change_trim(self, degrees_in=0):
         # Send a message to change the trim
         pass
 
-    async def move_rudder(self, degrees_starboard=0):
+    def move_rudder(self, degrees_starboard=0):
         # Send a message to move the rudder
         pass
 
-    async def change_mode(self, mode=NavigationMode.MANUAL.value):
+    def change_mode(self, mode=NavigationMode.MANUAL.value):
         # Send a message to change the mode
         pass
 
@@ -72,4 +74,4 @@ def make_broadcaster():
 
     Returns:
     The correct RCBroadcaster for the environment."""
-    pass
+    return TestableBroadcaster()

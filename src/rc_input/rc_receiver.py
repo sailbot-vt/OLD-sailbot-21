@@ -6,7 +6,7 @@ from src.rc_input.rc_broadcasting import make_broadcaster
 from src.navigation_mode import NavigationMode
 
 
-RC_READ_INTERVAL = 50
+RC_READ_INTERVAL = 50 / 1000
 
 
 class RCReceiverType(Enum):
@@ -64,9 +64,12 @@ class ADCReceiver(RCReceiver):
         Keyword arguments:
         inputs – Inputs to be sent. A dictionary with keys 'RUDDER', 'TRIM', and 'MODE'
         """
-        self.broadcaster.move_rudder(degrees_starboard=inputs["RUDDER"])
-        self.broadcaster.change_trim(degrees_in=inputs["TRIM"])
-        self.broadcaster.change_mode(mode=inputs["MODE"])
+        if "RUDDER" in inputs:
+            self.broadcaster.move_rudder(degrees_starboard=inputs["RUDDER"])
+        if "TRIM" in inputs:
+            self.broadcaster.change_trim(degrees_in=inputs["TRIM"])
+        if "MODE" in inputs:
+            self.broadcaster.change_mode(mode=inputs["MODE"])
 
     @staticmethod
     def _process_inputs(input_values):
@@ -121,7 +124,7 @@ class ADCReceiver(RCReceiver):
         return NavigationMode.MANUAL
 
 
-def make_rc_receiver(receiver_type):
+def make_rc_receiver(receiver_type=RCReceiverType.ADC, broadcaster=make_broadcaster()):
     """Generates the appropriate implementation of RCReceiver.
 
     Implements the factory design pattern.
@@ -131,7 +134,7 @@ def make_rc_receiver(receiver_type):
     """
     if receiver_type == RCReceiverType.ADC:
         import Adafruit_BBIO.ADC as ADC
-        return ADCReceiver(make_broadcaster(), ADC, {
+        return ADCReceiver(broadcaster, ADC, {
             "RUDDER": "P0_0",
             "TRIM": "P0_1",
             "MODE": "P0_5"
