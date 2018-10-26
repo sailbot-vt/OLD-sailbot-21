@@ -1,11 +1,18 @@
-from os import environ
+from contextlib import contextmanager
 from threading import Timer
 from abc import ABC
+from enum import Enum
 from src.rc_input.rc_broadcasting import make_broadcaster
 from src.navigation_mode import NavigationMode
 
 
 RC_READ_INTERVAL = 50
+
+
+class RCReceiverType(Enum):
+    """Semantically represents a type of RCReceiver."""
+    Testable = 0
+    ADC = 1
 
 
 class RCReceiver(ABC):
@@ -19,29 +26,26 @@ class TestableRCReceiver(RCReceiver):
         pass
 
 
-class FSR6BRCReceiver(RCReceiver):
-    """An implementation of the receiver behaviors for an FS-R6B receiver.
-    """
+class ADCReceiver(RCReceiver):
+    """An implementation of the receiver behaviors for a receiver using the BBB ADC pins."""
 
-    def __init__(self, adc_lib):
+    def __init__(self, broadcaster, adc_lib, pins):
         """Initializes a new FS-R6B receiver
         """
         self.adc_lib = adc_lib
+        self.broadcaster = broadcaster
+        self.pins = pins
 
-        self.broadcaster = make_broadcaster()
+    @contextmanager
+    def listen(self):
+        """Starts a regular input read interval.
 
-        # Pins used for input
-        self.pins = {
-            "RUDDER": "P0_0",
-            "TRIM": "P0_1",
-            "MODE": "P0_5"
-        }
-
-    def _start_input_listening(self):
+        Has automatic context management, so should be called inside a with statement."""
         self.adc_lib.setup()
 
         t = Timer(RC_READ_INTERVAL, self._read_input)
-        t.start()
+        yield t.start()
+        t.cancel()
 
     def _read_input(self):
         """Reads new input values and sends them to the broadcaster."""
@@ -52,9 +56,9 @@ class FSR6BRCReceiver(RCReceiver):
             self.adc_lib.read(self.pins[ch])
             input_values[ch] = self.adc_lib.read(self.pins[ch])
 
-        self.send_inputs(self.process_inputs(input_values))
+        self._send_inputs(self._process_inputs(input_values))
 
-    def send_inputs(self, inputs):
+    def _send_inputs(self, inputs):
         """Sends inputs to the broadcaster to be published.
 
         Keyword arguments:
@@ -65,7 +69,7 @@ class FSR6BRCReceiver(RCReceiver):
         self.broadcaster.change_mode(mode=inputs["MODE"])
 
     @staticmethod
-    def process_inputs(input_values):
+    def _process_inputs(input_values):
         """Delegates the transformation of raw input values into the correct units.
 
         Keyword arguments:
@@ -75,9 +79,9 @@ class FSR6BRCReceiver(RCReceiver):
         A new dictionary of inputs with standard units.
         """
         return {
-            "RUDDER": FSR6BRCReceiver._scale_rudder_input(raw_value=input_values["RUDDER"]),
-            "TRIM": FSR6BRCReceiver._scale_trim_input(raw_value=input_values["TRIM"]),
-            "MODE": FSR6BRCReceiver._transform_mode(input_voltage=input_values["MODE"])
+            "RUDDER": ADCReceiver._scale_rudder_input(raw_value=input_values["RUDDER"]),
+            "TRIM": ADCReceiver._scale_trim_input(raw_value=input_values["TRIM"]),
+            "MODE": ADCReceiver._transform_mode(input_voltage=input_values["MODE"])
         }
 
     @staticmethod
@@ -117,16 +121,20 @@ class FSR6BRCReceiver(RCReceiver):
         return NavigationMode.MANUAL
 
 
-def make_rc_receiver():
+def make_rc_receiver(receiver_type):
     """Generates the appropriate implementation of RCReceiver.
 
-    Implements the abstract factory pattern, except calls constructors directly instead of factory methods.
+    Implements the factory design pattern.
 
     Returns:
-    The correct RCReceiver for the environment.
+    An instance of the specified type of RCReceiver.
     """
-    if environ["ENV"] == "test":
-        return TestableRCReceiver()
-    else:
+    if receiver_type == RCReceiverType.ADC:
         import Adafruit_BBIO.ADC as ADC
-        return FSR6BRCReceiver(ADC)
+        return ADCReceiver(make_broadcaster(), ADC, {
+            "RUDDER": "P0_0",
+            "TRIM": "P0_1",
+            "MODE": "P0_5"
+        })
+    else:
+        return TestableRCReceiver()
