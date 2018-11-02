@@ -1,8 +1,14 @@
 from abc import ABC, abstractmethod
+from enum import Enum
 from src.navigation_mode import NavigationMode
 
 
-class RCBroadcaster(ABC):
+class RCInputBroadcasterType(Enum):
+    Testable = 0,
+    Messenger = 1
+
+
+class RCInputBroadcaster(ABC):
     """An abstract class to hide the interface required to notify the rest of the system of RC input events.
     Messages are async to prevent them from blocking each other, since RC input may need a high priority."""
 
@@ -34,7 +40,7 @@ class RCBroadcaster(ABC):
         pass
 
 
-class TestableBroadcaster(RCBroadcaster):
+class TestableInputBroadcaster(RCInputBroadcaster):
     """A broadcaster built to test methods that need to broadcast."""
     def __init__(self):
         self.rudder_signals = []
@@ -51,7 +57,7 @@ class TestableBroadcaster(RCBroadcaster):
         self.mode_signals.append(mode)
 
 
-class RCMessenger(RCBroadcaster):
+class RCInputMessenger(RCInputBroadcaster):
     """Implements an interface with the pub/sub messaging system to broadcast RC input."""
 
     def change_trim(self, degrees_in=0):
@@ -67,11 +73,18 @@ class RCMessenger(RCBroadcaster):
         pass
 
 
-def make_broadcaster():
+def make_broadcaster(broadcaster_type=RCInputBroadcasterType.Messenger):
     """Creates a new, implementation-relevant RCBroadcaster.
 
-    Implements the abstract factory pattern, except calls constructors instead of factory methods.
+    Implements the factory pattern.
+
+    Keyword arguments:
+    broadcaster_type -- The type of broadcaster to create
+
 
     Returns:
     The correct RCBroadcaster for the environment."""
-    return TestableBroadcaster()
+    if broadcaster_type == RCInputBroadcasterType.Messenger:
+        return RCInputMessenger()
+
+    return TestableInputBroadcaster()

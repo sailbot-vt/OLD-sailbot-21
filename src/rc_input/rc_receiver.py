@@ -2,11 +2,13 @@ from contextlib import contextmanager
 from threading import Timer
 from abc import ABC
 from enum import Enum
-from src.rc_input.rc_broadcasting import make_broadcaster
+from src.rc_input.rc_broadcaster import make_broadcaster
 from src.navigation_mode import NavigationMode
 
 
-RC_READ_INTERVAL = 50 / 1000
+RC_READ_INTERVAL = 50 / 1000  # Scaled for milliseconds
+BBB_MAX_INPUT_VOLTAGE = 1.8
+INPUT_PIN_MAX_VOLTAGE = 1.8  # Should be lower than BBB_MAX_INPUT_VOLTAGE to reduce risk to the BBB
 
 
 class RCReceiverType(Enum):
@@ -35,17 +37,18 @@ class ADCReceiver(RCReceiver):
         self.adc_lib = adc_lib
         self.broadcaster = broadcaster
         self.pins = pins
+        self.input_read_caller = Timer(RC_READ_INTERVAL, self._read_input)
 
-    @contextmanager
     def listen(self):
         """Starts a regular input read interval.
 
-        Has automatic context management, so should be called inside a with statement."""
+        Has automatic context management, so should be called using a with statement."""
         self.adc_lib.setup()
+        self.input_read_caller.start()
 
-        t = Timer(RC_READ_INTERVAL, self._read_input)
-        yield t.start()
-        t.cancel()
+    def stop_listening(self):
+        """Cancels regular input read."""
+        self.input_read_caller.start()
 
     def _read_input(self):
         """Reads new input values and sends them to the broadcaster."""
@@ -88,8 +91,11 @@ class ADCReceiver(RCReceiver):
         }
 
     @staticmethod
-    def _scale_rudder_input(raw_value=0):
+    def _scale_rudder_input(raw_value=0, max_value=INPUT_PIN_MAX_VOLTAGE / BBB_MAX_INPUT_VOLTAGE):
         """Scales the rudder values from the raw value to degrees to starboard.
+
+        Preconditions:
+        raw_value is on a scale of 0 to max_value.
 
         Keyword arguments:
         raw_value -- The raw rudder input.
@@ -97,7 +103,9 @@ class ADCReceiver(RCReceiver):
         Returns:
         The rudder input in degrees to starboard.
         """
-        return raw_value
+        normalized_value = 2 * ((raw_value / max_value) - 0.5)  # Between -1 and 1
+        degrees_starboard = 80 * (normalized_value ** 2)  # Between -80 and 80
+        return degrees_starboard
 
     @staticmethod
     def _scale_trim_input(raw_value=0):
@@ -129,6 +137,9 @@ def make_rc_receiver(receiver_type=RCReceiverType.ADC, broadcaster=make_broadcas
 
     Implements the factory design pattern.
 
+    Keyword arguments:
+    receiver_type -- The type of receiver to create
+
     Returns:
     An instance of the specified type of RCReceiver.
     """
@@ -139,5 +150,5 @@ def make_rc_receiver(receiver_type=RCReceiverType.ADC, broadcaster=make_broadcas
             "TRIM": "P0_1",
             "MODE": "P0_5"
         })
-    else:
-        return TestableRCReceiver()
+
+    return TestableRCReceiver()

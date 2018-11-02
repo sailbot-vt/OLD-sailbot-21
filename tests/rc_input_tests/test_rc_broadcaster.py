@@ -1,5 +1,5 @@
 import unittest
-import src.rc_input.rc_broadcasting
+import src.rc_input.rc_broadcaster
 
 
 class RCBroadcastingTests(unittest.TestCase):
