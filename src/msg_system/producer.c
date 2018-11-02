@@ -6,6 +6,8 @@
 
 int data[ 100 ];
 
+//make header file for relay to avoid redeclaring variables and funcs
+
 static int *dataPtr;
 
 int create_buffer();
@@ -22,6 +24,9 @@ struct channelTable* search();
 
 int register_to_produce_data(int channelName, int dataSize) {
     
+    //Calls create buffer which creates a shared memory block for publisher to publish to
+    //Producer and corresponding data ptr are stored in hashArray
+
     dataPtr = create_buffer(channelName, dataSize); 
 
     display();
@@ -32,38 +37,14 @@ int register_to_produce_data(int channelName, int dataSize) {
 
 int publish_data(int channelName, int dataSize, int data[]) {
 
+    //Uses hashArray to find where to publish data to then memcpy's to there
+    //Calls notify_consumers method of relay
 	
     dataPtr = search(channelName)->dataPtr;
 
     memcpy(dataPtr,data, dataSize);
 
-//    pthread_t threads[1];
-
-//    pthread_create(&threads[0], NULL, &notify_consumers, (int *) channelName);
-
     notify_consumers(channelName);
 
     return 0;
 }
-
-/*int n = 0;
-
-int main() {
-
-    int num;
-    
-    for(n; n<100; n++) {
-        srand(time(NULL));
-        num = rand();
-	data[n] = num;
-    }
-    
-    int channelName = 'sample_run';
-    int dataSize = 100;    
-
-    register_to_produce_data(channelName, dataSize);
-
-    publish_data(channelName, dataSize, data);
-
-}
-*/

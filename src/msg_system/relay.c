@@ -12,6 +12,9 @@
 int pthread_create();
 
 void* create_shared_memory(size_t size) {
+    
+    //Returns data ptr to shared memory which has been allocated to this producer
+	
     int protection = PROT_READ | PROT_WRITE;
 
     int visibility = MAP_SHARED | MAP_ANONYMOUS;
@@ -25,7 +28,7 @@ int rc;
 struct channelTable {
     int *dataPtr;
     int channelName;
-    void* consumers [NUM_CONSUMERS];
+    int* consumers [NUM_CONSUMERS];
 };
 
 struct channelTable* hashArray[SIZE];
@@ -37,6 +40,9 @@ int hashCode(int channelName) {
 }
 
 struct channelTable *search(int channelName) {
+
+    //Searches hashArray and returns channelTable object corresponding to channelName (if that object exists)
+
     //get the hash
     int hashIndex = hashCode(channelName);
 
@@ -55,10 +61,12 @@ struct channelTable *search(int channelName) {
 
 void insert_producer(int channelName, int *dataPtr) {
 
+    //Makes entry into hashArray containing channnelName and data ptr
+
     struct channelTable *item = (struct channelTable*) malloc(sizeof(struct channelTable));
     item->dataPtr = dataPtr;
     item->channelName = channelName;
-    void *consumers [ NUM_CONSUMERS ] = {};
+    int *consumers [ NUM_CONSUMERS ] = {};
     strcpy(item->consumers, consumers);
 
     int hashIndex = hashCode(channelName);		//get the hash
@@ -74,6 +82,8 @@ void insert_producer(int channelName, int *dataPtr) {
 
 void insert_consumer(int channelName, void* consumer) {
     
+    //Adds consumer data callback to hashArray corresponding to desired channel
+
     int hashIndex = hashCode(channelName);
     while(hashArray[hashIndex] != NULL && hashArray[hashIndex]->channelName != channelName) {
         ++hashIndex;
@@ -92,11 +102,14 @@ void insert_consumer(int channelName, void* consumer) {
 }
 
 struct channelTable* delete(struct channelTable* item) {
+
+    //Delete desired item from hashArray (eg: producer is done producing)
+
     int channelName = item->channelName;
 
     int hashIndex = hashCode(channelName);		//get the hash
 
-    //move in array until empty or deleted cell is found
+    //move in array until non-empty cell is found
     while(hashArray[hashIndex] != NULL) {
         
         if(hashArray[hashIndex]->channelName == channelName) {
@@ -114,17 +127,20 @@ struct channelTable* delete(struct channelTable* item) {
 }
 
 void display() {
+
+    //Iterates through hashArray and creates visual representation (used for debugging)
+
     int i = 0;
-    int n = 0;
+//    int n = 0;
     for(i = 0; i<SIZE; i++) {
 
         if(hashArray[i] != NULL) {
 	    printf(" (%d,%p,%p)", hashArray[i]->channelName, hashArray[i]->dataPtr,hashArray[i]->consumers);
-	    for(n=0; n < NUM_CONSUMERS; n++) {
-                if (hashArray[i]->consumers[n] != NULL) {
-		    printf(" (%p) ", hashArray[i]->consumers[n]);
-		}
-	    }
+//	    for(n=0; n < NUM_CONSUMERS; n++) {
+//              if (hashArray[i]->consumers[n] != NULL) {
+//		    printf(" (%p) ", hashArray[i]->consumers[n]);
+//		}
+//	    }
 	}
         else
 	    printf(" ~~ ");
@@ -132,25 +148,52 @@ void display() {
     printf("\n");
 }
 
+void display_consumers(int channelName) {
+ 
+    //Displays consumers registered to channel
+     
+    strcpy(consumers, search(channelName)->consumers);
+
+    for(int i=0; i<NUM_CONSUMERS; i++) {
+        if(consumers[i]!=NULL) {
+	    printf("%d,", consumers[i]);
+	}
+	else {
+	    printf("~~~,");
+	}
+    }
+    printf("\n");
+    }
+
+	   
+
 void *notify_consumers(int channelName,int *dataPtr) {
-//    consumers = search(channelName)->consumers;
-    
+   
+    //Creates thread for each consumer callback subscribed to a channel
+    //***Error here -- seems to not actually be looking into consumer data structure***
+
     strcpy(consumers, search(channelName)->consumers);
     pthread_t threads [sizeof(consumers)];
     
     printf("Inside of notify_consumers %i\n", sizeof(consumers));
 
     int i;
-    for(i=0; i < sizeof(consumers) / sizeof(int); i++) {
-	
-	rc = pthread_create(&threads[i], NULL, &(consumers[i]), (int *) dataPtr);  
-    	if (rc)  {
-	    printf("Error: unable to create thread");
-	}
+    display_consumers(channelName);
+    for(i=0; i < sizeof(consumers); i++) {
+	if(consumers[i] != NULL) {
+            printf("consumer notified = %p\n", consumers[i]);
+	    rc = pthread_create(&threads[i], NULL, &(consumers[i]), (int *) dataPtr);  
+    	    if (rc)  {
+	        printf("Error: unable to create thread");
+	    }
+        }
     }
 }
+
 int create_buffer(int channelName, int dataSize) {
-    
+   
+    //Returns data ptr to shared memory allocated to channel
+
     int* dataPtr = create_shared_memory(dataSize*8);
 
 //    printf("data pointer (from relay) = %p\n", dataPtr);
@@ -165,39 +208,3 @@ int create_buffer(int channelName, int dataSize) {
 
 }
 
-/*int main() {
-
-   dummyItem = (struct channelTable*) malloc(sizeof(struct channelTable));
-   dummyItem->dataPtr = NULL;
-   dummyItem->channelName = -1;
-
-   insert(1, 20);
-   insert(2, 70);
-   insert(42, 80);
-   insert(4, 25);
-   insert(12, 44);
-   insert(14, 32);
-   insert(17, 11);
-   insert(13, 78);
-   insert(37, 97); 
-
-   display();
-   item = search(37);
-
-   if(item != NULL) {
-      printf("Element found: %i\n", item->dataPtr);
-   } else {
-      printf("Element not found\n");
-   }
-
-   delete(item);
-   item = search(37);
-
-   if(item != NULL) {
-      printf("Element found: %i\n", item->dataPtr);
-   } else {
-      printf("Element not found\n");
-   }
-}
-
-*/
