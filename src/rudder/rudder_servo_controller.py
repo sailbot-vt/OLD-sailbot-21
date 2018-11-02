@@ -1,9 +1,11 @@
+from src.servo import Servo
+
 class RudderServoController:
     """
     The Rudder has a negative min value and positive max value.
     """
 
-    def __init__(self, pwm_pin, duty_min, duty_max, angle_min, angle_max, mechanical_advantage):
+    def __init__(self, pwm_pin, duty_min, duty_max, angle_min, angle_max, mechanical_advantage, pwm_lib):
         """
         Initializes the RudderServoController object as an extenstion of Servo
 
@@ -14,15 +16,16 @@ class RudderServoController:
         duty_max -- The duty to send the servo to the full right position
         angle_min -- The minimum allowed angle.
         angle_max -- The maximum allowed angle.
+        pwm_lib -- The Adafruit_BBIO PWM library or mock.
 
         Side effects:
         - Initializes instance variables
         - Sends the rudder to 0 rudder_angle
         """
-        servo = Servo(pwm_pin, duty_min, duty_max, angle_min, angle_max)
+        servo = Servo(pwm_pin, duty_min, duty_max, angle_min, angle_max, pwm_lib)
         self.mechanical_advantage = mechanical_advantage
         current_rudder_angle = 0
-        rudder_goto(0)
+        self.rudder_goto(0)
 
 
     def rudder_angle_to_servo_angle(self, rudder_angle):
@@ -51,10 +54,10 @@ class RudderServoController:
         Returns:
         The constrained_angle
         """
-        if (rudder_angle * self.mechanical_advantage > servo.angle_max):
-            return servo.angle_max / self.mechanical_advantage
-        if (rudder_angle * self.mechanical_advantage < servo.angle_min):
-            return servo.angle_min / self.mechanical_advantage
+        if (rudder_angle * self.mechanical_advantage > self.servo.angle_max):
+            return self.servo.angle_max / self.mechanical_advantage
+        if (rudder_angle * self.mechanical_advantage < self.servo.angle_min):
+            return self.servo.angle_min / self.mechanical_advantage
         return rudder_angle
 
 
@@ -70,10 +73,11 @@ class RudderServoController:
         Calls the goto method of the servo class
 
         """
-        constrained_rudder_angle = constrain_rudder_angle(rudder_angle)
-        servo.goto(rudder_angle_to_servo_angle(self, constrained_rudder_angle)
-        return constrained_rudder_angle
+        constrained_rudder_angle = self.constrain_rudder_angle(rudder_angle)
+        self.servo.goto(self.rudder_angle_to_servo_angle(constrained_rudder_angle))
         current_rudder_angle = constrained_rudder_angle
+        return constrained_rudder_angle
+
 
     def change_rudder_angle(self, delta_rudder_angle):
         """
@@ -86,4 +90,4 @@ class RudderServoController:
         Side effects:
         Calls the rudder_goto method with the constrained angle
         """
-        rudder_goto(constrain_rudder_angle(current_rudder_angle + delta_rudder_angle))
+        self.rudder_goto(self.constrain_rudder_angle(self.current_rudder_angle + delta_rudder_angle))

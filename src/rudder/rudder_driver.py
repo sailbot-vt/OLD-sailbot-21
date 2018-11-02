@@ -27,7 +27,7 @@ class RudderThread(Thread):
         Entry point.
         Not sure if this will run multiple times
         """
-        rudder_control = RudderServoController(pwm_pin, duty_min, duty_max, angle_min, angle_max, mechanical_advantage)
+        rudder_control = RudderServoController(pwm_pin, duty_min, duty_max, angle_min, angle_max, mechanical_advantage, pwm_lib)
         subscriber = RudderConsumer()
         subscriber.register_to_consume_data("RCComand")
 

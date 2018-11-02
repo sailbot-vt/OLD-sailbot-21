@@ -28,7 +28,7 @@ class SailThread(Thread):
         Entry point.
         Not sure if this will run multiple times
         """
-        sail_control = sail_servo_controller(pwm_pin,duty_min,duty_max,angle_min,angle_max)
+        sail_control = sail_servo_controller(pwm_pin,duty_min,duty_max,angle_min,angle_max,pwm_lib)
         subscriber = SailConsumer()
         subscriber.register_to_consume_data("RCComand")
 
