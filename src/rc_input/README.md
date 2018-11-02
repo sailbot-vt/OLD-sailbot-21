@@ -8,8 +8,8 @@ Starts the event listening in RC receiver. Maybe this should go in `__init__.py`
 ### `rc_receiver.py`
 Contains functionality of an RC receiver, including a factory method to get configuration-specific receiver models.
 
-### `rc_broadcasting.py`
-Generates and publishes events based on inputs.
+### `rc_broadcaster.py`
+Generates and publishes events based on inputs. Includes factory to get a testable broadcaster that records calls to the broadcaster.
 
 ### `__init.py__`
 Indicates that `rc_input` is a module.
