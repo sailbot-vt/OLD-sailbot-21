@@ -1,12 +1,11 @@
-from contextlib import contextmanager
-from threading import Timer
-from abc import ABC
+from abc import ABC, abstractmethod
 from enum import Enum
-from src.rc_input.rc_broadcaster import make_broadcaster
+
+from numpy import sign
+
 from src.navigation_mode import NavigationMode
+from src.rc_input.rc_broadcaster import make_broadcaster
 
-
-RC_READ_INTERVAL = 50 / 1000  # Scaled for milliseconds
 BBB_MAX_INPUT_VOLTAGE = 1.8
 INPUT_PIN_MAX_VOLTAGE = 1.8  # Should be lower than BBB_MAX_INPUT_VOLTAGE to reduce risk to the BBB
 
@@ -19,7 +18,9 @@ class RCReceiverType(Enum):
 
 class RCReceiver(ABC):
     """Defines an RCReceiver type"""
-    pass
+    @abstractmethod
+    def read_input(self):
+        pass
 
 
 class TestableRCReceiver(RCReceiver):
@@ -32,25 +33,14 @@ class ADCReceiver(RCReceiver):
     """An implementation of the receiver behaviors for a receiver using the BBB ADC pins."""
 
     def __init__(self, broadcaster, adc_lib, pins):
-        """Initializes a new FS-R6B receiver
-        """
+        """Initializes a new FS-R6B receiver."""
         self.adc_lib = adc_lib
         self.broadcaster = broadcaster
         self.pins = pins
-        self.input_read_caller = Timer(RC_READ_INTERVAL, self._read_input)
 
-    def listen(self):
-        """Starts a regular input read interval.
-
-        Has automatic context management, so should be called using a with statement."""
         self.adc_lib.setup()
-        self.input_read_caller.start()
 
-    def stop_listening(self):
-        """Cancels regular input read."""
-        self.input_read_caller.start()
-
-    def _read_input(self):
+    def read_input(self):
         """Reads new input values and sends them to the broadcaster."""
         input_values = {}
 
@@ -91,7 +81,7 @@ class ADCReceiver(RCReceiver):
         }
 
     @staticmethod
-    def _scale_rudder_input(raw_value=0, max_value=INPUT_PIN_MAX_VOLTAGE / BBB_MAX_INPUT_VOLTAGE):
+    def _scale_rudder_input(raw_value=0):
         """Scales the rudder values from the raw value to degrees to starboard.
 
         Preconditions:
@@ -103,8 +93,8 @@ class ADCReceiver(RCReceiver):
         Returns:
         The rudder input in degrees to starboard.
         """
-        normalized_value = 2 * ((raw_value / max_value) - 0.5)  # Between -1 and 1
-        degrees_starboard = 80 * (normalized_value ** 2)  # Between -80 and 80
+        normalized_value = ADCReceiver._normalize_voltage(raw_value)  # Between -1 and 1
+        degrees_starboard = sign(normalized_value) * 80 * (normalized_value ** 2)  # Between -80 and 80
         return degrees_starboard
 
     @staticmethod
@@ -117,7 +107,10 @@ class ADCReceiver(RCReceiver):
         Returns:
         The trim input in degrees trimming in.
         """
-        return raw_value
+        normalized_value = ADCReceiver._normalize_voltage(raw_value)  # Between -1 and 1
+
+        degrees_in = sign(normalized_value) * 20 * (normalized_value ** 2)  # Between -20 and 20
+        return degrees_in
 
     @staticmethod
     def _transform_mode(input_voltage=0):
@@ -130,6 +123,10 @@ class ADCReceiver(RCReceiver):
         The navigation mode corresponding to the input voltage.
         """
         return NavigationMode.MANUAL
+
+    @staticmethod
+    def _normalize_voltage(read_value, max_value=INPUT_PIN_MAX_VOLTAGE / BBB_MAX_INPUT_VOLTAGE):
+        return 2 * ((read_value / max_value) - 0.5)  # Between -1 and 1
 
 
 def make_rc_receiver(receiver_type=RCReceiverType.ADC, broadcaster=make_broadcaster()):
