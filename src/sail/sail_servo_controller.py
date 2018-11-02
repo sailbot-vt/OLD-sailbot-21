@@ -27,7 +27,7 @@ class SailServoController:
 
         self.servo = Servo(pwm_pin, duty_min, duty_max, angle_min, angle_max, pwm_lib)
         current_sail_angle = 0
-        self.sail_goto(0)
+        self.sail_turn_to(0)
 
     def sail_angle_to_servo_angle(self, sail_angle):
         """
@@ -62,10 +62,10 @@ class SailServoController:
         if (sail_angle>max):
             return max
 
-    def sail_goto(self, sail_angle):
+    def sail_turn_to(self, sail_angle):
         """
         Method to send the sail to a given angle. Uses sail_angle_to_servo_angle
-        to get the servo angle and sends that to the regular goto method.
+        to get the servo angle and sends that to the regular turn_to method.
 
         Keyword arguments:
         self -- The caller
@@ -75,11 +75,11 @@ class SailServoController:
         The constrained sail angle that the servo was set to
 
         Side effects:
-        Calls the goto method of the servo class
+        Calls the turn_to method of the servo class
 
         """
         constrained_sail_angle = self.constrain_sail_angle(sail_angle)
-        self.servo.goto(self.sail_angle_to_servo_angle(constrained_sail_angle))
+        self.servo.turn_to(self.sail_angle_to_servo_angle(constrained_sail_angle))
         current_sail_angle = constrained_sail_angle
         return constrained_sail_angle
 
@@ -92,6 +92,6 @@ class SailServoController:
         delta_sail_angle -- The change in angle to be processed
 
         Side effects:
-        Calls the sail_goto method with the constrained angle
+        Calls the sail_turn_to method with the constrained angle
         """
-        self.sail_goto(self.constrain_sail_angle(self.current_sail_angle+delta_sail_angle))
+        self.sail_turn_to(self.constrain_sail_angle(self.current_sail_angle+delta_sail_angle))

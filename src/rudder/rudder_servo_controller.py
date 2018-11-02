@@ -25,7 +25,7 @@ class RudderServoController:
         servo = Servo(pwm_pin, duty_min, duty_max, angle_min, angle_max, pwm_lib)
         self.mechanical_advantage = mechanical_advantage
         current_rudder_angle = 0
-        self.rudder_goto(0)
+        self.rudder_turn_to(0)
 
 
     def rudder_angle_to_servo_angle(self, rudder_angle):
@@ -61,20 +61,20 @@ class RudderServoController:
         return rudder_angle
 
 
-    def rudder_goto(self, rudder_angle):
+    def rudder_turn_to(self, rudder_angle):
         """
         Method to send the rudder to a given angle. Uses rudder_angle_to_servo_angle
-        to get the servo angle and sends that to the regular goto method.
+        to get the servo angle and sends that to the regular turn_to method.
 
         Keyword arguments:
         rudder_angle -- The desired angle of the rudder
 
         Side effects:
-        Calls the goto method of the servo class
+        Calls the turn_to method of the servo class
 
         """
         constrained_rudder_angle = self.constrain_rudder_angle(rudder_angle)
-        self.servo.goto(self.rudder_angle_to_servo_angle(constrained_rudder_angle))
+        self.servo.turn_to(self.rudder_angle_to_servo_angle(constrained_rudder_angle))
         current_rudder_angle = constrained_rudder_angle
         return constrained_rudder_angle
 
@@ -88,6 +88,6 @@ class RudderServoController:
         delta_rudder_angle -- The change in angle to be processed
 
         Side effects:
-        Calls the rudder_goto method with the constrained angle
+        Calls the rudder_turn_to method with the constrained angle
         """
-        self.rudder_goto(self.constrain_rudder_angle(self.current_rudder_angle + delta_rudder_angle))
+        self.rudder_turn_to(self.constrain_rudder_angle(self.current_rudder_angle + delta_rudder_angle))

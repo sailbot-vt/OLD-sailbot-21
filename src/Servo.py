@@ -30,9 +30,9 @@ class Servo:
         self.angle_max = angle_max
         self.pwm_lib = pwm_lib
         self.pwm_lib.start(self.pwm_pin,(100 - duty_min), 60.0)
-        self.current_angle = self.goto(0)
+        self.current_angle = self.turn_to(0)
 
-    def goto(self, angle):
+    def turn_to(self, angle):
         """
         Method to send the servo to the given angle.
 
@@ -53,7 +53,7 @@ class Servo:
         self.current_angle = constrained_angle;
         return constrained_angle
 
-    def changeServoAngle(self, deltaAngle):
+    def change_servo_angle(self, deltaAngle):
         """
         Method to change the servo relative to the current_angle
 
@@ -64,7 +64,7 @@ class Servo:
         Side effects:
         - Changes the current_angle varaible of the object
         """
-        self.current_angle = self.goto(self.current_angle + deltaAngle)
+        self.current_angle = self.turn_to(self.current_angle + deltaAngle)
 
     def calc_duty_cycle(self, angle):
         """
