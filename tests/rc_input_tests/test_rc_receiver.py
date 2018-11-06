@@ -12,6 +12,7 @@ class RCReceiverTests(unittest.TestCase):
     def setUp(self):
         Adafruit_BBIO.ADC.setup = MagicMock(name='Adafruit_BBIO.ADC.setup')
         Adafruit_BBIO.ADC.read = MagicMock(name='Adafruit_BBIO.ADC.read')
+
         self.broadcaster = make_broadcaster(RCInputBroadcasterType.Testable)
         self.r = make_rc_receiver(RCReceiverType.ADC, broadcaster=self.broadcaster)
 
@@ -23,6 +24,7 @@ class RCReceiverTests(unittest.TestCase):
     def test_listen(self):
         """Tests that the listen method queries the ADC pins correctly"""
         self.r.read_input()
+
         Adafruit_BBIO.ADC.setup.assert_called()
         Adafruit_BBIO.ADC.read.assert_called()
 
@@ -30,9 +32,12 @@ class RCReceiverTests(unittest.TestCase):
         """Tests that the receiver reads and scales rudder input correctly"""
         test_voltages = [0, 0.25, 0.5, 0.75, 1]
         scaled_outputs = [-80, -20, 0, 20, 80]  # 80 * x^2
+
         for index, (test_voltage, scaled_output) in enumerate(zip(test_voltages, scaled_outputs)):
             Adafruit_BBIO.ADC.read = MagicMock(name='Adafruit_BBIO.ADC.read', return_value=test_voltage)
+
             self.r.read_input()
+
             assert len(self.broadcaster.rudder_signals) == index + 1
             assert self.broadcaster.rudder_signals[index] == scaled_output
 
@@ -40,6 +45,7 @@ class RCReceiverTests(unittest.TestCase):
         """Tests that the receiver reads and scales trim input correctly"""
         test_voltages = [0, 0.25, 0.5, 0.75, 1]
         scaled_outputs = [-20, -5, 0, 5, 20]  # 20 * x^2
+
         for index, (test_voltage, scaled_output) in enumerate(zip(test_voltages, scaled_outputs)):
             Adafruit_BBIO.ADC.read = MagicMock(name='Adafruit_BBIO.ADC.read', return_value=test_voltage)
             self.r.read_input()
