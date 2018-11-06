@@ -7,6 +7,8 @@ int publish_data();
 int register_to_consume_data();
 void data_callback();
 
+void (*callback)(void *) = &data_callback;
+
 int channelName = 'sample';
 int channelName2 = 'diff';
 int dataSize = 100;
@@ -24,7 +26,7 @@ int main() {
     }
 
     register_to_produce_data(channelName, dataSize);
-    register_to_consume_data(channelName, data_callback);
+    register_to_consume_data(channelName, callback);
 
     publish_data(channelName, dataSize, data);
 

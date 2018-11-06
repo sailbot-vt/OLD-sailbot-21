@@ -9,34 +9,43 @@ void insert_consumer();
 void display();
 int consumer_data[ DATASIZE ];
 
+static int *dataPtr;
 
-int register_to_consume_data(int channelName, void *data_callback) {
+struct channelTable {
+    int *dataPtr;
+    int channelName;
+};
+
+struct channelTable* search();
+
+
+int register_to_consume_data(int channelName, void *callback) {
    
     //Registers data callback with relay
     //***In theory, relay would access and create new threads for all consumers that have registered using this call***
 
-    void (*callback)(int*);
-
-    callback = &data_callback;
+//    void (*callback)(void *) = &data_callback;
 
     insert_consumer(channelName, callback);
 
     printf("registering consumer %p\n", callback);
 
-    display();
+//    display();
 
     return 0;
 }
 
-void data_callback(int *dataPtr) {
+void data_callback(void *dataPtr) {
 
     //Called by relay when a publisher publishes data
     //***Currently not working -- issue with consumer data structure not actually being accessed in relay***
     //	Definitely just me being stupid -- need to look into that
 
+    int *newdataPtr = (int *)dataPtr;
+
     printf("data callback called\n");
     
-    memcpy(&consumer_data, (* dataPtr), DATASIZE);
+    memcpy(&consumer_data, (* newdataPtr), DATASIZE);
 
     printf("data_callback has been called back with data");
 
