@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
 
 #define DATASIZE 100
 
@@ -53,7 +54,7 @@ void data_callback(void *dataPtr) {
 
     //<cython_callback>
 
-    pthread_exit(NULL);
+    return NULL;
 }
 
 
