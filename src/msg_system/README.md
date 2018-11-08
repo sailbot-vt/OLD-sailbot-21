@@ -6,14 +6,14 @@
 
 ### Functions
 
-1. register_to_consume_data(int <channelName>, void\* <callback>)
+1. register_to_consume_data(int \<channelName>, void\* \<callback>)
 
 ```
 Register with relay to consume data on channelName
 Will now be called by notify_consumers upon data being published on channelName
 ```
 
-2. data_callback(void \*<dataPtr>)
+2. data_callback(void \*\<dataPtr>)
 
 ```
 Dereference data and pass to data_callback
@@ -24,14 +24,14 @@ data_callback will call a cython function, which will serve as an intermediary t
 
 ### Functions
 
-1. register_to_produce_data(int <channelName>, int <dataSize>)
+1. register_to_produce_data(int \<channelName>, int \<dataSize>)
 
 ```
 Register with relay to produce data on channelName
 Producer and dataPtr to publishing address are stored in hashArray by relay
 ```
 
-2. publish_data(int <channelName>, int <dataSize>, int \*<sourcePtr>)
+2. publish_data(int \<channelName>, int \<dataSize>, int \*\<sourcePtr>)
 
 ```
 Receives sourcePtr to data and pushes it to shared memory
