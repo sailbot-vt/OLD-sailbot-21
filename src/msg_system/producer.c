@@ -35,14 +35,14 @@ int register_to_produce_data(int channelName, int dataSize) {
 }
 
 
-int publish_data(int channelName, int dataSize, int data[]) {
+int publish_data(int channelName, int dataSize, int *sourcePtr) {
 
     //Uses hashArray to find where to publish data to then memcpy's to there
     //Calls notify_consumers method of relay
 	
     dataPtr = search(channelName)->dataPtr;
 
-    memcpy(dataPtr,data, dataSize);
+    memcpy(dataPtr,sourcePtr, dataSize);
 
     notify_consumers(channelName);
 

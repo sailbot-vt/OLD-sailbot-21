@@ -200,7 +200,7 @@ void *notify_consumers(int channelName,int *dataPtr) {
             printf("consumer notified = %p\n", consumers[i]);
 	    printf("pthread_t object = %p\n", &(threads[i]));
 	    void *newDataPtr = (void *)(dataPtr);
-	    rc = pthread_create(&(threads[i]), NULL, *consumers[i], newDataPtr);  
+//	    rc = pthread_create(&(threads[i]), NULL, *consumers[i], newDataPtr);  
 	    (*consumers[i]) (newDataPtr);
 	    if(rc)  {
 	        printf("Error: unable to create thread: %i\n", rc);

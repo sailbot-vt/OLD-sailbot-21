@@ -28,7 +28,7 @@ int main() {
     register_to_produce_data(channelName, dataSize);
     register_to_consume_data(channelName, callback);
 
-    publish_data(channelName, dataSize, data);
+    publish_data(channelName, dataSize, &data);
 
     return 0;
 }
