@@ -4,7 +4,7 @@
 
 ## consumer.c
 
-###Functions
+######Functions
 
 1. register_to_consume_data(int <channelName>, void\* <callback>)
 
@@ -22,7 +22,7 @@ data_callback will call a cython function, which will serve as an intermediary t
 
 ## producer.c
 
-###Functions
+######Functions
 
 1. register_to_produce_data(int <channelName>, int <dataSize>)
 
@@ -40,5 +40,5 @@ Notifies relay so that it can notify_consumers on this channel
  
 ## relay.c
 
-###Functions
+######Functions
 
