@@ -79,13 +79,13 @@ This entry will be found by notify_consumers and the callback will be called
 
 ```
 Creates thread for each consumers data callback stored in channelTable
-*Thread creation not currently working, can still do callback just not multiprocessing-ly*
+Thread creation not currently working, can still do callback just not multiprocessing-ly
 ```
 
 7. display()
 
 ```
-Creates visual representation of entire hashArray (*doesn't show consumers*)
+Creates visual representation of entire hashArray (doesn't show consumers)
 ```
 
 8. display_consumers(int \<channelName>)
