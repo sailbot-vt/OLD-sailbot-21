@@ -185,7 +185,7 @@ void display_consumers(int channelName) {
 void *notify_consumers(int channelName,int *dataPtr) {
    
     //Creates thread for each consumer callback subscribed to a channel
-    //***Error here -- seems to not actually be looking into consumer data structure***
+    ///Error here -- Won't actually create a thread, but will just call the function using the consumer callback pointer
 
     void (*consumers[NUM_CONSUMERS]) (void *ptr) = { NULL };
 
