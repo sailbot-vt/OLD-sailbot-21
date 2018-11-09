@@ -4,11 +4,10 @@
 #include <stdlib.h>
 #include <time.h>
 
-int data[ 100 ];
 
 //make header file for relay to avoid redeclaring variables and funcs
 
-static int *dataPtr;
+int *dataPtr;
 
 int create_buffer();
 void display();
@@ -29,8 +28,6 @@ int register_to_produce_data(int channelName, int dataSize) {
 
     dataPtr = create_buffer(channelName, dataSize); 
 
-    display();
-
     return dataPtr;
 }
 
@@ -44,7 +41,7 @@ int publish_data(int channelName, int dataSize, int *sourcePtr) {
 
     memcpy(dataPtr,sourcePtr, dataSize);
 
-    notify_consumers(channelName);
+    notify_consumers(channelName, dataSize, dataPtr);
 
     return 0;
 }

@@ -5,11 +5,20 @@
 #include <stdbool.h>
 #include <sys/mman.h>
 #include <pthread.h>
+#include <Python.h>
 
 #define SIZE 20
 #define NUM_CONSUMERS 5
 
 int pthread_create();
+
+void *data_callback(void *dataPtr, int dataSize, PyObject* callback);
+struct arg_struct {
+    void *dataPtr;
+    int dataSize;
+    PyObject* callback;
+};
+
 
 void* create_shared_memory(size_t size) {
     
@@ -177,7 +186,7 @@ void display_consumers(int channelName) {
 
 	   
 
-void *notify_consumers(int channelName,int *dataPtr) {
+void *notify_consumers(int channelName,int dataSize, int *dataPtr) {
    
     //Creates thread for each consumer callback subscribed to a channel
     ///Error here -- Won't actually create a thread, but will just call the function using the consumer callback pointer
@@ -202,8 +211,11 @@ void *notify_consumers(int channelName,int *dataPtr) {
 //	        printf("pthread_t object = %p\n", &(threads[i]));
 	        void *newDataPtr = (void *)(dataPtr);
             printf("consumer notified = %p\n", consumers[i]);
-	        rc = pthread_create((&(threads[i])), NULL, *consumers[i], newDataPtr);
-//	        (*consumers[i]) (newDataPtr);
+            struct arg_struct callback_args;
+            callback_args.dataPtr = newDataPtr;
+            callback_args.dataSize = dataSize;
+            callback_args.callback *consumers[i];
+	        rc = pthread_create((&(threads[i])), NULL, &data_callback, (void* )&callback_args);
 	        if(rc)  {
 	            printf("Error: unable to create thread: %i\n", rc);
 		        threads[i] = NULL;
