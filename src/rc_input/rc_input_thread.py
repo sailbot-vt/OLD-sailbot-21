@@ -4,7 +4,7 @@ from time import sleep
 from src.rc_input.rc_receiver import make_rc_receiver, RCReceiverType
 from src.rc_input.rc_broadcaster import make_broadcaster, RCInputBroadcasterType
 
-RC_READ_INTERVAL = 50 / 1000  # Scaled for milliseconds
+RC_READ_INTERVAL = 50 / 1000  # 50 milliseconds
 
 
 class RCInputThread(Thread):

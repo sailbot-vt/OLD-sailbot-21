@@ -11,7 +11,7 @@ class consumer(ABC):
     """
 
     @abstractmethod
-    def py_register_to_consume_data(self, channel_name):
+    def py_register_to_consume_data(self, channel_name):            #SUBSCRIBE
         
         """
         Register with relay to receive a callback upon data being received on <channel_name>. 

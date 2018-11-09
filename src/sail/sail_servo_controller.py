@@ -26,7 +26,7 @@ class SailServoController:
         """
 
         self.servo = Servo(pwm_pin, duty_min, duty_max, angle_min, angle_max, pwm_lib)
-        current_sail_angle = 0
+        self.current_sail_angle = 0
         self.sail_turn_to(0)
 
     def sail_angle_to_servo_angle(self, sail_angle):
@@ -80,7 +80,7 @@ class SailServoController:
         """
         constrained_sail_angle = self.constrain_sail_angle(sail_angle)
         self.servo.turn_to(self.sail_angle_to_servo_angle(constrained_sail_angle))
-        current_sail_angle = constrained_sail_angle
+        self.current_sail_angle = constrained_sail_angle
         return constrained_sail_angle
 
     def change_sail_angle(self, delta_sail_angle):

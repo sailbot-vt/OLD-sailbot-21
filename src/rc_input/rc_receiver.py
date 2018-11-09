@@ -33,7 +33,7 @@ class ADCReceiver(RCReceiver):
     """An implementation of the receiver behaviors for a receiver using the BBB ADC pins."""
 
     def __init__(self, broadcaster, adc_lib, pins):
-        """Initializes a new FS-R6B receiver."""
+        """Initializes a new ADC receiver."""
         self.adc_lib = adc_lib
         self.broadcaster = broadcaster
         self.pins = pins

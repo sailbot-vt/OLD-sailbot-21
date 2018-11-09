@@ -39,7 +39,7 @@ class RudderServoController:
         Returns:
         The angle of the servo that correspondes to the rudder angle
         """
-        mechanical_advantage = 1 #This may be necessary later, robably should inport from elsewhere
+        self.mechanical_advantage = 1 #This may be necessary later, robably should inport from elsewhere
         return rudder_angle*self.mechanical_advantage
 
     def constrain_rudder_angle(self, rudder_angle):
