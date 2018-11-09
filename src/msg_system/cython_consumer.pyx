@@ -1,61 +1,20 @@
 # distutils: sources = consumer.c relay.c
-import pdb
-from abc import ABC, abstractmethod
 
-cdef extern register_to_consume_data(int channelName, void *callback)
+cdef extern register_to_consume_data(int channelName, PyObject callback)
 
-class consumer(ABC):
-    
+
+def subscribe(self, channel_name, data_callback):
+
     """
-    An abstract class to hide the interface with Cython from consumers.
+    Register with relay to receive a callback upon data being received on <channel_name>. 
+
+    Calls cython which calls the C... Relay keeps track of who to signal upon receiving new data
+
+    Keyword arguments:
+    channel_name -- The name of the channel to subscribe to (need to coordinate with producer to have matching values)
+    data_callback -- Method to execute upon receiving signal from relay... This method will be passed the dereferenced data from shared memory
     """
 
-    @abstractmethod
-    def py_register_to_consume_data(self, channel_name):
-        
-        """
-        Register with relay to receive a callback upon data being received on <channel_name>. 
+    register_to_consume_data(channelName, data_callback)
 
-        Calls cython which calls the C... Relay keeps track of who to signal upon receiving new data
-
-        Keyword arguments:
-        channel_name -- The name of the channel to subscribe to (need to coordinate with producer to have matching values)
-        data_callback -- Method to execute upon receiving signal from relay... This method will be passed the dereferenced data from shared memory
-        """
-
-        pdb.set_trace()
-
-        register_to_consume_data(channelName, self.data_callback)
-
-    @abstractmethod
-    def data_callback(self, data):
-        """
-        This method is instantiated upon receiving a signal from the relay
-
-        Called by cython method that dereferences data in shared memory and passes it to this function
-
-        Keyword arguments:
-        data -- Data that is passed to the callback... Will likely be in a structured numpy array
-        """
-
-        pass
-
-    
-
-class example_consumer_class(consumer):
-    """
-    Inherits from consumer base class
-    """
-    def py_register_to_consume_data(self, channel_name):
-        """
-        Nothing additional needed here... Just remember to run this method in order to receive any data!
-        """
-
-        pass
-
-    def data_callback(self, data):
-        """
-        Do any processing needed on the data... Remember to keep the system real-time
-        """
-        pass
 
