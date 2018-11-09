@@ -22,7 +22,9 @@ class RCReceiverTests(unittest.TestCase):
         self.r = make_rc_receiver(RCReceiverType.ADC, broadcaster=self.broadcaster)
 
     def test_listen(self):
-        """Tests that the listen method queries the ADC pins correctly"""
+        """Tests that the listen method queries the ADC pins correctly.
+
+        This test partially duplicates ones further down, but could help pinpoint issues."""
         self.r.read_input()
 
         Adafruit_BBIO.ADC.setup.assert_called()
@@ -34,11 +36,15 @@ class RCReceiverTests(unittest.TestCase):
         scaled_outputs = [-80, -20, 0, 20, 80]  # 80 * x^2
 
         for index, (test_voltage, scaled_output) in enumerate(zip(test_voltages, scaled_outputs)):
+            # Mock Adafruit_BBIO.ADC.read() method with the correct return value
             Adafruit_BBIO.ADC.read = MagicMock(name='Adafruit_BBIO.ADC.read', return_value=test_voltage)
 
             self.r.read_input()
 
+            # There should be one signal sent per iteration
             assert len(self.broadcaster.rudder_signals) == index + 1
+
+            # The test outputs should match the expected values
             assert self.broadcaster.rudder_signals[index] == scaled_output
 
     def test_scale_trim(self):
@@ -47,15 +53,25 @@ class RCReceiverTests(unittest.TestCase):
         scaled_outputs = [-20, -5, 0, 5, 20]  # 20 * x^2
 
         for index, (test_voltage, scaled_output) in enumerate(zip(test_voltages, scaled_outputs)):
+            # Mock Adafruit_BBIO.ADC.read() method with the correct return value
             Adafruit_BBIO.ADC.read = MagicMock(name='Adafruit_BBIO.ADC.read', return_value=test_voltage)
+
             self.r.read_input()
+
+            # There should be one signal sent per iteration
             assert len(self.broadcaster.trim_signals) == index + 1
+
+            # The test outputs should match the expected values
             assert self.broadcaster.trim_signals[index] == scaled_output
 
     def test_detect_mode(self):
         """Tests that the receiver reads and transforms mode input correctly"""
         self.r.read_input()
+
+        # There should be one signal sent per iteration
         assert len(self.broadcaster.mode_signals) == 1
+
+        # The test outputs should match the expected values
         assert self.broadcaster.mode_signals[0] == NavigationMode.MANUAL
 
 
