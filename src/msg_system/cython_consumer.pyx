@@ -4,47 +4,15 @@ from abc import ABC, abstractmethod
 
 cdef extern register_to_consume_data(int channelName, void *callback)
 
-cdef void *data_callback(void *dataPtr) {
-
-    """
-   //Called by relay when a publisher publishes data
-    //***Currently not working -- issue with consumer data structure not actually being accessed in relay***
-    //  Definitely just me being stupid -- need to look into that
-    """
-
-    int *newdataPtr = (int *)dataPtr;
-
-    printf("data callback called: %p\n", &consumer_data);
-
-    memcpy(&consumer_data, newdataPtr, DATASIZE);
-
-    printf("First 4 ints = %i %i %i %i\n", consumer_data[0], consumer_data[1], consumer_data[2], consumer_data[3]);
-
-    
-
-    pthread_exit(0);
-}
-
-"""
-    cdef int cythonCallback(void *dataPtr, int dataSize):
-        
-        cdef int *newdataPtr = <int *>dataPtr
-
-        cdef int data [dataSize]
-
-        memcpy(&data, dataPtr, dataSize)
-
-        data_callback(data) 
-
-"""
-
 class consumer(ABC):
+    
     """
     An abstract class to hide the interface with Cython from consumers.
     """
 
     @abstractmethod
     def py_register_to_consume_data(self, channel_name):
+        
         """
         Register with relay to receive a callback upon data being received on <channel_name>. 
 
@@ -57,7 +25,7 @@ class consumer(ABC):
 
         pdb.set_trace()
 
-#        register_to_consume_data(channelName, self.cythonCallback)
+        register_to_consume_data(channelName, self.data_callback)
 
     @abstractmethod
     def data_callback(self, data):
