@@ -19,6 +19,7 @@ angle_max = 180
 angle_min = -180
 mechanical_advantage = 1
 
+sail_control = None
 
 class SailThread(Thread):
     """ Thead to subscribe and move the servo as such."""
@@ -28,7 +29,8 @@ class SailThread(Thread):
         Entry point.
         Not sure if this will run multiple times
         """
-        sail_control = sail_servo_controller(pwm_pin,duty_min,duty_max,angle_min,angle_max,pwm_lib)
+        global sail_control
+        sail_control = sail_servo_controller(pwm_pin, duty_min, duty_max, angle_min, angle_max, pwm_lib)
         subscriber = SailConsumer()
         subscriber.register_to_consume_data("RCComand")
 

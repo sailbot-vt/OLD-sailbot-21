@@ -24,7 +24,7 @@ void* create_shared_memory(size_t size) {
     
     //Returns data ptr to shared memory which has been allocated to this producer
 	
-    int protection = PROT_READ | PROT_WRITE;
+    int protection = PROT_READ | PROT_WRITE;                    //inttypes.h -- fixed width integers
 
     int visibility = MAP_SHARED | MAP_ANONYMOUS;
 

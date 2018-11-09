@@ -21,6 +21,8 @@ angle_max = 180
 angle_min = -180
 mechanical_advantage = 1
 
+rudder_control = None
+
 class RudderThread(Thread):
     """ Thread to subscribe and move the servo as such."""
 
@@ -30,6 +32,7 @@ class RudderThread(Thread):
         Not sure if this will run multiple times
         """
         pwm_pin = Adafruit_BBIO.PWM
+        global rudder_control
         rudder_control = RudderServoController(pwm_pin, duty_min, duty_max, angle_min, angle_max, mechanical_advantage, pwm_lib)
         subscriber = make_rudder_consumer(RudderConsumerType.Production)
         subscriber.register_to_consume_data("RCComand")
@@ -59,7 +62,7 @@ class TestableRudderConsumer():
         """
         self.delta_angles = [0, -0, 15, -15, 90, -90, 90, 90, -180, 90]
 
-    def register_to_consume_data(self, data):
+    def register_to_consume_data(self, channel_name):
         """
         Mock this method as it is the one that is called.
         """

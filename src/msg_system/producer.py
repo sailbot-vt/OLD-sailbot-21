@@ -6,7 +6,7 @@ class producer(ABC):
     """
 
     @abstractmethod
-    def register_to_produce_data(self, channel_name, data_size, buffer_length):
+    def register_to_produce_data(self, channel_name, data_size, buffer_length):             #PUBLISH
         """
         Register with relay to produce data... Relay assigns a pointer to shared memory for it to publish to
 
