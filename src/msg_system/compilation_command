@@ -1,3 +1,0 @@
-***UNTIL I MAKE A MAKE FILE FOR THESE FILES, THIS IS HOW TO COMPILE ON CL***
-
-gcc -pthread -0 main main.c producer.c consumer.c relay.c
