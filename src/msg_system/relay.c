@@ -94,13 +94,13 @@ void insert_consumer(int channelName, void* consumer) {
     }
 
     printf("consumer = %p\n", consumer);
-    display_consumers(channelName);
+//    display_consumers(channelName);
     for(int i=0;i < NUM_CONSUMERS; i++) { 
         if(hashArray[hashIndex]->consumers[i] == NULL) {
-	    hashArray[hashIndex]->consumers[i] = consumer; 
-	}
+	        hashArray[hashIndex]->consumers[i] = consumer;
+            break;
+	    }
     }
-    display_consumers(channelName);
 }
 
 struct channelTable* delete(struct channelTable* item) {
@@ -137,15 +137,10 @@ void display() {
     for(i = 0; i<SIZE; i++) {
 
         if(hashArray[i] != NULL) {
-	    printf(" (%d,%p,%p)", hashArray[i]->channelName, hashArray[i]->dataPtr,hashArray[i]->consumers);
-//	    for(n=0; n < NUM_CONSUMERS; n++) {
-//              if (hashArray[i]->consumers[n] != NULL) {
-//		    printf(" (%p) ", hashArray[i]->consumers[n]);
-//		}
-//	    }
-	}
+            printf(" (%d,%p,%p)", hashArray[i]->channelName, hashArray[i]->dataPtr,hashArray[i]->consumers);
+	    }
         else
-	    printf(" ~~ ");
+	        printf(" ~~ ");
     }
     printf("\n");
 }
@@ -187,24 +182,42 @@ void *notify_consumers(int channelName,int *dataPtr) {
     //Creates thread for each consumer callback subscribed to a channel
     ///Error here -- Won't actually create a thread, but will just call the function using the consumer callback pointer
 
-    void (*consumers[NUM_CONSUMERS]) (void *ptr) = { NULL };
+    void *(*consumers[NUM_CONSUMERS]) (void *ptr) = { NULL };
 
-    strcpy(consumers, search(channelName)->consumers);
+//    strcpy(consumers, search(channelName)->consumers);
+    size_t cpy_size = NUM_CONSUMERS*sizeof(void *);
+    int *search_addr = &(search(channelName)->consumers);
+    memcpy(&consumers, search_addr, cpy_size);
+
     pthread_t threads [NUM_CONSUMERS];
     
-    void *consumer_func_ptr;
+    for(int n=0; n < NUM_CONSUMERS; n++) {
+        printf("%p ", consumers[n]);
+    }
+    printf("\n");
 
-    display_consumers(channelName);
+//    display_consumers(channelName);
     for(int i=0; i < NUM_CONSUMERS; i++) {
-	if(consumers[i] != NULL) {
+	    if(consumers[i] != NULL) {
+//	        printf("pthread_t object = %p\n", &(threads[i]));
+	        void *newDataPtr = (void *)(dataPtr);
             printf("consumer notified = %p\n", consumers[i]);
-	    printf("pthread_t object = %p\n", &(threads[i]));
-	    void *newDataPtr = (void *)(dataPtr);
-//	    rc = pthread_create(&(threads[i]), NULL, *consumers[i], newDataPtr);  
-	    (*consumers[i]) (newDataPtr);
-	    if(rc)  {
-	        printf("Error: unable to create thread: %i\n", rc);
-	    }
+	        rc = pthread_create((&(threads[i])), NULL, *consumers[i], newDataPtr);
+//	        (*consumers[i]) (newDataPtr);
+	        if(rc)  {
+	            printf("Error: unable to create thread: %i\n", rc);
+		        threads[i] = NULL;
+	        }
+        }
+	    else {
+	        threads[i] = NULL;
+        }
+    }
+
+    for(int i=0; i <NUM_CONSUMERS; i++) {
+        if(threads[i] != NULL) {
+//            continue;
+	        pthread_join(threads[i], NULL);
         }
     }
 }

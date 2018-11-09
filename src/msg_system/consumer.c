@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <Python.h>
 
 #define DATASIZE 100
 
@@ -36,7 +37,7 @@ int register_to_consume_data(int channelName, void *callback) {
     return 0;
 }
 
-void data_callback(void *dataPtr) {
+void *data_callback(void *dataPtr) {
 
     //Called by relay when a publisher publishes data
     //***Currently not working -- issue with consumer data structure not actually being accessed in relay***
@@ -44,17 +45,39 @@ void data_callback(void *dataPtr) {
 
     int *newdataPtr = (int *)dataPtr;
 
-    printf("data callback called\n");
+    printf("data callback called: %p\n", &consumer_data);
     
-    memcpy(&consumer_data, (* newdataPtr), DATASIZE);
+    memcpy(&consumer_data, newdataPtr, DATASIZE);
 
-    printf("data_callback has been called back with data");
+    printf("First 4 ints = %i %i %i %i\n", consumer_data[0], consumer_data[1], consumer_data[2], consumer_data[3]);
 
-    printf("First 4 bits = %c %c %c %c", consumer_data[0], consumer_data[1], consumer_data[2], consumer_data[3]);
+    
 
-    //<cython_callback>
+    pthread_exit(0);
 
-    return NULL;
+//    return dataPtr;
+
 }
 
 
+void *data_callback_2(void *dataPtr) {
+
+    //Called by relay when a publisher publishes data
+    //***Currently not working -- issue with consumer data structure not actually being accessed in relay***
+    //	Definitely just me being stupid -- need to look into that
+
+    int *newdataPtr = (int *)dataPtr;
+
+    printf("data callback 2 called: %p\n", &consumer_data);
+    
+    memcpy(&consumer_data, newdataPtr, DATASIZE);
+
+    printf("Second 4 ints = %i %i %i %i\n", consumer_data[4], consumer_data[5], consumer_data[6], consumer_data[7]);
+
+    //<cython_callback>
+
+    pthread_exit(0);
+
+//    return dataPtr;
+
+}
