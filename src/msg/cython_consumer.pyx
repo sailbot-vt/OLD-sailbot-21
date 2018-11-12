@@ -1,8 +1,10 @@
 # distutils: sources = consumer.c relay.c
 
+from cpython.ref cimport PyObject
+
 cdef extern register_to_consume_data(int channelName, PyObject callback)
 
-def subscribe(self, channel_name, data_callback):
+def subscribe(self, channelName, dataCallback):
 
     """
     Register with relay to receive a callback upon data being received on <channel_name>. 
@@ -14,6 +16,6 @@ def subscribe(self, channel_name, data_callback):
     data_callback -- Method to execute upon receiving signal from relay... This method will be passed the dereferenced data from shared memory
     """
 
-    register_to_consume_data(channelName, data_callback)
+    register_to_consume_data(channelName, dataCallback)
 
 
