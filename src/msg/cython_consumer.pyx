@@ -16,6 +16,14 @@ def subscribe(self, channelName, dataCallback):
     data_callback -- Method to execute upon receiving signal from relay... This method will be passed the dereferenced data from shared memory
     """
 
-    register_to_consume_data(channelName, dataCallback)
+    cython_subscribe(channelName, dataCallback)
 
 
+
+cdef cython_subscibe(channelName, dataCallback)
+
+    cdef int C_channelName = <int>channelName
+
+    cdef PyObject callback = <PyObject>dataCallback
+
+    register_to_consume_data(C_channelName, callback)
