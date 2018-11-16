@@ -1,5 +1,5 @@
-#ifndef circular_queue
-#define circular_queue
+#ifndef circular_queue_h
+#define circular_queue_h
 
 #include <stdbool.h>
 
@@ -25,4 +25,4 @@ unsigned int cirque_get_count(const cirque* queue);
 void cirque_for_each(const cirque* queue, cirque_for_fn fun);
 
 #endif
-/* circular_queue */
+/* circular_queue_h */
