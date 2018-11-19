@@ -3,10 +3,13 @@
 from pickle import Pickler, Unpickler
 from cpython.ref cimport PyObject
 from libc.string cimport strcpy
+from libc.stdlib cimport malloc
 
 
 cdef extern register_to_produce_data(int channelName, int dataSize)
 cdef extern publish_data(int channelName, int dataSize, int *sourcePtr)
+cdef extern deregister_to_produce_data(int channelName)
+
 
 
 def publish(channelName, dataSize):
@@ -38,15 +41,31 @@ def push_data(channelName, data):
 
     cython_publish_data(channelName, sizeof(pickled_data), pickled_data) 
 
+def depublish(channelName):
+
+    cython_depublish(channelName)
+
+
 cdef cython_publish_data(channelName, dataSize, pickled_data):
  
     cdef int C_dataSize = <int>dataSize
 
-    cdef int [C_dataSize] C_pickled_data
-    strcpy(C_pickled_data, pickled_data)
+    cdef int C_pickled_data = <int> malloc(C_dataSize * sizeof(int))
+
+    for i in range(dataSize):
+
+        C_pickled_data[i] = <int>(pickled_data[i])
 
     cdef int *sourcePtr = &C_pickled_data
 
     cdef int C_channelName = <int>channelName
 
     publish_data(C_channelName, C_dataSize, sourcePtr)
+
+
+cdef cython_depublish(channelName):
+
+    cdef int C_channelName = <int>channelName
+
+    deregister_to_produce_data(C_channelName)
+

@@ -16,7 +16,9 @@ extern void* notify_consumers();
 
 struct channelTable {
     int *dataPtr;
+    int maxSize;
     int channelName;
+    void (*consumers[NUM_CONSUMERS])
 };
 
 struct channelTable* search();
@@ -45,3 +47,14 @@ int publish_data(int channelName, int dataSize, int *sourcePtr) {
 
     return 0;
 }
+
+int deregister_to_produce_data(int channelName) {
+
+    channelTable table = search(channelName);
+
+    int *loc_ptr = table->dataPtr;
+
+    int dataSize = table->maxSize;
+
+    void *realloc(loc_ptr, dataSize);
+} 

@@ -36,6 +36,7 @@ int rc;
 
 struct channelTable {
     int *dataPtr;
+    int maxSize;
     int channelName;
     void (*consumers[NUM_CONSUMERS]);
 };
