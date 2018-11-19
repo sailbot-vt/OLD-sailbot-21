@@ -2,7 +2,16 @@
 
 from cpython.ref cimport PyObject
 
-cdef extern register_to_consume_data(int channelName, PyObject callback)
+cdef extern register_to_consume_data(int channelName, PyObject* callback)
+
+cdef cython_subscribe(channelName, dataCallback):
+
+    cdef int C_channelName = <int>channelName
+
+    cdef PyObject* callback = <PyObject*>dataCallback
+
+    register_to_consume_data(C_channelName, callback)
+
 
 def subscribe(self, channelName, dataCallback):
 
@@ -17,13 +26,3 @@ def subscribe(self, channelName, dataCallback):
     """
 
     cython_subscribe(channelName, dataCallback)
-
-
-
-cdef cython_subscibe(channelName, dataCallback)
-
-    cdef int C_channelName = <int>channelName
-
-    cdef PyObject callback = <PyObject>dataCallback
-
-    register_to_consume_data(C_channelName, callback)

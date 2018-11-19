@@ -214,7 +214,7 @@ void *notify_consumers(int channelName,int dataSize, int *dataPtr) {
             struct arg_struct callback_args;
             callback_args.dataPtr = newDataPtr;
             callback_args.dataSize = dataSize;
-            callback_args.callback *consumers[i];
+            callback_args.callback = (void*)consumers[i];
 	        rc = pthread_create((&(threads[i])), NULL, &data_callback, (void* )&callback_args);
 	        if(rc)  {
 	            printf("Error: unable to create thread: %i\n", rc);

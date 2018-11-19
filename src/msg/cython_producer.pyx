@@ -2,6 +2,8 @@
 # distutils: include_dirs = Python.h
 from pickle import Pickler, Unpickler
 from cpython.ref cimport PyObject
+from libc.string cimport strcpy
+
 
 cdef extern register_to_produce_data(int channelName, int dataSize)
 cdef extern publish_data(int channelName, int dataSize, int *sourcePtr)
@@ -34,14 +36,17 @@ def push_data(channelName, data):
 
     pickled_data = Pickler(data)
 
-    cython_publish_data(channelName, size(pickled_data), pickled_data) 
+    cython_publish_data(channelName, sizeof(pickled_data), pickled_data) 
 
 cdef cython_publish_data(channelName, dataSize, pickled_data):
+ 
+    cdef int C_dataSize = <int>dataSize
 
-    cdef int *sourcePtr = &pickled_data
+    cdef int [C_dataSize] C_pickled_data
+    strcpy(C_pickled_data, pickled_data)
+
+    cdef int *sourcePtr = &C_pickled_data
 
     cdef int C_channelName = <int>channelName
-
-    cdef int C_dataSize = <int>dataSize
 
     publish_data(C_channelName, C_dataSize, sourcePtr)
