@@ -27,6 +27,8 @@ int register_to_consume_data(int channelName, PyObject* callback) {
 
 //    void (*callback)(void *) = &data_callback;
 
+    void *data_callback = (void *)data_callback;    
+
     insert_consumer(channelName, callback);
 
     printf("registering consumer %p\n", callback);
