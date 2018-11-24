@@ -23,11 +23,6 @@ class RCInputThread(Thread):
 
     def run(self):
         """Starts a regular input read interval."""
-        self.keep_reading = True
-        while self.keep_reading:
+        while True:
             self.receiver.read_input()
             sleep(RC_READ_INTERVAL)
-
-    def stop(self):
-        """Cancels regular input read."""
-        self.keep_reading = False
