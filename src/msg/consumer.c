@@ -7,18 +7,14 @@
 
 #define DATASIZE 100
 
-void insert_consumer();
-void display();
+#include "relay.h"
 
-static int *dataPtr;
+// Globals
 
-struct channelTable {
-    int *dataPtr;
-    int channelName;
-};
+int *dataPtr;
 
-struct channelTable* search();
 
+// Functions
 
 int register_to_consume_data(int channelName, PyObject* callback) {
    
@@ -44,7 +40,7 @@ void *data_callback(void *dataPtr, int dataSize, PyObject* callback) {
     //***Currently not working -- issue with consumer data structure not actually being accessed in relay***
     //	Definitely just me being stupid -- need to look into that
 
-    int consumer_data[ dataSize ]; 
+    int consumer_data[ dataSize ];
 
     int *newdataPtr = (int *)dataPtr;
 

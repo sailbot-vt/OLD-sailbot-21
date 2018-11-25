@@ -1,5 +1,5 @@
 build:
-	gcc -Wall -Werror -pthread -o main.bin main.c producer.c consumer.c relay.c circular_queue.c; \
+	python3.7 setup.py build_ext --inplace
 
 clean:
 	rm *.bin *.o ~*; \

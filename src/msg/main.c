@@ -11,8 +11,8 @@ void data_callback_2();
 void (*callback)(void *) = &data_callback;
 void (*callback_2)(void *) = &data_callback_2;
 
-int channelName = 'sample';
-int channelName2 = 'diff';
+int channelName = "sample";
+int channelName2 = "diff";
 int dataSize = 100;
 
 

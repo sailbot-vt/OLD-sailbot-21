@@ -4,24 +4,14 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "relay.h"
 
-//make header file for relay to avoid redeclaring variables and funcs
+// Globals
 
 int *dataPtr;
 
-int create_buffer();
-void display();
 
-extern void* notify_consumers();
-
-struct channelTable {
-    int *dataPtr;
-    int maxSize;
-    int channelName;
-    void (*consumers[NUM_CONSUMERS])
-};
-
-struct channelTable* search();
+// Function Definitions
 
 int register_to_produce_data(int channelName, int dataSize) {
     
@@ -33,13 +23,12 @@ int register_to_produce_data(int channelName, int dataSize) {
     return dataPtr;
 }
 
-
 int publish_data(int channelName, int dataSize, int *sourcePtr) {
 
     //Uses hashArray to find where to publish data to then memcpy's to there
     //Calls notify_consumers method of relay
 	
-    dataPtr = search(channelName)->dataPtr;
+    int *dataPtr = search(channelName)->dataPtr;
 
     memcpy(dataPtr,sourcePtr, dataSize);
 
@@ -50,7 +39,7 @@ int publish_data(int channelName, int dataSize, int *sourcePtr) {
 
 int deregister_to_produce_data(int channelName) {
 
-    channelTable table = search(channelName);
+    channel_table table = search(channelName);
 
     int *loc_ptr = table->dataPtr;
 

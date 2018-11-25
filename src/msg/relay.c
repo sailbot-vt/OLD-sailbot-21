@@ -7,59 +7,50 @@
 #include <pthread.h>
 #include <Python.h>
 
+#include "consumer.h"
+
 #define SIZE 20
 #define NUM_CONSUMERS 5
 
-int pthread_create();
 
-void *data_callback(void *dataPtr, int dataSize, PyObject* callback);
-struct arg_struct {
+// Structs
+
+typedef struct arg_struct {
     void *dataPtr;
     int dataSize;
     PyObject* callback;
-};
+} arg_struct;
 
 
-void* create_shared_memory(size_t size) {
-    
-    //Returns data ptr to shared memory which has been allocated to this producer
-	
-    int protection = PROT_READ | PROT_WRITE;                    //inttypes.h -- fixed width integers
-
-    int visibility = MAP_SHARED | MAP_ANONYMOUS;
-
-    return mmap(NULL, size, protection, visibility, 0, 0);
-}
+// Globals
 
 int consumers [NUM_CONSUMERS];
 int rc;
 
-struct channelTable {
-    int *dataPtr;
-    int maxSize;
-    int channelName;
-    void (*consumers[NUM_CONSUMERS]);
-};
+channel_table* hashArray[SIZE];
+channel_table* dummyItem;
+channel_table* item;
 
-struct channelTable* hashArray[SIZE];
-struct channelTable* dummyItem;
-struct channelTable* item;
 
-int hashCode(int channelName) {
-    return channelName % SIZE;
-}
+// Private Function Declarations
 
-struct channelTable *search(int channelName) {
+void* create_shared_memory(size_t size);
+int hashCode(int channelName);
 
-    //Searches hashArray and returns channelTable object corresponding to channelName (if that object exists)
+
+// Functions
+
+channel_table *search(int channelName) {
+
+    //Searches hashArray and returns channel_table object corresponding to channelName (if that object exists)
 
     //get the hash
     int hashIndex = hashCode(channelName);
 
     //move in array until an empty spot is found
-    while(hashArray[hashIndex] != NULL && hashArray[hashIndex]->dataPtr != NULL) {
+    while (hashArray[hashIndex] != NULL && hashArray[hashIndex]->dataPtr != NULL) {
         
-	if(hashArray[hashIndex]->channelName == channelName)
+	if (hashArray[hashIndex]->channelName == channelName)
             return hashArray[hashIndex];
 
 	++hashIndex;		//go to next cell
@@ -73,7 +64,7 @@ void insert_producer(int channelName, int *dataPtr) {
 
     //Makes entry into hashArray containing channnelName and data ptr
 
-    struct channelTable *item = (struct channelTable*) malloc(sizeof(struct channelTable));
+    channel_table *item = (channel_table*) malloc(sizeof(channel_table));
     item->dataPtr = dataPtr;
     item->channelName = channelName;
     void *consumers [ NUM_CONSUMERS ] = { NULL };
@@ -113,7 +104,7 @@ void insert_consumer(int channelName, void* consumer) {
     }
 }
 
-struct channelTable* delete(struct channelTable* item) {
+channel_table* delete(channel_table* item) {
 
     //Delete desired item from hashArray (eg: producer is done producing)
 
@@ -125,7 +116,7 @@ struct channelTable* delete(struct channelTable* item) {
     while(hashArray[hashIndex] != NULL) {
         
         if(hashArray[hashIndex]->channelName == channelName) {
-	    struct channelTable* temp = hashArray[hashIndex];
+	    channel_table* temp = hashArray[hashIndex];
 
 	    hashArray[hashIndex] = dummyItem;		//assign a dummy item at deleted position
 	    return temp;
@@ -161,7 +152,7 @@ void display_consumers(int channelName) {
     
 /*    int *consumers [NUM_CONSUMERS] = { NULL };
 
-    struct channelTable *item = search(channelName);
+    channel_table *item = search(channelName);
 
     strcpy(consumers, item->consumers);
 */
@@ -184,8 +175,6 @@ void display_consumers(int channelName) {
 
     printf("\n");
     }
-
-	   
 
 void *notify_consumers(int channelName,int dataSize, int *dataPtr) {
    
@@ -212,7 +201,7 @@ void *notify_consumers(int channelName,int dataSize, int *dataPtr) {
 //	        printf("pthread_t object = %p\n", &(threads[i]));
 	        void *newDataPtr = (void *)(dataPtr);
             printf("consumer notified = %p\n", consumers[i]);
-            struct arg_struct callback_args;
+            arg_struct callback_args;
             callback_args.dataPtr = newDataPtr;
             callback_args.dataSize = dataSize;
             callback_args.callback = (void*)consumers[i];
@@ -253,3 +242,20 @@ int create_buffer(int channelName, int dataSize) {
 
 }
 
+
+// Private Function Definitions
+
+static int hashCode(int channelName) {
+    return channelName % SIZE;
+}
+
+static void* create_shared_memory(size_t size) {
+
+    //Returns data ptr to shared memory which has been allocated to this producer
+
+    int protection = PROT_READ | PROT_WRITE;  // Don't worry about fixed-width ints here, since mmap needs ints as arguments
+
+    int visibility = MAP_SHARED | MAP_ANONYMOUS;
+
+    return mmap(NULL, size, protection, visibility, 0, 0);
+}
