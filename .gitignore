@@ -182,3 +182,6 @@ fabric.properties
 
 # PyCharm
 .idea/
+
+# CMake
+[C|c][M|m]ake*
