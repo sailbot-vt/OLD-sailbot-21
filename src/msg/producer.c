@@ -13,17 +13,21 @@ int *dataPtr;
 
 // Function Definitions
 
-int register_to_produce_data(int channelName, int dataSize) {
+int register_to_produce_data(char channelName, int dataSize) {
     
     //Calls create buffer which creates a shared memory block for publisher to publish to
     //Producer and corresponding data ptr are stored in hashArray
 
-    dataPtr = create_buffer(channelName, dataSize); 
+    if(search(channelName) != NULL) {
 
-    return dataPtr;
+        return create_buffer(channelName); 
+    }
+
+    return NULL;
+
 }
 
-int publish_data(int channelName, int dataSize, int *sourcePtr) {
+int publish_data(char channelName, int dataSize, int *sourcePtr) {
 
     //Uses hashArray to find where to publish data to then memcpy's to there
     //Calls notify_consumers method of relay
@@ -37,7 +41,7 @@ int publish_data(int channelName, int dataSize, int *sourcePtr) {
     return 0;
 }
 
-int deregister_to_produce_data(int channelName) {
+int deregister_to_produce_data(char channelName) {
 
     channel_table table = search(channelName);
 

@@ -16,7 +16,7 @@ int *dataPtr;
 
 // Functions
 
-int register_to_consume_data(int channelName, PyObject* callback) {
+int register_to_consume_data(char channelName, PyObject* callback) {
    
     //Registers data callback with relay
     //***In theory, relay would access and create new threads for all consumers that have registered using this call***

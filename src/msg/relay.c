@@ -10,8 +10,8 @@
 #include "consumer.h"
 
 #define SIZE 20
-#define NUM_CONSUMERS 5
-
+#define NUM_CONSUMERS 100
+#define QUEUE_LENGTH 256
 
 // Structs
 
@@ -35,12 +35,12 @@ channel_table* item;
 // Private Function Declarations
 
 void* create_shared_memory(size_t size);
-int hashCode(int channelName);
+int hashCode(char channelName);
 
 
 // Functions
 
-channel_table *search(int channelName) {
+channel_table *search(char channelName) {
 
     //Searches hashArray and returns channel_table object corresponding to channelName (if that object exists)
 
@@ -62,7 +62,7 @@ channel_table *search(int channelName) {
     return NULL;
 }
 
-void insert_producer(int channelName, int *dataPtr) {
+void insert_producer(char channelName, int *dataPtr) {
 
     //Makes entry into hashArray containing channnelName and data ptr
 
@@ -88,7 +88,7 @@ void insert_producer(int channelName, int *dataPtr) {
     //SORT USING qsort
 }
 
-void insert_consumer(int channelName, void* consumer) {
+void insert_consumer(char channelName, void* consumer) {
     
     //Adds consumer data callback to hashArray corresponding to desired channel
 
@@ -112,7 +112,7 @@ channel_table* delete(channel_table* item) {
 
     //Delete desired item from hashArray (eg: producer is done producing)
 
-    int channelName = item->channelName;
+    char channelName = item->channelName;
 
     int hashIndex = hashCode(channelName);		//get the hash
 
@@ -150,7 +150,7 @@ void display() {
     printf("\n");
 }
 
-void display_consumers(int channelName) {
+void display_consumers(char channelName) {
  
     //Displays consumers registered to channel
     
@@ -180,7 +180,7 @@ void display_consumers(int channelName) {
     printf("\n");
     }
 
-void *notify_consumers(int channelName,int dataSize, int *dataPtr) {
+void *notify_consumers(char channelName,int dataSize, int *dataPtr) {
    
     //Creates thread for each consumer callback subscribed to a channel
     ///Error here -- Won't actually create a thread, but will just call the function using the consumer callback pointer
@@ -228,11 +228,11 @@ void *notify_consumers(int channelName,int dataSize, int *dataPtr) {
     }
 }
 
-int create_buffer(int channelName, int dataSize) {
+int create_buffer(char channelName, int dataSize) {
    
     //Returns data ptr to shared memory allocated to channel
 
-    int* dataPtr = create_shared_memory(dataSize*8);
+    int* dataPtr = create_shared_memory(dataSize * QUEUE_LENGTH);        //WHAT IS LENGTH OF QUEUE??
 
 //    printf("data pointer (from relay) = %p\n", dataPtr);
 
@@ -249,7 +249,7 @@ int create_buffer(int channelName, int dataSize) {
 
 // Private Function Definitions
 
-static int hashCode(int channelName) {
+static int hashCode(char channelName) {
     return channelName % SIZE;
 }
 

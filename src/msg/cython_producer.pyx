@@ -6,13 +6,13 @@ from libc.string cimport strcpy
 from libc.stdlib cimport malloc
 
 
-cdef extern register_to_produce_data(int channelName, int dataSize)
-cdef extern publish_data(int channelName, int dataSize, int *sourcePtr)
-cdef extern deregister_to_produce_data(int channelName)
+cdef extern register_to_produce_data(char channelName, int dataSize)
+cdef extern publish_data(char channelName, int dataSize, int *sourcePtr)
+cdef extern deregister_to_produce_data(char channelName)
 
 
+def publish(channelName, data):
 
-def publish(channelName, dataSize):
     """
     Register with relay to produce data... Relay assigns a pointer to shared memory for it to publish to
 
@@ -24,35 +24,31 @@ def publish(channelName, dataSize):
     buffer_size -- Used in conjunction with data_size to determine total size of shared memory to be assigned to this channel
     """
 
-    // if search returns Null.... create channel
-
-        register_to_produce_data(channelName, dataSize)
-
-    publish_data(...)
-
-def push_data(channelName, data):
-    """
-    Push data to shared memory through cython
-
-    Data will be converted to bytearray before pushed to memory
-
-    Keyword arguments:
-    channelName -- The name of the channel to publish to
-    data -- Data to be published to shared memory
-    """
 
     pickled_data = Pickler(data)
 
-    cython_publish_data(channelName, sizeof(pickled_data), pickled_data) 
+    register_to_produce_data(channelName, find_c_data_size(pickled_data))
+
+    cython_publish_data(channelName, data)
+
 
 def depublish(channelName):
 
     cython_depublish(channelName)
 
+cdef find_c_data_size(pickled_data):
 
-cdef cython_publish_data(channelName, dataSize, pickled_data):
+    cdef int C_dataSize = <int>(sizeof(pickled_data))
+
+    return C_dataSize
+
+cdef cython_publish_data(channelName, data):
     
-    cdef int C_dataSize = <int>dataSize
+    pickled_data = Pickler(data)
+
+    cdef int C_dataSize = find_c_data_size(pickled_data)
+    
+    """
 
     cdef int C_pickled_data = <int> malloc(C_dataSize * sizeof(int))
 
@@ -62,14 +58,20 @@ cdef cython_publish_data(channelName, dataSize, pickled_data):
 
     cdef int *sourcePtr = &C_pickled_data
 
-    cdef int C_channelName = <int>channelName
+    """
+
+    cdef void *voidSourcePtr = <void*>pickled_data
+
+    cdef int *sourcePtr = <int*>voidSourcePtr
+
+    cdef char C_channelName = <char>channelName
 
     publish_data(C_channelName, C_dataSize, sourcePtr)
 
 
 cdef cython_depublish(channelName):
 
-    cdef int C_channelName = <int>channelName
+    cdef char C_channelName = <char>channelName
 
     deregister_to_produce_data(C_channelName)
 

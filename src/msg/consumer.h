@@ -3,7 +3,7 @@
 
 // Functions
 
-int register_to_consume_data(int channelName, PyObject* callback);
+int register_to_consume_data(char channelName, PyObject* callback);
 void *data_callback(void *dataPtr, int dataSize, PyObject* callback);
 
 #endif /* consumer_h */
