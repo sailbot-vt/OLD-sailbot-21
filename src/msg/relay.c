@@ -49,7 +49,9 @@ channel_table *search(int channelName) {
 
     //move in array until an empty spot is found
     while (hashArray[hashIndex] != NULL && hashArray[hashIndex]->dataPtr != NULL) {
-        
+    
+    //search using bsearch
+
 	if (hashArray[hashIndex]->channelName == channelName)
             return hashArray[hashIndex];
 
@@ -82,6 +84,8 @@ void insert_producer(int channelName, int *dataPtr) {
 
     }
     hashArray[hashIndex] = item;
+
+    //SORT USING qsort
 }
 
 void insert_consumer(int channelName, void* consumer) {

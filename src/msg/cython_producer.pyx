@@ -24,7 +24,11 @@ def publish(channelName, dataSize):
     buffer_size -- Used in conjunction with data_size to determine total size of shared memory to be assigned to this channel
     """
 
-    register_to_produce_data(channelName, dataSize)
+    // if search returns Null.... create channel
+
+        register_to_produce_data(channelName, dataSize)
+
+    publish_data(...)
 
 def push_data(channelName, data):
     """
@@ -47,7 +51,7 @@ def depublish(channelName):
 
 
 cdef cython_publish_data(channelName, dataSize, pickled_data):
- 
+    
     cdef int C_dataSize = <int>dataSize
 
     cdef int C_pickled_data = <int> malloc(C_dataSize * sizeof(int))
