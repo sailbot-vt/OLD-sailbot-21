@@ -16,7 +16,7 @@ int *dataPtr;
 
 // Functions
 
-int register_to_consume_data(int channelName, PyObject* callback) {
+int register_to_consume_data(char channelName, PyObject* callback) {
    
     //Registers data callback with relay
     //***In theory, relay would access and create new threads for all consumers that have registered using this call***
@@ -34,23 +34,25 @@ int register_to_consume_data(int channelName, PyObject* callback) {
     return 0;
 }
 
-void *data_callback(void *dataPtr, int dataSize, PyObject* callback) {
+void *data_callback(Element element, PyObject* callback) {
 
     //Called by relay when a publisher publishes data
     //***Currently not working -- issue with consumer data structure not actually being accessed in relay***
     //	Definitely just me being stupid -- need to look into that
 
-    int consumer_data[ dataSize ];
+    int consumer_data[element.size];
 
-    int *newdataPtr = (int *)dataPtr;
+    void* consumer_data = malloc(element.size * sizeof(void*));
 
-    printf("data callback called: %p\n", &consumer_data);
-    
-    memcpy(&consumer_data, newdataPtr, DATASIZE);
+    //int consumer_data[ dataSize ];
 
-    printf("First 4 ints = %i %i %i %i\n", consumer_data[0], consumer_data[1], consumer_data[2], consumer_data[3]);
+    //int *newdataPtr = (int *)dataPtr;
+
+    memcpy(&consumer_data, element.data, element.size);
 
     PyObject_CallObject(callback, consumer_data);
+
+    free(consumer_data);
 
     pthread_exit(0);
 

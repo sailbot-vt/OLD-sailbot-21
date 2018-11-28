@@ -2,11 +2,11 @@
 
 from cpython.ref cimport PyObject
 
-cdef extern register_to_consume_data(int channelName, PyObject* callback)
+cdef extern register_to_consume_data(char channelName, PyObject* callback)
 
 cdef cython_subscribe(channelName, dataCallback):
 
-    cdef int C_channelName = <int>channelName
+    cdef char C_channelName = <char>channelName
 
     cdef PyObject* callback = <PyObject*>dataCallback
 

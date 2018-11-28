@@ -7,8 +7,8 @@
 
 // Functions
 
-int register_to_produce_data(int channelName, int dataSize);
-int publish_data(int channelName, int dataSize, int *sourcePtr);
-int deregister_to_produce_data(int channelName);
+int register_to_produce_data(char channelName, int dataSize);
+int publish_data(char channelName, int dataSize, int *sourcePtr);
+int deregister_to_produce_data((char channelName);
 
 #endif /* producer_h */
