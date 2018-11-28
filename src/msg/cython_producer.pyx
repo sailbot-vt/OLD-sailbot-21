@@ -6,12 +6,9 @@ from libc.string cimport strcpy
 from libc.stdlib cimport malloc
 
 
-cdef extern register_to_produce_data(int channel_name, int data_size)
-cdef extern publish_data(int channel_name, int data_size, int *source_ptr)
-cdef extern deregister_to_produce_data(int channel_name)
-cdef extern register_to_produce_data(char channelName, int dataSize)
-cdef extern publish_data(char channelName, int dataSize, int *sourcePtr)
-cdef extern deregister_to_produce_data(char channelName)
+cdef extern register_to_produce_data(char* channel_name, int data_size)
+cdef extern publish_data(char* channel_name, int data_size, int *source_ptr)
+cdef extern deregister_to_produce_data(char* channel_name)
 
 
 def publish(channelName, data):
