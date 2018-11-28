@@ -1,3 +1,6 @@
+import Adafruit_BBIO.ADC as ADC
+import Adafruit_BBIO.GPIO as GPIO
+
 from abc import ABC, abstractmethod
 from enum import Enum
 
@@ -13,7 +16,7 @@ INPUT_PIN_MAX_VOLTAGE = 1.8  # Should be lower than BBB_MAX_INPUT_VOLTAGE to red
 class RCReceiverType(Enum):
     """Semantically represents a type of RCReceiver."""
     Testable = 0
-    ADC = 1
+    BBIO = 1
 
 
 class RCReceiver(ABC):
@@ -29,16 +32,17 @@ class TestableRCReceiver(RCReceiver):
         pass
 
 
-class ADCReceiver(RCReceiver):
+class BBIOReceiver(RCReceiver):
     """An implementation of the receiver behaviors for a receiver using the BBB ADC pins."""
 
-    def __init__(self, broadcaster, adc_lib, pins):
+    def __init__(self, broadcaster, pins):
         """Initializes a new ADC receiver."""
-        self.adc_lib = adc_lib
         self.broadcaster = broadcaster
         self.pins = pins
 
-        self.adc_lib.setup()
+        ADC.setup()
+        GPIO.setup(pins["MODE1"], GPIO.IN)
+        GPIO.setup(pins["MODE2"], GPIO.OUT)
 
     def read_input(self):
         """Reads new input values and sends them to the broadcaster."""
@@ -46,8 +50,8 @@ class ADCReceiver(RCReceiver):
 
         for ch in self.pins:
             # According to some sources online, there is a bug in the ADC driver, so we have to read the value twice
-            self.adc_lib.read(self.pins[ch])
-            input_values[ch] = self.adc_lib.read(self.pins[ch])
+            ADC.read(self.pins[ch])
+            input_values[ch] = ADC.read(self.pins[ch])
 
         self._send_inputs(self._process_inputs(input_values))
 
@@ -75,9 +79,9 @@ class ADCReceiver(RCReceiver):
         A new dictionary of inputs with standard units.
         """
         return {
-            "RUDDER": ADCReceiver._scale_rudder_input(raw_value=input_values["RUDDER"]),
-            "TRIM": ADCReceiver._scale_trim_input(raw_value=input_values["TRIM"]),
-            "MODE": ADCReceiver._transform_mode(input_voltage=input_values["MODE"])
+            "RUDDER": BBIOReceiver._scale_rudder_input(raw_value=input_values["RUDDER"]),
+            "TRIM": BBIOReceiver._scale_trim_input(raw_value=input_values["TRIM"]),
+            "MODE": BBIOReceiver._transform_mode(input_voltage=input_values["MODE"])
         }
 
     @staticmethod
@@ -93,7 +97,7 @@ class ADCReceiver(RCReceiver):
         Returns:
         The rudder input in degrees to starboard.
         """
-        normalized_value = ADCReceiver._normalize_voltage(raw_value)  # Between -1 and 1
+        normalized_value = BBIOReceiver._normalize_voltage(raw_value)  # Between -1 and 1
         degrees_starboard = sign(normalized_value) * 80 * (normalized_value ** 2)  # Between -80 and 80
         return degrees_starboard
 
@@ -107,7 +111,7 @@ class ADCReceiver(RCReceiver):
         Returns:
         The trim input in degrees trimming in.
         """
-        normalized_value = ADCReceiver._normalize_voltage(raw_value)  # Between -1 and 1
+        normalized_value = BBIOReceiver._normalize_voltage(raw_value)  # Between -1 and 1
 
         degrees_in = sign(normalized_value) * 20 * (normalized_value ** 2)  # Between -20 and 20
         return degrees_in
@@ -129,7 +133,7 @@ class ADCReceiver(RCReceiver):
         return 2 * ((read_value / max_value) - 0.5)  # Between -1 and 1
 
 
-def make_rc_receiver(receiver_type=RCReceiverType.ADC, broadcaster=make_broadcaster()):
+def make_rc_receiver(receiver_type=RCReceiverType.BBIO, broadcaster=make_broadcaster()):
     """Generates the appropriate implementation of RCReceiver.
 
     Implements the factory design pattern.
@@ -140,12 +144,12 @@ def make_rc_receiver(receiver_type=RCReceiverType.ADC, broadcaster=make_broadcas
     Returns:
     An instance of the specified type of RCReceiver.
     """
-    if receiver_type == RCReceiverType.ADC:
-        import Adafruit_BBIO.ADC as ADC
-        return ADCReceiver(broadcaster, ADC, {
+    if receiver_type == RCReceiverType.BBIO:
+        return BBIOReceiver(broadcaster, {
             "RUDDER": "P0_0",
             "TRIM": "P0_1",
-            "MODE": "P0_5"
+            "MODE1": "P0_5",
+            "MODE2": "P0_3"
         })
 
     return TestableRCReceiver()

@@ -17,7 +17,7 @@ class RCInputThread(Thread):
         super().__init__()
 
         self.broadcaster = make_broadcaster(RCInputBroadcasterType.Messenger)
-        self.receiver = make_rc_receiver(RCReceiverType.ADC, broadcaster=self.broadcaster)
+        self.receiver = make_rc_receiver(RCReceiverType.BBIO, broadcaster=self.broadcaster)
 
         self.keep_reading = True
 

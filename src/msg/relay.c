@@ -7,9 +7,9 @@
 #include <pthread.h>
 #include <Python.h>
 
+#include "circular_queue.h"
 #include "consumer.h"
 
-#define SIZE 20
 #define NUM_CONSUMERS 5
 
 
@@ -24,7 +24,6 @@ typedef struct arg_struct {
 
 // Globals
 
-int consumers [NUM_CONSUMERS];
 int rc;
 
 channel_table* hashArray[SIZE];
@@ -34,57 +33,81 @@ channel_table* item;
 
 // Private Function Declarations
 
-void* create_shared_memory(size_t size);
-int hashCode(int channelName);
+static void compare_names(void* name1, void* name2);
+static void* create_shared_memory(size_t size);
 
 
 // Functions
 
-channel_table *search(int channelName) {
+/*
+ *
+ */
+int* create_buffer(char* channel_name, int data_size) {
 
-    //Searches hashArray and returns channel_table object corresponding to channelName (if that object exists)
+    int* data_ptr = create_shared_memory(data_size);
 
-    //get the hash
+//    printf("data pointer (from relay) = %p\n", dataPtr);
+
+    insert_producer(channel_name, data_ptr, data_size);
+
+//    pthread_t threads[1];
+
+//    pthread_create(&threads[0], NULL, &notify_consumers, (int *) channelName);
+
+    return *data_ptr;
+
+}
+
+
+/*
+ * Finds the channel table with the specified channel name, if it exists.
+ *
+ * Keyword arguments:
+ * channel_name -- The name of the channel for which to search.
+ *
+ * Returns:
+ * A ptr to the channel_table struct with the right channel name.
+ */
+channel_table *search(char* channelName) {
     int hashIndex = hashCode(channelName);
 
     //move in array until an empty spot is found
     while (hashArray[hashIndex] != NULL && hashArray[hashIndex]->dataPtr != NULL) {
-        
-	if (hashArray[hashIndex]->channelName == channelName)
+        if (hashArray[hashIndex]->channelName == channelName) {
             return hashArray[hashIndex];
+        }
 
-	++hashIndex;		//go to next cell
-	hashIndex %= SIZE; 	//wrap around the table
+        ++hashIndex %= SIZE;
     }
 
     return NULL;
 }
 
-void insert_producer(int channelName, int *dataPtr) {
 
-    //Makes entry into hashArray containing channnelName and data ptr
+/*
+ * Adds an entry to the array of producers.
+ *
+ * Keyword arguments:
+ * channel_name -- The channel name of the producer.
+ * data_ptr -- A ptr to the shared memory owned by the producer.
+ */
+void insert_producer(char* channelName, int *dataPtr) {
+    channel_table *new_producer = (channel_table*)malloc(sizeof(channel_table));
+    new_producer->dataPtr = dataPtr;
+    new_producer->channelName = channelName;
+    new_producer->consumers = (void*)malloc(NUM_CONSUMERS * sizeof(void*));
 
-    channel_table *item = (channel_table*) malloc(sizeof(channel_table));
-    item->dataPtr = dataPtr;
-    item->channelName = channelName;
-    void *consumers [ NUM_CONSUMERS ] = { NULL };
-//    for(int i = 0; i<NUM_CONSUMERS;i++) {
-//        consumers[i] = NULL;
-//    }
-    strcpy(item->consumers, consumers);
 
-    int hashIndex = hashCode(channelName);		//get the hash
+    int hashIndex = hashCode(channelName);
 
-    //move in array until an empty or deleted cell is found
-    while(hashArray[hashIndex] != NULL && hashArray[hashIndex]->channelName != -1) {
-        ++hashIndex;		//go to the next cell
-	hashIndex %= SIZE;	//wrap around the table
-
+    // move in array until an empty or deleted cell is found
+    while (hashArray[hashIndex] != NULL && hashArray[hashIndex]->channelName != -1) {
+	    ++hashIndex %= SIZE;	// Go to next cell and wrap around the table
     }
-    hashArray[hashIndex] = item;
+    hashArray[hashIndex] = new_producer;
 }
 
-void insert_consumer(int channelName, void* consumer) {
+void insert_consumer(char* channelName, void* consumer) {
     
     //Adds consumer data callback to hashArray corresponding to desired channel
 
@@ -104,7 +127,7 @@ void insert_consumer(int channelName, void* consumer) {
     }
 }
 
-channel_table* delete(channel_table* item) {
+channel_table *delete(channel_table* item) {
 
     //Delete desired item from hashArray (eg: producer is done producing)
 
@@ -181,6 +204,9 @@ void *notify_consumers(int channelName,int dataSize, int *dataPtr) {
     //Creates thread for each consumer callback subscribed to a channel
     ///Error here -- Won't actually create a thread, but will just call the function using the consumer callback pointer
 
+
+    // Call get_element() here
+
     void *(*consumers[NUM_CONSUMERS]) (void *ptr) = { NULL };
 
 //    strcpy(consumers, search(channelName)->consumers);
@@ -224,38 +250,36 @@ void *notify_consumers(int channelName,int dataSize, int *dataPtr) {
     }
 }
 
-int create_buffer(int channelName, int dataSize) {
-   
-    //Returns data ptr to shared memory allocated to channel
-
-    int* dataPtr = create_shared_memory(dataSize*8);
-
-//    printf("data pointer (from relay) = %p\n", dataPtr);
-
-    insert_producer(channelName, dataPtr);
-
-//    pthread_t threads[1];
-
-//    pthread_create(&threads[0], NULL, &notify_consumers, (int *) channelName);
-
-    return *dataPtr;
-
-}
-
 
 // Private Function Definitions
 
-static int hashCode(int channelName) {
-    return channelName % SIZE;
+/*
+ * Compares two channel names.
+ *
+ * Keyword arguments:
+ * name1 -- The first channel name
+ * name2 -- The second channel name
+ *
+ * Returns:
+ * An int >, =, or < 0, if name1 >, =, or < name2.
+ */
+static int compare_names(void* name1, void* name2) {
+    return strncmp((char*)name1, (char*)name2, 512);
 }
 
+
+/*
+ * Creates a region of memory that any thread can access.
+ *
+ * Keyword arguments:
+ * size -- The size (in bytes) of the region to create.
+ *
+ * Returns:
+ * A void* to the newly created region.
+ */
 static void* create_shared_memory(size_t size) {
-
-    //Returns data ptr to shared memory which has been allocated to this producer
-
-    int protection = PROT_READ | PROT_WRITE;  // Don't worry about fixed-width ints here, since mmap needs ints as arguments
-
+    int protection = PROT_READ | PROT_WRITE;
     int visibility = MAP_SHARED | MAP_ANONYMOUS;
 
-    return mmap(NULL, size, protection, visibility, 0, 0);
+    return mmap(NULL, size * 8, protection, visibility, 0, 0);
 }

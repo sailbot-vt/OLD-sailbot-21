@@ -1,6 +1,26 @@
 # Messaging System
 
-> Communication Layer between all separate processes... Allows for processes to interact with eachother while providing a level of separation
+> Communication layer between all separate processes. Allows  processes to interact with each other without tight coupling and provides easy extensibility.
+
+## API
+
+To broadcast a message, use the `publish` method:
+```
+import msg
+
+msg.publish("your_channel_name", your_generic_data)
+```
+
+To subscribe to a channel, create a `Subscriber` object:
+```
+import msg
+
+your_channel_name_subscriber = msg.Subscribe("your_channel_name", your_callback_function)
+
+def your_callback_function(your_data):
+    do_something(your_data)
+```
+The `Subscriber` will automatically unsubscribe when destroyed using the special method `__del__`.
 
 ## consumer.c
 

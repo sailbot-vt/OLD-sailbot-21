@@ -5,14 +5,15 @@
 typedef struct channel_table {
     int *dataPtr;
     int maxSize;
-    int channelName;
-    void (*consumers[NUM_CONSUMERS]);
+    char* channelName;
+    void *consumers;
 } channel_table;
+
 
 // Functions
 
+int create_buffer(char* channelName, int dataSize);
 void display(void);
-void *notify_consumers(int channelName,int dataSize, int *dataPtr);
-int create_buffer(int channelName, int dataSize);
+void *notify_consumers(char* channelName,int dataSize, int *dataPtr);
 
 #endif /* relay_h */

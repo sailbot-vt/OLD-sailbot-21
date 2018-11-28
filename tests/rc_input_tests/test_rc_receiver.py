@@ -14,12 +14,12 @@ class RCReceiverTests(unittest.TestCase):
         Adafruit_BBIO.ADC.read = MagicMock(name='Adafruit_BBIO.ADC.read')
 
         self.broadcaster = make_broadcaster(RCInputBroadcasterType.Testable)
-        self.r = make_rc_receiver(RCReceiverType.ADC, broadcaster=self.broadcaster)
+        self.r = make_rc_receiver(RCReceiverType.BBIO, broadcaster=self.broadcaster)
 
     def tearDown(self):
         """Resets the receiver each test run"""
         self.broadcaster = make_broadcaster(RCInputBroadcasterType.Testable)
-        self.r = make_rc_receiver(RCReceiverType.ADC, broadcaster=self.broadcaster)
+        self.r = make_rc_receiver(RCReceiverType.BBIO, broadcaster=self.broadcaster)
 
     def test_listen(self):
         """Tests that the listen method queries the ADC pins correctly.
