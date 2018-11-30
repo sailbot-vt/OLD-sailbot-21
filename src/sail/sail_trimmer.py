@@ -7,8 +7,9 @@ Expected messgae to be object such that:
     -For TRIM_SAIL positive brings the winch in.
 """
 from threading import Thread
-from consumer import consumer
-import SailServoController
+from enum import Enum
+from src.msg import msg
+from src.sail.sail_servo_controller import SailServoController
 
 """ I don't know where to put these constants
 Most need to be determined by testing"""
@@ -30,15 +31,47 @@ class SailThread(Thread):
         Not sure if this will run multiple times
         """
         global sail_control
-        sail_control = sail_servo_controller(pwm_pin, duty_min, duty_max, angle_min, angle_max, pwm_lib)
-        subscriber = SailConsumer()
-        subscriber.register_to_consume_data("RCComand")
+        sail_control = SailServoController(pwm_pin, duty_min, duty_max, angle_min, angle_max)
+        rc_command_subscriber = msg.Subscribe("RCComand", "rc_command_callback_function")
 
-
-class SailConsumer(consumer):
-    def register_to_consume_data(self, channel_name):
-        pass
-    def data_callback(self, data):
+    def rc_command_callback_function(data):
         if not data.TRIM_SAIL is None:
             delta_sail_angle = data.TRIM_SAIL
             sail_control.change_sail_angle(delta_sail_angle)
+
+class TestableSailSubscriber():
+    """
+    Mock subscriber to feed artifical input to the rudder_control
+    """
+    def __init__(self):
+        """
+        Make a bunch of angles to turn.
+        """
+        self.delta_angles = [0, 1, 15, -16, 90, -90, 45, 45, -90]
+
+    def rc_command_callback_function(self):
+        """
+        Mock this method as it is the one that is called.
+        """
+        for angle in self.delta_angles:
+            self.sail_control.change_sail_angle(angle)
+
+class SailSubscriberType(Enum):
+    Testable = 0,
+    Production = 1
+
+
+def make_sail_subscriber(sail_subscriber_type, channelName="RCComand", functionName = "rc_command_callback_function"):
+    """
+    Create a subscriber that is real or mocked for the purpose of testing.
+
+    Keyword arguments:
+    rudder_subscriber_type -- The type of subscriber to create
+
+    Returns:
+    The correct type of subscriber.
+    """
+    if sail_subscriber_type == SailSubscriberType.Testable:
+        return TestableSailSubscriber()
+
+    return msg.Subscribe(channelName, functionName)

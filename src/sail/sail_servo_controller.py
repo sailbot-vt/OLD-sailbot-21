@@ -43,7 +43,7 @@ class SailServoController:
         Returns:
         The angle of the servo that correspondes to the sail angle
         """
-        return self.servo.angle_min + (self.servo.angle_max - self.angle_min) * (sail_angle/90)
+        return self.servo.angle_min + (self.servo.angle_max - self.servo.angle_min) * (sail_angle/90)
 
     def constrain_sail_angle(self, sail_angle):
         """
