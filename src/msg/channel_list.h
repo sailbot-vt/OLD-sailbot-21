@@ -46,6 +46,19 @@ void remove_channel(ChannelList* channel_list, char* name);
 
 
 /*
+ * Gets a channel by name.
+ *
+ * Keyword arguments:
+ * channel_list -- The list of channels to search.
+ * name -- The name of the channel to get.
+ *
+ * Returns:
+ * A pointer to the channel with that name, or NULL if one is not found.
+ */
+void get_channel(ChannelList* channel_list, char* name);
+
+
+/*
  * Deallocates a list of channels and every channel in it. Sets the pointer to the channel list to NULL.
  *
  * Keyword arguments:

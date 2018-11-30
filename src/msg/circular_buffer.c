@@ -15,10 +15,10 @@ CircularBuffer* init_circular_buffer() {
 }
 
 
-void push(CircularBuffer* buffer, void* data, size_t data_size) {
+void push(CircularBuffer* buffer, Data data) {
     Data* new_data = (Data*)malloc(sizeof(Data));
-    new_data->size = data_size;
-    new_data->data = data;
+    new_data->size = data.size;
+    new_data->data = data.data;
 
     int next_index = buffer->size == 0 ? 1 : (buffer->head + 1) % MAX_BUFFER_SIZE;
 

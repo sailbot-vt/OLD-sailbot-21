@@ -4,6 +4,7 @@
 // Structs
 
 typedef struct Consumer {
+    char* id;
     void (*callback)(void);
 } Consumer;
 

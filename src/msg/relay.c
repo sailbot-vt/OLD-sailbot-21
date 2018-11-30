@@ -7,11 +7,12 @@
 #include <pthread.h>
 #include <Python.h>
 
+#include "relay.h"
+#include "circular_buffer.h"
 #include "consumer.h"
 
 #define SIZE 20
 #define NUM_CONSUMERS 100
-#define QUEUE_LENGTH 256
 
 // Structs
 
