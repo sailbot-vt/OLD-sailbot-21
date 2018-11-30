@@ -1,6 +1,12 @@
 #ifndef consumer_h
 #define consumer_h
 
+// Structs
+
+typedef struct Consumer {
+    void (*callback)(void);
+} Consumer;
+
 // Functions
 
 int register_to_consume_data(char channelName, PyObject* callback);

@@ -4,14 +4,6 @@
 //Constants
 #define NUM_CONSUMERS 100
 
-// Structs
-typedef struct channel_table {
-    int *dataPtr;
-    int maxSize;
-    char channelName;
-    void (*consumers[NUM_CONSUMERS]);
-} channel_table;
-
 // Functions
 
 void display(void);

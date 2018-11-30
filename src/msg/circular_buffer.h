@@ -53,10 +53,9 @@ CircularBuffer* init_circular_buffer(void);
  *
  * Keyword arguments:
  * buffer -- The CircularBuffer to which to add the data.
- * data -- A pointer to the data.
- * data_size -- The number of bytes in the data.
+ * data -- The data to add.
  */
-void push(CircularBuffer* buffer, void* data, size_t data_size);
+void push(CircularBuffer* buffer, Data data);
 
 /*
  * Gets an element from the buffer.
@@ -73,12 +72,18 @@ void push(CircularBuffer* buffer, void* data, size_t data_size);
 Data* get_element(CircularBuffer* buffer, Element elem);
 
 /*
+ * Empties the provided buffer.
  *
+ * Keyword arguments:
+ * buffer -- The buffer to empty.
  */
 void empty_buffer(CircularBuffer *buffer);
 
 /*
+ * Deallocates the provided buffer, and sets the pointer to it to NULL.
  *
+ * Keyword arguments:
+ * buffer -- The buffer to deallocate.
  */
 void destroy_circular_buffer(CircularBuffer** buffer);
 
