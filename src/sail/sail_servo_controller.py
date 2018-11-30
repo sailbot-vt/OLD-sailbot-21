@@ -6,7 +6,7 @@ class SailServoController:
     positive can be either direction as the wind decides.
     """
 
-    def __init__(self, pwm_pin, duty_min, duty_max, angle_min, angle_max, pwm_lib):
+    def __init__(self, pwm_pin, duty_min, duty_max, angle_min, angle_max):
         """
         Initializes the SailServoController object
 
@@ -25,7 +25,7 @@ class SailServoController:
         - Sends the sail to 0 sail_angle
         """
 
-        self.servo = Servo(pwm_pin, duty_min, duty_max, angle_min, angle_max, pwm_lib)
+        self.servo = Servo(pwm_pin, duty_min, duty_max, angle_min, angle_max)
         self.current_sail_angle = 0
         self.sail_turn_to(0)
 

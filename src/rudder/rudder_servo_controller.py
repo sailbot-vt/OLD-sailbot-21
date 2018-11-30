@@ -5,7 +5,7 @@ class RudderServoController:
     The Rudder has a negative min value and positive max value.
     """
 
-    def __init__(self, pwm_pin, duty_min, duty_max, angle_min, angle_max, mechanical_advantage, pwm_lib):
+    def __init__(self, pwm_pin, duty_min, duty_max, angle_min, angle_max, mechanical_advantage):
         """
         Initializes the RudderServoController object as an extenstion of Servo
 
@@ -16,13 +16,12 @@ class RudderServoController:
         duty_max -- The duty to send the servo to the full right position
         angle_min -- The minimum allowed angle of servo.
         angle_max -- The maximum allowed angle of servo.
-        pwm_lib -- The Adafruit_BBIO PWM library or mock.
 
         Side effects:
         - Initializes instance variables
         - Sends the rudder to 0 rudder_angle
         """
-        self.servo = Servo(pwm_pin, duty_min, duty_max, angle_min, angle_max, pwm_lib)
+        self.servo = Servo(pwm_pin, duty_min, duty_max, angle_min, angle_max)
         self.mechanical_advantage = mechanical_advantage
         self.current_rudder_angle = 0
         self.rudder_turn_to(0)

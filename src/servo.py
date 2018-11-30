@@ -1,10 +1,12 @@
+import Adafruit_BBIO.PWM as PWM
+
 class Servo:
     """
     Import the Adafruit_BBIO PWM library.
     General sero class to control a general servo.
     """
 
-    def __init__(self, pwm_pin, duty_min, duty_max, angle_min, angle_max, pwm_lib):
+    def __init__(self, pwm_pin, duty_min, duty_max, angle_min, angle_max):
         """
         Sets up the servo with specifics to the actual servo.
 
@@ -15,7 +17,6 @@ class Servo:
         duty_max -- The duty to send the servo to the full right position
         angle_min -- The minimum allowed angle.
         angle_max -- The maximum allowed angle.
-        pwm_lib -- The Adafruit_BBIO PWM library or mock
 
         Side effects:
         - Initializes instance variables
@@ -28,8 +29,7 @@ class Servo:
         self.duty_span = duty_max-duty_min
         self.angle_min = angle_min
         self.angle_max = angle_max
-        self.pwm_lib = pwm_lib
-        self.pwm_lib.start(self.pwm_pin,(100 - duty_min), 60.0)
+        PWM.start(self.pwm_pin,(100 - duty_min), 60.0)
         self.current_angle = self.turn_to(0)
 
     def turn_to(self, angle):
@@ -49,7 +49,7 @@ class Servo:
         - Returns the angle that the servo went to
         """
         constrained_angle = self.constrain(self.angel_min, self.angle_max, angle)
-        self.pwm_lib.set_duty_cycle(self.pwm_pin, self.calc_duty_cycle(constrained_angle))
+        PWM.set_duty_cycle(self.pwm_pin, self.calc_duty_cycle(constrained_angle))
         self.current_angle = constrained_angle;
         return constrained_angle
 
@@ -87,7 +87,7 @@ class Servo:
         max -- the highest allowed value for the angle
         angle -- the unconstrained angle to be constrained
         """
-        if(angle>max):
+        if(angle > max):
             return max
         if(angle<min):
             return min
