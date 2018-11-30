@@ -44,24 +44,8 @@ channel_table *search(char channelName) {
 
     //Searches hashArray and returns channel_table object corresponding to channelName (if that object exists)
 
-    //get the hash
-    int hashIndex = hashCode(channelName);
+    return sorted_search(channelName);
 
-    //move in array until a filled spot is found
-    while (hashArray[hashIndex] != NULL && hashArray[hashIndex]->dataPtr != NULL) {
-    
-    //search using bsearch
-
-	    if (hashArray[hashIndex]->channelName == channelName) {
-
-            return hashArray[hashIndex];
-        
-        }
-	    ++hashIndex;		//go to next cell
-	    hashIndex %= SIZE; 	//wrap around the table
-    }
-
-    return NULL;
 }
 
 void insert_producer(char channelName, int *dataPtr) {
@@ -87,7 +71,8 @@ void insert_producer(char channelName, int *dataPtr) {
     }
     hashArray[hashIndex] = item;
 
-    //SORT USING qsort
+    sort_by_channel();
+
 }
 
 void insert_consumer(char channelName, void* consumer) {
@@ -132,6 +117,7 @@ channel_table* delete(channel_table* item) {
     hashIndex %= SIZE;		//wrap around the table
 
     }
+    sort_by_channel()
     return NULL;
 }
 
@@ -254,6 +240,77 @@ int create_buffer(char channelName, int dataSize) {
 static int hashCode(char channelName) {
     return channelName % SIZE;
 }
+
+
+static channelTable sorted_search(char channelName) {
+
+    int first, last, middle, n
+
+    char *sorted_char_array [SIZE];
+
+    first = 0;
+
+    last = SIZE - 1;
+
+
+    for (int i=0; i<SIZE; i++) {
+
+        sorted_char_array = hashArray[i]->channelName;     
+
+    }
+
+    while (first <= last) {
+        
+        middle = (first+last)/2 
+
+       int value = strcmp(sorted_char_array[middle], channelName);
+
+        if (value == 0) {
+
+            return hashArray[middle];
+
+        }
+        else if (value > 1) {
+            last = middle;
+            middle = (first+last)/2;
+
+        }
+        else if (value <1) {
+
+            first = middle
+
+        }
+    }
+    return NULL;
+}
+
+static int cmpfunc(const void *a, const void *b) {
+
+    return (strcmp((char*)a, (char*)b));
+
+static void sort_by_channel() {
+
+    int n, i;
+
+    hashArray tempHashArray = hashArray;
+
+    char *channelNameArray[SIZE];
+
+    for (n = 0; n < SIZE; n++) {
+
+        channelNameArray[n] = tempHashArray[n]->channelName;
+
+    }
+
+    qsort(channelNameArray, SIZE, sizeof(char), cmpfunc);
+
+    for(i = 0; i< SIZE; i++) {
+
+        tempHashArray[i] = hashArray[hashCode(channelNameArray[i])];
+
+    }
+
+    hashArray = tempHashArray;
 
 static void* create_shared_memory(size_t size) {
 
