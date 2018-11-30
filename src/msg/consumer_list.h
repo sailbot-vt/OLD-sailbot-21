@@ -52,7 +52,7 @@ Consumer remove_consumer(ConsumerList* consumer_list, char* id);
  * consumer_list -- The list over which to iterate.
  * func -- A function taking a Consumer and returning void that will be applied to every consumer in the list.
  */
-void foreach_consumer(ConsumerList* consumer_list, void (*func)(Consumer));
+void foreach_consumer(ConsumerList* consumer_list, void (*func)(Consumer*));
 
 
 /*
