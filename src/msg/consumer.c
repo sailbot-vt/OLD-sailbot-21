@@ -8,6 +8,7 @@
 #define DATASIZE 100
 
 #include "relay.h"
+#include "circular_buffer.h"
 
 // Globals
 
@@ -50,7 +51,15 @@ void *data_callback(Element element, PyObject* callback) {
 
     memcpy(&consumer_data, element.data, element.size);
 
-    PyObject_CallObject(callback, consumer_data);
+    Py_XINCREF(callback);
+
+    PyObject *result;
+
+    PyObject *arg = consumer_data;
+
+    Py_BuildValue(arg);
+
+    result = PyEval_CallObject(callback, arg);
 
     free(consumer_data);
 

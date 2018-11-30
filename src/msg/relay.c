@@ -47,16 +47,18 @@ channel_table *search(char channelName) {
     //get the hash
     int hashIndex = hashCode(channelName);
 
-    //move in array until an empty spot is found
+    //move in array until a filled spot is found
     while (hashArray[hashIndex] != NULL && hashArray[hashIndex]->dataPtr != NULL) {
     
     //search using bsearch
 
-	if (hashArray[hashIndex]->channelName == channelName)
-            return hashArray[hashIndex];
+	    if (hashArray[hashIndex]->channelName == channelName) {
 
-	++hashIndex;		//go to next cell
-	hashIndex %= SIZE; 	//wrap around the table
+            return hashArray[hashIndex];
+        
+        }
+	    ++hashIndex;		//go to next cell
+	    hashIndex %= SIZE; 	//wrap around the table
     }
 
     return NULL;

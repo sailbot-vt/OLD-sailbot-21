@@ -6,9 +6,9 @@ from libc.string cimport strcpy
 from libc.stdlib cimport malloc
 
 
-cdef extern register_to_produce_data(char* channel_name, int data_size)
-cdef extern publish_data(char* channel_name, int data_size, int *source_ptr)
-cdef extern deregister_to_produce_data(char* channel_name)
+cdef extern register_to_produce_data(char channel_name, int data_size)
+cdef extern publish_data(char channel_name, int data_size, int *source_ptr)
+cdef extern deregister_to_produce_data(char channel_name)
 
 
 def publish(channelName, data):
@@ -48,25 +48,11 @@ cdef cython_publish_data(channelName, data):
 
     cdef int C_dataSize = find_c_data_size(pickled_data)
 
-    """
-
-    cdef int C_pickled_data = <int> malloc(C_dataSize * sizeof(int))
-
-    for i in range(dataSize):
-
-        C_pickled_data[i] = <int>(pickled_data[i])
-
-    cdef int *sourcePtr = &C_pickled_data
-
-    """
-
     cdef void *voidSourcePtr = <void*>pickled_data
 
     cdef int *sourcePtr = <int*>voidSourcePtr
 
     cdef char C_channelName = <char>channelName
-
-cdef cython_depublish(channel_name):
 
 
 cdef cython_depublish(channelName):
