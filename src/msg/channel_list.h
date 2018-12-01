@@ -42,7 +42,7 @@ void add_channel(ChannelList* channel_list, Channel* channel);
  * channel_list -- The list of channels from which to remove the channel.
  * name -- The name of the channel to remove.
  */
-void remove_channel(ChannelList* channel_list, char* name);
+Channel* remove_channel(ChannelList* channel_list, char* name);
 
 
 /*
@@ -55,7 +55,7 @@ void remove_channel(ChannelList* channel_list, char* name);
  * Returns:
  * A pointer to the channel with that name, or NULL if one is not found.
  */
-void get_channel(ChannelList* channel_list, char* name);
+Channel* get_channel(ChannelList* channel_list, char* name);
 
 
 /*
