@@ -1,8 +1,3 @@
-//
-// Created by William Cabell on 2018-11-30.
-//
-
-
 #include <stdlib.h>
 #include <string.h>
 
@@ -28,7 +23,7 @@ struct ConsumerList {
 // Static function declarations
 
 static ConsumerNode* find_consumer_node_by_id(ConsumerList* consumer_list, char* id);
-static void free_consumer(Consumer* consumer);
+static void destroy_consumer(Consumer **consumer);
 
 
 // Functions
@@ -64,8 +59,7 @@ Consumer remove_consumer(ConsumerList* consumer_list, char* id) {
 
     Consumer local_copy = *consumer->consumer;
 
-    free_consumer(consumer->consumer);
-    free(consumer);
+    destroy_consumer(&consumer->consumer);
 
     return local_copy;
 }
@@ -81,8 +75,6 @@ void foreach_consumer(ConsumerList* consumer_list, void (*func)(Consumer*)) {
 
 
 void destroy_consumer_list(ConsumerList** consumer_list) {
-    foreach_consumer(*consumer_list, free_consumer);
-
     ConsumerNode* current = (**consumer_list).head;
     while (current != (ConsumerNode*)NULL) {
         current = current->next_node;
@@ -107,7 +99,8 @@ static ConsumerNode* find_consumer_node_by_id(ConsumerList* consumer_list, char*
 
 
 // This should be tied to the Consumer struct and should be in the consumer module
-static void free_consumer(Consumer* consumer) {
-    free(consumer->callback);
-    free(consumer);
+static void destroy_consumer(Consumer **consumer) {
+    free((**consumer).callback);
+    free(*consumer);
+    *consumer = (Consumer*)NULL;
 }

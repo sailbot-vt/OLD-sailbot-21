@@ -35,37 +35,26 @@ int register_to_consume_data(char channelName, PyObject* callback) {
     return 0;
 }
 
-void *data_callback(Element element, PyObject* callback) {
+void data_callback(Data* data, PyObject* callback) {
 
     //Called by relay when a publisher publishes data
     //***Currently not working -- issue with consumer data structure not actually being accessed in relay***
     //	Definitely just me being stupid -- need to look into that
 
-    int consumer_data[element.size];
+    void* consumer_data = malloc(data->size * sizeof(void*));
 
-    void* consumer_data = malloc(element.size * sizeof(void*));
-
-    //int consumer_data[ dataSize ];
-
-    //int *newdataPtr = (int *)dataPtr;
-
-    memcpy(&consumer_data, element.data, element.size);
+    memcpy(&consumer_data, data->data, data->size);
 
     Py_XINCREF(callback);
 
     PyObject *result;
 
     PyObject *arg = consumer_data;
-
     Py_BuildValue(arg);
 
     result = PyEval_CallObject(callback, arg);
 
     free(consumer_data);
-
     pthread_exit(0);
-
-//    return dataPtr;
-
 }
 

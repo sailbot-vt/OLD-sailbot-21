@@ -9,6 +9,9 @@
 #include <stdlib.h>
 
 
+#include "msg_types.h"
+
+
 #define MAX_BUFFER_SIZE 256
 
 
@@ -18,12 +21,6 @@ typedef struct Element {
     uint64_t revolution;
     int index;
 } Element;
-
-
-typedef struct Data {
-    size_t size;
-    void* data;
-} Data;
 
 
 typedef struct CircularBuffer {

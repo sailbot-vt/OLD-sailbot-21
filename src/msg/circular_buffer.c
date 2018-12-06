@@ -12,6 +12,8 @@ CircularBuffer* init_circular_buffer() {
     new_buffer->size = 0;
     new_buffer->head = 0;
     new_buffer->tail = 0;
+
+    return new_buffer;
 }
 
 

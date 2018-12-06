@@ -5,6 +5,7 @@
 
 
 #include "test_consumer_list.h"
+#include "../../../src/msg/msg_types.h"
 
 
 // Delegates
@@ -65,6 +66,14 @@ static void set_up() {
 static void tear_down() {
     // Nothing to do here
 }
+
+
+/********************************************************
+ *****************       Tests          *****************
+ ********************************************************/
+
+
+// Test Globals
 
 
 // Test Definitions

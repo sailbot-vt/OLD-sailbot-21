@@ -1,13 +1,9 @@
-//
-// Created by William Cabell on 2018-11-30.
-//
-
-
 #ifndef consumer_list_h
 #define consumer_list_h
 
 
 #include "consumer.h"
+
 
 // Structs
 
@@ -36,7 +32,7 @@ void add_consumer(ConsumerList* consumer_list, Consumer* consumer);
 
 
 /*
- * Removes a consumer from the list.
+ * Removes a consumer from the list and destroys the consumer struct associated with it.
  *
  * Keyword arguments:
  * consumer_list -- The list to which to remove the consumer.

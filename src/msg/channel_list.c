@@ -3,6 +3,7 @@
 //
 
 
+#include "stdlib.h"
 #include "string.h"
 
 
@@ -24,7 +25,7 @@ struct ChannelList {
 // Static Function Declarations
 
 /*
- * Doubles the capacity of the channel list.
+ * Doubles the capacity of a channel list.
  *
  * Keyword arguments:
  * channel_list -- The list of channels to double.
@@ -73,13 +74,12 @@ void add_channel(ChannelList* channel_list, Channel* channel) {
 }
 
 
-Channel* remove_channel(ChannelList* channel_list, char* name) {
-
-}
-
-
 Channel* get_channel(ChannelList* channel_list, char* name) {
-
+    return bsearch(name,
+            channel_list->channels,
+            channel_list->size,
+            sizeof(Channel*),
+            compare_channels);
 }
 
 
@@ -91,7 +91,15 @@ void destroy_channel_list(ChannelList** channel_list) {
 // Static Function Definitions
 
 static void double_capacity(ChannelList* channel_list) {
+    channel_list->capacity *= 2;
+    Channel** new_list = (Channel**)malloc(channel_list->capacity * sizeof(Channel**));
 
+    for (int i = 0; i < channel_list->size; ++i) {
+        new_list[i] = channel_list->channels[i];
+    }
+
+    free(channel_list->channels);
+    channel_list->channels = new_list;
 }
 
 
