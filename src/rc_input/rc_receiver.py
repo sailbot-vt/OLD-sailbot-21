@@ -8,6 +8,7 @@ from numpy import sign
 
 from src.navigation_mode import NavigationMode
 from src.rc_input.rc_broadcaster import make_broadcaster
+from src.pin import Pin, PinType
 
 BBB_MAX_INPUT_VOLTAGE = 1.8
 INPUT_PIN_MAX_VOLTAGE = 1.8  # Should be lower than BBB_MAX_INPUT_VOLTAGE to reduce risk to the BBB
@@ -28,6 +29,10 @@ class RCReceiver(ABC):
 
 class TestableRCReceiver(RCReceiver):
     """A mock RCReceiver to test consumers of RCReceiver."""
+
+    def read_input(self):
+        pass
+
     def fake_read_input(self, event):
         pass
 
@@ -36,7 +41,15 @@ class BBIOReceiver(RCReceiver):
     """An implementation of the receiver behaviors for a receiver using the BBB ADC pins."""
 
     def __init__(self, broadcaster, pins):
-        """Initializes a new ADC receiver."""
+        """Initializes a new ADC receiver.
+
+        Keyword arguments:
+        broadcaster -- An RC broadcaster object.
+        pins -- The pin map with keys 'TRIM', 'RUDDER', 'MODE1', and 'MODE2' associated with Pin objects.
+
+        Returns:
+        A new BBIOReceiver
+        """
         self.broadcaster = broadcaster
         self.pins = pins
 
@@ -49,9 +62,12 @@ class BBIOReceiver(RCReceiver):
         input_values = {}
 
         for ch in self.pins:
-            # According to some sources online, there is a bug in the ADC driver, so we have to read the value twice
-            ADC.read(self.pins[ch])
-            input_values[ch] = ADC.read(self.pins[ch])
+            if self.pins[ch].pin_type == PinType.ADC:
+                # According to sources online, there is a bug in the ADC driver, so we have to read the value twice
+                ADC.read(self.pins[ch])
+                input_values[ch] = ADC.read(self.pins[ch].name)
+            elif self.pins[ch].pin_type == PinType.GPIO:
+                input_values[ch] = GPIO.input(self.pins[ch].name)
 
         self._send_inputs(self._process_inputs(input_values))
 
@@ -73,7 +89,7 @@ class BBIOReceiver(RCReceiver):
         """Delegates the transformation of raw input values into the correct units.
 
         Keyword arguments:
-        inputs – Inputs to be processed. A dictionary with keys 'RUDDER', 'TRIM', and 'MODE'
+        inputs – Inputs to be processed. A dictionary with keys 'RUDDER', 'TRIM', 'MODE1', and 'MODE2'
 
         Returns:
         A new dictionary of inputs with standard units.
@@ -81,7 +97,7 @@ class BBIOReceiver(RCReceiver):
         return {
             "RUDDER": BBIOReceiver._scale_rudder_input(raw_value=input_values["RUDDER"]),
             "TRIM": BBIOReceiver._scale_trim_input(raw_value=input_values["TRIM"]),
-            "MODE": BBIOReceiver._transform_mode(input_voltage=input_values["MODE"])
+            "MODE": BBIOReceiver._transform_mode(input_voltages=(input_values["MODE1"], input_values["MODE2"]))
         }
 
     @staticmethod
@@ -117,7 +133,7 @@ class BBIOReceiver(RCReceiver):
         return degrees_in
 
     @staticmethod
-    def _transform_mode(input_voltage=0):
+    def _transform_mode(input_voltages=(0, 0)):
         """Maps an input voltage to a navigation mode.
 
         Keyword arguments:
@@ -126,6 +142,7 @@ class BBIOReceiver(RCReceiver):
         Returns:
         The navigation mode corresponding to the input voltage.
         """
+
         return NavigationMode.MANUAL
 
     @staticmethod
@@ -146,10 +163,10 @@ def make_rc_receiver(receiver_type=RCReceiverType.BBIO, broadcaster=make_broadca
     """
     if receiver_type == RCReceiverType.BBIO:
         return BBIOReceiver(broadcaster, {
-            "RUDDER": "P0_0",
-            "TRIM": "P0_1",
-            "MODE1": "P0_5",
-            "MODE2": "P0_3"
+            "RUDDER": Pin("P0_0", PinType.ADC),
+            "TRIM": Pin("P0_1", PinType.ADC),
+            "MODE1": Pin("P0_5", PinType.GPIO),
+            "MODE2": Pin("P0_3", PinType.GPIO)
         })
 
     return TestableRCReceiver()

@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import MagicMock
-from tests.mock_pwm import Adafruit_BBIO
+from tests.mock_bbio import Adafruit_BBIO
 from src.sail.sail_trimmer import make_sail_subscriber, SailSubscriberType
 from src.sail.sail_servo_controller import SailServoController
 

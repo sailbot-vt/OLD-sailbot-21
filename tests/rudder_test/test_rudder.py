@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import MagicMock
-from tests.mock_pwm import Adafruit_BBIO
+from tests.mock_bbio import Adafruit_BBIO
 from src.rudder.rudder_driver import make_rudder_subscriber, RudderSubscriberType
 from src.rudder.rudder_servo_controller import RudderServoController
 

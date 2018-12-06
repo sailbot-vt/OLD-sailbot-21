@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import MagicMock
-from tests.mock_adc import Adafruit_BBIO
+from tests.mock_bbio import Adafruit_BBIO
 from src.rc_input.rc_receiver import make_rc_receiver, RCReceiverType
 from src.rc_input.rc_broadcaster import make_broadcaster, RCInputBroadcasterType
 from src.navigation_mode import NavigationMode
@@ -12,6 +12,10 @@ class RCReceiverTests(unittest.TestCase):
     def setUp(self):
         Adafruit_BBIO.ADC.setup = MagicMock(name='Adafruit_BBIO.ADC.setup')
         Adafruit_BBIO.ADC.read = MagicMock(name='Adafruit_BBIO.ADC.read')
+        Adafruit_BBIO.GPIO.setup = MagicMock(name='Adafruit.BBIO.GPIO.setup')
+        Adafruit_BBIO.GPIO.input = MagicMock(name='Adafruit.BBIO.GPIO.input')
+        Adafruit_BBIO.GPIO.IN = MagicMock(name='Adafruit.BBIO.GPIO.IN')
+        Adafruit_BBIO.GPIO.OUT = MagicMock(name='Adafruit.BBIO.GPIO.OUT')
 
         self.broadcaster = make_broadcaster(RCInputBroadcasterType.Testable)
         self.r = make_rc_receiver(RCReceiverType.BBIO, broadcaster=self.broadcaster)
@@ -21,14 +25,17 @@ class RCReceiverTests(unittest.TestCase):
         self.broadcaster = make_broadcaster(RCInputBroadcasterType.Testable)
         self.r = make_rc_receiver(RCReceiverType.BBIO, broadcaster=self.broadcaster)
 
-    def test_listen(self):
-        """Tests that the listen method queries the ADC pins correctly.
+    def test_read_input(self):
+        """Tests that the read_input method queries the ADC pins correctly.
 
         This test partially duplicates ones further down, but could help pinpoint issues."""
         self.r.read_input()
 
         Adafruit_BBIO.ADC.setup.assert_called()
         Adafruit_BBIO.ADC.read.assert_called()
+
+        Adafruit_BBIO.GPIO.setup.assert_called()
+        Adafruit_BBIO.GPIO.input.assert_called()
 
     def test_scale_rudder(self):
         """Tests that the receiver reads and scales rudder input correctly"""
