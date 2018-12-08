@@ -2,324 +2,89 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <stdbool.h>
 #include <sys/mman.h>
 #include <pthread.h>
 #include <Python.h>
 
 #include "relay.h"
+#include "msg_types.h"
 #include "circular_buffer.h"
 #include "consumer.h"
-
-#define SIZE 20
-#define NUM_CONSUMERS 100
-
-// Structs
-
-typedef struct arg_struct {
-    void *dataPtr;
-    int dataSize;
-    PyObject* callback;
-} arg_struct;
+#include "channel_list.h"
 
 
 // Globals
 
-int consumers [NUM_CONSUMERS];
 int rc;
+CallbackWithArgs* callback_with_args;
+ChannelList* channel_list;
+pthread_mutex_t* mutex;
 
-channel_table* hashArray[SIZE];
-channel_table* dummyItem;
-channel_table* item;
 
+// Private Function Definitions
 
-// Private Function Declarations
-
-void* create_shared_memory(size_t size);
-int hashCode(char channelName);
+/*
+ * Creates a callback thread for the consumer.
+ *
+ * Keyword arguments:
+ * consumer -- The subscriber owning the callback.
+ */
+void create_callback_thread(Consumer* consumer);
 
 
 // Functions
 
-channel_table *search(char channelName) {
-
-    //Searches hashArray and returns channel_table object corresponding to channelName (if that object exists)
-
-    return sorted_search(channelName);
-
+void start_relay() {
+    channel_list = init_channel_list();
+    pthread_mutexattr_t* pthread_mutexattr;
+    pthread_mutexattr_init(pthread_mutexattr);
+    pthread_mutex_init(mutex, pthread_mutexattr);
 }
 
-void insert_producer(char channelName, int *dataPtr) {
 
-    //Makes entry into hashArray containing channnelName and data ptr
+void register_subscriber(char* channel_name, void (*callback)) {
+    Consumer* new_sub = malloc(sizeof(Consumer));
 
-    channel_table *item = (channel_table*) malloc(sizeof(channel_table));
-    item->dataPtr = dataPtr;
-    item->channelName = channelName;
-    void *consumers [ NUM_CONSUMERS ] = { NULL };
-//    for(int i = 0; i<NUM_CONSUMERS;i++) {
-//        consumers[i] = NULL;
-//    }
-    strcpy(item->consumers, consumers);
+    new_sub->id = sprintf("%s_%d", channel_name, clock());
+    new_sub->callback = callback;
 
-    int hashIndex = hashCode(channelName);		//get the hash
-
-    //move in array until an empty or deleted cell is found
-    while(hashArray[hashIndex] != NULL && hashArray[hashIndex]->channelName != -1) {
-        ++hashIndex;		//go to the next cell
-	hashIndex %= SIZE;	//wrap around the table
-
-    }
-    hashArray[hashIndex] = item;
-
-    sort_by_channel();
-
+    add_consumer_to_channel(channel_name, new_sub);
 }
 
-void insert_consumer(char channelName, void* consumer) {
-    
-    //Adds consumer data callback to hashArray corresponding to desired channel
 
-    int hashIndex = hashCode(channelName);
-    while(hashArray[hashIndex] != NULL && hashArray[hashIndex]->channelName != channelName) {
-        ++hashIndex;
-        hashIndex %= SIZE;
-    }
+void* notify_subscribers(char* channel_name, CircularBufferElement* buffer_elem) {
+    Channel* channel = get_channel(channel_name);
 
-    printf("consumer = %p\n", consumer);
-//    display_consumers(channelName);
-    for(int i=0;i < NUM_CONSUMERS; i++) { 
-        if(hashArray[hashIndex]->consumers[i] == NULL) {
-	        hashArray[hashIndex]->consumers[i] = consumer;
-            break;
-	    }
-    }
+    pthread_mutex_lock(mutex);
+
+    callback_with_args = (CallbackWithArgs*)malloc(sizeof(CallbackWithArgs));
+    callback_with_args->data = circular_buffer_get_element(channel->data_buffer, buffer_elem);
+
+    foreach_consumer(channel->consumer_list, create_callback_thread);
+
+    free(callback_with_args);
+
+    pthread_mutex_unlock(mutex);
 }
 
-channel_table* delete(channel_table* item) {
 
-    //Delete desired item from hashArray (eg: producer is done producing)
+void* create_shared_memory(size_t size) {
+    int protection = PROT_READ | PROT_WRITE;
+    int visibility = MAP_SHARED | MAP_ANONYMOUS;
 
-    char channelName = item->channelName;
-
-    int hashIndex = hashCode(channelName);		//get the hash
-
-    //move in array until non-empty cell is found
-    while(hashArray[hashIndex] != NULL) {
-        
-        if(hashArray[hashIndex]->channelName == channelName) {
-	    channel_table* temp = hashArray[hashIndex];
-
-	    hashArray[hashIndex] = dummyItem;		//assign a dummy item at deleted position
-	    return temp;
-	}
-
-    ++hashIndex;		//go to next cell
-    hashIndex %= SIZE;		//wrap around the table
-
-    }
-    sort_by_channel()
-    return NULL;
-}
-
-void display() {
-
-    //Iterates through hashArray and creates visual representation (used for debugging)
-
-    int i = 0;
-//    int n = 0;
-    for(i = 0; i<SIZE; i++) {
-
-        if(hashArray[i] != NULL) {
-            printf(" (%d,%p,%p)", hashArray[i]->channelName, hashArray[i]->dataPtr,hashArray[i]->consumers);
-	    }
-        else
-	        printf(" ~~ ");
-    }
-    printf("\n");
-}
-
-void display_consumers(char channelName) {
- 
-    //Displays consumers registered to channel
-    
-/*    int *consumers [NUM_CONSUMERS] = { NULL };
-
-    channel_table *item = search(channelName);
-
-    strcpy(consumers, item->consumers);
-*/
-    int hashIndex = hashCode(channelName);
-    while(hashArray[hashIndex] == NULL) {
-	if(hashArray[hashIndex]->channelName != channelName) {
-            ++hashIndex;
-            hashIndex %= SIZE;
-	}
-    }
-
-    for(int i=0;i < NUM_CONSUMERS; i++) { 
-        if(hashArray[hashIndex]->consumers[i] == NULL) { 
-	    printf("~~");
-	}
-	else {
-	   printf("%p", consumers[i]);
-	}
-    }
-
-    printf("\n");
-    }
-
-void *notify_consumers(char channelName,int dataSize, int *dataPtr) {
-   
-    //Creates thread for each consumer callback subscribed to a channel
-    ///Error here -- Won't actually create a thread, but will just call the function using the consumer callback pointer
-
-    void *(*consumers[NUM_CONSUMERS]) (void *ptr) = { NULL };
-
-//    strcpy(consumers, search(channelName)->consumers);
-    size_t cpy_size = NUM_CONSUMERS*sizeof(void *);
-    int *search_addr = &(search(channelName)->consumers);
-    memcpy(&consumers, search_addr, cpy_size);
-
-    pthread_t threads [NUM_CONSUMERS];
-    
-    for(int n=0; n < NUM_CONSUMERS; n++) {
-        printf("%p ", consumers[n]);
-    }
-    printf("\n");
-
-//    display_consumers(channelName);
-    for(int i=0; i < NUM_CONSUMERS; i++) {
-	    if(consumers[i] != NULL) {
-//	        printf("pthread_t object = %p\n", &(threads[i]));
-	        void *newDataPtr = (void *)(dataPtr);
-            printf("consumer notified = %p\n", consumers[i]);
-            arg_struct callback_args;
-            callback_args.dataPtr = newDataPtr;
-            callback_args.dataSize = dataSize;
-            callback_args.callback = (void*)consumers[i];
-	        rc = pthread_create((&(threads[i])), NULL, &data_callback, (void* )&callback_args);
-	        if(rc)  {
-	            printf("Error: unable to create thread: %i\n", rc);
-		        threads[i] = NULL;
-	        }
-        }
-	    else {
-	        threads[i] = NULL;
-        }
-    }
-
-    for(int i=0; i <NUM_CONSUMERS; i++) {
-        if(threads[i] != NULL) {
-//            continue;
-	        pthread_join(threads[i], NULL);
-        }
-    }
-}
-
-int create_buffer(char channelName, int dataSize) {
-   
-    //Returns data ptr to shared memory allocated to channel
-
-    int* dataPtr = create_shared_memory(dataSize * QUEUE_LENGTH);        //WHAT IS LENGTH OF QUEUE??
-
-//    printf("data pointer (from relay) = %p\n", dataPtr);
-
-    insert_producer(channelName, dataPtr);
-
-//    pthread_t threads[1];
-
-//    pthread_create(&threads[0], NULL, &notify_consumers, (int *) channelName);
-
-    return *dataPtr;
-
+    return mmap(NULL, size, protection, visibility, 0, 0);
 }
 
 
 // Private Function Definitions
 
-static int hashCode(char channelName) {
-    return channelName % SIZE;
-}
+void create_callback_thread(Consumer* consumer) {
+    callback_with_args->callback = consumer->callback;
 
-
-static channelTable sorted_search(char channelName) {
-
-    int first, last, middle, n
-
-    char *sorted_char_array [SIZE];
-
-    first = 0;
-
-    last = SIZE - 1;
-
-
-    for (int i=0; i<SIZE; i++) {
-
-        sorted_char_array = hashArray[i]->channelName;     
-
-    }
-
-    while (first <= last) {
-        
-        middle = (first+last)/2 
-
-       int value = strcmp(sorted_char_array[middle], channelName);
-
-        if (value == 0) {
-
-            return hashArray[middle];
-
-        }
-        else if (value > 1) {
-            last = middle;
-            middle = (first+last)/2;
-
-        }
-        else if (value <1) {
-
-            first = middle
-
-        }
-    }
-    return NULL;
-}
-
-static int cmpfunc(const void *a, const void *b) {
-
-    return (strcmp((char*)a, (char*)b));
-
-static void sort_by_channel() {
-
-    int n, i;
-
-    hashArray tempHashArray = hashArray;
-
-    char *channelNameArray[SIZE];
-
-    for (n = 0; n < SIZE; n++) {
-
-        channelNameArray[n] = tempHashArray[n]->channelName;
-
-    }
-
-    qsort(channelNameArray, SIZE, sizeof(char), cmpfunc);
-
-    for(i = 0; i< SIZE; i++) {
-
-        tempHashArray[i] = hashArray[hashCode(channelNameArray[i])];
-
-    }
-
-    hashArray = tempHashArray;
-
-static void* create_shared_memory(size_t size) {
-
-    //Returns data ptr to shared memory which has been allocated to this producer
-
-    int protection = PROT_READ | PROT_WRITE;  // Don't worry about fixed-width ints here, since mmap needs ints as arguments
-
-    int visibility = MAP_SHARED | MAP_ANONYMOUS;
-
-    return mmap(NULL, size, protection, visibility, 0, 0);
+    pthread_t* thread;
+    pthread_attr_t* pthread_attr;
+    pthread_attr_init(pthread_attr);
+    pthread_create(thread, pthread_attr, data_callback, (void*)callback_with_args);
 }

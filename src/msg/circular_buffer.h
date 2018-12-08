@@ -1,7 +1,3 @@
-//
-// Created by William Cabell on 11/27/18.
-//
-
 #ifndef CircularBuffer_h
 #define CircularBuffer_h
 
@@ -17,10 +13,10 @@
 
 // Structs
 
-typedef struct Element {
+typedef struct CircularBufferElement {
     uint64_t revolution;
     int index;
-} Element;
+} CircularBufferElement;
 
 
 typedef struct CircularBuffer {
@@ -52,7 +48,7 @@ CircularBuffer* init_circular_buffer(void);
  * buffer -- The CircularBuffer to which to add the data.
  * data -- The data to add.
  */
-void push(CircularBuffer* buffer, Data data);
+CircularBufferElement* circular_buffer_push(CircularBuffer* buffer, Data data);
 
 /*
  * Gets an element from the buffer.
@@ -66,7 +62,7 @@ void push(CircularBuffer* buffer, Data data);
  * Returns:
  * The Data struct containing the data or NULL.
  */
-Data* get_element(CircularBuffer* buffer, Element elem);
+Data* circular_buffer_get_element(CircularBuffer* buffer, CircularBufferElement* elem);
 
 /*
  * Empties the provided buffer.
@@ -74,7 +70,7 @@ Data* get_element(CircularBuffer* buffer, Element elem);
  * Keyword arguments:
  * buffer -- The buffer to empty.
  */
-void empty_buffer(CircularBuffer *buffer);
+void empty_circular_buffer(CircularBuffer *buffer);
 
 /*
  * Deallocates the provided buffer, and sets the pointer to it to NULL.

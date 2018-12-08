@@ -1,8 +1,11 @@
-//
-// Created by William Cabell on 11/27/18.
-//
+#include <pthread.h>
 
 #include "circular_buffer.h"
+
+
+// Globals
+
+pthread_mutex_t* mutex;
 
 
 // Functions
@@ -13,18 +16,20 @@ CircularBuffer* init_circular_buffer() {
     new_buffer->head = 0;
     new_buffer->tail = 0;
 
+    pthread_mutexattr_t* pthread_mutexattr;
+    pthread_mutexattr_init(pthread_mutexattr);
+    pthread_mutex_init(mutex, pthread_mutexattr);
+
     return new_buffer;
 }
 
 
-void push(CircularBuffer* buffer, Data data) {
-    Data* new_data = (Data*)malloc(sizeof(Data));
-    new_data->size = data.size;
-    new_data->data = data.data;
+CircularBufferElement circular_buffer_push(CircularBuffer* buffer, Data* data) {
+    pthread_mutex_lock(mutex);
 
     int next_index = buffer->size == 0 ? 1 : (buffer->head + 1) % MAX_BUFFER_SIZE;
 
-    buffer->data[next_index] = *new_data;
+    buffer->data[next_index] = *data;
 
     buffer->head = next_index;
     buffer->tail = (buffer->head - buffer->size + 1) % MAX_BUFFER_SIZE;
@@ -32,22 +37,40 @@ void push(CircularBuffer* buffer, Data data) {
     if (buffer->size < MAX_BUFFER_SIZE) {
         buffer->size++;
     }
+
+    if (next_index == 0) {
+        buffer->revolutions++;
+    }
+
+    CircularBufferElement element;
+    element.index = next_index;
+    element.revolution = buffer->revolutions;
+
+    pthread_mutex_unlock(mutex);
 }
 
 
-Data* get_element(CircularBuffer* buffer, Element elem) {
-    if (elem.index <= buffer->head && buffer->revolutions != elem.revolution) {
+Data* circular_buffer_get_element(CircularBuffer* buffer, CircularBufferElement* elem) {
+    pthread_mutex_lock(mutex);
+
+    if (elem->index <= buffer->head && buffer->revolutions != elem->revolution) {
         return (Data*)NULL;
     }
 
-    return &buffer->data[elem.index];
+    pthread_mutex_unlock(mutex);
+
+    return &buffer->data[elem->index];
 }
 
 
-void empty_buffer(CircularBuffer* buffer) {
+void empty_circular_buffer(CircularBuffer* buffer) {
+    pthread_mutex_lock(mutex);
+
     buffer->size = 0;
     buffer->head = 0;
     buffer->tail = 0;
+
+    pthread_mutex_unlock(mutex);
 }
 
 

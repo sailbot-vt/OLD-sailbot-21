@@ -8,6 +8,7 @@
 #define DATASIZE 100
 
 #include "relay.h"
+#include "msg_types.h"
 #include "circular_buffer.h"
 
 // Globals
@@ -17,29 +18,26 @@ int *dataPtr;
 
 // Functions
 
-int register_to_consume_data(char channelName, PyObject* callback) {
+void subscribe(char* channel_name, PyObject* callback) {
    
     //Registers data callback with relay
     //***In theory, relay would access and create new threads for all consumers that have registered using this call***
 
 //    void (*callback)(void *) = &data_callback;
 
-    void *data_callback = (void *)data_callback;    
+    void* data_callback = (void*)callback;
 
     insert_consumer(channelName, callback);
 
     printf("registering consumer %p\n", callback);
 
 //    display();
-
-    return 0;
 }
 
-void data_callback(Data* data, PyObject* callback) {
 
-    //Called by relay when a publisher publishes data
-    //***Currently not working -- issue with consumer data structure not actually being accessed in relay***
-    //	Definitely just me being stupid -- need to look into that
+void data_callback(void* callback_with_args) {
+    Data* data = ((CallbackWithArgs*)callback_with_args)->data;
+    PyObject* py_callback = ((CallbackWithArgs*)callback_with_args)->callback;
 
     void* consumer_data = malloc(data->size * sizeof(void*));
 

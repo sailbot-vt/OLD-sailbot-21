@@ -1,7 +1,3 @@
-//
-// Created by William Cabell on 2018-11-30.
-//
-
 #ifndef channel_h
 #define channel_h
 

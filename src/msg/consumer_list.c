@@ -42,6 +42,10 @@ ConsumerList* create_consumer_list() {
 
 
 void add_consumer(ConsumerList* consumer_list, Consumer* consumer) {
+    if (consumer == (Consumer*)NULL) {
+        return;
+    }
+
     ConsumerNode* new_node = (ConsumerNode*)malloc(sizeof(ConsumerNode));
     new_node->next_node = NULL;
     new_node->prev_node = consumer_list->tail;
