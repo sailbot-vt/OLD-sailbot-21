@@ -11,14 +11,15 @@
 #include "relay.h"
 #include "msg_types.h"
 #include "circular_buffer.h"
-#include "consumer.h"
+#include "subscriber.h"
+#include "subscriber_list.h"
 #include "channel_list.h"
 
 
 // Globals
 
 int rc;
-CallbackWithArgs* callback_with_args;
+CallbackWithData* callback_with_data;
 ChannelList* channel_list;
 pthread_mutex_t* mutex;
 
@@ -44,11 +45,11 @@ void start_relay() {
 }
 
 
-void register_subscriber(char* channel_name, void (*callback)) {
+void register_subscriber(char* channel_name, PyObject* py_callback) {
     Consumer* new_sub = malloc(sizeof(Consumer));
 
     new_sub->id = sprintf("%s_%d", channel_name, clock());
-    new_sub->callback = callback;
+    new_sub->py_callback = py_callback;
 
     add_consumer_to_channel(channel_name, new_sub);
 }
@@ -59,12 +60,12 @@ void* notify_subscribers(char* channel_name, CircularBufferElement* buffer_elem)
 
     pthread_mutex_lock(mutex);
 
-    callback_with_args = (CallbackWithArgs*)malloc(sizeof(CallbackWithArgs));
-    callback_with_args->data = circular_buffer_get_element(channel->data_buffer, buffer_elem);
+    callback_with_data = (CallbackWithArgs*)malloc(sizeof(CallbackWithArgs));
+    callback_with_data->data = circular_buffer_get_element(channel->data_buffer, buffer_elem);
 
     foreach_consumer(channel->consumer_list, create_callback_thread);
 
-    free(callback_with_args);
+    free(callback_with_data);
 
     pthread_mutex_unlock(mutex);
 }
@@ -81,7 +82,7 @@ void* create_shared_memory(size_t size) {
 // Private Function Definitions
 
 void create_callback_thread(Consumer* consumer) {
-    callback_with_args->callback = consumer->callback;
+    callback_with_data->py_callback = consumer->py_callback;
 
     pthread_t* thread;
     pthread_attr_t* pthread_attr;

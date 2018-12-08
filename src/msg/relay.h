@@ -5,11 +5,6 @@
 #include "msg_types.h"
 
 
-// Constants
-
-#define NUM_CONSUMERS 100
-
-
 // Functions
 
 /*

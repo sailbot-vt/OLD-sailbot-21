@@ -14,7 +14,7 @@ typedef struct Data {
 
 typedef struct CallbackWithData {
     Data* data;
-    PyObject* callback;
+    PyObject* py_callback;
 } CallbackWithArgs;
 
 #endif /* msg_types_h */

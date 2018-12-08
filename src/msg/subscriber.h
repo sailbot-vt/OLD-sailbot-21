@@ -1,14 +1,16 @@
+#ifndef subscriber_h
+#define subscriber_h
+
+
 #include "msg_types.h"
 
-#ifndef consumer_h
-#define consumer_h
 
 // Structs
 
-typedef struct Consumer {
+typedef struct Subscriber {
     char* id;
-    void (*callback)(void);
-} Consumer;
+    PyObject* py_callback;
+} Subscriber;
 
 
 // Functions
@@ -19,11 +21,9 @@ typedef struct Consumer {
  * Keyword arguments:
  * channel_name -- The name of the channel.
  * callback -- The subscriber's callback function.
- *
- * Returns:
- * ?
  */
-int register_to_consume_data(char channel_name, PyObject* callback);
+void subscribe(char* channel_name, PyObject* callback);
+
 
 /*
  * Calls a PyObject callback with pickled Python argument data.
@@ -34,4 +34,4 @@ int register_to_consume_data(char channel_name, PyObject* callback);
  */
 void data_callback(Data* data, PyObject* callback);
 
-#endif /* consumer_h */
+#endif /* subscriber_h */
