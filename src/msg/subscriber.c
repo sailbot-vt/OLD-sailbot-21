@@ -12,8 +12,8 @@
 
 // Functions
 
-void subscribe(char* channel_name, PyObject* callback) {
-    register_subscriber(channel_name, callback);
+Subscriber* subscribe(char* channel_name, PyObject* callback) {
+    return register_subscriber(channel_name, callback);
 }
 
 

@@ -22,7 +22,7 @@ typedef struct Subscriber {
  * channel_name -- The name of the channel.
  * callback -- The subscriber's callback function.
  */
-void subscribe(char* channel_name, PyObject* callback);
+Subscriber* subscribe(char* channel_name, PyObject* callback);
 
 
 /*
@@ -33,5 +33,14 @@ void subscribe(char* channel_name, PyObject* callback);
  * callback -- The Python callback function.
  */
 void data_callback(Data* data, PyObject* callback);
+
+
+/*
+ * Removes a subscriber and sets the pointer to the subscriber to NULL.
+ *
+ * Keyword arguments:
+ * subscriber -- The subscriber to remove.
+ */
+void unsubscribe(Subscriber **subscriber);
 
 #endif /* subscriber_h */
