@@ -18,25 +18,28 @@ void register_subscriber(char* channel_name, void (*callback));
 
 
 /*
- * Notifies subscribers of a new event.
+ * Pushes data to the message data buffer.
  *
  * Keyword arguments:
- * channel_name -- The name of the channel on which to notify subscribers
- * data -- The data to send to the subscribers
+ * data -- The data to add.
+ *
+ * Returns:
+ * A buffer index to access the data.
  */
-void* notify_subscribers(char* channel_name , Data* data);
+CircularBufferElement* push_data_to_msg_buffer(Data* data);
 
 
 /*
- * Creates thread-shared memory.
+ * Notifies subscribers of a new event.
  *
  * Keyword arguments:
- * size -- The number of bytes of shared memory to allocate.
- *
- * Returns:
- * A pointer to the shared memory.
+ * channel_name -- The name of the channel on which to notify subscribers.
+ * buffer_elem -- The buffer index associated with the data.
  */
-void* create_shared_memory(size_t size);
+void* notify_subscribers(char* channel_name, CircularBufferElement* buffer_elem);
+
+
+
 
 
 #endif /* relay_h */

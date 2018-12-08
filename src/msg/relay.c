@@ -1,10 +1,4 @@
-#include <string.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
-#include <stdbool.h>
-#include <sys/mman.h>
 #include <pthread.h>
 #include <Python.h>
 
@@ -18,10 +12,12 @@
 
 // Globals
 
-int rc;
-CallbackWithData* callback_with_data;
-ChannelList* channel_list;
 pthread_mutex_t* mutex;
+CallbackWithData* callback_with_data;
+
+ChannelList* channel_list;
+CircularBuffer* data_buffer;
+
 
 
 // Private Function Definitions
@@ -39,6 +35,8 @@ void create_callback_thread(Consumer* consumer);
 
 void start_relay() {
     channel_list = init_channel_list();
+    data_buffer = init_circular_buffer();
+
     pthread_mutexattr_t* pthread_mutexattr;
     pthread_mutexattr_init(pthread_mutexattr);
     pthread_mutex_init(mutex, pthread_mutexattr);
@@ -55,6 +53,11 @@ void register_subscriber(char* channel_name, PyObject* py_callback) {
 }
 
 
+CircularBufferElement* push_data_to_msg_buffer(Data* data) {
+    return circular_buffer_push(data_buffer, data);
+}
+
+
 void* notify_subscribers(char* channel_name, CircularBufferElement* buffer_elem) {
     Channel* channel = get_channel(channel_name);
 
@@ -68,14 +71,6 @@ void* notify_subscribers(char* channel_name, CircularBufferElement* buffer_elem)
     free(callback_with_data);
 
     pthread_mutex_unlock(mutex);
-}
-
-
-void* create_shared_memory(size_t size) {
-    int protection = PROT_READ | PROT_WRITE;
-    int visibility = MAP_SHARED | MAP_ANONYMOUS;
-
-    return mmap(NULL, size, protection, visibility, 0, 0);
 }
 
 
