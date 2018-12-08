@@ -9,7 +9,7 @@ cdef extern from "subscriber.h":
     c_publish(char* channel_name, void* data, size_t data_size)
 
 
-def publish(channel_name, data):
+def _publish(channel_name, data):
     """Publishes data to a channel.
 
     Keyword arguments:

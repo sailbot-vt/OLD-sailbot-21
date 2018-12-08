@@ -1,4 +1,4 @@
-from src.msg.cython_producer import publish
-from src.msg.cython_consumer import subscribe
+from src.msg.api import Subscriber
+from src.msg.api import publish
 
-__all__ = ["publish", "subscribe"]
+__all__ = ['Subscriber', 'publish']

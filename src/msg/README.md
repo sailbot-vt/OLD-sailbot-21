@@ -15,7 +15,7 @@ To subscribe to a channel, create a `Subscriber` object:
 ```
 import msg
 
-your_channel_name_subscriber = msg.Subscribe("your_channel_name", your_callback_function)
+your_channel_name_subscriber = msg.Subscriber("your_channel_name", your_callback_function)
 
 def your_callback_function(your_data):
     do_something(your_data)
