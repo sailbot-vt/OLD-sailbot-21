@@ -5,6 +5,7 @@
 #include <Python.h>
 
 
+#include "subscriber.h"
 #include "relay.h"
 #include "msg_types.h"
 #include "circular_buffer.h"
@@ -19,10 +20,12 @@ Subscriber* subscribe(char* channel_name, PyObject* callback) {
 
 void data_callback(void* callback_with_args) {
     Data* data = ((CallbackWithArgs*)callback_with_args)->data;
-    PyObject* py_callback = ((CallbackWithArgs*)callback_with_args)->callback;
+    PyObject* py_callback = ((CallbackWithArgs*)callback_with_args)->py_callback;
 
     void* subscriber_data = malloc(data->size);
     memcpy(&subscriber_data, data->data, data->size);
+
+    // Why can't we do this part in Python?
 
     // Adds the Python function to the Python ref counter
     Py_XINCREF(py_callback);

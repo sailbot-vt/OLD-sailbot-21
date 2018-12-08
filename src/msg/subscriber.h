@@ -29,10 +29,9 @@ Subscriber* subscribe(char* channel_name, PyObject* callback);
  * Calls a PyObject callback with pickled Python argument data.
  *
  * Keyword arguments:
- * data -- The pickled Python object.
- * callback -- The Python callback function.
+ * callback_with_args -- The PyObject and the data to pass along with it.
  */
-void data_callback(Data* data, PyObject* callback);
+void data_callback(void* callback_with_args);
 
 
 /*
