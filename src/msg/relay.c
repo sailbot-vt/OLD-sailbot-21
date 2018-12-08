@@ -26,9 +26,9 @@ CircularBuffer* data_buffer;
  * Creates a callback thread for the consumer.
  *
  * Keyword arguments:
- * consumer -- The subscriber owning the callback.
+ * subscriber -- The subscriber owning the callback.
  */
-void create_callback_thread(Consumer* consumer);
+void create_callback_thread(Subscriber* subscriber);
 
 
 // Functions
@@ -44,12 +44,19 @@ void start_relay() {
 
 
 void register_subscriber(char* channel_name, PyObject* py_callback) {
-    Consumer* new_sub = malloc(sizeof(Consumer));
+    Subscriber* new_sub = malloc(sizeof(Subscriber));
 
     new_sub->id = sprintf("%s_%d", channel_name, clock());
     new_sub->py_callback = py_callback;
 
-    add_consumer_to_channel(channel_name, new_sub);
+    Channel* channel = get_channel(channel_name);
+
+    if (channel == (Channel*)NULL) {
+        channel = init_channel(channel_name);
+        add_channel(channel_list, channel);
+    }
+
+    add_subscriber_to_channel(channel, new_sub);
 }
 
 
@@ -58,8 +65,14 @@ CircularBufferElement* push_data_to_msg_buffer(Data* data) {
 }
 
 
-void* notify_subscribers(char* channel_name, CircularBufferElement* buffer_elem) {
+void notify_subscribers(char* channel_name, CircularBufferElement* buffer_elem) {
     Channel* channel = get_channel(channel_name);
+
+    if (channel == (Channel*)NULL) {
+        channel = init_channel(channel_name);
+        add_channel(channel_list, channel);
+        return;  // No subscribers at this point
+    }
 
     pthread_mutex_lock(mutex);
 

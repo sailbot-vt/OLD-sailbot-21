@@ -17,6 +17,11 @@ struct ChannelList {
 };
 
 
+// Globals
+
+pthread_mutex_t* mutex;
+
+
 // Static Function Declarations
 
 /*
@@ -51,6 +56,10 @@ ChannelList* init_channel_list() {
     channel_list->size = 0;
     channel_list->capacity = INITIAL_CAPACITY;
 
+    pthread_mutexattr_t* pthread_mutexattr;
+    pthread_mutexattr_init(pthread_mutexattr);
+    pthread_mutex_init(mutex, pthread_mutexattr);
+
     return channel_list;
 }
 
@@ -60,32 +69,41 @@ void add_channel(ChannelList* channel_list, Channel* channel) {
         double_capacity(channel_list);
     }
 
+    pthread_mutex_lock(mutex);
+
     channel_list->channels[channel_list->size] = channel;
 
     qsort(channel_list->channels,
           channel_list->size,
           sizeof(Channel*),
           compare_channels);
+
+    channel_list->size++;
+
+    pthread_mutex_unlock(mutex);
 }
 
 
 Channel* get_channel(ChannelList* channel_list, char* name) {
-    return bsearch(name,
+    pthread_mutex_lock(mutex);
+
+    void* result = bsearch(name,
             channel_list->channels,
             channel_list->size,
             sizeof(Channel*),
             compare_channels);
-}
 
+    pthread_mutex_unlock(mutex);
 
-void destroy_channel_list(ChannelList** channel_list) {
-
+    return (Channel*)result;
 }
 
 
 // Static Function Definitions
 
 static void double_capacity(ChannelList* channel_list) {
+    pthread_mutex_lock(mutex);
+
     channel_list->capacity *= 2;
     Channel** new_list = (Channel**)malloc(channel_list->capacity * sizeof(Channel**));
 
@@ -95,6 +113,8 @@ static void double_capacity(ChannelList* channel_list) {
 
     free(channel_list->channels);
     channel_list->channels = new_list;
+
+    pthread_mutex_unlock(mutex);
 }
 
 

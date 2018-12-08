@@ -36,10 +36,7 @@ CircularBufferElement* push_data_to_msg_buffer(Data* data);
  * channel_name -- The name of the channel on which to notify subscribers.
  * buffer_elem -- The buffer index associated with the data.
  */
-void* notify_subscribers(char* channel_name, CircularBufferElement* buffer_elem);
-
-
-
+void notify_subscribers(char* channel_name, CircularBufferElement* buffer_elem);
 
 
 #endif /* relay_h */

@@ -21,6 +21,11 @@ struct SubscriberList {
 };
 
 
+// Globals
+
+pthread_mutex_t* mutex;
+
+
 // Static Function Declarations
 
 static SubscriberNode* find_subscriber_node_by_id(SubscriberList* subscriber_list, char* id);
@@ -38,6 +43,10 @@ SubscriberList* create_subscriber_list() {
 
     new_list->head->next_node = new_list->tail;
     new_list->tail->prev_node = new_list->head;
+
+    pthread_mutexattr_t* pthread_mutexattr;
+    pthread_mutexattr_init(pthread_mutexattr);
+    pthread_mutex_init(mutex, pthread_mutexattr);
 }
 
 
@@ -46,6 +55,8 @@ void add_subscriber(SubscriberList* subscriber_list, Subscriber* subscriber) {
         return;
     }
 
+    pthread_mutex_lock(mutex);
+
     SubscriberNode* new_node = (SubscriberNode*)malloc(sizeof(SubscriberNode));
     new_node->next_node = NULL;
     new_node->prev_node = subscriber_list->tail;
@@ -53,16 +64,22 @@ void add_subscriber(SubscriberList* subscriber_list, Subscriber* subscriber) {
 
     subscriber_list->tail->next_node = new_node;
     subscriber_list->tail = new_node;
+
+    pthread_mutex_unlock(mutex);
 }
 
 
 Subscriber remove_subscriber(SubscriberList* subscriber_list, char* id) {
+    pthread_mutex_lock(mutex);
+
     SubscriberNode* subscriber = find_subscriber_node_by_id(subscriber_list, id);
+
     subscriber->prev_node->next_node = subscriber->next_node;
     subscriber->next_node->prev_node = subscriber->prev_node;
 
-    Subscriber local_copy = *subscriber->subscriber;
+    pthread_mutex_unlock(mutex);
 
+    Subscriber local_copy = *subscriber->subscriber;
     destroy_subscriber(&subscriber->subscriber);
 
     return local_copy;
@@ -71,15 +88,23 @@ Subscriber remove_subscriber(SubscriberList* subscriber_list, char* id) {
 
 void foreach_subscriber(SubscriberList* subscriber_list, void (*func)(Subscriber*)) {
     SubscriberNode* current = subscriber_list->head->next_node;
+
+    pthread_mutex_lock(mutex);
+
     while (current != (SubscriberNode*)NULL) {
         func(current->subscriber);
         current = current->next_node;
     }
+
+    pthread_mutex_unlock(mutex);
 }
 
 
 void destroy_subscriber_list(SubscriberList** subscriber_list) {
     SubscriberNode* current = (**subscriber_list).head;
+
+    pthread_mutex_lock(mutex);
+
     while (current != (SubscriberNode*)NULL) {
         current = current->next_node;
         free(current->prev_node);
@@ -87,6 +112,9 @@ void destroy_subscriber_list(SubscriberList** subscriber_list) {
 
     free(*subscriber_list);
     *subscriber_list = (SubscriberList*)NULL;
+
+    pthread_mutex_unlock(mutex);
+    free(mutex);
 }
 
 
