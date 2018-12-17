@@ -20,97 +20,12 @@ your_channel_name_subscriber = msg.Subscriber("your_channel_name", your_callback
 def your_callback_function(your_data):
     do_something(your_data)
 ```
-The `Subscriber` will automatically unsubscribe when destroyed using the special method `__del__`.
+The `Subscriber` will automatically unsubscribe when destroyed using the special Cython method `__dealloc__`, which, unlike `__del__`, is guaranteed to be called.
 
-## consumer.c
+## Organization
 
-### Functions
+The `relay` module stores a `ChannelList`. Each `Channel` in the list has a `SubscriberList` of all subscribers to that `Channel` and a `CircularBuffer` to store the data broadcast along that `Channel`. Each `Subscriber` stores its callback function as a `PyObject`.
 
-1. register_to_consume_data(int \<channelName>, void\* \<callback>)
+When the `publish` method from the `publisher` module is called, a copy of the passed `Data` is created and pushed onto the `CircularBuffer` associated with the correct channel. Then the `notify_subscribers` method in the `relay` module is called, which runs the callback of each subscriber on the relevant channel in a separate POSIX thread.
 
-```
-Register with relay to consume data on channelName
-Will now be called by notify_consumers upon data being published on channelName
-```
-
-2. data_callback(void \*\<dataPtr>)
-
-```
-Dereference data and pass to data_callback
-data_callback will call a cython function, which will serve as an intermediary to the pyton data_callback
-```
-
-## producer.c
-
-### Functions
-
-1. register_to_produce_data(int \<channelName>, int \<dataSize>)
-
-```
-Register with relay to produce data on channelName
-Producer and dataPtr to publishing address are stored in hashArray by relay
-```
-
-2. publish_data(int \<channelName>, int \<dataSize>, int \*\<sourcePtr>)
-
-```
-Receives sourcePtr to data and pushes it to shared memory
-Notifies relay so that it can notify_consumers on this channel
-```
- 
-## relay.c
-
-### Functions
-
-1. create_shared_memory(size_t \<size>)
-
-```
-Returns pointer to shared memory address which has been allocated to this producer
-Called by create_buffer when new producer registers with the relay
-```
-
-2. search(int \<channelName>)
-
-```
-Searches hashArray and returns channelTable object according to channelName given if entry exists
-```
-
-3. delete(struct channelTable\* \<item>)
-
-```
-Removes channelTable entry from hashArray and replaces it with default values
-```
-
-4. insert_producer(int \<channelName>, int\* \<dataPtr>)
-
-```
-Makes entry into hashArray consisting of the channelName and dataPtr
-Consumer field is set as NULL as a default value
-```
-
-5. insert_consumer(int \<channelName>, void\* \<consumer>)
-
-```
-Registers the consumer data callback with the channel
-This entry will be found by notify_consumers and the callback will be called
-```
-
-6. notify_consumers(int \<channelName>, int\* \<dataPtr>)
-
-```
-Creates thread for each consumers data callback stored in channelTable
-Thread creation not currently working, can still do callback just not multiprocessing-ly
-```
-
-7. display()
-
-```
-Creates visual representation of entire hashArray (doesn't show consumers)
-```
-
-8. display_consumers(int \<channelName>)
-
-```
-Creates visual representation of consumers for a given channelName
-```
-
+The `CircularBuffer` holds an array of `Data` objects: essentially, tuples of a void pointer and the size of its associated data in bytes. The buffer has a maximum size specified by `MAX_BUFFER_SIZE`, which acts as a redundant real-time measure to cut off any functions using especially old data, since pushing to the buffer will overwrite the oldest element when the buffer is full.
