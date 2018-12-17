@@ -18,7 +18,6 @@ pthread_mutex_t* relay_mutex;
 CallbackWithData* callback_with_data;
 
 ChannelList* channel_list;
-CircularBuffer* data_buffer;
 
 
 
@@ -37,7 +36,6 @@ void create_callback_thread(Subscriber* subscriber);
 
 void start_relay() {
     channel_list = init_channel_list();
-    data_buffer = init_circular_buffer();
 
     pthread_mutexattr_t* pthread_mutexattr = NULL;
     pthread_mutexattr_init(pthread_mutexattr);
@@ -45,7 +43,7 @@ void start_relay() {
 }
 
 
-Subscriber* register_subscriber(char* channel_name, PyObject* py_callback) {
+Subscriber* register_subscriber_on_channel(char* channel_name, PyObject* py_callback) {
     Subscriber* new_sub = malloc(sizeof(Subscriber));
 
     new_sub->id = (char*)calloc((strlen(channel_name) + 6), sizeof(char));
@@ -66,12 +64,19 @@ Subscriber* register_subscriber(char* channel_name, PyObject* py_callback) {
 }
 
 
-CircularBufferElement push_data_to_msg_buffer(Data* data) {
-    return circular_buffer_push(data_buffer, data);
+CircularBufferElement push_data_to_channel(char* channel_name, Data* data) {
+    Channel* channel = get_channel(channel_list, channel_name);
+
+    if (channel == (Channel*)NULL) {
+        channel = init_channel(channel_name);
+        add_channel(channel_list, channel);
+    }
+
+    return publish_data(channel, data);
 }
 
 
-void notify_subscribers(char* channel_name, CircularBufferElement buffer_elem) {
+void notify_subscribers_on_channel(char* channel_name, CircularBufferElement buffer_elem) {
     Channel* channel = get_channel(channel_list, channel_name);
 
     if (channel == (Channel*)NULL) {

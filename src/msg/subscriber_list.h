@@ -18,7 +18,7 @@ typedef struct SubscriberList SubscriberList;
  * Returns:
  * A new, empty list of subscribers.
  */
-SubscriberList* create_subscriber_list(void);
+SubscriberList* init_subscriber_list(void);
 
 
 /*

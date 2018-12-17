@@ -34,7 +34,7 @@ static SubscriberNode* find_subscriber_node_by_id(SubscriberList* subscriber_lis
 
 // Functions
 
-SubscriberList* create_subscriber_list() {
+SubscriberList* init_subscriber_list() {
     SubscriberList* new_list = (SubscriberList*)malloc(sizeof(struct SubscriberList));
     new_list->head = (SubscriberNode*)malloc(sizeof(SubscriberNode));
     new_list->tail = (SubscriberNode*)malloc(sizeof(SubscriberNode));

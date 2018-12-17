@@ -13,7 +13,7 @@
 // Functions
 
 Subscriber* subscribe(char* channel_name, PyObject* callback) {
-    return register_subscriber(channel_name, callback);
+    return register_subscriber_on_channel(channel_name, callback);
 }
 
 

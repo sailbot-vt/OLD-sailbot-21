@@ -36,7 +36,7 @@ Channel* init_channel(char* name);
  * ch -- The channel
  * data -- The data to publish
  */
-void publish_data(Channel* ch, Data data);
+CircularBufferElement publish_data(Channel* ch, Data* data);
 
 
 /*

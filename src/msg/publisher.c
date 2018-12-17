@@ -30,7 +30,7 @@ void publish(char* channel_name, void* data, size_t data_size) {
     data_wrapper->size = data_size;
     memcpy(data_wrapper->data, data, data_size);
 
-    notify_subscribers(channel_name, push_data_to_msg_buffer(data_wrapper));
+    notify_subscribers_on_channel(channel_name, push_data_to_channel(channel_name, data_wrapper));
 }
 
 
