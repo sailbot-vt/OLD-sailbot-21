@@ -2,7 +2,25 @@ from distutils.core import setup
 from distutils.extension import Extension
 from Cython.Build import cythonize
 
-setup(ext_modules=cythonize([
-        Extension("cython_subscriber", ["cython_subscriber.pyx"], extra_compile_args=['-std=gnu11']),
-        Extension("cython_publisher", ["cython_publisher.pyx"], extra_compile_args=['-std=gnu11'])
-]))
+source_files = ["subscriber.c",
+                "relay.c",
+                "circular_buffer.c",
+                "subscriber_list.c",
+                "channel_list.c",
+                "channel.c",
+                "publisher.c"]
+
+dirs = ["pthread.h", "types.h"]
+
+extensions = [
+        Extension(name="cython_subscriber",
+                  sources=["cython_subscriber.pyx"] + source_files,
+                  include_dirs=dirs,
+                  extra_compile_args=['-std=gnu11']),
+        Extension(name="cython_publisher",
+                  sources=["cython_publisher.pyx"] + source_files,
+                  include_dirs=dirs,
+                  extra_compile_args=['-std=gnu11'])
+]
+
+setup(ext_modules=cythonize(extensions))

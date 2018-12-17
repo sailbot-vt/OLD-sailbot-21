@@ -1,7 +1,3 @@
-# distutils: sources = subscriber.c relay.c circular_buffer.c subscriber_list.c channel_list.c channel.c
-# distutils: include_dirs = Python.h types.h pthread.h
-
-
 from cpython.ref cimport PyObject
 
 
