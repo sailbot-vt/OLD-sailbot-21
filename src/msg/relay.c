@@ -48,7 +48,9 @@ void start_relay() {
 Subscriber* register_subscriber(char* channel_name, PyObject* py_callback) {
     Subscriber* new_sub = malloc(sizeof(Subscriber));
 
-    new_sub->id = sprintf("%s_%f", channel_name, (double)clock());
+    new_sub->id = (char*)calloc((strlen(channel_name) + 6), sizeof(char));
+    sprintf(new_sub->id, "%s_%5f", channel_name, (double)clock());
+
     new_sub->py_callback = py_callback;
 
     Channel* channel = get_channel(channel_list, channel_name);
