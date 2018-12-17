@@ -16,9 +16,7 @@ The software design document detailing the system architecture can be found [her
 
 2. Move to the directory where you would like to store your local copy of the code, and clone the repository by running `git clone git@github.com:vt-sailbot/sailbot-19.git`.
 
-3. Install a Python 3.7 virtual environment in your local repository by running `virtualenv -p python3.7 p3_7env --no-site-packages`. The created directory `p3_7env` will be automatically excluded from source control. The name of the virtual environment is important if you want the `make` commands to work correctly.
-
-4. On macOS or Linux, run `make init`. On Windows, open `Makefile` and run each command under `init` separately.
+3. On macOS or Linux, run `make init`. On Windows, open `Makefile` and run each command under `init` separately.
 
 ### Testing Instructions
 

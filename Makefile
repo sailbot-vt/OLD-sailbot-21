@@ -1,4 +1,6 @@
 init:
+	pip install virtualenv; \
+	virtualenv -p python3.7 p3_7env --no-site-packages; \
 	source ./p3_7env/bin/activate; \
 	pip install -r requirements.txt; \
 	cd src/msg && $(MAKE) build; \
