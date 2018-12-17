@@ -12,6 +12,13 @@
 
 // Functions
 
+
+/*
+ * Initializes the relay.
+ */
+void start_relay(void);
+
+
 /*
  * Adds a subscriber to the message system.
  *

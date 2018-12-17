@@ -18,7 +18,7 @@ typedef struct ChannelList ChannelList;
  * Returns:
  * A new, empty channel list.
  */
-ChannelList* init_channel_list();
+ChannelList* init_channel_list(void);
 
 
 /*
