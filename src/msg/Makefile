@@ -2,6 +2,9 @@ build:
 	python3.7 setup.py build_ext --inplace; \
 
 clean:
-	rm -rf *.bin *.o *.so ~* build/; \
+	rm -rf *.bin *.o *.so ~* cython*.c build/; \
 
-.PHONY: build clean test
+clean_c:
+	rm cython*.c; \
+
+.PHONY: build clean clean_c test
