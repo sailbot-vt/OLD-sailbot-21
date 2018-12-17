@@ -64,12 +64,12 @@ Subscriber* register_subscriber(char* channel_name, PyObject* py_callback) {
 }
 
 
-CircularBufferElement* push_data_to_msg_buffer(Data* data) {
+CircularBufferElement push_data_to_msg_buffer(Data* data) {
     return circular_buffer_push(data_buffer, data);
 }
 
 
-void notify_subscribers(char* channel_name, CircularBufferElement* buffer_elem) {
+void notify_subscribers(char* channel_name, CircularBufferElement buffer_elem) {
     Channel* channel = get_channel(channel_list, channel_name);
 
     if (channel == (Channel*)NULL) {

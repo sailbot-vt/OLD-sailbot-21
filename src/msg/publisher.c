@@ -40,7 +40,6 @@ static void* create_shared_memory(size_t size) {
     int protection = PROT_READ | PROT_WRITE;
     int visibility = MAP_SHARED | MAP_ANONYMOUS;
 
-    void* new_addr = NULL;
-    mmap(new_addr, size, protection, visibility, 0, 0);
+    void* new_addr = mmap(NULL, size, protection, visibility, 0, 0);
     return new_addr;
 }

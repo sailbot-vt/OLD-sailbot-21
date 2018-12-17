@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <pthread.h>
+#include <sys/mman.h>
 
 
 #include "circular_buffer.h"
@@ -26,7 +27,7 @@ CircularBuffer* init_circular_buffer() {
 }
 
 
-CircularBufferElement* circular_buffer_push(CircularBuffer* buffer, Data* data) {
+CircularBufferElement circular_buffer_push(CircularBuffer* buffer, Data* data) {
     pthread_mutex_lock(cir_buf_mutex);
 
     int next_index = buffer->size == 0 ? 1 : (buffer->head + 1) % MAX_BUFFER_SIZE;
@@ -44,9 +45,15 @@ CircularBufferElement* circular_buffer_push(CircularBuffer* buffer, Data* data) 
         buffer->revolutions++;
     }
 
-    CircularBufferElement* element = malloc(sizeof(CircularBufferElement));
-    element->index = next_index;
-    element->revolution = buffer->revolutions;
+    CircularBufferElement element;
+    element.index = next_index;
+    element.revolution = buffer->revolutions;
+
+    CircularBufferElement old_element = element;
+    element.revolution -= 1;
+
+    Data* to_overwrite = circular_buffer_get_element(buffer, old_element);
+    munmap(to_overwrite->data, to_overwrite->size);
 
     pthread_mutex_unlock(cir_buf_mutex);
 
@@ -54,16 +61,16 @@ CircularBufferElement* circular_buffer_push(CircularBuffer* buffer, Data* data) 
 }
 
 
-Data* circular_buffer_get_element(CircularBuffer* buffer, CircularBufferElement* elem) {
+Data* circular_buffer_get_element(CircularBuffer* buffer, CircularBufferElement elem) {
     pthread_mutex_lock(cir_buf_mutex);
 
-    if (elem->index <= buffer->head && buffer->revolutions != elem->revolution) {
+    if (elem.index <= buffer->head && buffer->revolutions != elem.revolution) {
         return (Data*)NULL;
     }
 
     pthread_mutex_unlock(cir_buf_mutex);
 
-    return &buffer->data[elem->index];
+    return &buffer->data[elem.index];
 }
 
 

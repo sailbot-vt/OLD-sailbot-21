@@ -48,7 +48,7 @@ CircularBuffer* init_circular_buffer(void);
  * buffer -- The CircularBuffer to which to add the data.
  * data -- The data to add.
  */
-CircularBufferElement* circular_buffer_push(CircularBuffer* buffer, Data* data);
+CircularBufferElement circular_buffer_push(CircularBuffer* buffer, Data* data);
 
 /*
  * Gets an element from the buffer.
@@ -62,7 +62,7 @@ CircularBufferElement* circular_buffer_push(CircularBuffer* buffer, Data* data);
  * Returns:
  * The Data struct containing the data or NULL.
  */
-Data* circular_buffer_get_element(CircularBuffer* buffer, CircularBufferElement* elem);
+Data* circular_buffer_get_element(CircularBuffer* buffer, CircularBufferElement elem);
 
 /*
  * Empties the provided buffer.
