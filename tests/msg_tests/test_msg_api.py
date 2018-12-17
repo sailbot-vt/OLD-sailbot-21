@@ -1,20 +1,23 @@
 import unittest
+from time import sleep
+
+import src.msg as msg
 
 
 class TestMsgAPI(unittest.TestCase):
-    """Tests subscribing to the message system."""
+    """Tests the message system endpoints."""
 
     def setUp(self):
         """Runs before each test method."""
-        pass
+        self.msgs = []
+        self.s1 = msg.Subscriber("channel name here", lambda data: self.msgs.append(data))
+        self.s2 = msg.Subscriber("channel name here", lambda data: self.msgs.append(data))
 
-    def test_subscribe(self):
+    def test_msg(self):
         """Tests the subscribe function."""
-        assert False
-
-    def tearDown(self):
-        """Runs after all test methods."""
-        pass
+        msg.publish("channel name here", "hi")
+        sleep(0.01)
+        assert self.msgs.count("hi") == 2
 
 
 if __name__ == "__main__":

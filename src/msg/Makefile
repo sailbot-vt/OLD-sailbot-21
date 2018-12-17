@@ -2,6 +2,6 @@ build:
 	python3.7 setup.py build_ext --inplace; \
 
 clean:
-	rm *.bin *.o ~*; \
+	rm -rf *.bin *.o *.so ~* build/; \
 
 .PHONY: build clean test

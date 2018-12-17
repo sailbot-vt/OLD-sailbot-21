@@ -6,14 +6,14 @@
 
 To broadcast a message, use the `publish` method:
 ```
-import msg
+import src.msg as msg
 
 msg.publish("your_channel_name", your_generic_data)
 ```
 
 To subscribe to a channel, create a `Subscriber` object:
 ```
-import msg
+import src.msg as msg
 
 your_channel_name_subscriber = msg.Subscriber("your_channel_name", your_callback_function)
 

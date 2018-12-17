@@ -19,7 +19,7 @@ struct ChannelList {
 
 // Globals
 
-pthread_mutex_t* mutex;
+pthread_mutex_t* ch_list_mutex;
 
 
 // Static Function Declarations
@@ -56,9 +56,9 @@ ChannelList* init_channel_list() {
     channel_list->size = 0;
     channel_list->capacity = INITIAL_CAPACITY;
 
-    pthread_mutexattr_t* pthread_mutexattr;
+    pthread_mutexattr_t* pthread_mutexattr = NULL;
     pthread_mutexattr_init(pthread_mutexattr);
-    pthread_mutex_init(mutex, pthread_mutexattr);
+    pthread_mutex_init(ch_list_mutex, pthread_mutexattr);
 
     return channel_list;
 }
@@ -69,7 +69,7 @@ void add_channel(ChannelList* channel_list, Channel* channel) {
         double_capacity(channel_list);
     }
 
-    pthread_mutex_lock(mutex);
+    pthread_mutex_lock(ch_list_mutex);
 
     channel_list->channels[channel_list->size] = channel;
 
@@ -80,12 +80,12 @@ void add_channel(ChannelList* channel_list, Channel* channel) {
 
     channel_list->size++;
 
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(ch_list_mutex);
 }
 
 
 Channel* get_channel(ChannelList* channel_list, char* name) {
-    pthread_mutex_lock(mutex);
+    pthread_mutex_lock(ch_list_mutex);
 
     void* result = bsearch(name,
             channel_list->channels,
@@ -93,7 +93,7 @@ Channel* get_channel(ChannelList* channel_list, char* name) {
             sizeof(Channel*),
             compare_channels);
 
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(ch_list_mutex);
 
     return (Channel*)result;
 }
@@ -102,19 +102,19 @@ Channel* get_channel(ChannelList* channel_list, char* name) {
 // Static Function Definitions
 
 static void double_capacity(ChannelList* channel_list) {
-    pthread_mutex_lock(mutex);
+    pthread_mutex_lock(ch_list_mutex);
 
     channel_list->capacity *= 2;
     Channel** new_list = (Channel**)malloc(channel_list->capacity * sizeof(Channel**));
 
-    for (int i = 0; i < channel_list->size; ++i) {
+    for (size_t i = 0; i < channel_list->size; ++i) {
         new_list[i] = channel_list->channels[i];
     }
 
     free(channel_list->channels);
     channel_list->channels = new_list;
 
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(ch_list_mutex);
 }
 
 

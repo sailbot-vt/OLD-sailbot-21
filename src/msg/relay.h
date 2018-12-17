@@ -2,6 +2,10 @@
 #define relay_h
 
 
+#include <Python.h>
+
+
+#include "subscriber.h"
 #include "msg_types.h"
 #include "circular_buffer.h"
 
@@ -15,7 +19,7 @@
  * channel_name -- The name of the channel to which the subscriber wishes to subscribe.
  * callback -- The callback function for the new subscriber.
  */
-Subscriber* register_subscriber(char* channel_name, void (*callback));
+Subscriber* register_subscriber(char* channel_name, PyObject* py_callback);
 
 
 /*
@@ -28,9 +32,6 @@ Subscriber* register_subscriber(char* channel_name, void (*callback));
  * A buffer index to access the data.
  */
 CircularBufferElement* push_data_to_msg_buffer(Data* data);
-
-
-
 
 
 /*

@@ -10,7 +10,7 @@
 
 typedef struct SubscriberNode {
     struct SubscriberNode* next_node;
-    struct SubcriberNode* prev_node;
+    struct SubscriberNode* prev_node;
     Subscriber* subscriber;
 } SubscriberNode;
 
@@ -23,7 +23,7 @@ struct SubscriberList {
 
 // Globals
 
-pthread_mutex_t* mutex;
+pthread_mutex_t* sub_list_mutex;
 
 
 // Static Function Declarations
@@ -44,9 +44,11 @@ SubscriberList* create_subscriber_list() {
     new_list->head->next_node = new_list->tail;
     new_list->tail->prev_node = new_list->head;
 
-    pthread_mutexattr_t* pthread_mutexattr;
+    pthread_mutexattr_t* pthread_mutexattr = NULL;
     pthread_mutexattr_init(pthread_mutexattr);
-    pthread_mutex_init(mutex, pthread_mutexattr);
+    pthread_mutex_init(sub_list_mutex, pthread_mutexattr);
+
+    return new_list;
 }
 
 
@@ -55,7 +57,7 @@ void add_subscriber(SubscriberList* subscriber_list, Subscriber* subscriber) {
         return;
     }
 
-    pthread_mutex_lock(mutex);
+    pthread_mutex_lock(sub_list_mutex);
 
     SubscriberNode* new_node = (SubscriberNode*)malloc(sizeof(SubscriberNode));
     new_node->next_node = NULL;
@@ -65,45 +67,45 @@ void add_subscriber(SubscriberList* subscriber_list, Subscriber* subscriber) {
     subscriber_list->tail->next_node = new_node;
     subscriber_list->tail = new_node;
 
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(sub_list_mutex);
 }
 
 
-Subscriber remove_subscriber(SubscriberList* subscriber_list, char* id) {
-    pthread_mutex_lock(mutex);
+Subscriber* remove_subscriber(SubscriberList* subscriber_list, char* id) {
+    pthread_mutex_lock(sub_list_mutex);
 
     SubscriberNode* subscriber = find_subscriber_node_by_id(subscriber_list, id);
 
     subscriber->prev_node->next_node = subscriber->next_node;
     subscriber->next_node->prev_node = subscriber->prev_node;
 
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(sub_list_mutex);
 
-    Subscriber local_copy = *subscriber->subscriber;
-    destroy_subscriber(&subscriber->subscriber);
+    Subscriber* removed = subscriber->subscriber;
+    free(subscriber);
 
-    return local_copy;
+    return removed;
 }
 
 
 void foreach_subscriber(SubscriberList* subscriber_list, void (*func)(Subscriber*)) {
     SubscriberNode* current = subscriber_list->head->next_node;
 
-    pthread_mutex_lock(mutex);
+    pthread_mutex_lock(sub_list_mutex);
 
     while (current != (SubscriberNode*)NULL) {
         func(current->subscriber);
         current = current->next_node;
     }
 
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(sub_list_mutex);
 }
 
 
 void destroy_subscriber_list(SubscriberList** subscriber_list) {
     SubscriberNode* current = (**subscriber_list).head;
 
-    pthread_mutex_lock(mutex);
+    pthread_mutex_lock(sub_list_mutex);
 
     while (current != (SubscriberNode*)NULL) {
         current = current->next_node;
@@ -113,8 +115,8 @@ void destroy_subscriber_list(SubscriberList** subscriber_list) {
     free(*subscriber_list);
     *subscriber_list = (SubscriberList*)NULL;
 
-    pthread_mutex_unlock(mutex);
-    free(mutex);
+    pthread_mutex_unlock(sub_list_mutex);
+    free(sub_list_mutex);
 }
 
 

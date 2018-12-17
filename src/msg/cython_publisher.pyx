@@ -1,4 +1,4 @@
-# distutils: sources = publisher.c
+# distutils: sources = publisher.c relay.c circular_buffer.c subscriber_list.c channel_list.c channel.c
 # distutils: include_dirs = Python.h types.h
 
 
@@ -6,7 +6,7 @@ from pickle import Pickler
 
 
 cdef extern from "subscriber.h":
-    c_publish(char* channel_name, void* data, size_t data_size)
+    publish(char* channel_name, void* data, size_t data_size)
 
 
 def _publish(channel_name, data):
@@ -18,7 +18,7 @@ def _publish(channel_name, data):
     """
     pickled_data = Pickler(data)
 
-    cdef size_t data_size = sizeof(pickled_data)
+    cdef size_t data_size = <int>sizeof(pickled_data)
     cdef void* data_ptr = <void*>pickled_data
 
-    c_publish(channel_name, data_ptr, data_size)
+    publish(channel_name, data_ptr, data_size)

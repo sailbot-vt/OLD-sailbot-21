@@ -30,7 +30,7 @@ void publish(char* channel_name, void* data, size_t data_size) {
     data_wrapper->size = data_size;
     memcpy(data_wrapper->data, data, data_size);
 
-    notify_consumers(channel_name, push_data_to_msg_buffer(data_wrapper));
+    notify_subscribers(channel_name, push_data_to_msg_buffer(data_wrapper));
 }
 
 
@@ -40,7 +40,7 @@ static void* create_shared_memory(size_t size) {
     int protection = PROT_READ | PROT_WRITE;
     int visibility = MAP_SHARED | MAP_ANONYMOUS;
 
-    void* new_addr;
+    void* new_addr = NULL;
     mmap(new_addr, size, protection, visibility, 0, 0);
     return new_addr;
 }

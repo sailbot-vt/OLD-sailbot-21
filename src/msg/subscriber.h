@@ -31,7 +31,7 @@ Subscriber* subscribe(char* channel_name, PyObject* callback);
  * Keyword arguments:
  * callback_with_args -- The PyObject and the data to pass along with it.
  */
-void data_callback(void* callback_with_args);
+void* data_callback(void* callback_with_data);
 
 
 /*

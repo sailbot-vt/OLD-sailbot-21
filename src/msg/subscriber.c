@@ -1,5 +1,4 @@
 #include <string.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <pthread.h>
 #include <Python.h>
@@ -18,9 +17,9 @@ Subscriber* subscribe(char* channel_name, PyObject* callback) {
 }
 
 
-void data_callback(void* callback_with_args) {
-    Data* data = ((CallbackWithArgs*)callback_with_args)->data;
-    PyObject* py_callback = ((CallbackWithArgs*)callback_with_args)->py_callback;
+void* data_callback(void* callback_with_data) {
+    Data* data = ((CallbackWithData*)callback_with_data)->data;
+    PyObject* py_callback = ((CallbackWithData*)callback_with_data)->py_callback;
 
     void* subscriber_data = malloc(data->size);
     memcpy(&subscriber_data, data->data, data->size);
@@ -40,7 +39,9 @@ void data_callback(void* callback_with_args) {
     result = PyEval_CallObject(py_callback, arg);
 
     free(subscriber_data);
-    pthread_exit(0);
+
+    // Have to return something
+    return NULL;
 }
 
 void unsubscribe(Subscriber **subscriber) {
