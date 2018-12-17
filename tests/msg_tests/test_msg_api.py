@@ -1,15 +1,15 @@
 import unittest
 
 
-class TestPublish(unittest.TestCase):
-    """Tests publishing data to the message system."""
+class TestMsgAPI(unittest.TestCase):
+    """Tests subscribing to the message system."""
 
     def setUp(self):
         """Runs before each test method."""
         pass
 
-    def test_publish(self):
-        """Tests the publish method."""
+    def test_subscribe(self):
+        """Tests the subscribe function."""
         assert False
 
     def tearDown(self):
