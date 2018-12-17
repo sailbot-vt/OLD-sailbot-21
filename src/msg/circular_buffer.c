@@ -1,4 +1,6 @@
+#include <stdlib.h>
 #include <pthread.h>
+
 
 #include "circular_buffer.h"
 
