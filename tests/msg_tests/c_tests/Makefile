@@ -16,11 +16,10 @@ CCFLAGS = -Werror -Wall
 ifeq ($(CC), clang)
 	CCFLAGS += -undefined dynamic_lookup
 else
-	CCFLAGS = -Wl
+	CCFLAGS = -Wl,-rpath=../../../p3_7env/lib -L../../../p3_7env/lib -Wl,-rpath=../../../p3_7env/lib
 endif
 
 compile:
-	$(CC) -o msg_tests.bin -std=gnu11 *.c ../../../src/msg/*.c -I../../../p3_7env/include/python3.7m $(CCFLAGS)
-
+	$(CC) -o msg_tests.bin -std=gnu11 -pthread *.c ../../../src/msg/*.c -I../../../p3_7env/include/python3.7m $(CCFLAGS)
 
 .PHONY: test build run clean compile
