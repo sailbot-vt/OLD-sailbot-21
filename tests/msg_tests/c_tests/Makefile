@@ -12,10 +12,10 @@ clean:
 	-rm msg_tests.bin
 
 CCFLAGS = -Werror -Wall
-ifeq ($(CC),cc)
-	CCFLAGS += -undefined dynamic_lookup
-else
+ifeq ($(CC),gcc)
 	CCFLAGS += --no-allow-shlib-undefined
+else
+	CCFLAGS += -undefined dynamic_lookup
 endif
 
 compile:
