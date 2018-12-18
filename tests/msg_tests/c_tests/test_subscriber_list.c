@@ -24,6 +24,7 @@ static void tear_down(void);
 // Test Declarations
 
 static void test_add_subscriber(void);
+static void test_remove_subscriber(void);
 
 
 // Globals
@@ -33,6 +34,7 @@ static void test_add_subscriber(void);
  */
 Test tests[2] = {
         test_add_subscriber,
+        test_remove_subscriber,
         (Test)NULL
 };
 
@@ -43,7 +45,7 @@ void subscriber_list_all() {
     int i = 0;
     while (tests[i] != (Test)NULL) {
         set_up();
-        printf("Running test %d ... ", i);
+        printf("Running test %d ... ", i + 1);
         tests[i]();
         printf("passed.\n");  // Tests should halt execution of test suite on failure
         tear_down();
@@ -93,6 +95,36 @@ static void tear_down() {
  * Tests the add_subscriber method.
  */
 static void test_add_subscriber() {
+    Subscriber* new_sub = malloc(sizeof(Subscriber));
+
+    add_subscriber(list, new_sub);
+
+    foreach_subscriber(list, increment);
+    assert(1 == counter);
+
+    free(new_sub);
+    new_sub = malloc(sizeof(Subscriber));
+
+    add_subscriber(list, new_sub);
+
+    counter = 0;
+    foreach_subscriber(list, increment);
+    assert(2 == counter);
+
+    free(new_sub);
+    new_sub = NULL;
+
+    add_subscriber(list, new_sub);
+
+    counter = 0;
+    foreach_subscriber(list, increment);
+    assert(2 == counter);
+}
+
+/*
+ * Tests the remove_subscriber method.
+ */
+static void test_remove_subscriber() {
     Subscriber* new_sub = malloc(sizeof(Subscriber));
 
     add_subscriber(list, new_sub);
