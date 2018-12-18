@@ -2,7 +2,7 @@ from pickle import Pickler
 
 
 cdef extern from "publisher.h":
-    publish(char* channel_name, void* data, size_t data_size)
+    void publish(char* channel_name, void* data, size_t data_size)
 
 
 def _publish(channel_name, data):
