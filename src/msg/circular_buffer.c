@@ -6,9 +6,16 @@
 #include "circular_buffer.h"
 
 
-// Globals
+// Structs
 
-pthread_mutex_t* cir_buf_mutex;
+struct CircularBuffer {
+    int size;
+    int head;
+    int tail;
+    uint64_t revolutions;
+    Data data[MAX_BUFFER_SIZE];
+    pthread_mutex_t mutex;
+};
 
 
 // Functions
@@ -19,16 +26,14 @@ CircularBuffer* init_circular_buffer() {
     new_buffer->head = 0;
     new_buffer->tail = 0;
 
-    pthread_mutexattr_t* pthread_mutexattr = NULL;
-    pthread_mutexattr_init(pthread_mutexattr);
-    pthread_mutex_init(cir_buf_mutex, pthread_mutexattr);
+    new_buffer->mutex = PTHREAD_MUTEX_INITIALIZER;
 
     return new_buffer;
 }
 
 
 CircularBufferElement circular_buffer_push(CircularBuffer* buffer, Data* data) {
-    pthread_mutex_lock(cir_buf_mutex);
+    pthread_mutex_lock(&buffer->mutex);
 
     int next_index = buffer->size == 0 ? 1 : (buffer->head + 1) % MAX_BUFFER_SIZE;
 
@@ -55,38 +60,37 @@ CircularBufferElement circular_buffer_push(CircularBuffer* buffer, Data* data) {
     Data* to_overwrite = circular_buffer_get_element(buffer, old_element);
     munmap(to_overwrite->data, to_overwrite->size);
 
-    pthread_mutex_unlock(cir_buf_mutex);
+    pthread_mutex_unlock(&buffer->mutex);
 
     return element;
 }
 
 
 Data* circular_buffer_get_element(CircularBuffer* buffer, CircularBufferElement elem) {
-    pthread_mutex_lock(cir_buf_mutex);
+    pthread_mutex_lock(&buffer->mutex);
 
     if (elem.index <= buffer->head && buffer->revolutions != elem.revolution) {
         return (Data*)NULL;
     }
 
-    pthread_mutex_unlock(cir_buf_mutex);
+    pthread_mutex_unlock(&buffer->mutex);
 
     return &buffer->data[elem.index];
 }
 
 
 void empty_circular_buffer(CircularBuffer* buffer) {
-    pthread_mutex_lock(cir_buf_mutex);
+    pthread_mutex_lock(&buffer->mutex);
 
     buffer->size = 0;
     buffer->head = 0;
     buffer->tail = 0;
 
-    pthread_mutex_unlock(cir_buf_mutex);
+    pthread_mutex_unlock(&buffer->mutex);
 }
 
 
 void destroy_circular_buffer(CircularBuffer** buffer) {
     free(*buffer);
     *buffer = (CircularBuffer*)NULL;
-    free(cir_buf_mutex);
 }

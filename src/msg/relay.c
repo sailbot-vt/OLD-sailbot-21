@@ -14,7 +14,7 @@
 
 // Globals
 
-pthread_mutex_t* relay_mutex;
+pthread_mutex_t relay_mutex;
 CallbackWithData* callback_with_data;
 
 ChannelList* channel_list;
@@ -37,9 +37,7 @@ void create_callback_thread(Subscriber* subscriber);
 void start_relay() {
     channel_list = init_channel_list();
 
-    pthread_mutexattr_t* pthread_mutexattr = NULL;
-    pthread_mutexattr_init(pthread_mutexattr);
-    pthread_mutex_init(relay_mutex, pthread_mutexattr);
+    relay_mutex = PTHREAD_MUTEX_INITIALIZER;
 }
 
 
@@ -85,7 +83,7 @@ void notify_subscribers_on_channel(char* channel_name, CircularBufferElement buf
         return;  // No subscribers at this point
     }
 
-    pthread_mutex_lock(relay_mutex);
+    pthread_mutex_lock(&relay_mutex);
 
     callback_with_data = (CallbackWithData*)malloc(sizeof(CallbackWithData));
     callback_with_data->data = circular_buffer_get_element(channel->data_buffer, buffer_elem);
@@ -94,7 +92,7 @@ void notify_subscribers_on_channel(char* channel_name, CircularBufferElement buf
 
     free(callback_with_data);
 
-    pthread_mutex_unlock(relay_mutex);
+    pthread_mutex_unlock(&relay_mutex);
 }
 
 
@@ -102,9 +100,5 @@ void notify_subscribers_on_channel(char* channel_name, CircularBufferElement buf
 
 void create_callback_thread(Subscriber* subscriber) {
     callback_with_data->py_callback = subscriber->py_callback;
-
-    pthread_t* thread = NULL;
-    pthread_attr_t* pthread_attr = NULL;
-    pthread_attr_init(pthread_attr);
-    pthread_create(thread, pthread_attr, data_callback, (void*)callback_with_data);
+    pthread_create(NULL, NULL, data_callback, (void*)callback_with_data);
 }

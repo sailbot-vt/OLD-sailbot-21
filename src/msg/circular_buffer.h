@@ -19,13 +19,7 @@ typedef struct CircularBufferElement {
 } CircularBufferElement;
 
 
-typedef struct CircularBuffer {
-    int size;
-    int head;
-    int tail;
-    uint64_t revolutions;
-    Data data[MAX_BUFFER_SIZE];
-} CircularBuffer;
+typedef struct CircularBuffer CircularBuffer;
 
 
 // Functions
