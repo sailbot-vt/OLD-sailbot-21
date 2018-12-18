@@ -16,7 +16,8 @@ CCFLAGS = -Werror -Wall
 ifeq ($(CC), clang)
 	CCFLAGS += -undefined dynamic_lookup
 else
-	CCFLAGS = -Wl,-rpath=../../../p3_7env/lib -L../../../p3_7env/lib -Wl,-rpath=../../../p3_7env/lib
+	CC = gcc
+	CCFLAGS = --unresolved-symbols=ignore-all
 endif
 
 compile:
