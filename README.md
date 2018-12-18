@@ -16,12 +16,12 @@ The software design document detailing the system architecture can be found [her
 
 2. Move to the directory where you would like to store your local copy of the code, and clone the repository by running `git clone git@github.com:vt-sailbot/sailbot-19.git`.
 
-3. On macOS or Linux, run `make init`. On Windows, open `Makefile` and run each command under `init` separately.
+3. On macOS or Linux, run `make init`. On Windows, open `Makefile` and run each command under `init` separately. To compile with `clang` instead of `gcc` (for Mac users), run `make init CC=clang`.
 
 ### Testing Instructions
 
 Any code pushed to this repository will automatically be subject to all existing test methods as well as any newly added tests.
 
-To run tests locally before pushing, run `make test` on macOS or Linux, or run each command under `test` in `Makefile` separately on Windows. To compile tests with `clang` instead of `gcc` (for Mac users), run `make test CC=clang`.
+To run tests locally before pushing, run `make test` on macOS or Linux, or run each command under `test` in `Makefile` separately on Windows.
 
 Test coverage should be as complete as is practical – for most classes, it should be 90% to 100%. Recall that robustness is our first design requirement.

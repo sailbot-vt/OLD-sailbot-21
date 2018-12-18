@@ -4,6 +4,7 @@ init:
 	source ./p3_7env/bin/activate; \
 	pip install -r requirements.txt; \
 	cd src/msg && $(MAKE) build; \
+	cd ../../tests/msg_tests/c_tests && $(MAKE) build; \
 
 test:
 	source ./p3_7env/bin/activate; \
