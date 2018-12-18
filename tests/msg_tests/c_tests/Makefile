@@ -17,7 +17,7 @@ ifeq ($(CC), clang)
 	CCFLAGS += -undefined dynamic_lookup
 else
 	CC = gcc
-	CCFLAGS = --unresolved-symbols=ignore-all
+	CCFLAGS = -Wl,--unresolved-symbols=ignore-all
 endif
 
 compile:
