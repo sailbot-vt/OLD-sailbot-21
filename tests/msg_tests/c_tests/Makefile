@@ -11,14 +11,12 @@ run:
 clean:
 	-rm msg_tests.bin
 
-CC = gcc
 CCFLAGS = -Werror -Wall
 
-ifeq (, $(shell which clang))
-	CCFLAGS += --no-allow-shlib-undefined
-else
-	CC = clang
+ifeq ($(CC), clang)
 	CCFLAGS += -undefined dynamic_lookup
+else
+	CCFLAGS += --no-allow-shlib-undefined
 endif
 
 compile:
