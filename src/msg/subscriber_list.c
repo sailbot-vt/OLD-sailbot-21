@@ -41,7 +41,7 @@ SubscriberList* init_subscriber_list() {
     new_list->head->next_node = new_list->tail;
     new_list->tail->prev_node = new_list->head;
 
-    new_list->mutex = PTHREAD_MUTEX_INITIALIZER;
+    pthread_mutex_init(&new_list->mutex, NULL);
 
     return new_list;
 }

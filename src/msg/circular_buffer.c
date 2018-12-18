@@ -26,7 +26,7 @@ CircularBuffer* init_circular_buffer() {
     new_buffer->head = 0;
     new_buffer->tail = 0;
 
-    new_buffer->mutex = PTHREAD_MUTEX_INITIALIZER;
+    pthread_mutex_init(&new_buffer->mutex, NULL);
 
     return new_buffer;
 }

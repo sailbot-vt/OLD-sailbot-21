@@ -53,7 +53,7 @@ ChannelList* init_channel_list() {
     channel_list->size = 0;
     channel_list->capacity = INITIAL_CAPACITY;
 
-    channel_list->mutex = PTHREAD_MUTEX_INITIALIZER;
+    pthread_mutex_init(&channel_list->mutex, NULL);
 
     return channel_list;
 }

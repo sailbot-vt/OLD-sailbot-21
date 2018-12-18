@@ -14,7 +14,7 @@
 
 // Globals
 
-pthread_mutex_t relay_mutex;
+pthread_mutex_t relay_mutex = PTHREAD_MUTEX_INITIALIZER;
 CallbackWithData* callback_with_data;
 
 ChannelList* channel_list;
@@ -36,8 +36,6 @@ void create_callback_thread(Subscriber* subscriber);
 
 void start_relay() {
     channel_list = init_channel_list();
-
-    relay_mutex = PTHREAD_MUTEX_INITIALIZER;
 }
 
 
@@ -100,5 +98,7 @@ void notify_subscribers_on_channel(char* channel_name, CircularBufferElement buf
 
 void create_callback_thread(Subscriber* subscriber) {
     callback_with_data->py_callback = subscriber->py_callback;
-    pthread_create(NULL, NULL, data_callback, (void*)callback_with_data);
+
+    pthread_t* thread = NULL;
+    pthread_create(thread, NULL, data_callback, (void*)callback_with_data);
 }
