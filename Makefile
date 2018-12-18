@@ -10,12 +10,12 @@ init:
 	cd $(ROOT_DIR)/tests/msg_tests/c_tests && $(MAKE) build ROOT_DIR=$(ROOT_DIR)
 
 test:
+	cd tests/msg_tests/c_tests && $(MAKE) test ROOT_DIR=$(ROOT_DIR)
 	source ./p3_7env/bin/activate; \
 	export ENV test; \
-	python -m unittest discover -vcs tests; \
-	cd tests/msg_tests/c_tests && $(MAKE) test ROOT_DIR=$(ROOT_DIR); \
+	python -m unittest discover -vcs tests
 
 clean:
-	cd src/msg && $(MAKE) build; \
+	cd src/msg && $(MAKE) build
 
 .PHONY: init test clean
