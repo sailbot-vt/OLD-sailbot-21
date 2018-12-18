@@ -18,13 +18,15 @@ Subscriber* subscribe(char* channel_name, PyObject* callback) {
 
 
 void* data_callback(void* callback_with_data) {
+    /*
+     * See https://docs.python.org/3/extending/extending.html for CPython API documentation.
+     */
+
     Data* data = ((CallbackWithData*)callback_with_data)->data;
     PyObject* py_callback = ((CallbackWithData*)callback_with_data)->py_callback;
 
     void* subscriber_data = malloc(data->size);
     memcpy(&subscriber_data, data->data, data->size);
-
-    // Why can't we do this part in Python?
 
     // Adds the Python function to the Python ref counter
     Py_XINCREF(py_callback);
@@ -33,7 +35,7 @@ void* data_callback(void* callback_with_data) {
 
     // Unpickles the local copy of the object passed by publisher
     PyObject *arg = subscriber_data;
-    Py_BuildValue(arg);
+    Py_BuildValue("O", arg);
 
     // Calls the Python function
     result = PyEval_CallObject(py_callback, arg);

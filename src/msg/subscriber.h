@@ -2,6 +2,9 @@
 #define subscriber_h
 
 
+#include <Python.h>
+
+
 #include "msg_types.h"
 
 
