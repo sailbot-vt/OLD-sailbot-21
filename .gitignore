@@ -13,6 +13,7 @@ cython_*.c
 *.so
 
 # Compiled binaries
+bin/*
 *.bin
 
 # Distribution / packaging

@@ -1,5 +1,5 @@
 ifndef EXE_DIR
-	EXE_DIR := $(shell pwd)/../../../build
+	EXE_DIR := $(shell pwd)/../../../bin
 endif
 
 build:
