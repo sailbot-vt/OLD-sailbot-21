@@ -16,7 +16,7 @@ CCFLAGS = -Werror -Wall
 ifeq ($(CC), clang)
 	CCFLAGS += -undefined dynamic_lookup
 else
-	CCFLAGS += --no-allow-shlib-undefined
+	CCFLAGS += --unresolved-symbols=ignore-in-shared-libs
 endif
 
 compile:
