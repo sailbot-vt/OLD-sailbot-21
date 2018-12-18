@@ -1,9 +1,9 @@
 ifndef EXE_DIR
-	EXE_DIR := $(shell pwd)/../../../bin
+	EXE_DIR := $(ROOT_DIR)/bin
 endif
 
 build:
-	cd ../../../src/msg; $(MAKE) clean_c
+	cd $(ROOT_DIR)/src/msg; $(MAKE) clean_c
 	$(MAKE) compile
 
 test:
@@ -20,6 +20,6 @@ else
 endif
 
 compile:
-	$(CC) -o $(EXE_DIR)/msg_tests.bin -std=gnu11 -ggdb3 -pthread *.c ../../../src/msg/*.c -I../../../p3_7env/include/python3.7m $(CCFLAGS)
+	$(CC) -o $(EXE_DIR)/msg_tests.bin -std=gnu11 -ggdb3 -pthread *.c $(ROOT_DIR)/src/msg/*.c -I$(ROOT_DIR)/p3_7env/include/python3.7m $(CCFLAGS)
 
 .PHONY: test build run clean compile
