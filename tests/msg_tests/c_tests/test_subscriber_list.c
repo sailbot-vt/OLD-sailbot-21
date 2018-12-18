@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
 
 #include "test_subscriber_list.h"
@@ -25,6 +26,7 @@ static void tear_down(void);
 
 static void test_add_subscriber(void);
 static void test_remove_subscriber(void);
+static void test_foreach_subscriber(void);
 
 
 // Globals
@@ -32,9 +34,10 @@ static void test_remove_subscriber(void);
 /*
  * NULL-terminated array of all test methods.
  */
-Test tests[2] = {
+Test tests[4] = {
         test_add_subscriber,
         test_remove_subscriber,
+        test_foreach_subscriber,
         (Test)NULL
 };
 
@@ -63,11 +66,13 @@ void subscriber_list_all() {
 
 SubscriberList* list;
 int counter;
+char container[4] = {'\0'};
 
 
 // Test Helpers
 
 static void increment(Subscriber*);
+static void concat(Subscriber* sub);
 
 
 // Environment Setup
@@ -95,6 +100,9 @@ static void tear_down() {
  * Tests the add_subscriber method.
  */
 static void test_add_subscriber() {
+
+    // Normal use cases
+
     Subscriber* new_sub = malloc(sizeof(Subscriber));
 
     add_subscriber(list, new_sub);
@@ -110,6 +118,9 @@ static void test_add_subscriber() {
     counter = 0;
     foreach_subscriber(list, increment);
     assert(2 == counter);
+
+
+    // Edge cases
 
     free(new_sub);
     new_sub = NULL;
@@ -121,34 +132,82 @@ static void test_add_subscriber() {
     assert(2 == counter);
 }
 
+
 /*
  * Tests the remove_subscriber method.
  */
 static void test_remove_subscriber() {
-    Subscriber* new_sub = malloc(sizeof(Subscriber));
 
-    add_subscriber(list, new_sub);
+    // Normal use cases
 
-    foreach_subscriber(list, increment);
-    assert(1 == counter);
+    Subscriber* new_sub_1 = malloc(sizeof(Subscriber));
+    new_sub_1->id = "a";
 
-    free(new_sub);
-    new_sub = malloc(sizeof(Subscriber));
+    add_subscriber(list, new_sub_1);
 
-    add_subscriber(list, new_sub);
+    Subscriber* new_sub_2 = malloc(sizeof(Subscriber));
+    new_sub_2->id = "b";
 
-    counter = 0;
-    foreach_subscriber(list, increment);
-    assert(2 == counter);
+    add_subscriber(list, new_sub_2);
 
-    free(new_sub);
+    Subscriber* rmd = remove_subscriber(list, new_sub_2->id);
+
+    assert(!strcmp(rmd->id, new_sub_2->id));
+
+
+    // Edge cases
+
+    Subscriber* new_sub_3 = malloc(sizeof(Subscriber));
+    new_sub_3->id = "c";
+
+    rmd = remove_subscriber(list, new_sub_3->id);
+
+    assert(rmd == (Subscriber*)NULL);
+
+
+    // Clean-up
+
+    free(new_sub_1);
+    free(new_sub_2);
+    free(new_sub_3);
 }
 
 
+/*
+ * Tests the foreach_subscriber method.
+ */
+static void test_foreach_subscriber() {
+
+    // Normal use cases
+
+    Subscriber* new_sub_1 = malloc(sizeof(Subscriber));
+    new_sub_1->id = "a";
+    add_subscriber(list, new_sub_1);
+    Subscriber* new_sub_2 = malloc(sizeof(Subscriber));
+    new_sub_2->id = "b";
+    add_subscriber(list, new_sub_2);
+    Subscriber* new_sub_3 = malloc(sizeof(Subscriber));
+    new_sub_3->id = "c";
+    add_subscriber(list, new_sub_3);
+
+    foreach_subscriber(list, concat);
+
+    assert(!strcmp("abc", container));
+
+    // Clean-up
+
+    free(new_sub_1);
+    free(new_sub_2);
+    free(new_sub_3);
+}
 
 
 // Test Helper Definitions
 
 static void increment(Subscriber* _) {
     counter++;
+}
+
+static void concat(Subscriber* sub) {
+    strcat(container, sub->id);
 }

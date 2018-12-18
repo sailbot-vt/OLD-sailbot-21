@@ -71,6 +71,11 @@ Subscriber* remove_subscriber(SubscriberList* subscriber_list, char* id) {
 
     SubscriberNode* subscriber_node = find_subscriber_node_by_id(subscriber_list, id);
 
+    if (subscriber_node == (SubscriberNode*)NULL) {
+        pthread_mutex_unlock(&subscriber_list->mutex);
+        return (Subscriber*)NULL;
+    }
+
     subscriber_node->prev_node->next_node = subscriber_node->next_node;
     subscriber_node->next_node->prev_node = subscriber_node->prev_node;
 
@@ -124,5 +129,10 @@ static SubscriberNode* find_subscriber_node_by_id(SubscriberList* subscriber_lis
             && strcmp(current->subscriber->id, id) != 0) {
         current = current->next_node;
     }
+
+    if (current == subscriber_list->tail) {
+        return (SubscriberNode*)NULL;
+    }
+
     return current;
 }
