@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
+#include <stdarg.h>
 
 
 #include "test_subscriber_list.h"
@@ -47,7 +48,6 @@ static Test tests[NUM_TESTS] = {
 // Functions
 
 void subscriber_list_all() {
-
     for (int i = 0; i < NUM_TESTS; i++) {
         set_up();
         printf("Running test %d ... ", i + 1);
@@ -66,14 +66,13 @@ void subscriber_list_all() {
 // Test Globals
 
 SubscriberList* list;
-int counter;
 char container[4] = {'\0'};
+int accumulator = 0;
 
 
 // Test Helpers
 
-static void increment(Subscriber*);
-static void concat(Subscriber* sub);
+static void concat(int index, Subscriber* sub, int argc, va_list argv);
 
 
 // Environment Setup
@@ -83,7 +82,6 @@ static void concat(Subscriber* sub);
  */
 static void set_up() {
     list = init_subscriber_list();
-    counter = 0;
 }
 
 
@@ -108,17 +106,14 @@ static void test_add_subscriber() {
 
     add_subscriber(list, new_sub);
 
-    foreach_subscriber(list, increment);
-    assert(1 == counter);
+    assert(1 == get_subscriber_list_size(list));
 
     free(new_sub);
     new_sub = malloc(sizeof(Subscriber));
 
     add_subscriber(list, new_sub);
 
-    counter = 0;
-    foreach_subscriber(list, increment);
-    assert(2 == counter);
+    assert(2 == get_subscriber_list_size(list));
 
 
     // Edge cases
@@ -128,9 +123,7 @@ static void test_add_subscriber() {
 
     add_subscriber(list, new_sub);
 
-    counter = 0;
-    foreach_subscriber(list, increment);
-    assert(2 == counter);
+    assert(2 == get_subscriber_list_size(list));
 }
 
 
@@ -154,6 +147,7 @@ static void test_remove_subscriber() {
     Subscriber* rmd = remove_subscriber(list, new_sub_2->id);
 
     assert(!strcmp(rmd->id, new_sub_2->id));
+    assert(1 == get_subscriber_list_size(list));
 
 
     // Edge cases
@@ -164,6 +158,11 @@ static void test_remove_subscriber() {
     rmd = remove_subscriber(list, new_sub_3->id);
 
     assert(rmd == (Subscriber*)NULL);
+    assert(1 == get_subscriber_list_size(list));
+
+    remove_subscriber(list, new_sub_1->id);
+
+    assert(0 == get_subscriber_list_size(list));
 
 
     // Clean-up
@@ -191,9 +190,10 @@ static void test_foreach_subscriber() {
     new_sub_3->id = "c";
     add_subscriber(list, new_sub_3);
 
-    foreach_subscriber(list, concat);
+    foreach_subscriber(list, concat, 1, 2);
 
     assert(!strcmp("abc", container));
+    assert(6 == accumulator);
 
     // Clean-up
 
@@ -205,11 +205,9 @@ static void test_foreach_subscriber() {
 
 // Test Helper Definitions
 
-static void increment(Subscriber* _) {
-    counter++;
-}
+static void concat(int index, Subscriber* sub, int argc, va_list argv) {
+    int multiplier = va_arg(argv, int);
+    accumulator += index * multiplier;
 
-
-static void concat(Subscriber* sub) {
     strcat(container, sub->id);
 }

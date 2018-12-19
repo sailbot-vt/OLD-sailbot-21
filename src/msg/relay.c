@@ -20,10 +20,6 @@ struct Relay {
     pthread_mutex_t mutex;
 };
 
-// Globals
-
-CallbackWithData *callback_with_data;
-
 
 // Private Function Definitions
 
@@ -32,8 +28,10 @@ CallbackWithData *callback_with_data;
  *
  * Keyword arguments:
  * subscriber -- The subscriber owning the callback.
+ * argc -- Should be 2, for data and thread array, respectively
+ * va_list -- The data and thread array are passed, respectively
  */
-static void create_callback_thread(Subscriber* subscriber);
+static void create_callback_thread(int index, Subscriber* subscriber, int argc, va_list);
 
 
 // Functions
@@ -81,14 +79,30 @@ void notify_subscribers_on_channel(Relay* relay, char* channel_name, CircularBuf
 
     pthread_mutex_lock(&relay->mutex);
 
-    callback_with_data = (CallbackWithData*)malloc(sizeof(CallbackWithData));
-    callback_with_data->data = circular_buffer_get_element(channel->data_buffer, buffer_elem);
+    int num_callbacks = get_subscriber_list_size(channel->subscriber_list);
+    pthread_t** threads = (pthread_t**)malloc(num_callbacks * sizeof(pthread_t*));
+    for (int i = 0; i < num_callbacks; ++i) {
+        threads[i] = (pthread_t*)NULL;
+    }
 
-    foreach_subscriber(channel->subscriber_list, create_callback_thread);
+    Data* data = circular_buffer_get_element(channel->data_buffer, buffer_elem);
 
-    free(callback_with_data);
+    foreach_subscriber(channel->subscriber_list, create_callback_thread, 2, data, threads);
 
     pthread_mutex_unlock(&relay->mutex);
+
+
+    // Wait for threads to finish before exiting
+    // Outside of mutex, so does not block subsequent calls to notify_subscribers_on_channel
+    for (int i = 0; i < num_callbacks; ++i) {
+        pthread_join(*threads[i], NULL);
+    }
+
+    // Free completed threads
+    for (int i = 0; i < num_callbacks; ++i) {
+        free(threads[i]);
+    }
+    free(threads);
 }
 
 
@@ -99,9 +113,12 @@ void destroy_relay(Relay** relay) {
 
 // Private Function Definitions
 
-static void create_callback_thread(Subscriber* subscriber) {
+static void create_callback_thread(int index, Subscriber* subscriber, int argc, va_list argv) {
+    CallbackWithData* callback_with_data = (CallbackWithData*)malloc(sizeof(CallbackWithData));
+    callback_with_data->data = va_arg(argv, Data*);
     callback_with_data->py_callback = subscriber->py_callback;
 
-    pthread_t* thread = NULL;
-    pthread_create(thread, NULL, data_callback, (void*)callback_with_data);
+    pthread_t** threads = va_arg(argv, pthread_t**);
+
+    pthread_create(threads[index], NULL, data_callback, (void*)callback_with_data);
 }

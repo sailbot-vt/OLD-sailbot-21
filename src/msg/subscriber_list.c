@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
+#include <stdarg.h>
 
 
 #include "subscriber_list.h"
@@ -20,6 +21,7 @@ struct SubscriberList {
     SubscriberNode* head;
     SubscriberNode* tail;
     pthread_mutex_t mutex;
+    int size;
 };
 
 
@@ -40,6 +42,8 @@ SubscriberList* init_subscriber_list() {
 
     new_list->head->next_node = new_list->tail;
     new_list->tail->prev_node = new_list->head;
+
+    new_list->size = 0;
 
     pthread_mutex_init(&new_list->mutex, NULL);
 
@@ -62,6 +66,8 @@ void add_subscriber(SubscriberList* subscriber_list, Subscriber* subscriber) {
     subscriber_list->tail->prev_node->next_node = new_node;
     subscriber_list->tail->prev_node = new_node;
 
+    subscriber_list->size++;
+
     pthread_mutex_unlock(&subscriber_list->mutex);
 }
 
@@ -79,6 +85,8 @@ Subscriber* remove_subscriber(SubscriberList* subscriber_list, char* id) {
     subscriber_node->prev_node->next_node = subscriber_node->next_node;
     subscriber_node->next_node->prev_node = subscriber_node->prev_node;
 
+    subscriber_list->size--;
+
     pthread_mutex_unlock(&subscriber_list->mutex);
 
     Subscriber* removed = subscriber_node->subscriber;
@@ -88,17 +96,30 @@ Subscriber* remove_subscriber(SubscriberList* subscriber_list, char* id) {
 }
 
 
-void foreach_subscriber(SubscriberList* subscriber_list, void (*func)(Subscriber*)) {
+void foreach_subscriber(SubscriberList* subscriber_list, void (*func)(int, Subscriber*, int, va_list), int argc, ...) {
+    va_list argv;
+    va_start(argv, argc);
+
     SubscriberNode* current = subscriber_list->head->next_node;
 
     pthread_mutex_lock(&subscriber_list->mutex);
 
+    int index = 0;
     while (current != subscriber_list->tail) {
-        func(current->subscriber);
+        va_start(argv, argc);
+        func(index, current->subscriber, argc, argv);
         current = current->next_node;
+        index++;
     }
 
     pthread_mutex_unlock(&subscriber_list->mutex);
+
+    va_end(argv);
+}
+
+
+int get_subscriber_list_size(SubscriberList* list) {
+    return list->size;
 }
 
 
