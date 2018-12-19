@@ -11,6 +11,9 @@
 #include "../../../src/msg/subscriber.h"
 
 
+#define NUM_TESTS 3
+
+
 // Delegates
 
 typedef void (*Test)(void);
@@ -32,27 +35,25 @@ static void test_foreach_subscriber(void);
 // Globals
 
 /*
- * NULL-terminated array of all test methods.
+ * Array of all test methods.
  */
-Test tests[4] = {
+Test tests[NUM_TESTS] = {
         test_add_subscriber,
         test_remove_subscriber,
-        test_foreach_subscriber,
-        (Test)NULL
+        test_foreach_subscriber
 };
 
 
 // Functions
 
 void subscriber_list_all() {
-    int i = 0;
-    while (tests[i] != (Test)NULL) {
+
+    for (int i = 0; i < NUM_TESTS; i++) {
         set_up();
         printf("Running test %d ... ", i + 1);
         tests[i]();
         printf("passed.\n");  // Tests should halt execution of test suite on failure
         tear_down();
-        i++;
     }
 }
 
@@ -207,6 +208,7 @@ static void test_foreach_subscriber() {
 static void increment(Subscriber* _) {
     counter++;
 }
+
 
 static void concat(Subscriber* sub) {
     strcat(container, sub->id);
