@@ -1,12 +1,17 @@
 from cpython.ref cimport PyObject
 
-
-cimport cython_subscriber
+cdef extern from "subscriber.h":
+    ctypedef struct Subscriber:
+        pass
+    ctypedef struct Relay:
+        pass
+    Subscriber* subscribe(Relay* relay, char* channel_name, PyObject* callback)
+    void unsubscribe(Relay* relay, Subscriber **subscriber)
 
 
 cdef class _Subscriber:
-    cdef cython_subscriber.Subscriber* subscriber
-    cdef cython_subscriber.Relay* relay
+    cdef Subscriber* subscriber
+    cdef Relay* relay
 
     def __cinit__(self):
         self.subscriber = NULL
@@ -21,8 +26,8 @@ cdef class _Subscriber:
         data_callback -- Function to execute on event, passed data from publisher
         """
         self.relay = <Relay*>relay.relay
-        self.subscriber = cython_subscriber.subscribe(self.relay, channel_name, <PyObject*>data_callback)
+        self.subscriber = subscribe(self.relay, channel_name, <PyObject*>data_callback)
 
     def __dealloc__(self):
-        cdef cython_subscriber.Subscriber* temp = <Subscriber*>self.subscriber
-        cython_subscriber.unsubscribe(self.relay, &temp)
+        cdef Subscriber* temp = <Subscriber*>self.subscriber
+        unsubscribe(self.relay, &temp)
