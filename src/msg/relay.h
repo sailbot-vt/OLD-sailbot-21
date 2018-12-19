@@ -61,5 +61,12 @@ CircularBufferElement push_data_to_channel(Relay* relay, char* channel_name, Dat
  */
 void notify_subscribers_on_channel(Relay* relay, char* channel_name, CircularBufferElement buffer_elem);
 
+/*
+ * Deallocates a relay and all memory associated with it.
+ *
+ * Deallocates all subscribers, channels, and data on the relay.
+ */
+void destroy_relay(Relay** relay);
+
 
 #endif /* relay_h */

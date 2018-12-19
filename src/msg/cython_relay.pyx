@@ -4,6 +4,7 @@ cdef extern from "relay.h":
     ctypedef struct Relay:
         pass
     Relay* init_relay()
+    void destroy_relay(Relay** relay)
 
 
 cdef class RelayWrapper:
@@ -12,6 +13,9 @@ cdef class RelayWrapper:
 
     def __cinit__(self):
         self.relay = init_relay()
+
+    def __dealloc__(self):
+        destroy_relay(&self.relay)
 
 
 class MsgThread(Thread):

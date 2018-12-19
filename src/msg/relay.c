@@ -92,6 +92,11 @@ void notify_subscribers_on_channel(Relay* relay, char* channel_name, CircularBuf
 }
 
 
+void destroy_relay(Relay** relay) {
+    // TODO
+}
+
+
 // Private Function Definitions
 
 static void create_callback_thread(Subscriber* subscriber) {
