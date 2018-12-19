@@ -4,6 +4,13 @@
 
 ## API
 
+To start the message system (do only once), use
+```
+import src.msg as msg
+
+msg.start()
+```
+
 To broadcast a message, use the `publish` method:
 ```
 import src.msg as msg

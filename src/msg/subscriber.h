@@ -6,6 +6,7 @@
 
 
 #include "msg_types.h"
+#include "relay.h"
 
 
 // Structs
@@ -25,7 +26,7 @@ typedef struct Subscriber {
  * channel_name -- The name of the channel.
  * callback -- The subscriber's callback function.
  */
-Subscriber* subscribe(char* channel_name, PyObject* callback);
+Subscriber* subscribe(Relay* relay, char* channel_name, PyObject* callback);
 
 
 /*
@@ -43,6 +44,6 @@ void* data_callback(void* callback_with_data);
  * Keyword arguments:
  * subscriber -- The subscriber to remove.
  */
-void unsubscribe(Subscriber **subscriber);
+void unsubscribe(Relay* relay, Subscriber **subscriber);
 
 #endif /* subscriber_h */

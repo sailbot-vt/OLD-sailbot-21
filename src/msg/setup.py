@@ -20,6 +20,10 @@ extensions = [
         Extension(name="cython_publisher",
                   sources=["cython_publisher.pyx"] + source_files,
                   include_dirs=dirs,
+                  extra_compile_args=['-std=gnu11']),
+        Extension(name="cython_relay",
+                  sources=["cython_relay.pyx"] + source_files,
+                  include_dirs=dirs,
                   extra_compile_args=['-std=gnu11'])
 ]
 

@@ -2,10 +2,12 @@ from pickle import Pickler
 
 
 cdef extern from "publisher.h":
-    void publish(char* channel_name, void* data, size_t data_size)
+    ctypedef struct Relay:
+        pass
+    void publish(Relay* relay, char* channel_name, void* data, size_t data_size)
 
 
-def _publish(channel_name, data):
+def _publish(relay, channel_name, data):
     """Publishes data to a channel.
 
     Keyword arguments:
@@ -17,4 +19,4 @@ def _publish(channel_name, data):
     cdef size_t data_size = <int>sizeof(pickled_data)
     cdef void* data_ptr = <void*>pickled_data
 
-    publish(channel_name, data_ptr, data_size)
+    publish(<Relay*>relay.relay, channel_name, data_ptr, data_size)

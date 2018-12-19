@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <Python.h>
+#include <string.h>
+#include <time.h>
 
 
 #include "subscriber.h"
@@ -12,8 +14,17 @@
 
 // Functions
 
-Subscriber* subscribe(char* channel_name, PyObject* callback) {
-    return register_subscriber_on_channel(channel_name, callback);
+Subscriber* subscribe(Relay* relay, char* channel_name, PyObject* callback) {
+    Subscriber* new_sub = malloc(sizeof(Subscriber));
+
+    new_sub->id = (char*)calloc((strlen(channel_name) + 6), sizeof(char));
+    sprintf(new_sub->id, "%s_%5f", channel_name, (double)clock());
+
+    new_sub->py_callback = callback;
+
+    register_subscriber_on_channel(relay, channel_name, new_sub);
+
+    return new_sub;
 }
 
 
@@ -46,7 +57,7 @@ void* data_callback(void* callback_with_data) {
     return NULL;
 }
 
-void unsubscribe(Subscriber **subscriber) {
+void unsubscribe(Relay* relay, Subscriber **subscriber) {
     // TODO: Remove from channel
 
     free((**subscriber).py_callback);

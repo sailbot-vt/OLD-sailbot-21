@@ -24,13 +24,13 @@ static void* create_shared_memory(size_t size);
 
 // Functions
 
-void publish(char* channel_name, void* data, size_t data_size) {
+void publish(Relay* relay, char* channel_name, void* data, size_t data_size) {
     Data* data_wrapper = (Data*)malloc(sizeof(Data));
     data_wrapper->data = create_shared_memory(data_size);
     data_wrapper->size = data_size;
     memcpy(data_wrapper->data, data, data_size);
 
-    notify_subscribers_on_channel(channel_name, push_data_to_channel(channel_name, data_wrapper));
+    notify_subscribers_on_channel(relay, channel_name, push_data_to_channel(relay, channel_name, data_wrapper));
 }
 
 

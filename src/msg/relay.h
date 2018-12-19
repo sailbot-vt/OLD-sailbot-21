@@ -5,51 +5,61 @@
 #include <Python.h>
 
 
-#include "subscriber.h"
 #include "msg_types.h"
 #include "circular_buffer.h"
 
 
+// Structs
+
+typedef struct Relay Relay;
+typedef struct Subscriber Subscriber; // To avoid circular dependency
+
+
 // Functions
 
-
 /*
- * Initializes the relay.
+ * Initializes a new relay.
+ *
+ * Returns:
+ * A new relay.
  */
-void start_relay(void);
+Relay* init_relay(void);
 
 
 /*
  * Adds a subscriber to the message system.
  *
  * Keyword arguments:
+ * relay -- The relay to add the subscriber to.
  * channel_name -- The name of the channel to which the subscriber wishes to subscribe.
- * callback -- The callback function for the new subscriber.
+ * subscriber -- The subscriber to add.
  */
-Subscriber* register_subscriber_on_channel(char* channel_name, PyObject* py_callback);
+void register_subscriber_on_channel(Relay* relay, char* channel_name, Subscriber* subscriber);
 
 
 /*
  * Pushes data to the message data buffer.
  *
  * Keyword arguments:
+ * relay -- The relay to which to push the data.
  * channel_name -- The name of the channel for the data.
  * data -- The data to add.
  *
  * Returns:
  * A buffer index to access the data.
  */
-CircularBufferElement push_data_to_channel(char* channel_name, Data* data);
+CircularBufferElement push_data_to_channel(Relay* relay, char* channel_name, Data* data);
 
 
 /*
  * Notifies subscribers of a new event.
  *
  * Keyword arguments:
+ * relay -- The relay on which to notify subscribers.
  * channel_name -- The name of the channel on which to notify subscribers.
  * buffer_elem -- The buffer index associated with the data.
  */
-void notify_subscribers_on_channel(char* channel_name, CircularBufferElement buffer_elem);
+void notify_subscribers_on_channel(Relay* relay, char* channel_name, CircularBufferElement buffer_elem);
 
 
 #endif /* relay_h */

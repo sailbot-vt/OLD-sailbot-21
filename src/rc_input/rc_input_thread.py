@@ -12,7 +12,7 @@ class RCInputThread(Thread):
 
     Should accept multiple boat configurations, and should be general enough to allow for easy extension.
     """
-    def __init__(self, config):
+    def __init__(self, config=None):
         """Builds a new RC input thread."""
         super().__init__()
 

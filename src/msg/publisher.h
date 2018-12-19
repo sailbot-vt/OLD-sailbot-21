@@ -2,6 +2,9 @@
 #define publisher_h
 
 
+#include "relay.h"
+
+
 // Functions
 
 /*
@@ -12,7 +15,7 @@
  * data -- A pointer to the data to include.
  * data_size -- The number of bytes in the data.
  */
-void publish(char* channel_name, void* data, size_t data_size);
+void publish(Relay* relay, char* channel_name, void* data, size_t data_size);
 
 
 #endif /* publisher_h */
