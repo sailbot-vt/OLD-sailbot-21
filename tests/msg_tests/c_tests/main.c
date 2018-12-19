@@ -2,6 +2,7 @@
 
 
 #include "test_subscriber_list.h"
+#include "test_channel_list.h"
 
 
 int main(int argc, char** argv) {
@@ -13,6 +14,7 @@ int main(int argc, char** argv) {
     printf("\n");
 
     printf("Testing channel_list module:\n");
+    channel_list_all();
     printf("\n");
 
     printf("Testing circular_buffer module:\n");

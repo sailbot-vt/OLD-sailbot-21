@@ -37,7 +37,7 @@ static void test_foreach_subscriber(void);
 /*
  * Array of all test methods.
  */
-Test tests[NUM_TESTS] = {
+static Test tests[NUM_TESTS] = {
         test_add_subscriber,
         test_remove_subscriber,
         test_foreach_subscriber
