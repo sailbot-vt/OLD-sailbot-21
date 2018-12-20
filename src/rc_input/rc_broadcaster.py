@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 from enum import Enum
+
+import src.msg as msg
 from src.navigation_mode import NavigationMode
 
 
@@ -53,7 +55,7 @@ class TestableInputBroadcaster(RCInputBroadcaster):
     def move_rudder(self, degrees_starboard=0):
         self.rudder_signals.append(degrees_starboard)
 
-    def change_mode(self, mode=NavigationMode.MANUAL.value):
+    def change_mode(self, mode=NavigationMode.MANUAL):
         self.mode_signals.append(mode)
 
 
@@ -61,16 +63,13 @@ class RCInputMessenger(RCInputBroadcaster):
     """Implements an interface with the pub/sub messaging system to broadcast RC input."""
 
     def change_trim(self, degrees_in=0):
-        # Send a message to change the trim
-        pass
+        msg.publish("set trim", degrees_in)
 
     def move_rudder(self, degrees_starboard=0):
-        # Send a message to move the rudder
-        pass
+        msg.publish("set rudder", degrees_starboard)
 
-    def change_mode(self, mode=NavigationMode.MANUAL.value):
-        # Send a message to change the mode
-        pass
+    def change_mode(self, mode=NavigationMode.MANUAL):
+        msg.publish("set nav mode", mode)
 
 
 def make_broadcaster(broadcaster_type=RCInputBroadcasterType.Messenger):
