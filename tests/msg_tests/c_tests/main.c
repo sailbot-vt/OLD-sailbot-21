@@ -4,6 +4,7 @@
 #include "test_subscriber_list.h"
 #include "test_channel_list.h"
 #include "test_circular_buffer.h"
+#include "test_relay.h"
 
 
 int main(int argc, char** argv) {
@@ -23,6 +24,7 @@ int main(int argc, char** argv) {
     printf("\n");
 
     printf("Testing relay module:\n");
+    relay_all();
     printf("\n");
 
     return 0;
