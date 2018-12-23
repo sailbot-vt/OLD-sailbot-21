@@ -65,9 +65,9 @@ void subscriber_list_all() {
 
 // Test Globals
 
-SubscriberList* list;
-char container[4] = {'\0'};
-int accumulator = 0;
+static SubscriberList* sub_list;
+static char container[4] = {'\0'};
+static int accumulator = 0;
 
 
 // Test Helpers
@@ -81,7 +81,7 @@ static void concat(int index, Subscriber* sub, int argc, va_list argv);
  * Runs before each test method.
  */
 static void set_up() {
-    list = init_subscriber_list();
+    sub_list = init_subscriber_list();
 }
 
 
@@ -89,7 +89,7 @@ static void set_up() {
  * Runs after each test method.
  */
 static void tear_down() {
-    destroy_subscriber_list(&list);
+    destroy_subscriber_list(&sub_list);
 }
 
 
@@ -104,16 +104,16 @@ static void test_add_subscriber() {
 
     Subscriber* new_sub = malloc(sizeof(Subscriber));
 
-    add_subscriber(list, new_sub);
+    add_subscriber(sub_list, new_sub);
 
-    assert(1 == get_subscriber_list_size(list));
+    assert(1 == get_subscriber_list_size(sub_list));
 
     free(new_sub);
     new_sub = malloc(sizeof(Subscriber));
 
-    add_subscriber(list, new_sub);
+    add_subscriber(sub_list, new_sub);
 
-    assert(2 == get_subscriber_list_size(list));
+    assert(2 == get_subscriber_list_size(sub_list));
 
 
     // Edge cases
@@ -121,9 +121,9 @@ static void test_add_subscriber() {
     free(new_sub);
     new_sub = NULL;
 
-    add_subscriber(list, new_sub);
+    add_subscriber(sub_list, new_sub);
 
-    assert(2 == get_subscriber_list_size(list));
+    assert(2 == get_subscriber_list_size(sub_list));
 }
 
 
@@ -137,17 +137,17 @@ static void test_remove_subscriber() {
     Subscriber* new_sub_1 = malloc(sizeof(Subscriber));
     new_sub_1->id = "a";
 
-    add_subscriber(list, new_sub_1);
+    add_subscriber(sub_list, new_sub_1);
 
     Subscriber* new_sub_2 = malloc(sizeof(Subscriber));
     new_sub_2->id = "b";
 
-    add_subscriber(list, new_sub_2);
+    add_subscriber(sub_list, new_sub_2);
 
-    Subscriber* rmd = remove_subscriber(list, new_sub_2->id);
+    Subscriber* rmd = remove_subscriber(sub_list, new_sub_2->id);
 
     assert(!strcmp(rmd->id, new_sub_2->id));
-    assert(1 == get_subscriber_list_size(list));
+    assert(1 == get_subscriber_list_size(sub_list));
 
 
     // Edge cases
@@ -155,14 +155,14 @@ static void test_remove_subscriber() {
     Subscriber* new_sub_3 = malloc(sizeof(Subscriber));
     new_sub_3->id = "c";
 
-    rmd = remove_subscriber(list, new_sub_3->id);
+    rmd = remove_subscriber(sub_list, new_sub_3->id);
 
     assert(rmd == (Subscriber*)NULL);
-    assert(1 == get_subscriber_list_size(list));
+    assert(1 == get_subscriber_list_size(sub_list));
 
-    remove_subscriber(list, new_sub_1->id);
+    remove_subscriber(sub_list, new_sub_1->id);
 
-    assert(0 == get_subscriber_list_size(list));
+    assert(0 == get_subscriber_list_size(sub_list));
 
 
     // Clean-up
@@ -182,15 +182,15 @@ static void test_foreach_subscriber() {
 
     Subscriber* new_sub_1 = malloc(sizeof(Subscriber));
     new_sub_1->id = "a";
-    add_subscriber(list, new_sub_1);
+    add_subscriber(sub_list, new_sub_1);
     Subscriber* new_sub_2 = malloc(sizeof(Subscriber));
     new_sub_2->id = "b";
-    add_subscriber(list, new_sub_2);
+    add_subscriber(sub_list, new_sub_2);
     Subscriber* new_sub_3 = malloc(sizeof(Subscriber));
     new_sub_3->id = "c";
-    add_subscriber(list, new_sub_3);
+    add_subscriber(sub_list, new_sub_3);
 
-    foreach_subscriber(list, concat, 1, 2);
+    foreach_subscriber(sub_list, concat, 1, 2);
 
     assert(!strcmp("abc", container));
     assert(6 == accumulator);

@@ -26,7 +26,6 @@ void add_subscriber_to_channel(Channel* ch, Subscriber* subscriber) {
 
 
 void destroy_channel(Channel** ch) {
-    free((**ch).name);
     destroy_circular_buffer(&(**ch).data_buffer);
     destroy_subscriber_list(&(**ch).subscriber_list);
     *ch = (Channel*)NULL;

@@ -48,7 +48,7 @@ static int compare_channels(const void* ch_a, const void* ch_b);
 ChannelList* init_channel_list() {
     ChannelList* channel_list = (ChannelList*)malloc(sizeof(ChannelList));
 
-    channel_list->channels = (Channel**)malloc(sizeof(Channel*));
+    channel_list->channels = (Channel**)malloc(sizeof(Channel*) * INITIAL_CAPACITY);
 
     channel_list->size = 0;
     channel_list->capacity = INITIAL_CAPACITY;
@@ -60,6 +60,10 @@ ChannelList* init_channel_list() {
 
 
 void add_channel(ChannelList* channel_list, Channel* channel) {
+    if (get_channel(channel_list, channel->name) != (Channel*)NULL) {
+        return;
+    }
+
     if (channel_list->size == channel_list->capacity) {
         double_capacity(channel_list);
     }
@@ -67,30 +71,75 @@ void add_channel(ChannelList* channel_list, Channel* channel) {
     pthread_mutex_lock(&channel_list->mutex);
 
     channel_list->channels[channel_list->size] = channel;
+    channel_list->size++;
 
-    qsort(channel_list->channels,
+    qsort((void*)channel_list->channels,
           channel_list->size,
           sizeof(Channel*),
           compare_channels);
-
-    channel_list->size++;
 
     pthread_mutex_unlock(&channel_list->mutex);
 }
 
 
 Channel* get_channel(ChannelList* channel_list, char* name) {
+    Channel* with_name = init_channel(name);
+
     pthread_mutex_lock(&channel_list->mutex);
 
-    void* result = bsearch(name,
-            channel_list->channels,
+    void* result = bsearch((void*)&with_name,
+            (void*)channel_list->channels,
             channel_list->size,
             sizeof(Channel*),
             compare_channels);
 
     pthread_mutex_unlock(&channel_list->mutex);
 
-    return (Channel*)result;
+    destroy_channel(&with_name);
+
+    if (result == NULL) {
+        return (Channel*)NULL;
+    }
+
+    return *(Channel**)result;
+}
+
+
+Channel* remove_channel(ChannelList* channel_list, char* name) {
+    size_t index = 0;
+
+    pthread_mutex_lock(&channel_list->mutex);
+
+    while (index < channel_list->size &&
+           strcmp(channel_list->channels[index]->name, name) != 0) {
+        index++;
+    }
+
+    if (index < channel_list->size) {
+        Channel* rmd = channel_list->channels[index];
+
+        while (index < channel_list->size - 1) {
+            channel_list->channels[index] = channel_list->channels[index + 1];
+            index++;
+        }
+
+        channel_list->size--;
+
+        pthread_mutex_unlock(&channel_list->mutex);
+
+        return rmd;
+    }
+
+    pthread_mutex_unlock(&channel_list->mutex);
+
+    return (Channel*)NULL;
+}
+
+
+void destroy_channel_list(ChannelList** channel_list) {
+    free((*channel_list)->channels);
+    free(*channel_list);
+    *channel_list = (ChannelList*)NULL;
 }
 
 
@@ -114,7 +163,7 @@ static void double_capacity(ChannelList* channel_list) {
 
 
 static int compare_channels(const void* ch_a, const void* ch_b) {
-    Channel* channel_a = (Channel*)ch_a;
-    Channel* channel_b = (Channel*)ch_b;
-    return strcmp(channel_a->name, channel_b->name);
+    Channel** channel_a = (Channel**)ch_a;
+    Channel** channel_b = (Channel**)ch_b;
+    return strcmp((*channel_a)->name, (*channel_b)->name);
 }

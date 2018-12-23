@@ -10,7 +10,7 @@
 #include "../../../src/msg/channel.h"
 
 
-#define NUM_TESTS 3
+#define NUM_TESTS 2
 
 
 // Delegates
@@ -28,7 +28,6 @@ static void tear_down(void);
 
 static void test_add_channel(void);
 static void test_remove_channel(void);
-static void test_get_channel(void);
 
 
 // Globals
@@ -38,8 +37,7 @@ static void test_get_channel(void);
  */
 static Test tests[NUM_TESTS] = {
         test_add_channel,
-        test_remove_channel,
-        test_get_channel
+        test_remove_channel
 };
 
 
@@ -63,7 +61,7 @@ void channel_list_all() {
 
 // Test Globals
 
-ChannelList* list;
+static ChannelList* ch_list;
 
 
 // Environment Setup
@@ -72,7 +70,7 @@ ChannelList* list;
  * Runs before each test method.
  */
 static void set_up() {
-    list = init_channel_list();
+    ch_list = init_channel_list();
 }
 
 
@@ -80,55 +78,77 @@ static void set_up() {
  * Runs after each test method.
  */
 static void tear_down() {
-    destroy_channel_list(&list);
+    destroy_channel_list(&ch_list);
 }
 
 
 // Test Definitions
 
 /*
- * Tests the add_subscriber method.
+ * Tests the add_channel method.
  */
 static void test_add_channel() {
 
     // Normal use cases
 
-    assert(false);
+    Channel* channel_1 = init_channel("1");
+    Channel* channel_2 = init_channel("2");
+    Channel* channel_3 = init_channel("3");
+
+    add_channel(ch_list, channel_1);
+
+    assert(channel_1 == get_channel(ch_list, "1"));
+
+    add_channel(ch_list, channel_2);
+
+    assert(channel_1 = get_channel(ch_list, "1"));
+    assert(channel_2 = get_channel(ch_list, "2"));
+
+    add_channel(ch_list, channel_3);
+
+    assert(channel_3 = get_channel(ch_list, "3"));
+    assert(channel_2 = get_channel(ch_list, "2"));
+    assert(channel_1 = get_channel(ch_list, "1"));
 
 
-    // Edge cases
+    // Clean-up
 
+    destroy_channel(&channel_1);
+    destroy_channel(&channel_2);
+    destroy_channel(&channel_3);
 }
 
 
 /*
- * Tests the remove_subscriber method.
+ * Tests the remove_channel method.
  */
 static void test_remove_channel() {
 
     // Normal use cases
 
-    assert(false);
+    Channel* channel_1 = init_channel("1");
+    Channel* channel_2 = init_channel("2");
+
+    add_channel(ch_list, channel_1);
+    add_channel(ch_list, channel_2);
+
+    assert(channel_1 == remove_channel(ch_list, "1"));
+
+    assert((Channel*)NULL == get_channel(ch_list, "1"));
+    assert(channel_2 == get_channel(ch_list, "2"));
+
+    assert(channel_2 == remove_channel(ch_list, "2"));
+
+    assert((Channel*)NULL == get_channel(ch_list, "2"));
 
 
     // Edge cases
 
-
-
-    // Clean-up
-}
-
-
-/*
- * Tests the foreach_subscriber method.
- */
-static void test_get_channel() {
-
-    // Normal use cases
-
-    assert(false);
+    assert((Channel*)NULL == remove_channel(ch_list, "nonexistent channel"));
 
 
     // Clean-up
 
+    destroy_channel(&channel_1);
+    destroy_channel(&channel_2);
 }
