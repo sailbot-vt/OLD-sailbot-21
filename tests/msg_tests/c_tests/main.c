@@ -3,6 +3,7 @@
 
 #include "test_subscriber_list.h"
 #include "test_channel_list.h"
+#include "test_circular_buffer.h"
 
 
 int main(int argc, char** argv) {
@@ -18,6 +19,7 @@ int main(int argc, char** argv) {
     printf("\n");
 
     printf("Testing circular_buffer module:\n");
+    circular_buffer_all();
     printf("\n");
 
     printf("Testing relay module:\n");

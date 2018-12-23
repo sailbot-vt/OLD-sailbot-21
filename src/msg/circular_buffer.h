@@ -32,6 +32,7 @@ typedef struct CircularBuffer CircularBuffer;
  */
 CircularBuffer* init_circular_buffer(void);
 
+
 /*
  * Adds a new Data item to the buffer.
  *
@@ -43,6 +44,7 @@ CircularBuffer* init_circular_buffer(void);
  * data -- The data to add.
  */
 CircularBufferElement circular_buffer_push(CircularBuffer* buffer, Data* data);
+
 
 /*
  * Gets an element from the buffer.
@@ -58,6 +60,7 @@ CircularBufferElement circular_buffer_push(CircularBuffer* buffer, Data* data);
  */
 Data* circular_buffer_get_element(CircularBuffer* buffer, CircularBufferElement elem);
 
+
 /*
  * Empties the provided buffer.
  *
@@ -66,6 +69,7 @@ Data* circular_buffer_get_element(CircularBuffer* buffer, CircularBufferElement 
  */
 void empty_circular_buffer(CircularBuffer *buffer);
 
+
 /*
  * Deallocates the provided buffer, and sets the pointer to it to NULL.
  *
@@ -73,5 +77,6 @@ void empty_circular_buffer(CircularBuffer *buffer);
  * buffer -- The buffer to deallocate.
  */
 void destroy_circular_buffer(CircularBuffer** buffer);
+
 
 #endif /* CircularBuffer_h */
