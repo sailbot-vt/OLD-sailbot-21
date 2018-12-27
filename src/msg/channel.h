@@ -2,6 +2,7 @@
 #define channel_h
 
 
+#include "msg_types.h"
 #include "subscriber_list.h"
 #include "circular_buffer.h"
 
@@ -36,7 +37,7 @@ Channel* init_channel(char* name);
  * ch -- The channel
  * data -- The data to publish
  */
-CircularBufferElement publish_data(Channel* ch, Data* data);
+CircularBufferElement publish_data(Channel* ch, Data data);
 
 
 /*

@@ -33,11 +33,11 @@ void* data_callback(void* callback_with_data) {
      * See https://docs.python.org/3/extending/extending.html for CPython API documentation.
      */
 
-    Data* data = ((CallbackWithData*)callback_with_data)->data;
+    Data data = ((CallbackWithData*)callback_with_data)->data;
     PyObject* py_callback = ((CallbackWithData*)callback_with_data)->py_callback;
 
-    void* subscriber_data = malloc(data->size);
-    memcpy(&subscriber_data, data->data, data->size);
+    void* subscriber_data = malloc(data.size);
+    memcpy(&subscriber_data, data.data, data.size);
 
     // Adds the Python function to the Python ref counter
     Py_XINCREF(py_callback);

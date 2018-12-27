@@ -48,7 +48,7 @@ void register_subscriber_on_channel(Relay* relay, char* channel_name, Subscriber
  * Returns:
  * A buffer index to access the data.
  */
-CircularBufferElement push_data_to_channel(Relay* relay, char* channel_name, Data* data);
+CircularBufferElement push_data_to_channel(Relay* relay, char* channel_name, Data data);
 
 
 /*

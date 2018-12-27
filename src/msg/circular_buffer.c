@@ -11,7 +11,6 @@
 struct CircularBuffer {
     int size;
     int head;
-    int tail;
     uint64_t revolutions;
     Data data[MAX_BUFFER_SIZE];
     pthread_mutex_t mutex;
@@ -24,7 +23,6 @@ CircularBuffer* init_circular_buffer() {
     CircularBuffer* new_buffer = (CircularBuffer*)malloc(sizeof(CircularBuffer));
     new_buffer->size = 0;
     new_buffer->head = 0;
-    new_buffer->tail = 0;
 
     pthread_mutex_init(&new_buffer->mutex, NULL);
 
@@ -32,15 +30,14 @@ CircularBuffer* init_circular_buffer() {
 }
 
 
-CircularBufferElement circular_buffer_push(CircularBuffer* buffer, Data* data) {
+CircularBufferElement circular_buffer_push(CircularBuffer* buffer, Data data) {
     pthread_mutex_lock(&buffer->mutex);
 
     int next_index = buffer->size == 0 ? 1 : (buffer->head + 1) % MAX_BUFFER_SIZE;
 
-    buffer->data[next_index] = *data;
+    buffer->data[next_index] = data;
 
     buffer->head = next_index;
-    buffer->tail = (buffer->head - buffer->size + 1) % MAX_BUFFER_SIZE;
 
     if (buffer->size < MAX_BUFFER_SIZE) {
         buffer->size++;
@@ -57,8 +54,8 @@ CircularBufferElement circular_buffer_push(CircularBuffer* buffer, Data* data) {
     CircularBufferElement old_element = element;
     element.revolution -= 1;
 
-    Data* to_overwrite = circular_buffer_get_element(buffer, old_element);
-    munmap(to_overwrite->data, to_overwrite->size);
+    Data to_overwrite = circular_buffer_get_element(buffer, old_element);
+    munmap(to_overwrite.data, to_overwrite.size);
 
     pthread_mutex_unlock(&buffer->mutex);
 
@@ -66,16 +63,19 @@ CircularBufferElement circular_buffer_push(CircularBuffer* buffer, Data* data) {
 }
 
 
-Data* circular_buffer_get_element(CircularBuffer* buffer, CircularBufferElement elem) {
+Data circular_buffer_get_element(CircularBuffer* buffer, CircularBufferElement elem) {
     pthread_mutex_lock(&buffer->mutex);
 
     if (elem.index <= buffer->head && buffer->revolutions != elem.revolution) {
-        return (Data*)NULL;
+        Data null;
+        null.data = NULL;
+        null.size = 0;
+        return null;
     }
 
     pthread_mutex_unlock(&buffer->mutex);
 
-    return &buffer->data[elem.index];
+    return buffer->data[elem.index];
 }
 
 
@@ -84,7 +84,6 @@ void empty_circular_buffer(CircularBuffer* buffer) {
 
     buffer->size = 0;
     buffer->head = 0;
-    buffer->tail = 0;
 
     pthread_mutex_unlock(&buffer->mutex);
 }

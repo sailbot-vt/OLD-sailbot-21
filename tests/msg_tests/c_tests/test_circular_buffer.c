@@ -7,6 +7,7 @@
 
 #include "test_circular_buffer.h"
 #include "../../../src/msg/msg_types.h"
+#include "../../../src/msg/circular_buffer.h"
 
 
 #define NUM_TESTS 3
@@ -61,6 +62,7 @@ void circular_buffer_all() {
 
 
 // Test Globals
+CircularBuffer* buffer;
 
 
 // Environment Setup
@@ -69,7 +71,7 @@ void circular_buffer_all() {
  * Runs before each test method.
  */
 static void set_up() {
-    // Tests not implemented
+    buffer = init_circular_buffer();
 }
 
 
@@ -77,7 +79,7 @@ static void set_up() {
  * Runs after each test method.
  */
 static void tear_down() {
-    // Tests not implemented
+    destroy_circular_buffer(&buffer);
 }
 
 
@@ -87,6 +89,23 @@ static void tear_down() {
  * Tests the push method.
  */
 static void test_push() {
+    Data data1;
+    Data data2;
+    Data data3;
+
+    data1.size = 8;
+    data1.data = malloc(data1.size);
+
+    data2.size = 16;
+    data2.data = malloc(data2.size);
+
+    data3.size = 24;
+    data3.data = malloc(data3.size);
+
+    CircularBufferElement index = circular_buffer_push(buffer, data1);
+
+    assert(data1.data == circular_buffer_get_element(buffer, index).data);
+
     assert(false);
 }
 

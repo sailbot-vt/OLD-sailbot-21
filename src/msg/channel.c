@@ -15,7 +15,7 @@ Channel* init_channel(char* name) {
 }
 
 
-CircularBufferElement publish_data(Channel* ch, Data* data) {
+CircularBufferElement publish_data(Channel* ch, Data data) {
     return circular_buffer_push(ch->data_buffer, data);
 }
 
