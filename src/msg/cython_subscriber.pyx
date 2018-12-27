@@ -6,7 +6,7 @@ cdef extern from "subscriber.h":
     ctypedef struct Relay:
         pass
     Subscriber* subscribe(Relay* relay, char* channel_name, PyObject* callback)
-    void unsubscribe(Relay* relay, Subscriber **subscriber)
+    void unsubscribe(Relay* relay, Subscriber *subscriber)
 
 
 cdef class _Subscriber:
@@ -30,7 +30,7 @@ cdef class _Subscriber:
 
     def __dealloc__(self):
         cdef Subscriber* temp = <Subscriber*>self.subscriber
-        unsubscribe(self.relay, &temp)
+        unsubscribe(self.relay, temp)
 
 class DummyItem:
     def __add__(self,other):

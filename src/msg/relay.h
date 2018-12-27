@@ -34,7 +34,7 @@ Relay* init_relay(void);
  * channel_name -- The name of the channel to which the subscriber wishes to subscribe.
  * subscriber -- The subscriber to add.
  */
-void register_subscriber_on_channel(Relay* relay, char* channel_name, Subscriber* subscriber);
+void register_subscriber_on_channel(Relay* relay, Subscriber* subscriber);
 
 
 /*
@@ -48,7 +48,7 @@ void register_subscriber_on_channel(Relay* relay, char* channel_name, Subscriber
  * Returns:
  * A buffer index to access the data.
  */
-CircularBufferElement push_data_to_channel(Relay* relay, char* channel_name, Data* data);
+CircularBufferElement push_data_to_channel(Relay* relay, char* channel_name, Data data);
 
 
 /*
@@ -60,6 +60,13 @@ CircularBufferElement push_data_to_channel(Relay* relay, char* channel_name, Dat
  * buffer_elem -- The buffer index associated with the data.
  */
 void notify_subscribers_on_channel(Relay* relay, char* channel_name, CircularBufferElement buffer_elem);
+
+
+/*
+ * Removes a subscriber from its channel.
+ */
+Subscriber* remove_subscriber_from_channel(Relay* relay, Subscriber* subscriber);
+
 
 /*
  * Deallocates a relay and all memory associated with it.

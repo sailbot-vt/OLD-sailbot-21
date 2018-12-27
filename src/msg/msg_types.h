@@ -13,7 +13,7 @@ typedef struct Data {
 
 
 typedef struct CallbackWithData {
-    Data* data;
+    Data data;
     PyObject* py_callback;
 } CallbackWithData;
 

@@ -4,6 +4,8 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdarg.h>
+
 
 #include "relay.h"
 #include "msg_types.h"
@@ -44,11 +46,11 @@ Relay* init_relay() {
 }
 
 
-void register_subscriber_on_channel(Relay* relay, char* channel_name, Subscriber* subscriber) {
-    Channel* channel = get_channel(relay->channel_list, channel_name);
+void register_subscriber_on_channel(Relay* relay, Subscriber* subscriber) {
+    Channel* channel = get_channel(relay->channel_list, subscriber->channel_name);
 
     if (channel == (Channel*)NULL) {
-        channel = init_channel(channel_name);
+        channel = init_channel(subscriber->channel_name);
         add_channel(relay->channel_list, channel);
     }
 
@@ -56,7 +58,7 @@ void register_subscriber_on_channel(Relay* relay, char* channel_name, Subscriber
 }
 
 
-CircularBufferElement push_data_to_channel(Relay* relay, char* channel_name, Data* data) {
+CircularBufferElement push_data_to_channel(Relay* relay, char* channel_name, Data data) {
     Channel* channel = get_channel(relay->channel_list, channel_name);
 
     if (channel == (Channel*)NULL) {
@@ -85,7 +87,7 @@ void notify_subscribers_on_channel(Relay* relay, char* channel_name, CircularBuf
         threads[i] = (pthread_t*)NULL;
     }
 
-    Data* data = circular_buffer_get_element(channel->data_buffer, buffer_elem);
+    Data data = circular_buffer_get_element(channel->data_buffer, buffer_elem);
 
     foreach_subscriber(channel->subscriber_list, create_callback_thread, 2, data, threads);
 
@@ -106,8 +108,22 @@ void notify_subscribers_on_channel(Relay* relay, char* channel_name, CircularBuf
 }
 
 
+Subscriber* remove_subscriber_from_channel(Relay* relay, Subscriber* subscriber) {
+    Channel* channel = get_channel(relay->channel_list, subscriber->channel_name);
+
+    if (channel == NULL) {
+        fprintf(stderr, "NULL channel during unsubscribe should never occur.");
+        return (Subscriber*)NULL;
+    }
+
+    return remove_subscriber(channel->subscriber_list, subscriber->id);
+}
+
+
 void destroy_relay(Relay** relay) {
-    // TODO
+    destroy_channel_list(&(*relay)->channel_list);
+    free(*relay);
+    *relay = (Relay*)NULL;
 }
 
 
@@ -115,7 +131,7 @@ void destroy_relay(Relay** relay) {
 
 static void create_callback_thread(int index, Subscriber* subscriber, int argc, va_list argv) {
     CallbackWithData* callback_with_data = (CallbackWithData*)malloc(sizeof(CallbackWithData));
-    callback_with_data->data = va_arg(argv, Data*);
+    callback_with_data->data = va_arg(argv, Data);
     callback_with_data->py_callback = subscriber->py_callback;
 
     pthread_t** threads = va_arg(argv, pthread_t**);

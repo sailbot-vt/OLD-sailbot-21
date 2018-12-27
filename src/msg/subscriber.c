@@ -22,7 +22,11 @@ Subscriber* subscribe(Relay* relay, char* channel_name, PyObject* callback) {
 
     new_sub->py_callback = callback;
 
-    register_subscriber_on_channel(relay, channel_name, new_sub);
+
+    new_sub->channel_name = (char*)calloc(strlen(channel_name) + 1, sizeof(char));
+    strcpy(new_sub->channel_name, channel_name);
+
+    register_subscriber_on_channel(relay, new_sub);
 
     return new_sub;
 }
@@ -33,7 +37,7 @@ void* data_callback(void* callback_with_data) {
      * See https://docs.python.org/3/extending/extending.html for CPython API documentation.
      */
 
-    Data* data = ((CallbackWithData*)callback_with_data)->data;
+    Data data = ((CallbackWithData*)callback_with_data)->data;
     PyObject* py_callback = ((CallbackWithData*)callback_with_data)->py_callback;
 
     // Adds the Python function to the Python ref counter
@@ -43,7 +47,7 @@ void* data_callback(void* callback_with_data) {
     PyObject *arglist;
 
     // Unpickles the local copy of the object passed by publisher
-    arglist = Py_BuildValue("(s,i)", data->data, data->size);
+    arglist = Py_BuildValue("(s,i)", data.data, data.size);
 
     // Calls the Python function
     result = PyEval_CallObject(py_callback, arglist);
@@ -54,10 +58,17 @@ void* data_callback(void* callback_with_data) {
     return result;
 }
 
-void unsubscribe(Relay* relay, Subscriber **subscriber) {
-    // TODO: Remove from channel
+void unsubscribe(Relay* relay, Subscriber* subscriber) {
+    remove_subscriber_from_channel(relay, subscriber);
 
+    destroy_subscriber(&subscriber);
+}
+
+
+void destroy_subscriber(Subscriber** subscriber) {
     free((**subscriber).py_callback);
+    free((**subscriber).channel_name);
+    free((**subscriber).id);
     free(*subscriber);
     *subscriber = (Subscriber*)NULL;
 }
