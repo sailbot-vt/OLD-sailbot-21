@@ -1,7 +1,7 @@
+#include <Python.h>
 #include <string.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include <Python.h>
 #include <string.h>
 #include <time.h>
 
@@ -37,19 +37,19 @@ void* data_callback(void* callback_with_data) {
     PyObject* py_callback = ((CallbackWithData*)callback_with_data)->py_callback;
 
     void* subscriber_data = malloc(data.size);
-    memcpy(&subscriber_data, data.data, data.size);
+    memcpy(&subscriber_data, data.data, data.size);       //deprecated
 
     // Adds the Python function to the Python ref counter
     Py_XINCREF(py_callback);
 
     PyObject *result;
+    PyObject *arglist;
 
     // Unpickles the local copy of the object passed by publisher
-    PyObject *arg = subscriber_data;
-    Py_BuildValue("O", arg);
+    arglist = Py_BuildValue("(s,i)", data.data, data.size);
 
     // Calls the Python function
-    result = PyEval_CallObject(py_callback, arg);
+    result = PyEval_CallObject(py_callback, arglist);
 
     free(subscriber_data);
 

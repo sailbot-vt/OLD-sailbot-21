@@ -2,8 +2,8 @@
 #define msg_types_h
 
 
-#include <stddef.h>
 #include <Python.h>
+#include <stddef.h>
 
 
 typedef struct Data {

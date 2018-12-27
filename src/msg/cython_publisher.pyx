@@ -1,5 +1,4 @@
-from pickle import Pickler
-
+import pickle
 
 cdef extern from "publisher.h":
     ctypedef struct Relay:
@@ -14,7 +13,7 @@ def _publish(relay, channel_name, data):
     channel_name -- The name of the channel to publish to
     data -- The data to send along the channel
     """
-    pickled_data = Pickler(data)
+    pickled_data = pickle.dumps(data)
 
     cdef size_t data_size = <int>sizeof(pickled_data)
     cdef void* data_ptr = <void*>pickled_data
