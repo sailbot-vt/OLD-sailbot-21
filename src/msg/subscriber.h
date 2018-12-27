@@ -13,6 +13,7 @@
 
 typedef struct Subscriber {
     char* id;
+    char* channel_name;
     PyObject* py_callback;
 } Subscriber;
 
@@ -23,6 +24,7 @@ typedef struct Subscriber {
  * Subscribes a subscriber to a channel.
  *
  * Keyword arguments:
+ * relay -- The relay with the channel to subscribe to.
  * channel_name -- The name of the channel.
  * callback -- The subscriber's callback function.
  */
@@ -42,8 +44,18 @@ void* data_callback(void* callback_with_data);
  * Removes a subscriber and sets the pointer to the subscriber to NULL.
  *
  * Keyword arguments:
+ * relay -- The relay from which to remove the subscriber.
  * subscriber -- The subscriber to remove.
  */
-void unsubscribe(Relay* relay, Subscriber **subscriber);
+void unsubscribe(Relay* relay, Subscriber* subscriber);
+
+
+/*
+ * Deallocates all memory associated with a subscriber.
+ *
+ * Keyword arguments:
+ * subscriber -- The subscriber to destroy.
+ */
+void destroy_subscriber(Subscriber** subscriber);
 
 #endif /* subscriber_h */

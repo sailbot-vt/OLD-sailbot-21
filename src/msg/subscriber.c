@@ -22,7 +22,11 @@ Subscriber* subscribe(Relay* relay, char* channel_name, PyObject* callback) {
 
     new_sub->py_callback = callback;
 
-    register_subscriber_on_channel(relay, channel_name, new_sub);
+
+    new_sub->channel_name = (char*)calloc(strlen(channel_name) + 1, sizeof(char));
+    strcpy(new_sub->channel_name, channel_name);
+
+    register_subscriber_on_channel(relay, new_sub);
 
     return new_sub;
 }
@@ -52,10 +56,17 @@ void* data_callback(void* callback_with_data) {
     return NULL;
 }
 
-void unsubscribe(Relay* relay, Subscriber **subscriber) {
-    // TODO: Remove from channel
+void unsubscribe(Relay* relay, Subscriber* subscriber) {
+    remove_subscriber_from_channel(relay, subscriber);
 
+    destroy_subscriber(&subscriber);
+}
+
+
+void destroy_subscriber(Subscriber** subscriber) {
     free((**subscriber).py_callback);
+    free((**subscriber).channel_name);
+    free((**subscriber).id);
     free(*subscriber);
     *subscriber = (Subscriber*)NULL;
 }

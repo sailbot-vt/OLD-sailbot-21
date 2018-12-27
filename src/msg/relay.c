@@ -46,11 +46,11 @@ Relay* init_relay() {
 }
 
 
-void register_subscriber_on_channel(Relay* relay, char* channel_name, Subscriber* subscriber) {
-    Channel* channel = get_channel(relay->channel_list, channel_name);
+void register_subscriber_on_channel(Relay* relay, Subscriber* subscriber) {
+    Channel* channel = get_channel(relay->channel_list, subscriber->channel_name);
 
     if (channel == (Channel*)NULL) {
-        channel = init_channel(channel_name);
+        channel = init_channel(subscriber->channel_name);
         add_channel(relay->channel_list, channel);
     }
 
@@ -108,8 +108,22 @@ void notify_subscribers_on_channel(Relay* relay, char* channel_name, CircularBuf
 }
 
 
+Subscriber* remove_subscriber_from_channel(Relay* relay, Subscriber* subscriber) {
+    Channel* channel = get_channel(relay->channel_list, subscriber->channel_name);
+
+    if (channel == NULL) {
+        fprintf(stderr, "NULL channel during unsubscribe should never occur.");
+        return (Subscriber*)NULL;
+    }
+
+    return remove_subscriber(channel->subscriber_list, subscriber->id);
+}
+
+
 void destroy_relay(Relay** relay) {
-    // TODO
+    destroy_channel_list(&(*relay)->channel_list);
+    free(*relay);
+    *relay = (Relay*)NULL;
 }
 
 
