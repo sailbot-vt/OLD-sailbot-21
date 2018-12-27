@@ -58,7 +58,7 @@ CircularBufferElement circular_buffer_push(CircularBuffer* buffer, Data data) {
     element.revolution = buffer->revolutions;
 
     CircularBufferElement old_element = element;
-    element.revolution -= 1;
+    old_element.revolution -= 1;
 
     Data to_overwrite = circular_buffer_get_element(buffer, old_element);
     munmap(to_overwrite.data, to_overwrite.size);
@@ -90,6 +90,10 @@ Data circular_buffer_get_element(CircularBuffer* buffer, CircularBufferElement e
 void empty_circular_buffer(CircularBuffer* buffer) {
     pthread_mutex_lock(&buffer->mutex);
 
+    for (int i = 0; i < buffer->size; ++i) {
+        munmap(buffer->data[i].data, buffer->data[i].size);
+    }
+
     buffer->size = 0;
     buffer->head = 0;
 
@@ -98,6 +102,7 @@ void empty_circular_buffer(CircularBuffer* buffer) {
 
 
 void destroy_circular_buffer(CircularBuffer** buffer) {
+    empty_circular_buffer(*buffer);
     free(*buffer);
     *buffer = (CircularBuffer*)NULL;
 }
