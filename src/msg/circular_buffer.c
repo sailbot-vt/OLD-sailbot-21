@@ -22,9 +22,15 @@ struct CircularBuffer {
 CircularBuffer* init_circular_buffer() {
     CircularBuffer* new_buffer = (CircularBuffer*)malloc(sizeof(CircularBuffer));
     new_buffer->size = 0;
-    new_buffer->head = 0;
+    new_buffer->head = -1;
+    new_buffer->revolutions = 0xffffffffffffffff;  // -1 equivalent
 
-    pthread_mutex_init(&new_buffer->mutex, NULL);
+    // Recursive mutex allows get_element to obtain a lock inside push
+    pthread_mutexattr_t attr;
+    pthread_mutexattr_init(&attr);
+    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+
+    pthread_mutex_init(&new_buffer->mutex, &attr);
 
     return new_buffer;
 }
@@ -33,7 +39,7 @@ CircularBuffer* init_circular_buffer() {
 CircularBufferElement circular_buffer_push(CircularBuffer* buffer, Data data) {
     pthread_mutex_lock(&buffer->mutex);
 
-    int next_index = buffer->size == 0 ? 1 : (buffer->head + 1) % MAX_BUFFER_SIZE;
+    int next_index = (buffer->head + 1) % MAX_BUFFER_SIZE;
 
     buffer->data[next_index] = data;
 
@@ -70,6 +76,8 @@ Data circular_buffer_get_element(CircularBuffer* buffer, CircularBufferElement e
         Data null;
         null.data = NULL;
         null.size = 0;
+
+        pthread_mutex_unlock(&buffer->mutex);
         return null;
     }
 
