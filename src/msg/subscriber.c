@@ -36,9 +36,6 @@ void* data_callback(void* callback_with_data) {
     Data data = ((CallbackWithData*)callback_with_data)->data;
     PyObject* py_callback = ((CallbackWithData*)callback_with_data)->py_callback;
 
-    void* subscriber_data = malloc(data.size);
-    memcpy(&subscriber_data, data.data, data.size);       //deprecated
-
     // Adds the Python function to the Python ref counter
     Py_XINCREF(py_callback);
 
@@ -50,8 +47,6 @@ void* data_callback(void* callback_with_data) {
 
     // Calls the Python function
     result = PyEval_CallObject(py_callback, arglist);
-
-    free(subscriber_data);
 
     // Have to return something
     return NULL;
