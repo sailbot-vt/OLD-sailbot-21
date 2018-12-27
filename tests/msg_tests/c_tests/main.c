@@ -3,6 +3,7 @@
 
 #include "test_subscriber_list.h"
 #include "test_channel_list.h"
+#include "test_subscriber.h"
 #include "test_circular_buffer.h"
 #include "test_relay.h"
 
@@ -17,6 +18,10 @@ int main(int argc, char** argv) {
 
     printf("Testing channel_list module:\n");
     channel_list_all();
+    printf("\n");
+
+    printf("Testing subscriber module:\n");
+    subscriber_all();
     printf("\n");
 
     printf("Testing circular_buffer module:\n");

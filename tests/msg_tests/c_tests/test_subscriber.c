@@ -1,3 +1,4 @@
+#include <Python.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -5,13 +6,12 @@
 #include <string.h>
 
 
-#include "../../../src/msg/publisher.h"
 #include "../../../src/msg/subscriber.h"
-#include "test_relay.h"
 #include "../../../src/msg/relay.h"
+#include "test_subscriber.h"
 
 
-#define NUM_TESTS 3
+#define NUM_TESTS 1
 
 
 // Delegates
@@ -27,10 +27,9 @@ static void tear_down(void);
 
 // Test Declarations
 
-static void test_register_subscriber(void);
-static void test_push_data(void);
-static void test_notify_subscribers(void);
-
+static void test_subscribe_unsubscribe(void);
+//NOTE --- Test of data_callback will be done from python
+//         Need valid python function to make to be callback
 
 // Globals
 
@@ -38,15 +37,13 @@ static void test_notify_subscribers(void);
  * Array of all test methods.
  */
 static Test tests[NUM_TESTS] = {
-        test_register_subscriber,
-        test_push_data,
-        test_notify_subscribers
+        test_subscribe_unsubscribe
 };
 
 
 // Functions
 
-void relay_all() {
+void subscriber_all() {
     for (int i = 0; i < NUM_TESTS; i++) {
         set_up();
         printf("Running test %d ... ", i + 1);
@@ -64,6 +61,10 @@ void relay_all() {
 
 // Test Globals
 
+    char *channel_name = "test";
+
+    static PyObject *test_callback = Py_None;
+
 
 // Environment Setup
 
@@ -78,7 +79,7 @@ static void set_up() {
 /*
  * Runs after each test method.
  */
-static void tear_down() {
+static void tear_down() { 
     // Tests not implemented
 }
 
@@ -86,24 +87,10 @@ static void tear_down() {
 // Test Definitions
 
 /*
- * Tests the register_subscriber_on_channel method.
+ * Tests the subscribe and unsubscribe methods.
  */
-static void test_register_subscriber() {
-    assert(false);
-}
-
-
-/*
- * Tests the push_data_to_channel method.
- */
-static void test_push_data() {
-    assert(false);
-}
-
-
-/*
- * Tests the notify_subscribers_on_channel method.
- */
-static void test_notify_subscribers() {
-    assert(false);
+static void test_subscribe_unsubscribe() { 
+    Relay *test_relay = init_relay();
+    Subscriber *test_subscriber = subscribe(test_relay, channel_name, test_callback);
+    unsubscribe(test_relay, &test_subscriber);
 }
