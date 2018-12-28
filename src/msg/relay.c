@@ -46,7 +46,7 @@ Relay* init_relay() {
 }
 
 
-void register_subscriber_on_channel(Relay* relay, Subscriber* subscriber) {
+void register_subscriber(Relay *relay, Subscriber *subscriber) {
     Channel* channel = get_channel(relay->channel_list, subscriber->channel_name);
 
     if (channel == (Channel*)NULL) {
@@ -65,12 +65,6 @@ CircularBufferElement push_data_to_channel(Relay* relay, char* channel_name, Dat
         channel = init_channel(channel_name);
         add_channel(relay->channel_list, channel);
     }
-
-    if (get_subscriber_list_size(channel->subscriber_list) == 0) {
-        remove_channel(relay->channel_list, channel->name);
-    }
-
-    free(&channel);
 
     return publish_data(channel, data);
 }
@@ -114,7 +108,7 @@ void notify_subscribers_on_channel(Relay* relay, char* channel_name, CircularBuf
 }
 
 
-Subscriber* remove_subscriber_from_channel(Relay* relay, Subscriber* subscriber) {
+Subscriber* remove_subscriber(Relay *relay, Subscriber *subscriber) {
     Channel* channel = get_channel(relay->channel_list, subscriber->channel_name);
 
     if (channel == NULL) {
@@ -122,7 +116,14 @@ Subscriber* remove_subscriber_from_channel(Relay* relay, Subscriber* subscriber)
         return (Subscriber*)NULL;
     }
 
-    return remove_subscriber(channel->subscriber_list, subscriber->id);
+    Subscriber* removed = remove_subscriber_from_list(channel->subscriber_list, subscriber->id);
+
+    if (get_subscriber_list_size(channel->subscriber_list) == 0) {
+        remove_channel(relay->channel_list, channel->name);
+        destroy_channel(&channel);
+    }
+
+    return removed;
 }
 
 

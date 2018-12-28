@@ -41,7 +41,7 @@ void add_subscriber(SubscriberList* subscriber_list, Subscriber* subscriber);
  * subscriber_list -- The list to which to remove the subscriber.
  * id -- The ID of the subscriber to remove.
  */
-Subscriber* remove_subscriber(SubscriberList* subscriber_list, char* id);
+Subscriber* remove_subscriber_from_list(SubscriberList *subscriber_list, char *id);
 
 
 /*

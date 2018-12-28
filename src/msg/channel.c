@@ -8,7 +8,10 @@
 
 Channel* init_channel(char* name) {
     Channel* new_ch = (Channel*)malloc(sizeof(Channel));
-    new_ch->name = name;
+
+    new_ch->name = (char*)malloc((strlen(name) + 1) * sizeof(char));
+    strcpy(new_ch->name, name);
+
     new_ch->data_buffer = init_circular_buffer();
     new_ch->subscriber_list = init_subscriber_list();
     return new_ch;
@@ -28,5 +31,6 @@ void add_subscriber_to_channel(Channel* ch, Subscriber* subscriber) {
 void destroy_channel(Channel** ch) {
     destroy_circular_buffer(&(**ch).data_buffer);
     destroy_subscriber_list(&(**ch).subscriber_list);
+    free((**ch).name);
     *ch = (Channel*)NULL;
 }

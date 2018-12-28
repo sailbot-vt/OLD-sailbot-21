@@ -72,7 +72,7 @@ void add_subscriber(SubscriberList* subscriber_list, Subscriber* subscriber) {
 }
 
 
-Subscriber* remove_subscriber(SubscriberList* subscriber_list, char* id) {
+Subscriber* remove_subscriber_from_list(SubscriberList *subscriber_list, char *id) {
     pthread_mutex_lock(&subscriber_list->mutex);
 
     SubscriberNode* subscriber_node = find_subscriber_node_by_id(subscriber_list, id);

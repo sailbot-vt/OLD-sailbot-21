@@ -34,7 +34,7 @@ Relay* init_relay(void);
  * channel_name -- The name of the channel to which the subscriber wishes to subscribe.
  * subscriber -- The subscriber to add.
  */
-void register_subscriber_on_channel(Relay* relay, Subscriber* subscriber);
+void register_subscriber(Relay *relay, Subscriber *subscriber);
 
 
 /*
@@ -65,7 +65,7 @@ void notify_subscribers_on_channel(Relay* relay, char* channel_name, CircularBuf
 /*
  * Removes a subscriber from its channel.
  */
-Subscriber* remove_subscriber_from_channel(Relay* relay, Subscriber* subscriber);
+Subscriber* remove_subscriber(Relay *relay, Subscriber *subscriber);
 
 
 /*

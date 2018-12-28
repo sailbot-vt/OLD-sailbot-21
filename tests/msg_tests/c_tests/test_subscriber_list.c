@@ -144,7 +144,7 @@ static void test_remove_subscriber() {
 
     add_subscriber(sub_list, new_sub_2);
 
-    Subscriber* rmd = remove_subscriber(sub_list, new_sub_2->id);
+    Subscriber* rmd = remove_subscriber_from_list(sub_list, new_sub_2->id);
 
     assert(!strcmp(rmd->id, new_sub_2->id));
     assert(1 == get_subscriber_list_size(sub_list));
@@ -155,12 +155,12 @@ static void test_remove_subscriber() {
     Subscriber* new_sub_3 = malloc(sizeof(Subscriber));
     new_sub_3->id = "c";
 
-    rmd = remove_subscriber(sub_list, new_sub_3->id);
+    rmd = remove_subscriber_from_list(sub_list, new_sub_3->id);
 
     assert(rmd == (Subscriber*)NULL);
     assert(1 == get_subscriber_list_size(sub_list));
 
-    remove_subscriber(sub_list, new_sub_1->id);
+    remove_subscriber_from_list(sub_list, new_sub_1->id);
 
     assert(0 == get_subscriber_list_size(sub_list));
 

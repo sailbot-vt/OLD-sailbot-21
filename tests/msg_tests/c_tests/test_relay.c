@@ -5,13 +5,12 @@
 #include <string.h>
 
 
-#include "../../../src/msg/publisher.h"
-#include "../../../src/msg/subscriber.h"
 #include "test_relay.h"
 #include "../../../src/msg/relay.h"
+#include "../../../src/msg/subscriber.h"
 
 
-#define NUM_TESTS 3
+#define NUM_TESTS 2
 
 
 // Delegates
@@ -29,7 +28,6 @@ static void tear_down(void);
 
 static void test_register_subscriber(void);
 static void test_push_data(void);
-static void test_notify_subscribers(void);
 
 
 // Globals
@@ -39,8 +37,7 @@ static void test_notify_subscribers(void);
  */
 static Test tests[NUM_TESTS] = {
         test_register_subscriber,
-        test_push_data,
-        test_notify_subscribers
+        test_push_data
 };
 
 
@@ -64,6 +61,8 @@ void relay_all() {
 
 // Test Globals
 
+Relay* relay;
+
 
 // Environment Setup
 
@@ -71,7 +70,7 @@ void relay_all() {
  * Runs before each test method.
  */
 static void set_up() {
-    // Tests not implemented
+    relay = init_relay();
 }
 
 
@@ -79,7 +78,7 @@ static void set_up() {
  * Runs after each test method.
  */
 static void tear_down() {
-    // Tests not implemented
+    destroy_relay(&relay);
 }
 
 
@@ -89,7 +88,46 @@ static void tear_down() {
  * Tests the register_subscriber_on_channel method.
  */
 static void test_register_subscriber() {
-    assert(false);
+    Subscriber sub1;
+    sub1.channel_name = "test";
+    sub1.id = "1";
+
+    Subscriber sub2;
+    sub2.channel_name = "test";
+    sub2.id = "2";
+
+    Subscriber sub3;
+    sub3.channel_name = "test_b";
+    sub3.id = "3";
+
+    Subscriber sub4;
+    sub4.channel_name = "test";
+    sub4.id = "4";
+
+    Subscriber sub5;
+    sub5.channel_name = "test_b";
+    sub5.id = "5";
+
+    register_subscriber(relay, &sub1);
+    register_subscriber(relay, &sub2);
+    register_subscriber(relay, &sub3);
+    register_subscriber(relay, &sub4);
+    register_subscriber(relay, &sub5);
+
+    Subscriber* result = remove_subscriber(relay, &sub1);
+    assert(!strcmp(result->id, "1"));
+
+    result = remove_subscriber(relay, &sub2);
+    assert(!strcmp(result->id, "2"));
+
+    result = remove_subscriber(relay, &sub3);
+    assert(!strcmp(result->id, "3"));
+
+    result = remove_subscriber(relay, &sub4);
+    assert(!strcmp(result->id, "4"));
+
+    result = remove_subscriber(relay, &sub5);
+    assert(!strcmp(result->id, "5"));
 }
 
 
@@ -97,13 +135,19 @@ static void test_register_subscriber() {
  * Tests the push_data_to_channel method.
  */
 static void test_push_data() {
-    assert(false);
-}
+    Data data1;
+    data1.size = 8;
+    data1.data = malloc(data1.size);
 
+    Data data2;
+    data2.size = 8;
+    data2.data = malloc(data2.size);
 
-/*
- * Tests the notify_subscribers_on_channel method.
- */
-static void test_notify_subscribers() {
-    assert(false);
+    push_data_to_channel(relay, "test", data1);
+    push_data_to_channel(relay, "test", data2);
+
+    // Not really anything to test
+
+    free(data1.data);
+    free(data2.data);
 }
