@@ -92,5 +92,5 @@ static void tear_down() {
 static void test_subscribe_unsubscribe() { 
     Relay *test_relay = init_relay();
     Subscriber *test_subscriber = subscribe(test_relay, channel_name, test_callback);
-    unsubscribe(test_relay, &test_subscriber);
+    unsubscribe(test_relay, test_subscriber);
 }

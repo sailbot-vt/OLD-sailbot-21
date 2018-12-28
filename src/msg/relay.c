@@ -66,6 +66,12 @@ CircularBufferElement push_data_to_channel(Relay* relay, char* channel_name, Dat
         add_channel(relay->channel_list, channel);
     }
 
+    if (get_subscriber_list_size(channel->subscriber_list) == 0) {
+        remove_channel(relay->channel_list, channel->name);
+    }
+
+    free(&channel);
+
     return publish_data(channel, data);
 }
 
