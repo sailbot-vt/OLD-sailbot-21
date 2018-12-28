@@ -23,7 +23,7 @@ CircularBuffer* init_circular_buffer() {
     CircularBuffer* new_buffer = (CircularBuffer*)malloc(sizeof(CircularBuffer));
     new_buffer->size = 0;
     new_buffer->head = -1;
-    new_buffer->revolutions = 0xffffffffffffffff;  // -1 equivalent
+    new_buffer->revolutions = ~0;  // So we start with 0 and avoid sp cases
 
     // Recursive mutex allows get_element to obtain a lock inside push
     pthread_mutexattr_t attr;
