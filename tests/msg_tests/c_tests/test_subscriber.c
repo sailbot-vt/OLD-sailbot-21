@@ -61,9 +61,11 @@ void subscriber_all() {
 
 // Test Globals
 
-    char *channel_name = "test";
+char *channel_name = "test";
 
-    static PyObject *test_callback = Py_None;
+// For some reason, some Python.h types are available and some aren't
+// Py_None isn't available for some reason, so do either this or #define Py_None NULL
+static PyObject *test_callback = (PyObject*)NULL;
 
 
 // Environment Setup
@@ -93,4 +95,6 @@ static void test_subscribe_unsubscribe() {
     Relay *test_relay = init_relay();
     Subscriber *test_subscriber = subscribe(test_relay, channel_name, test_callback);
     unsubscribe(test_relay, test_subscriber);
+
+    assert(false);  // The test shouldn't pass unless it's finished
 }
