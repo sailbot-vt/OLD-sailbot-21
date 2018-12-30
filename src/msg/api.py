@@ -1,6 +1,6 @@
 from src.msg.cython_subscriber import _Subscriber
 from src.msg.cython_publisher import _publish
-from src.msg.cython_relay import MsgThread
+from src.msg.msg_thread import MsgThread
 
 
 msg_thread = None

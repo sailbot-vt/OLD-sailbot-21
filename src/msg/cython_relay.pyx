@@ -1,5 +1,3 @@
-from threading import Thread
-
 cdef extern from "relay.h":
     ctypedef struct Relay:
         pass
@@ -16,18 +14,3 @@ cdef class RelayWrapper:
 
     def __dealloc__(self):
         destroy_relay(&self.relay)
-
-
-class MsgThread(Thread):
-    """Holds the msg relay state in a separate thread"""
-
-    def __init__(self):
-        super().__init__()
-        self.relay = RelayWrapper()
-
-    def run(self):
-        while True:
-            pass
-
-    def get_relay(self):
-        return self.relay
