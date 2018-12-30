@@ -17,8 +17,9 @@
 Subscriber* subscribe(Relay* relay, char* channel_name, PyObject* callback) {
     Subscriber* new_sub = malloc(sizeof(Subscriber));
 
+    int counter = get_relay_counter();
     new_sub->id = (char*)calloc((strlen(channel_name) + 6), sizeof(char));
-    sprintf(new_sub->id, "%s_%5f", channel_name, (double)clock());
+    sprintf(new_sub->id, "%s_%05d", channel_name, counter);
 
     new_sub->py_callback = callback;
 

@@ -89,9 +89,6 @@ static void tear_down() {
 }
 
 
-// Test Definitions
-
-
 // External Structs
 
 struct Relay {
@@ -99,11 +96,13 @@ struct Relay {
     pthread_mutex_t mutex;
 };
 
+
 typedef struct SubscriberNode {
     struct SubscriberNode* next_node;
     struct SubscriberNode* prev_node;
     Subscriber* subscriber;
 } SubscriberNode;
+
 
 struct SubscriberList {
     SubscriberNode* head;
@@ -111,6 +110,7 @@ struct SubscriberList {
     pthread_mutex_t mutex;
     int size;
 };
+
 
 // External Static Funcs
 
@@ -128,24 +128,28 @@ static SubscriberNode* find_subscriber_node_by_id(SubscriberList* subscriber_lis
     return current;
 }
 
+
+// Test Definitions
+
+
 /*
  * Tests the subscribe and unsubscribe methods.
  */
 static void test_subscribe_unsubscribe() { 
     Relay *test_relay = init_relay();
 
+    subscribe(test_relay, channel_name, test_callback);
     Subscriber *test_subscriber = subscribe(test_relay, channel_name, test_callback);
 
     unsubscribe(test_relay, test_subscriber);
 
-//    ChannelList *test_ch_list = test_relay->channel_list;
+    ChannelList *test_ch_list = test_relay->channel_list;
 
-//    Channel* test_channel = get_channel(test_ch_list, test_subscriber->channel_name);
+    Channel* test_channel = get_channel(test_ch_list, channel_name);
 
-//    SubscriberList *test_sub_list = test_channel->subscriber_list;
+    SubscriberList *test_sub_list = test_channel->subscriber_list;
 
-//    assert(find_subscriber_node_by_id(test_sub_list, test_subscriber->id)==(SubscriberNode*)NULL);
+    assert(find_subscriber_node_by_id(test_sub_list, test_subscriber->id)==(SubscriberNode*)NULL);
 
-    assert(find_subscriber_node_by_id(get_channel(test_relay->channel_list, test_subscriber->channel_name)->subscriber_list, test_subscriber->id)==(SubscriberNode*)NULL);
-//    assert(false);  // The test shouldn't pass unless it's finished
+    // free all the memory
 }

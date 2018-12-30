@@ -23,6 +23,11 @@ struct Relay {
 };
 
 
+// Globals
+
+int counter;
+
+
 // Private Function Definitions
 
 /*
@@ -55,6 +60,8 @@ void register_subscriber(Relay *relay, Subscriber *subscriber) {
     }
 
     add_subscriber_to_channel(channel, subscriber);
+
+    counter++;
 }
 
 
@@ -124,6 +131,11 @@ Subscriber* remove_subscriber(Relay *relay, Subscriber *subscriber) {
     }
 
     return removed;
+}
+
+
+int get_relay_counter() {
+    return counter;
 }
 
 

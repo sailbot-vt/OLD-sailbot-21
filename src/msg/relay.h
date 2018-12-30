@@ -69,6 +69,15 @@ Subscriber* remove_subscriber(Relay *relay, Subscriber *subscriber);
 
 
 /*
+ * Gets a counter value based on the number of added subscribers.
+ *
+ * Returns:
+ * The number of subscribers that have been added to the relay.
+ */
+int get_relay_counter(void);
+
+
+/*
  * Deallocates a relay and all memory associated with it.
  *
  * Deallocates all subscribers, channels, and data on the relay.
