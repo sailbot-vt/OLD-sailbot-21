@@ -1,0 +1,4022 @@
+Already logging to gdb.txt.
+Breakpoint 1 at 0x1f9d: file test_subscriber.c, line 135.
+Starting program: /home/ryan/sailbot/sailbot-19/bin/msg_tests.bin 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Breakpoint 1, test_subscribe_unsubscribe () at test_subscriber.c:135
+135	    Relay *test_relay = init_relay();
+init_relay () at /home/ryan/sailbot/sailbot-19/src/msg/relay.c:42
+42	    Relay* new_relay = (Relay*)malloc(sizeof(Relay));
+__GI___libc_malloc (bytes=48) at malloc.c:3028
+3028	malloc.c: No such file or directory.
+3033	in malloc.c
+3034	in malloc.c
+3039	in malloc.c
+3042	in malloc.c
+3040	in malloc.c
+3042	in malloc.c
+3045	in malloc.c
+3048	in malloc.c
+3055	in malloc.c
+3057	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=48) at malloc.c:3521
+3521	in malloc.c
+3553	in malloc.c
+3521	in malloc.c
+3553	in malloc.c
+3557	in malloc.c
+3581	in malloc.c
+3583	in malloc.c
+3586	in malloc.c
+3588	in malloc.c
+3642	in malloc.c
+3644	in malloc.c
+3642	in malloc.c
+3644	in malloc.c
+3641	in malloc.c
+3722	in malloc.c
+3721	in malloc.c
+3722	in malloc.c
+3721	in malloc.c
+3722	in malloc.c
+3720	in malloc.c
+3726	in malloc.c
+3792	in malloc.c
+3752	in malloc.c
+3879	in malloc.c
+3731	in malloc.c
+3732	in malloc.c
+3752	in malloc.c
+3792	in malloc.c
+3732	in malloc.c
+3735	in malloc.c
+3736	in malloc.c
+3739	in malloc.c
+3749	in malloc.c
+3734	in malloc.c
+3749	in malloc.c
+3783	in malloc.c
+3778	in malloc.c
+3779	in malloc.c
+3783	in malloc.c
+3812	in malloc.c
+3820	in malloc.c
+3821	in malloc.c
+3822	in malloc.c
+3821	in malloc.c
+3825	in malloc.c
+3822	in malloc.c
+3825	in malloc.c
+3865	in malloc.c
+3868	in malloc.c
+3877	in malloc.c
+3868	in malloc.c
+3878	in malloc.c
+3869	in malloc.c
+3870	in malloc.c
+3871	in malloc.c
+3872	in malloc.c
+3878	in malloc.c
+3887	in malloc.c
+3732	in malloc.c
+3735	in malloc.c
+3736	in malloc.c
+3739	in malloc.c
+3749	in malloc.c
+3734	in malloc.c
+3749	in malloc.c
+3783	in malloc.c
+3778	in malloc.c
+3779	in malloc.c
+3783	in malloc.c
+3812	in malloc.c
+3820	in malloc.c
+3821	in malloc.c
+3822	in malloc.c
+3821	in malloc.c
+3825	in malloc.c
+3822	in malloc.c
+3825	in malloc.c
+3865	in malloc.c
+3868	in malloc.c
+3877	in malloc.c
+3868	in malloc.c
+3878	in malloc.c
+3869	in malloc.c
+3870	in malloc.c
+3871	in malloc.c
+3872	in malloc.c
+3878	in malloc.c
+3887	in malloc.c
+3732	in malloc.c
+3735	in malloc.c
+3736	in malloc.c
+3739	in malloc.c
+3749	in malloc.c
+3734	in malloc.c
+3749	in malloc.c
+3783	in malloc.c
+3778	in malloc.c
+3779	in malloc.c
+3783	in malloc.c
+3812	in malloc.c
+3820	in malloc.c
+3821	in malloc.c
+3822	in malloc.c
+3821	in malloc.c
+3825	in malloc.c
+3822	in malloc.c
+3825	in malloc.c
+3830	in malloc.c
+3828	in malloc.c
+3831	in malloc.c
+3843	in malloc.c
+3844	in malloc.c
+3850	in malloc.c
+3853	in malloc.c
+3861	in malloc.c
+3868	in malloc.c
+3877	in malloc.c
+3868	in malloc.c
+3878	in malloc.c
+3869	in malloc.c
+3870	in malloc.c
+3871	in malloc.c
+3872	in malloc.c
+3878	in malloc.c
+3887	in malloc.c
+3732	in malloc.c
+3735	in malloc.c
+3736	in malloc.c
+3739	in malloc.c
+3749	in malloc.c
+3734	in malloc.c
+3749	in malloc.c
+3751	in malloc.c
+3750	in malloc.c
+3783	in malloc.c
+3778	in malloc.c
+3779	in malloc.c
+3783	in malloc.c
+3812	in malloc.c
+3820	in malloc.c
+3821	in malloc.c
+3822	in malloc.c
+3821	in malloc.c
+3825	in malloc.c
+3822	in malloc.c
+3825	in malloc.c
+3830	in malloc.c
+3828	in malloc.c
+3831	in malloc.c
+3843	in malloc.c
+3844	in malloc.c
+3850	in malloc.c
+3853	in malloc.c
+3861	in malloc.c
+3868	in malloc.c
+3877	in malloc.c
+3868	in malloc.c
+3878	in malloc.c
+3869	in malloc.c
+3870	in malloc.c
+3871	in malloc.c
+3872	in malloc.c
+3878	in malloc.c
+3887	in malloc.c
+3732	in malloc.c
+3893	in malloc.c
+3904	in malloc.c
+3977	in malloc.c
+3978	in malloc.c
+3979	in malloc.c
+3980	in malloc.c
+3981	in malloc.c
+3986	in malloc.c
+3990	in malloc.c
+3993	in malloc.c
+3990	in malloc.c
+3993	in malloc.c
+3990	in malloc.c
+3993	in malloc.c
+3995	in malloc.c
+3996	in malloc.c
+4000	in malloc.c
+4002	in malloc.c
+4004	in malloc.c
+4000	in malloc.c
+4002	in malloc.c
+4004	in malloc.c
+4000	in malloc.c
+4008	in malloc.c
+4011	in malloc.c
+4020	in malloc.c
+4023	in malloc.c
+4028	in malloc.c
+4025	in malloc.c
+4028	in malloc.c
+4031	in malloc.c
+4046	in malloc.c
+4041	in malloc.c
+4047	in malloc.c
+4055	in malloc.c
+4049	in malloc.c
+4050	in malloc.c
+4051	in malloc.c
+4052	in malloc.c
+4055	in malloc.c
+4056	in malloc.c
+4057	in malloc.c
+4059	in malloc.c
+4060	in malloc.c
+4062	in malloc.c
+4064	in malloc.c
+4065	in malloc.c
+4104	in malloc.c
+alloc_perturb (n=<optimized out>, p=<optimized out>) at malloc.c:1887
+1887	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=48) at malloc.c:4103
+4103	in malloc.c
+4104	in malloc.c
+alloc_perturb (n=48, p=0x55555575c960 "\260\022\273\367\377\177") at malloc.c:1887
+1887	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=48) at malloc.c:4131
+4131	in malloc.c
+__GI___libc_malloc (bytes=48) at malloc.c:3058
+3058	in malloc.c
+3057	in malloc.c
+3058	in malloc.c
+3081	in malloc.c
+init_relay () at /home/ryan/sailbot/sailbot-19/src/msg/relay.c:43
+43	    new_relay->channel_list = init_channel_list();
+init_channel_list () at /home/ryan/sailbot/sailbot-19/src/msg/channel_list.c:49
+49	    ChannelList* channel_list = (ChannelList*)malloc(sizeof(ChannelList));
+__GI___libc_malloc (bytes=64) at malloc.c:3028
+3028	malloc.c: No such file or directory.
+3033	in malloc.c
+3034	in malloc.c
+3039	in malloc.c
+3042	in malloc.c
+3040	in malloc.c
+3042	in malloc.c
+3045	in malloc.c
+3048	in malloc.c
+3050	in malloc.c
+tcache_get (tc_idx=3) at malloc.c:2941
+2941	in malloc.c
+2943	in malloc.c
+2944	in malloc.c
+__GI___libc_malloc (bytes=<optimized out>) at malloc.c:3081
+3081	in malloc.c
+init_channel_list () at /home/ryan/sailbot/sailbot-19/src/msg/channel_list.c:51
+51	    channel_list->channels = (Channel**)malloc(sizeof(Channel*) * INITIAL_CAPACITY);
+__GI___libc_malloc (bytes=128) at malloc.c:3028
+3028	malloc.c: No such file or directory.
+3033	in malloc.c
+3034	in malloc.c
+3039	in malloc.c
+3042	in malloc.c
+3040	in malloc.c
+3042	in malloc.c
+3045	in malloc.c
+3048	in malloc.c
+3050	in malloc.c
+tcache_get (tc_idx=7) at malloc.c:2941
+2941	in malloc.c
+2943	in malloc.c
+2944	in malloc.c
+__GI___libc_malloc (bytes=<optimized out>) at malloc.c:3081
+3081	in malloc.c
+init_channel_list () at /home/ryan/sailbot/sailbot-19/src/msg/channel_list.c:53
+53	    channel_list->size = 0;
+54	    channel_list->capacity = INITIAL_CAPACITY;
+56	    pthread_mutex_init(&channel_list->mutex, NULL);
+__GI___pthread_mutex_init (mutex=0x55555575b688, mutexattr=0x0) at pthread_mutex_init.c:58
+58	pthread_mutex_init.c: No such file or directory.
+77	in pthread_mutex_init.c
+101	in pthread_mutex_init.c
+157	in pthread_mutex_init.c
+159	in pthread_mutex_init.c
+160	in pthread_mutex_init.c
+init_channel_list () at /home/ryan/sailbot/sailbot-19/src/msg/channel_list.c:58
+58	    return channel_list;
+59	}
+init_relay () at /home/ryan/sailbot/sailbot-19/src/msg/relay.c:44
+44	    pthread_mutex_init(&new_relay->mutex, NULL);
+__GI___pthread_mutex_init (mutex=0x55555575c968, mutexattr=0x0) at pthread_mutex_init.c:58
+58	pthread_mutex_init.c: No such file or directory.
+77	in pthread_mutex_init.c
+101	in pthread_mutex_init.c
+157	in pthread_mutex_init.c
+159	in pthread_mutex_init.c
+160	in pthread_mutex_init.c
+init_relay () at /home/ryan/sailbot/sailbot-19/src/msg/relay.c:45
+45	    return new_relay;
+46	}
+test_subscribe_unsubscribe () at test_subscriber.c:137
+137	    Subscriber *test_subscriber = subscribe(test_relay, channel_name, test_callback);
+subscribe (relay=0x55555575c960, channel_name=0x55555555810d "test", callback=0x0)
+    at /home/ryan/sailbot/sailbot-19/src/msg/subscriber.c:18
+18	    Subscriber* new_sub = malloc(sizeof(Subscriber));
+__GI___libc_malloc (bytes=24) at malloc.c:3028
+3028	malloc.c: No such file or directory.
+3033	in malloc.c
+3034	in malloc.c
+3039	in malloc.c
+3042	in malloc.c
+3040	in malloc.c
+3042	in malloc.c
+3045	in malloc.c
+3048	in malloc.c
+3050	in malloc.c
+tcache_get (tc_idx=0) at malloc.c:2941
+2941	in malloc.c
+2943	in malloc.c
+2944	in malloc.c
+__GI___libc_malloc (bytes=<optimized out>) at malloc.c:3081
+3081	in malloc.c
+subscribe (relay=0x55555575c960, channel_name=0x55555555810d "test", callback=0x0)
+    at /home/ryan/sailbot/sailbot-19/src/msg/subscriber.c:20
+20	    new_sub->id = (char*)calloc((strlen(channel_name) + 6), sizeof(char));
+__strlen_avx2 () at ../sysdeps/x86_64/multiarch/strlen-avx2.S:52
+52	../sysdeps/x86_64/multiarch/strlen-avx2.S: No such file or directory.
+53	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+54	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+57	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+58	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+59	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+62	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+63	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+64	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+72	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+332	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+333	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+334	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+338	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+__strlen_avx2 () at ../sysdeps/x86_64/multiarch/strlen-avx2.S:339
+339	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+__libc_calloc (n=10, elem_size=1) at malloc.c:3379
+3379	malloc.c: No such file or directory.
+3366	in malloc.c
+3381	in malloc.c
+3366	in malloc.c
+3379	in malloc.c
+3366	in malloc.c
+3376	in malloc.c
+3366	in malloc.c
+3376	in malloc.c
+3381	in malloc.c
+3389	in malloc.c
+3390	in malloc.c
+3402	in malloc.c
+3404	in malloc.c
+3414	in malloc.c
+3415	in malloc.c
+3436	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=10) at malloc.c:3521
+3521	in malloc.c
+3553	in malloc.c
+3521	in malloc.c
+3553	in malloc.c
+3557	in malloc.c
+3581	in malloc.c
+3583	in malloc.c
+3586	in malloc.c
+3588	in malloc.c
+3590	in malloc.c
+3584	in malloc.c
+3590	in malloc.c
+3591	in malloc.c
+3596	in malloc.c
+3597	in malloc.c
+3604	in malloc.c
+3603	in malloc.c
+3604	in malloc.c
+3609	in malloc.c
+3610	in malloc.c
+3612	in malloc.c
+3613	in malloc.c
+3620	in malloc.c
+tcache_put (tc_idx=<optimized out>, chunk=0x55555575b6d0) at malloc.c:2929
+2929	in malloc.c
+2930	in malloc.c
+2928	in malloc.c
+2930	in malloc.c
+2928	in malloc.c
+2932	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=10) at malloc.c:3609
+3609	in malloc.c
+3683	in malloc.c
+alloc_perturb (n=<optimized out>, p=<optimized out>) at malloc.c:1887
+1887	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=10) at malloc.c:3682
+3682	in malloc.c
+3683	in malloc.c
+alloc_perturb (n=10, p=0x55555575fc70 "жuUUU") at malloc.c:1887
+1887	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=10) at malloc.c:4131
+4131	in malloc.c
+__libc_calloc (n=<optimized out>, elem_size=<optimized out>) at malloc.c:3438
+3438	in malloc.c
+3436	in malloc.c
+3438	in malloc.c
+3441	in malloc.c
+3469	in malloc.c
+3472	in malloc.c
+3458	in malloc.c
+3472	in malloc.c
+3483	in malloc.c
+3484	in malloc.c
+3485	in malloc.c
+3487	in malloc.c
+3495	in malloc.c
+3492	in malloc.c
+3493	in malloc.c
+3494	in malloc.c
+3495	in malloc.c
+3513	in malloc.c
+subscribe (relay=0x55555575c960, channel_name=0x55555555810d "test", callback=0x0)
+    at /home/ryan/sailbot/sailbot-19/src/msg/subscriber.c:21
+21	    sprintf(new_sub->id, "%s_%5f", channel_name, (double)clock());
+clock () at ../sysdeps/unix/sysv/linux/clock.c:25
+25	../sysdeps/unix/sysv/linux/clock.c: No such file or directory.
+34	in ../sysdeps/unix/sysv/linux/clock.c
+25	in ../sysdeps/unix/sysv/linux/clock.c
+34	in ../sysdeps/unix/sysv/linux/clock.c
+__GI___clock_gettime (clock_id=clock_id@entry=2, tp=tp@entry=0x7fffffffdc20) at ../sysdeps/unix/clock_gettime.c:93
+93	../sysdeps/unix/clock_gettime.c: No such file or directory.
+115	in ../sysdeps/unix/clock_gettime.c
+134	in ../sysdeps/unix/clock_gettime.c
+clock () at ../sysdeps/unix/sysv/linux/clock.c:38
+38	../sysdeps/unix/sysv/linux/clock.c: No such file or directory.
+37	in ../sysdeps/unix/sysv/linux/clock.c
+38	in ../sysdeps/unix/sysv/linux/clock.c
+39	in ../sysdeps/unix/sysv/linux/clock.c
+__sprintf (s=0x55555575fc70 "", format=0x5555555583ac "%s_%5f") at sprintf.c:27
+27	sprintf.c: No such file or directory.
+31	in sprintf.c
+32	in sprintf.c
+31	in sprintf.c
+32	in sprintf.c
+__IO_vsprintf (string=0x55555575fc70 "", format=0x5555555583ac "%s_%5f", args=args@entry=0x7fffffffdb70) at iovsprintf.c:32
+32	iovsprintf.c: No such file or directory.
+39	in iovsprintf.c
+32	in iovsprintf.c
+39	in iovsprintf.c
+32	in iovsprintf.c
+39	in iovsprintf.c
+37	in iovsprintf.c
+39	in iovsprintf.c
+32	in iovsprintf.c
+39	in iovsprintf.c
+_IO_no_init (fp=fp@entry=0x7fffffffda40, flags=flags@entry=32768, orientation=orientation@entry=-1, wd=wd@entry=0x0, 
+    jmp=jmp@entry=0x0) at genops.c:590
+590	genops.c: No such file or directory.
+591	in genops.c
+_IO_old_init (fp=fp@entry=0x7fffffffda40, flags=flags@entry=32768) at genops.c:561
+561	in genops.c
+559	in genops.c
+560	in genops.c
+559	in genops.c
+561	in genops.c
+577	in genops.c
+563	in genops.c
+564	in genops.c
+577	in genops.c
+582	in genops.c
+565	in genops.c
+566	in genops.c
+567	in genops.c
+568	in genops.c
+582	in genops.c
+569	in genops.c
+570	in genops.c
+571	in genops.c
+573	in genops.c
+574	in genops.c
+575	in genops.c
+576	in genops.c
+582	in genops.c
+585	in genops.c
+_IO_no_init (fp=fp@entry=0x7fffffffda40, flags=flags@entry=32768, orientation=orientation@entry=-1, wd=wd@entry=0x0, 
+    jmp=jmp@entry=0x0) at genops.c:593
+593	in genops.c
+592	in genops.c
+593	in genops.c
+613	in genops.c
+614	in genops.c
+615	in genops.c
+__IO_vsprintf (string=0x55555575fc70 "", format=0x5555555583ac "%s_%5f", args=args@entry=0x7fffffffdb70) at iovsprintf.c:40
+40	iovsprintf.c: No such file or directory.
+41	in iovsprintf.c
+40	in iovsprintf.c
+41	in iovsprintf.c
+_IO_str_init_static_internal (sf=sf@entry=0x7fffffffda40, ptr=ptr@entry=0x55555575fc70 "", size=size@entry=18446744073709551615, 
+    pstart=pstart@entry=0x55555575fc70 "") at strops.c:36
+36	strops.c: No such file or directory.
+40	in strops.c
+42	in strops.c
+43	in strops.c
+46	in strops.c
+__GI__IO_setb (f=f@entry=0x7fffffffda40, b=b@entry=0x55555575fc70 "", 
+    eb=eb@entry=0xffffffffffffffff <error: Cannot access memory at address 0xffffffffffffffff>, a=a@entry=0) at genops.c:347
+347	genops.c: No such file or directory.
+348	in genops.c
+351	in genops.c
+353	in genops.c
+350	in genops.c
+353	in genops.c
+356	in genops.c
+_IO_str_init_static_internal (sf=sf@entry=0x7fffffffda40, ptr=ptr@entry=0x55555575fc70 "", size=size@entry=18446744073709551615, 
+    pstart=pstart@entry=0x55555575fc70 "") at strops.c:51
+51	strops.c: No such file or directory.
+48	in strops.c
+49	in strops.c
+50	in strops.c
+51	in strops.c
+53	in strops.c
+54	in strops.c
+55	in strops.c
+64	in strops.c
+65	in strops.c
+__IO_vsprintf (string=0x55555575fc70 "", format=0x5555555583ac "%s_%5f", args=args@entry=0x7fffffffdb70) at iovsprintf.c:42
+42	iovsprintf.c: No such file or directory.
+_IO_vfprintf_internal (s=s@entry=0x7fffffffda40, format=format@entry=0x5555555583ac "%s_%5f", ap=ap@entry=0x7fffffffdb70)
+    at vfprintf.c:1244
+1244	vfprintf.c: No such file or directory.
+1275	in vfprintf.c
+1283	in vfprintf.c
+1287	in vfprintf.c
+1298	in vfprintf.c
+1309	in vfprintf.c
+1320	in vfprintf.c
+__find_specmb (format=<optimized out>) at printf-parse.h:108
+108	printf-parse.h: No such file or directory.
+_IO_vfprintf_internal (s=s@entry=0x7fffffffda40, format=format@entry=0x5555555583ac "%s_%5f", ap=ap@entry=0x7fffffffdb70)
+    at vfprintf.c:1309
+1309	vfprintf.c: No such file or directory.
+1320	in vfprintf.c
+__find_specmb (format=0x5555555583ac "%s_%5f") at printf-parse.h:108
+108	printf-parse.h: No such file or directory.
+__strchrnul_avx2 () at ../sysdeps/x86_64/multiarch/strchr-avx2.S:45
+45	../sysdeps/x86_64/multiarch/strchr-avx2.S: No such file or directory.
+47	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+48	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+49	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+51	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+52	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+53	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+74	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+75	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+76	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+77	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+78	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+79	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+80	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+82	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+83	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+84	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+86	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+87	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+89	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+96	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+__strchrnul_avx2 () at ../sysdeps/x86_64/multiarch/strchr-avx2.S:97
+97	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+_IO_vfprintf_internal (s=s@entry=0x7fffffffda40, format=format@entry=0x5555555583ac "%s_%5f", ap=ap@entry=0x7fffffffdb70)
+    at vfprintf.c:1324
+1324	vfprintf.c: No such file or directory.
+1320	in vfprintf.c
+__find_specmb (format=0x5555555583ac "%s_%5f") at printf-parse.h:108
+108	printf-parse.h: No such file or directory.
+_IO_vfprintf_internal (s=s@entry=0x7fffffffda40, format=format@entry=0x5555555583ac "%s_%5f", ap=ap@entry=0x7fffffffdb70)
+    at vfprintf.c:1324
+1324	vfprintf.c: No such file or directory.
+1328	in vfprintf.c
+IO_validate_vtable (vtable=0x7ffff7bad360 <_IO_str_jumps>) at ../libio/libioP.h:870
+870	../libio/libioP.h: No such file or directory.
+872	in ../libio/libioP.h
+870	in ../libio/libioP.h
+872	in ../libio/libioP.h
+870	in ../libio/libioP.h
+873	in ../libio/libioP.h
+_IO_vfprintf_internal (s=s@entry=0x7fffffffda40, format=format@entry=0x5555555583ac "%s_%5f", ap=ap@entry=0x7fffffffdb70)
+    at vfprintf.c:1328
+1328	vfprintf.c: No such file or directory.
+__GI__IO_default_xsputn (f=0x7fffffffda40, data=0x5555555583ac, n=0) at genops.c:392
+392	genops.c: No such file or directory.
+_IO_vfprintf_internal (s=s@entry=0x7fffffffda40, format=format@entry=0x5555555583ac "%s_%5f", ap=ap@entry=0x7fffffffdb70)
+    at vfprintf.c:1332
+1332	vfprintf.c: No such file or directory.
+1336	in vfprintf.c
+1279	in vfprintf.c
+1313	in vfprintf.c
+1305	in vfprintf.c
+1246	in vfprintf.c
+1378	in vfprintf.c
+1375	in vfprintf.c
+1370	in vfprintf.c
+1366	in vfprintf.c
+1365	in vfprintf.c
+1364	in vfprintf.c
+1363	in vfprintf.c
+1362	in vfprintf.c
+1361	in vfprintf.c
+1360	in vfprintf.c
+1375	in vfprintf.c
+1359	in vfprintf.c
+1358	in vfprintf.c
+1357	in vfprintf.c
+1371	in vfprintf.c
+1367	in vfprintf.c
+1375	in vfprintf.c
+1374	in vfprintf.c
+1643	in vfprintf.c
+__strlen_avx2 () at ../sysdeps/x86_64/multiarch/strlen-avx2.S:52
+52	../sysdeps/x86_64/multiarch/strlen-avx2.S: No such file or directory.
+53	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+54	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+57	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+58	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+59	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+62	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+63	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+64	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+72	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+332	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+333	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+334	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+338	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+__strlen_avx2 () at ../sysdeps/x86_64/multiarch/strlen-avx2.S:339
+339	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+IO_validate_vtable (vtable=0x7ffff7bad360 <_IO_str_jumps>) at ../libio/libioP.h:872
+872	../libio/libioP.h: No such file or directory.
+873	in ../libio/libioP.h
+_IO_vfprintf_internal (s=s@entry=0x7fffffffda40, format=format@entry=0x5555555583ac "%s_%5f", ap=ap@entry=0x7fffffffdb70)
+    at vfprintf.c:1643
+1643	vfprintf.c: No such file or directory.
+__GI__IO_default_xsputn (f=0x7fffffffda40, data=0x55555555810d, n=4) at genops.c:392
+392	genops.c: No such file or directory.
+389	in genops.c
+417	in genops.c
+IO_validate_vtable (vtable=<optimized out>) at libioP.h:870
+870	libioP.h: No such file or directory.
+__GI__IO_default_xsputn (f=0x7fffffffda40, data=0x55555555810d, n=4) at genops.c:389
+389	genops.c: No such file or directory.
+417	in genops.c
+IO_validate_vtable (vtable=<optimized out>) at libioP.h:870
+870	libioP.h: No such file or directory.
+__GI__IO_default_xsputn (f=0x7fffffffda40, data=0x55555555810d, n=4) at genops.c:389
+389	genops.c: No such file or directory.
+417	in genops.c
+IO_validate_vtable (vtable=<optimized out>) at libioP.h:870
+870	libioP.h: No such file or directory.
+__GI__IO_default_xsputn (f=0x7fffffffda40, data=<optimized out>, n=4) at genops.c:397
+397	genops.c: No such file or directory.
+399	in genops.c
+402	in genops.c
+407	in genops.c
+412	in genops.c
+411	in genops.c
+412	in genops.c
+411	in genops.c
+412	in genops.c
+411	in genops.c
+412	in genops.c
+411	in genops.c
+413	in genops.c
+415	in genops.c
+417	in genops.c
+422	in genops.c
+393	in genops.c
+422	in genops.c
+_IO_vfprintf_internal (s=s@entry=0x7fffffffda40, format=format@entry=0x5555555583ac "%s_%5f", ap=ap@entry=0x7fffffffdb70)
+    at vfprintf.c:1660
+1660	vfprintf.c: No such file or directory.
+1662	in vfprintf.c
+1670	in vfprintf.c
+__find_specmb (format=0x5555555583ae "_%5f") at printf-parse.h:108
+108	printf-parse.h: No such file or directory.
+__strchrnul_avx2 () at ../sysdeps/x86_64/multiarch/strchr-avx2.S:45
+45	../sysdeps/x86_64/multiarch/strchr-avx2.S: No such file or directory.
+47	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+48	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+49	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+51	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+52	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+53	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+74	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+75	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+76	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+77	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+78	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+79	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+80	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+82	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+83	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+84	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+86	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+87	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+89	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+96	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+__strchrnul_avx2 () at ../sysdeps/x86_64/multiarch/strchr-avx2.S:97
+97	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+_IO_vfprintf_internal (s=s@entry=0x7fffffffda40, format=format@entry=0x5555555583ac "%s_%5f", ap=ap@entry=0x7fffffffdb70)
+    at vfprintf.c:1674
+1674	vfprintf.c: No such file or directory.
+1670	in vfprintf.c
+__find_specmb (format=0x5555555583ae "_%5f") at printf-parse.h:108
+108	printf-parse.h: No such file or directory.
+_IO_vfprintf_internal (s=s@entry=0x7fffffffda40, format=format@entry=0x5555555583ac "%s_%5f", ap=ap@entry=0x7fffffffdb70)
+    at vfprintf.c:1674
+1674	vfprintf.c: No such file or directory.
+IO_validate_vtable (vtable=0x7ffff7bad360 <_IO_str_jumps>) at ../libio/libioP.h:872
+872	../libio/libioP.h: No such file or directory.
+873	in ../libio/libioP.h
+_IO_vfprintf_internal (s=s@entry=0x7fffffffda40, format=format@entry=0x5555555583ac "%s_%5f", ap=ap@entry=0x7fffffffdb70)
+    at vfprintf.c:1674
+1674	vfprintf.c: No such file or directory.
+__GI__IO_default_xsputn (f=0x7fffffffda40, data=0x5555555583ae, n=1) at genops.c:392
+392	genops.c: No such file or directory.
+389	in genops.c
+417	in genops.c
+IO_validate_vtable (vtable=<optimized out>) at libioP.h:870
+870	libioP.h: No such file or directory.
+__GI__IO_default_xsputn (f=0x7fffffffda40, data=0x5555555583ae, n=1) at genops.c:389
+389	genops.c: No such file or directory.
+417	in genops.c
+IO_validate_vtable (vtable=<optimized out>) at libioP.h:870
+870	libioP.h: No such file or directory.
+__GI__IO_default_xsputn (f=0x7fffffffda40, data=0x5555555583ae, n=1) at genops.c:389
+389	genops.c: No such file or directory.
+417	in genops.c
+IO_validate_vtable (vtable=<optimized out>) at libioP.h:870
+870	libioP.h: No such file or directory.
+__GI__IO_default_xsputn (f=0x7fffffffda40, data=<optimized out>, n=1) at genops.c:397
+397	genops.c: No such file or directory.
+399	in genops.c
+402	in genops.c
+407	in genops.c
+412	in genops.c
+411	in genops.c
+413	in genops.c
+415	in genops.c
+417	in genops.c
+422	in genops.c
+393	in genops.c
+422	in genops.c
+_IO_vfprintf_internal (s=s@entry=0x7fffffffda40, format=format@entry=0x5555555583ac "%s_%5f", ap=ap@entry=0x7fffffffdb70)
+    at vfprintf.c:1676
+1676	vfprintf.c: No such file or directory.
+1674	in vfprintf.c
+1676	in vfprintf.c
+1378	in vfprintf.c
+1375	in vfprintf.c
+1370	in vfprintf.c
+1366	in vfprintf.c
+1365	in vfprintf.c
+1364	in vfprintf.c
+1363	in vfprintf.c
+1362	in vfprintf.c
+1361	in vfprintf.c
+1360	in vfprintf.c
+1375	in vfprintf.c
+1359	in vfprintf.c
+1358	in vfprintf.c
+1357	in vfprintf.c
+1371	in vfprintf.c
+1367	in vfprintf.c
+1375	in vfprintf.c
+1374	in vfprintf.c
+1496	in vfprintf.c
+read_int (pstr=<synthetic pointer>) at printf-parse.h:73
+73	printf-parse.h: No such file or directory.
+85	in printf-parse.h
+73	in printf-parse.h
+75	in printf-parse.h
+_IO_vfprintf_internal (s=s@entry=0x7fffffffda40, format=format@entry=0x5555555583ac "%s_%5f", ap=ap@entry=0x7fffffffdb70)
+    at vfprintf.c:1498
+1498	vfprintf.c: No such file or directory.
+1506	in vfprintf.c
+1523	in vfprintf.c
+1526	in vfprintf.c
+1496	in vfprintf.c
+read_int (pstr=<optimized out>) at printf-parse.h:75
+75	printf-parse.h: No such file or directory.
+_IO_vfprintf_internal (s=s@entry=0x7fffffffda40, format=format@entry=0x5555555583ac "%s_%5f", ap=ap@entry=0x7fffffffdb70)
+    at vfprintf.c:1526
+1526	vfprintf.c: No such file or directory.
+___printf_fp (fp=fp@entry=0x7fffffffda40, info=info@entry=0x7fffffffd5a0, args=args@entry=0x7fffffffd580) at printf_fp.c:1272
+1272	printf_fp.c: No such file or directory.
+1271	in printf_fp.c
+1272	in printf_fp.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:213
+213	in printf_fp.c
+263	in printf_fp.c
+213	in printf_fp.c
+254	in printf_fp.c
+270	in printf_fp.c
+263	in printf_fp.c
+273	in printf_fp.c
+263	in printf_fp.c
+273	in printf_fp.c
+263	in printf_fp.c
+273	in printf_fp.c
+275	in printf_fp.c
+_nl_lookup (item=65536, category=1, l=0x7ffff7bb1560 <_nl_global_locale>) at ../include/../locale/localeinfo.h:309
+309	../include/../locale/localeinfo.h: No such file or directory.
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:294
+294	printf_fp.c: No such file or directory.
+275	in printf_fp.c
+_nl_lookup (item=65536, category=1, l=0x7ffff7bb1560 <_nl_global_locale>) at ../include/../locale/localeinfo.h:309
+309	../include/../locale/localeinfo.h: No such file or directory.
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:276
+276	printf_fp.c: No such file or directory.
+294	in printf_fp.c
+302	in printf_fp.c
+231	in printf_fp.c
+230	in printf_fp.c
+383	in printf_fp.c
+388	in printf_fp.c
+392	in printf_fp.c
+__mpn_extract_double (res_ptr=res_ptr@entry=0x7fffffffd450, size=size@entry=2, expt=expt@entry=0x7fffffffd418, 
+    is_neg=is_neg@entry=0x7fffffffd40c, value=69535) at ../sysdeps/ieee754/dbl-64/dbl2mpn.c:37
+37	../sysdeps/ieee754/dbl-64/dbl2mpn.c: No such file or directory.
+35	in ../sysdeps/ieee754/dbl-64/dbl2mpn.c
+37	in ../sysdeps/ieee754/dbl-64/dbl2mpn.c
+38	in ../sysdeps/ieee754/dbl-64/dbl2mpn.c
+47	in ../sysdeps/ieee754/dbl-64/dbl2mpn.c
+56	in ../sysdeps/ieee754/dbl-64/dbl2mpn.c
+38	in ../sysdeps/ieee754/dbl-64/dbl2mpn.c
+56	in ../sysdeps/ieee754/dbl-64/dbl2mpn.c
+38	in ../sysdeps/ieee754/dbl-64/dbl2mpn.c
+47	in ../sysdeps/ieee754/dbl-64/dbl2mpn.c
+56	in ../sysdeps/ieee754/dbl-64/dbl2mpn.c
+103	in ../sysdeps/ieee754/dbl-64/dbl2mpn.c
+107	in ../sysdeps/ieee754/dbl-64/dbl2mpn.c
+103	in ../sysdeps/ieee754/dbl-64/dbl2mpn.c
+107	in ../sysdeps/ieee754/dbl-64/dbl2mpn.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:428
+428	printf_fp.c: No such file or directory.
+441	in printf_fp.c
+428	in printf_fp.c
+429	in printf_fp.c
+430	in printf_fp.c
+433	in printf_fp.c
+434	in printf_fp.c
+435	in printf_fp.c
+433	in printf_fp.c
+434	in printf_fp.c
+433	in printf_fp.c
+435	in printf_fp.c
+442	in printf_fp.c
+434	in printf_fp.c
+435	in printf_fp.c
+442	in printf_fp.c
+459	in printf_fp.c
+470	in printf_fp.c
+468	in printf_fp.c
+470	in printf_fp.c
+467	in printf_fp.c
+470	in printf_fp.c
+467	in printf_fp.c
+470	in printf_fp.c
+467	in printf_fp.c
+__mpn_lshift () at ../sysdeps/x86_64/lshift.S:29
+29	../sysdeps/x86_64/lshift.S: No such file or directory.
+30	in ../sysdeps/x86_64/lshift.S
+32	in ../sysdeps/x86_64/lshift.S
+33	in ../sysdeps/x86_64/lshift.S
+34	in ../sysdeps/x86_64/lshift.S
+46	in ../sysdeps/x86_64/lshift.S
+47	in ../sysdeps/x86_64/lshift.S
+48	in ../sysdeps/x86_64/lshift.S
+49	in ../sysdeps/x86_64/lshift.S
+50	in ../sysdeps/x86_64/lshift.S
+51	in ../sysdeps/x86_64/lshift.S
+52	in ../sysdeps/x86_64/lshift.S
+58	in ../sysdeps/x86_64/lshift.S
+59	in ../sysdeps/x86_64/lshift.S
+__mpn_lshift () at ../sysdeps/x86_64/lshift.S:60
+60	in ../sysdeps/x86_64/lshift.S
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:471
+471	printf_fp.c: No such file or directory.
+472	in printf_fp.c
+471	in printf_fp.c
+472	in printf_fp.c
+473	in printf_fp.c
+475	in printf_fp.c
+456	in printf_fp.c
+455	in printf_fp.c
+445	in printf_fp.c
+537	in printf_fp.c
+480	in printf_fp.c
+484	in printf_fp.c
+556	in printf_fp.c
+558	in printf_fp.c
+480	in printf_fp.c
+484	in printf_fp.c
+556	in printf_fp.c
+558	in printf_fp.c
+480	in printf_fp.c
+484	in printf_fp.c
+556	in printf_fp.c
+558	in printf_fp.c
+480	in printf_fp.c
+484	in printf_fp.c
+556	in printf_fp.c
+558	in printf_fp.c
+480	in printf_fp.c
+484	in printf_fp.c
+556	in printf_fp.c
+558	in printf_fp.c
+480	in printf_fp.c
+484	in printf_fp.c
+556	in printf_fp.c
+558	in printf_fp.c
+480	in printf_fp.c
+484	in printf_fp.c
+556	in printf_fp.c
+558	in printf_fp.c
+480	in printf_fp.c
+484	in printf_fp.c
+556	in printf_fp.c
+558	in printf_fp.c
+480	in printf_fp.c
+484	in printf_fp.c
+556	in printf_fp.c
+558	in printf_fp.c
+480	in printf_fp.c
+484	in printf_fp.c
+556	in printf_fp.c
+558	in printf_fp.c
+480	in printf_fp.c
+484	in printf_fp.c
+486	in printf_fp.c
+489	in printf_fp.c
+531	in printf_fp.c
+530	in printf_fp.c
+531	in printf_fp.c
+530	in printf_fp.c
+531	in printf_fp.c
+__memmove_avx_unaligned_erms () at ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:217
+217	../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S: No such file or directory.
+219	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+220	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+264	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+265	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+291	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+292	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+293	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+294	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+__memmove_avx_unaligned_erms () at ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:295
+295	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:547
+547	printf_fp.c: No such file or directory.
+__mpn_cmp (op1_ptr=0x7fffffffd310, op2_ptr=0x7fffffffd2d0, size=2) at cmp.c:35
+35	cmp.c: No such file or directory.
+37	in cmp.c
+38	in cmp.c
+39	in cmp.c
+47	in cmp.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:550
+550	printf_fp.c: No such file or directory.
+__memmove_avx_unaligned_erms () at ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:217
+217	../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S: No such file or directory.
+219	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+220	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+264	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+265	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+291	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+292	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+293	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+294	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+__memmove_avx_unaligned_erms () at ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:295
+295	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:551
+551	printf_fp.c: No such file or directory.
+552	in printf_fp.c
+553	in printf_fp.c
+556	in printf_fp.c
+551	in printf_fp.c
+552	in printf_fp.c
+553	in printf_fp.c
+558	in printf_fp.c
+480	in printf_fp.c
+484	in printf_fp.c
+486	in printf_fp.c
+537	in printf_fp.c
+539	in printf_fp.c
+537	in printf_fp.c
+__mpn_mul (prodp=0x7fffffffd2d0, up=0x7fffffffd290, usize=2, vp=0x7ffff796efb8 <__tens+24>, vsize=1) at mul.c:48
+48	mul.c: No such file or directory.
+54	in mul.c
+66	in mul.c
+71	in mul.c
+72	in mul.c
+81	in mul.c
+__mpn_mul_1 () at ../sysdeps/x86_64/mul_1.S:32
+32	../sysdeps/x86_64/mul_1.S: No such file or directory.
+35	in ../sysdeps/x86_64/mul_1.S
+36	in ../sysdeps/x86_64/mul_1.S
+37	in ../sysdeps/x86_64/mul_1.S
+38	in ../sysdeps/x86_64/mul_1.S
+39	in ../sysdeps/x86_64/mul_1.S
+41	in ../sysdeps/x86_64/mul_1.S
+42	in ../sysdeps/x86_64/mul_1.S
+44	in ../sysdeps/x86_64/mul_1.S
+45	in ../sysdeps/x86_64/mul_1.S
+46	in ../sysdeps/x86_64/mul_1.S
+47	in ../sysdeps/x86_64/mul_1.S
+79	in ../sysdeps/x86_64/mul_1.S
+80	in ../sysdeps/x86_64/mul_1.S
+81	in ../sysdeps/x86_64/mul_1.S
+82	in ../sysdeps/x86_64/mul_1.S
+83	in ../sysdeps/x86_64/mul_1.S
+84	in ../sysdeps/x86_64/mul_1.S
+85	in ../sysdeps/x86_64/mul_1.S
+86	in ../sysdeps/x86_64/mul_1.S
+87	in ../sysdeps/x86_64/mul_1.S
+113	in ../sysdeps/x86_64/mul_1.S
+114	in ../sysdeps/x86_64/mul_1.S
+115	in ../sysdeps/x86_64/mul_1.S
+117	in ../sysdeps/x86_64/mul_1.S
+118	in ../sysdeps/x86_64/mul_1.S
+119	in ../sysdeps/x86_64/mul_1.S
+120	in ../sysdeps/x86_64/mul_1.S
+121	in ../sysdeps/x86_64/mul_1.S
+122	in ../sysdeps/x86_64/mul_1.S
+124	in ../sysdeps/x86_64/mul_1.S
+__mpn_mul_1 () at ../sysdeps/x86_64/mul_1.S:127
+127	in ../sysdeps/x86_64/mul_1.S
+__mpn_mul (prodp=0x7fffffffd2d0, up=0x7fffffffd290, usize=2, vp=0x7ffff796efb8 <__tens+24>, vsize=1) at mul.c:83
+83	mul.c: No such file or directory.
+88	in mul.c
+83	in mul.c
+84	in mul.c
+88	in mul.c
+142	in mul.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:541
+541	printf_fp.c: No such file or directory.
+543	in printf_fp.c
+544	in printf_fp.c
+547	in printf_fp.c
+__mpn_cmp (op1_ptr=0x7fffffffd310, op2_ptr=0x7fffffffd2d0, size=2) at cmp.c:35
+35	cmp.c: No such file or directory.
+37	in cmp.c
+38	in cmp.c
+39	in cmp.c
+47	in cmp.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:556
+556	printf_fp.c: No such file or directory.
+558	in printf_fp.c
+480	in printf_fp.c
+484	in printf_fp.c
+486	in printf_fp.c
+537	in printf_fp.c
+539	in printf_fp.c
+537	in printf_fp.c
+__mpn_mul (prodp=0x7fffffffd2d0, up=0x7fffffffd290, usize=2, vp=0x7ffff796efa8 <__tens+8>, vsize=1) at mul.c:48
+48	mul.c: No such file or directory.
+54	in mul.c
+66	in mul.c
+71	in mul.c
+72	in mul.c
+81	in mul.c
+__mpn_mul_1 () at ../sysdeps/x86_64/mul_1.S:32
+32	../sysdeps/x86_64/mul_1.S: No such file or directory.
+35	in ../sysdeps/x86_64/mul_1.S
+36	in ../sysdeps/x86_64/mul_1.S
+37	in ../sysdeps/x86_64/mul_1.S
+38	in ../sysdeps/x86_64/mul_1.S
+39	in ../sysdeps/x86_64/mul_1.S
+41	in ../sysdeps/x86_64/mul_1.S
+42	in ../sysdeps/x86_64/mul_1.S
+44	in ../sysdeps/x86_64/mul_1.S
+45	in ../sysdeps/x86_64/mul_1.S
+46	in ../sysdeps/x86_64/mul_1.S
+47	in ../sysdeps/x86_64/mul_1.S
+79	in ../sysdeps/x86_64/mul_1.S
+80	in ../sysdeps/x86_64/mul_1.S
+81	in ../sysdeps/x86_64/mul_1.S
+82	in ../sysdeps/x86_64/mul_1.S
+83	in ../sysdeps/x86_64/mul_1.S
+84	in ../sysdeps/x86_64/mul_1.S
+85	in ../sysdeps/x86_64/mul_1.S
+86	in ../sysdeps/x86_64/mul_1.S
+87	in ../sysdeps/x86_64/mul_1.S
+113	in ../sysdeps/x86_64/mul_1.S
+114	in ../sysdeps/x86_64/mul_1.S
+115	in ../sysdeps/x86_64/mul_1.S
+117	in ../sysdeps/x86_64/mul_1.S
+118	in ../sysdeps/x86_64/mul_1.S
+119	in ../sysdeps/x86_64/mul_1.S
+120	in ../sysdeps/x86_64/mul_1.S
+121	in ../sysdeps/x86_64/mul_1.S
+122	in ../sysdeps/x86_64/mul_1.S
+124	in ../sysdeps/x86_64/mul_1.S
+__mpn_mul_1 () at ../sysdeps/x86_64/mul_1.S:127
+127	in ../sysdeps/x86_64/mul_1.S
+__mpn_mul (prodp=0x7fffffffd2d0, up=0x7fffffffd290, usize=2, vp=0x7ffff796efa8 <__tens+8>, vsize=1) at mul.c:83
+83	mul.c: No such file or directory.
+88	in mul.c
+83	in mul.c
+84	in mul.c
+88	in mul.c
+142	in mul.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:541
+541	printf_fp.c: No such file or directory.
+543	in printf_fp.c
+544	in printf_fp.c
+547	in printf_fp.c
+__mpn_cmp (op1_ptr=0x7fffffffd310, op2_ptr=0x7fffffffd2d0, size=2) at cmp.c:35
+35	cmp.c: No such file or directory.
+37	in cmp.c
+38	in cmp.c
+39	in cmp.c
+47	in cmp.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:556
+556	printf_fp.c: No such file or directory.
+558	in printf_fp.c
+559	in printf_fp.c
+565	in printf_fp.c
+559	in printf_fp.c
+565	in printf_fp.c
+569	in printf_fp.c
+573	in printf_fp.c
+575	in printf_fp.c
+573	in printf_fp.c
+575	in printf_fp.c
+592	in printf_fp.c
+591	in printf_fp.c
+592	in printf_fp.c
+595	in printf_fp.c
+604	in printf_fp.c
+614	in printf_fp.c
+632	in printf_fp.c
+633	in printf_fp.c
+632	in printf_fp.c
+633	in printf_fp.c
+632	in printf_fp.c
+__mpn_rshift () at ../sysdeps/x86_64/rshift.S:29
+29	../sysdeps/x86_64/rshift.S: No such file or directory.
+30	in ../sysdeps/x86_64/rshift.S
+31	in ../sysdeps/x86_64/rshift.S
+44	in ../sysdeps/x86_64/rshift.S
+45	in ../sysdeps/x86_64/rshift.S
+61	in ../sysdeps/x86_64/rshift.S
+62	in ../sysdeps/x86_64/rshift.S
+63	in ../sysdeps/x86_64/rshift.S
+64	in ../sysdeps/x86_64/rshift.S
+65	in ../sysdeps/x86_64/rshift.S
+66	in ../sysdeps/x86_64/rshift.S
+67	in ../sysdeps/x86_64/rshift.S
+72	in ../sysdeps/x86_64/rshift.S
+73	in ../sysdeps/x86_64/rshift.S
+74	in ../sysdeps/x86_64/rshift.S
+75	in ../sysdeps/x86_64/rshift.S
+__mpn_rshift () at ../sysdeps/x86_64/rshift.S:76
+76	in ../sysdeps/x86_64/rshift.S
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:636
+636	printf_fp.c: No such file or directory.
+635	in printf_fp.c
+636	in printf_fp.c
+__mpn_rshift () at ../sysdeps/x86_64/rshift.S:29
+29	../sysdeps/x86_64/rshift.S: No such file or directory.
+30	in ../sysdeps/x86_64/rshift.S
+31	in ../sysdeps/x86_64/rshift.S
+44	in ../sysdeps/x86_64/rshift.S
+45	in ../sysdeps/x86_64/rshift.S
+61	in ../sysdeps/x86_64/rshift.S
+62	in ../sysdeps/x86_64/rshift.S
+63	in ../sysdeps/x86_64/rshift.S
+64	in ../sysdeps/x86_64/rshift.S
+65	in ../sysdeps/x86_64/rshift.S
+66	in ../sysdeps/x86_64/rshift.S
+67	in ../sysdeps/x86_64/rshift.S
+72	in ../sysdeps/x86_64/rshift.S
+73	in ../sysdeps/x86_64/rshift.S
+74	in ../sysdeps/x86_64/rshift.S
+75	in ../sysdeps/x86_64/rshift.S
+__mpn_rshift () at ../sysdeps/x86_64/rshift.S:76
+76	in ../sysdeps/x86_64/rshift.S
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:639
+639	printf_fp.c: No such file or directory.
+640	in printf_fp.c
+639	in printf_fp.c
+827	in printf_fp.c
+837	in printf_fp.c
+827	in printf_fp.c
+837	in printf_fp.c
+839	in printf_fp.c
+837	in printf_fp.c
+839	in printf_fp.c
+849	in printf_fp.c
+852	in printf_fp.c
+851	in printf_fp.c
+852	in printf_fp.c
+852	in printf_fp.c
+855	in printf_fp.c
+857	in printf_fp.c
+854	in printf_fp.c
+853	in printf_fp.c
+857	in printf_fp.c
+859	in printf_fp.c
+852	in printf_fp.c
+857	in printf_fp.c
+852	in printf_fp.c
+897	in printf_fp.c
+836	in printf_fp.c
+897	in printf_fp.c
+911	in printf_fp.c
+912	in printf_fp.c
+911	in printf_fp.c
+918	in printf_fp.c
+919	in printf_fp.c
+__libc_use_alloca (size=56) at ../sysdeps/pthread/allocalim.h:27
+27	../sysdeps/pthread/allocalim.h: No such file or directory.
+__GI___libc_alloca_cutoff (size=size@entry=56) at alloca_cutoff.c:28
+28	alloca_cutoff.c: No such file or directory.
+35	in alloca_cutoff.c
+__libc_use_alloca (size=56) at ../sysdeps/pthread/allocalim.h:29
+29	../sysdeps/pthread/allocalim.h: No such file or directory.
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:928
+928	printf_fp.c: No such file or directory.
+932	in printf_fp.c
+929	in printf_fp.c
+932	in printf_fp.c
+935	in printf_fp.c
+938	in printf_fp.c
+hack_digit (p=0x7fffffffd410) at printf_fp.c:167
+167	in printf_fp.c
+170	in printf_fp.c
+172	in printf_fp.c
+180	in printf_fp.c
+184	in printf_fp.c
+__mpn_divrem (qp=0x7fffffffd2d0, qextra_limbs=qextra_limbs@entry=0, np=0x7fffffffd310, nsize=2, dp=0x7fffffffd290, dsize=1)
+    at divrem.c:46
+46	divrem.c: No such file or directory.
+49	in divrem.c
+62	in divrem.c
+63	in divrem.c
+47	in divrem.c
+65	in divrem.c
+72	in divrem.c
+73	in divrem.c
+72	in divrem.c
+73	in divrem.c
+72	in divrem.c
+76	in divrem.c
+79	in divrem.c
+81	in divrem.c
+234	in divrem.c
+hack_digit (p=0x7fffffffd410) at printf_fp.c:186
+186	printf_fp.c: No such file or directory.
+189	in printf_fp.c
+187	in printf_fp.c
+190	in printf_fp.c
+189	in printf_fp.c
+190	in printf_fp.c
+201	in printf_fp.c
+__mpn_mul_1 () at ../sysdeps/x86_64/mul_1.S:32
+32	../sysdeps/x86_64/mul_1.S: No such file or directory.
+35	in ../sysdeps/x86_64/mul_1.S
+36	in ../sysdeps/x86_64/mul_1.S
+37	in ../sysdeps/x86_64/mul_1.S
+38	in ../sysdeps/x86_64/mul_1.S
+39	in ../sysdeps/x86_64/mul_1.S
+41	in ../sysdeps/x86_64/mul_1.S
+42	in ../sysdeps/x86_64/mul_1.S
+44	in ../sysdeps/x86_64/mul_1.S
+45	in ../sysdeps/x86_64/mul_1.S
+46	in ../sysdeps/x86_64/mul_1.S
+47	in ../sysdeps/x86_64/mul_1.S
+48	in ../sysdeps/x86_64/mul_1.S
+50	in ../sysdeps/x86_64/mul_1.S
+51	in ../sysdeps/x86_64/mul_1.S
+52	in ../sysdeps/x86_64/mul_1.S
+53	in ../sysdeps/x86_64/mul_1.S
+122	in ../sysdeps/x86_64/mul_1.S
+124	in ../sysdeps/x86_64/mul_1.S
+__mpn_mul_1 () at ../sysdeps/x86_64/mul_1.S:127
+127	in ../sysdeps/x86_64/mul_1.S
+hack_digit (p=0x7fffffffd410) at printf_fp.c:202
+202	printf_fp.c: No such file or directory.
+203	in printf_fp.c
+207	in printf_fp.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:935
+935	in printf_fp.c
+938	in printf_fp.c
+hack_digit (p=0x7fffffffd410) at printf_fp.c:167
+167	in printf_fp.c
+170	in printf_fp.c
+172	in printf_fp.c
+180	in printf_fp.c
+184	in printf_fp.c
+__mpn_divrem (qp=0x7fffffffd2d0, qextra_limbs=qextra_limbs@entry=0, np=0x7fffffffd310, nsize=2, dp=0x7fffffffd290, dsize=1)
+    at divrem.c:46
+46	divrem.c: No such file or directory.
+49	in divrem.c
+62	in divrem.c
+63	in divrem.c
+47	in divrem.c
+65	in divrem.c
+72	in divrem.c
+73	in divrem.c
+72	in divrem.c
+73	in divrem.c
+72	in divrem.c
+76	in divrem.c
+79	in divrem.c
+81	in divrem.c
+234	in divrem.c
+hack_digit (p=0x7fffffffd410) at printf_fp.c:186
+186	printf_fp.c: No such file or directory.
+189	in printf_fp.c
+187	in printf_fp.c
+190	in printf_fp.c
+189	in printf_fp.c
+190	in printf_fp.c
+201	in printf_fp.c
+__mpn_mul_1 () at ../sysdeps/x86_64/mul_1.S:32
+32	../sysdeps/x86_64/mul_1.S: No such file or directory.
+35	in ../sysdeps/x86_64/mul_1.S
+36	in ../sysdeps/x86_64/mul_1.S
+37	in ../sysdeps/x86_64/mul_1.S
+38	in ../sysdeps/x86_64/mul_1.S
+39	in ../sysdeps/x86_64/mul_1.S
+41	in ../sysdeps/x86_64/mul_1.S
+42	in ../sysdeps/x86_64/mul_1.S
+44	in ../sysdeps/x86_64/mul_1.S
+45	in ../sysdeps/x86_64/mul_1.S
+46	in ../sysdeps/x86_64/mul_1.S
+47	in ../sysdeps/x86_64/mul_1.S
+48	in ../sysdeps/x86_64/mul_1.S
+50	in ../sysdeps/x86_64/mul_1.S
+51	in ../sysdeps/x86_64/mul_1.S
+52	in ../sysdeps/x86_64/mul_1.S
+53	in ../sysdeps/x86_64/mul_1.S
+122	in ../sysdeps/x86_64/mul_1.S
+124	in ../sysdeps/x86_64/mul_1.S
+__mpn_mul_1 () at ../sysdeps/x86_64/mul_1.S:127
+127	in ../sysdeps/x86_64/mul_1.S
+hack_digit (p=0x7fffffffd410) at printf_fp.c:202
+202	printf_fp.c: No such file or directory.
+203	in printf_fp.c
+207	in printf_fp.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:935
+935	in printf_fp.c
+938	in printf_fp.c
+hack_digit (p=0x7fffffffd410) at printf_fp.c:167
+167	in printf_fp.c
+170	in printf_fp.c
+172	in printf_fp.c
+180	in printf_fp.c
+184	in printf_fp.c
+__mpn_divrem (qp=0x7fffffffd2d0, qextra_limbs=qextra_limbs@entry=0, np=0x7fffffffd310, nsize=2, dp=0x7fffffffd290, dsize=1)
+    at divrem.c:46
+46	divrem.c: No such file or directory.
+49	in divrem.c
+62	in divrem.c
+63	in divrem.c
+47	in divrem.c
+65	in divrem.c
+72	in divrem.c
+73	in divrem.c
+72	in divrem.c
+73	in divrem.c
+72	in divrem.c
+76	in divrem.c
+79	in divrem.c
+81	in divrem.c
+234	in divrem.c
+hack_digit (p=0x7fffffffd410) at printf_fp.c:186
+186	printf_fp.c: No such file or directory.
+189	in printf_fp.c
+187	in printf_fp.c
+190	in printf_fp.c
+189	in printf_fp.c
+190	in printf_fp.c
+201	in printf_fp.c
+__mpn_mul_1 () at ../sysdeps/x86_64/mul_1.S:32
+32	../sysdeps/x86_64/mul_1.S: No such file or directory.
+35	in ../sysdeps/x86_64/mul_1.S
+36	in ../sysdeps/x86_64/mul_1.S
+37	in ../sysdeps/x86_64/mul_1.S
+38	in ../sysdeps/x86_64/mul_1.S
+39	in ../sysdeps/x86_64/mul_1.S
+41	in ../sysdeps/x86_64/mul_1.S
+42	in ../sysdeps/x86_64/mul_1.S
+44	in ../sysdeps/x86_64/mul_1.S
+45	in ../sysdeps/x86_64/mul_1.S
+46	in ../sysdeps/x86_64/mul_1.S
+47	in ../sysdeps/x86_64/mul_1.S
+48	in ../sysdeps/x86_64/mul_1.S
+50	in ../sysdeps/x86_64/mul_1.S
+51	in ../sysdeps/x86_64/mul_1.S
+52	in ../sysdeps/x86_64/mul_1.S
+53	in ../sysdeps/x86_64/mul_1.S
+122	in ../sysdeps/x86_64/mul_1.S
+124	in ../sysdeps/x86_64/mul_1.S
+__mpn_mul_1 () at ../sysdeps/x86_64/mul_1.S:127
+127	in ../sysdeps/x86_64/mul_1.S
+hack_digit (p=0x7fffffffd410) at printf_fp.c:202
+202	printf_fp.c: No such file or directory.
+203	in printf_fp.c
+207	in printf_fp.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:935
+935	in printf_fp.c
+938	in printf_fp.c
+hack_digit (p=0x7fffffffd410) at printf_fp.c:167
+167	in printf_fp.c
+170	in printf_fp.c
+172	in printf_fp.c
+180	in printf_fp.c
+184	in printf_fp.c
+__mpn_divrem (qp=0x7fffffffd2d0, qextra_limbs=qextra_limbs@entry=0, np=0x7fffffffd310, nsize=2, dp=0x7fffffffd290, dsize=1)
+    at divrem.c:46
+46	divrem.c: No such file or directory.
+49	in divrem.c
+62	in divrem.c
+63	in divrem.c
+47	in divrem.c
+65	in divrem.c
+72	in divrem.c
+73	in divrem.c
+72	in divrem.c
+73	in divrem.c
+72	in divrem.c
+76	in divrem.c
+79	in divrem.c
+81	in divrem.c
+234	in divrem.c
+hack_digit (p=0x7fffffffd410) at printf_fp.c:186
+186	printf_fp.c: No such file or directory.
+189	in printf_fp.c
+187	in printf_fp.c
+190	in printf_fp.c
+189	in printf_fp.c
+190	in printf_fp.c
+201	in printf_fp.c
+__mpn_mul_1 () at ../sysdeps/x86_64/mul_1.S:32
+32	../sysdeps/x86_64/mul_1.S: No such file or directory.
+35	in ../sysdeps/x86_64/mul_1.S
+36	in ../sysdeps/x86_64/mul_1.S
+37	in ../sysdeps/x86_64/mul_1.S
+38	in ../sysdeps/x86_64/mul_1.S
+39	in ../sysdeps/x86_64/mul_1.S
+41	in ../sysdeps/x86_64/mul_1.S
+42	in ../sysdeps/x86_64/mul_1.S
+44	in ../sysdeps/x86_64/mul_1.S
+45	in ../sysdeps/x86_64/mul_1.S
+46	in ../sysdeps/x86_64/mul_1.S
+47	in ../sysdeps/x86_64/mul_1.S
+48	in ../sysdeps/x86_64/mul_1.S
+50	in ../sysdeps/x86_64/mul_1.S
+51	in ../sysdeps/x86_64/mul_1.S
+52	in ../sysdeps/x86_64/mul_1.S
+53	in ../sysdeps/x86_64/mul_1.S
+122	in ../sysdeps/x86_64/mul_1.S
+124	in ../sysdeps/x86_64/mul_1.S
+__mpn_mul_1 () at ../sysdeps/x86_64/mul_1.S:127
+127	in ../sysdeps/x86_64/mul_1.S
+hack_digit (p=0x7fffffffd410) at printf_fp.c:202
+202	printf_fp.c: No such file or directory.
+203	in printf_fp.c
+207	in printf_fp.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:935
+935	in printf_fp.c
+938	in printf_fp.c
+hack_digit (p=0x7fffffffd410) at printf_fp.c:167
+167	in printf_fp.c
+170	in printf_fp.c
+172	in printf_fp.c
+180	in printf_fp.c
+184	in printf_fp.c
+__mpn_divrem (qp=0x7fffffffd2d0, qextra_limbs=qextra_limbs@entry=0, np=0x7fffffffd310, nsize=2, dp=0x7fffffffd290, dsize=1)
+    at divrem.c:46
+46	divrem.c: No such file or directory.
+49	in divrem.c
+62	in divrem.c
+63	in divrem.c
+47	in divrem.c
+65	in divrem.c
+72	in divrem.c
+73	in divrem.c
+72	in divrem.c
+73	in divrem.c
+72	in divrem.c
+76	in divrem.c
+79	in divrem.c
+81	in divrem.c
+234	in divrem.c
+hack_digit (p=0x7fffffffd410) at printf_fp.c:186
+186	printf_fp.c: No such file or directory.
+189	in printf_fp.c
+187	in printf_fp.c
+190	in printf_fp.c
+189	in printf_fp.c
+190	in printf_fp.c
+191	in printf_fp.c
+190	in printf_fp.c
+196	in printf_fp.c
+207	in printf_fp.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:935
+935	in printf_fp.c
+942	in printf_fp.c
+944	in printf_fp.c
+940	in printf_fp.c
+944	in printf_fp.c
+957	in printf_fp.c
+956	in printf_fp.c
+958	in printf_fp.c
+962	in printf_fp.c
+hack_digit (p=<optimized out>) at printf_fp.c:170
+170	in printf_fp.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:961
+961	in printf_fp.c
+962	in printf_fp.c
+hack_digit (p=0x7fffffffd410) at printf_fp.c:170
+170	in printf_fp.c
+172	in printf_fp.c
+180	in printf_fp.c
+184	in printf_fp.c
+__mpn_divrem (qp=0x7fffffffd2d0, qextra_limbs=qextra_limbs@entry=0, np=0x7fffffffd310, nsize=1, dp=0x7fffffffd290, dsize=1)
+    at divrem.c:46
+46	divrem.c: No such file or directory.
+49	in divrem.c
+62	in divrem.c
+63	in divrem.c
+47	in divrem.c
+65	in divrem.c
+72	in divrem.c
+76	in divrem.c
+79	in divrem.c
+81	in divrem.c
+234	in divrem.c
+hack_digit (p=0x7fffffffd410) at printf_fp.c:186
+186	printf_fp.c: No such file or directory.
+189	in printf_fp.c
+187	in printf_fp.c
+190	in printf_fp.c
+189	in printf_fp.c
+190	in printf_fp.c
+191	in printf_fp.c
+190	in printf_fp.c
+196	in printf_fp.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:962
+962	in printf_fp.c
+963	in printf_fp.c
+965	in printf_fp.c
+958	in printf_fp.c
+962	in printf_fp.c
+hack_digit (p=<optimized out>) at printf_fp.c:170
+170	in printf_fp.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:961
+961	in printf_fp.c
+962	in printf_fp.c
+hack_digit (p=0x7fffffffd410) at printf_fp.c:170
+170	in printf_fp.c
+172	in printf_fp.c
+180	in printf_fp.c
+184	in printf_fp.c
+__mpn_divrem (qp=0x7fffffffd2d0, qextra_limbs=qextra_limbs@entry=0, np=0x7fffffffd310, nsize=1, dp=0x7fffffffd290, dsize=1)
+    at divrem.c:46
+46	divrem.c: No such file or directory.
+49	in divrem.c
+62	in divrem.c
+63	in divrem.c
+47	in divrem.c
+65	in divrem.c
+72	in divrem.c
+76	in divrem.c
+79	in divrem.c
+81	in divrem.c
+234	in divrem.c
+hack_digit (p=0x7fffffffd410) at printf_fp.c:186
+186	printf_fp.c: No such file or directory.
+189	in printf_fp.c
+187	in printf_fp.c
+190	in printf_fp.c
+189	in printf_fp.c
+190	in printf_fp.c
+191	in printf_fp.c
+190	in printf_fp.c
+196	in printf_fp.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:962
+962	in printf_fp.c
+963	in printf_fp.c
+965	in printf_fp.c
+958	in printf_fp.c
+962	in printf_fp.c
+hack_digit (p=<optimized out>) at printf_fp.c:170
+170	in printf_fp.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:961
+961	in printf_fp.c
+962	in printf_fp.c
+hack_digit (p=0x7fffffffd410) at printf_fp.c:170
+170	in printf_fp.c
+172	in printf_fp.c
+180	in printf_fp.c
+184	in printf_fp.c
+__mpn_divrem (qp=0x7fffffffd2d0, qextra_limbs=qextra_limbs@entry=0, np=0x7fffffffd310, nsize=1, dp=0x7fffffffd290, dsize=1)
+    at divrem.c:46
+46	divrem.c: No such file or directory.
+49	in divrem.c
+62	in divrem.c
+63	in divrem.c
+47	in divrem.c
+65	in divrem.c
+72	in divrem.c
+76	in divrem.c
+79	in divrem.c
+81	in divrem.c
+234	in divrem.c
+hack_digit (p=0x7fffffffd410) at printf_fp.c:186
+186	printf_fp.c: No such file or directory.
+189	in printf_fp.c
+187	in printf_fp.c
+190	in printf_fp.c
+189	in printf_fp.c
+190	in printf_fp.c
+191	in printf_fp.c
+190	in printf_fp.c
+196	in printf_fp.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:962
+962	in printf_fp.c
+963	in printf_fp.c
+965	in printf_fp.c
+958	in printf_fp.c
+962	in printf_fp.c
+hack_digit (p=<optimized out>) at printf_fp.c:170
+170	in printf_fp.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:961
+961	in printf_fp.c
+962	in printf_fp.c
+hack_digit (p=0x7fffffffd410) at printf_fp.c:170
+170	in printf_fp.c
+172	in printf_fp.c
+180	in printf_fp.c
+184	in printf_fp.c
+__mpn_divrem (qp=0x7fffffffd2d0, qextra_limbs=qextra_limbs@entry=0, np=0x7fffffffd310, nsize=1, dp=0x7fffffffd290, dsize=1)
+    at divrem.c:46
+46	divrem.c: No such file or directory.
+49	in divrem.c
+62	in divrem.c
+63	in divrem.c
+47	in divrem.c
+65	in divrem.c
+72	in divrem.c
+76	in divrem.c
+79	in divrem.c
+81	in divrem.c
+234	in divrem.c
+hack_digit (p=0x7fffffffd410) at printf_fp.c:186
+186	printf_fp.c: No such file or directory.
+189	in printf_fp.c
+187	in printf_fp.c
+190	in printf_fp.c
+189	in printf_fp.c
+190	in printf_fp.c
+191	in printf_fp.c
+190	in printf_fp.c
+196	in printf_fp.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:962
+962	in printf_fp.c
+963	in printf_fp.c
+965	in printf_fp.c
+958	in printf_fp.c
+962	in printf_fp.c
+hack_digit (p=<optimized out>) at printf_fp.c:170
+170	in printf_fp.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:961
+961	in printf_fp.c
+962	in printf_fp.c
+hack_digit (p=0x7fffffffd410) at printf_fp.c:170
+170	in printf_fp.c
+172	in printf_fp.c
+180	in printf_fp.c
+184	in printf_fp.c
+__mpn_divrem (qp=0x7fffffffd2d0, qextra_limbs=qextra_limbs@entry=0, np=0x7fffffffd310, nsize=1, dp=0x7fffffffd290, dsize=1)
+    at divrem.c:46
+46	divrem.c: No such file or directory.
+49	in divrem.c
+62	in divrem.c
+63	in divrem.c
+47	in divrem.c
+65	in divrem.c
+72	in divrem.c
+76	in divrem.c
+79	in divrem.c
+81	in divrem.c
+234	in divrem.c
+hack_digit (p=0x7fffffffd410) at printf_fp.c:186
+186	printf_fp.c: No such file or directory.
+189	in printf_fp.c
+187	in printf_fp.c
+190	in printf_fp.c
+189	in printf_fp.c
+190	in printf_fp.c
+191	in printf_fp.c
+190	in printf_fp.c
+196	in printf_fp.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:962
+962	in printf_fp.c
+963	in printf_fp.c
+965	in printf_fp.c
+958	in printf_fp.c
+962	in printf_fp.c
+hack_digit (p=<optimized out>) at printf_fp.c:170
+170	in printf_fp.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:961
+961	in printf_fp.c
+962	in printf_fp.c
+hack_digit (p=0x7fffffffd410) at printf_fp.c:170
+170	in printf_fp.c
+172	in printf_fp.c
+180	in printf_fp.c
+184	in printf_fp.c
+__mpn_divrem (qp=0x7fffffffd2d0, qextra_limbs=qextra_limbs@entry=0, np=0x7fffffffd310, nsize=1, dp=0x7fffffffd290, dsize=1)
+    at divrem.c:46
+46	divrem.c: No such file or directory.
+49	in divrem.c
+62	in divrem.c
+63	in divrem.c
+47	in divrem.c
+65	in divrem.c
+72	in divrem.c
+76	in divrem.c
+79	in divrem.c
+81	in divrem.c
+234	in divrem.c
+hack_digit (p=0x7fffffffd410) at printf_fp.c:186
+186	printf_fp.c: No such file or directory.
+189	in printf_fp.c
+187	in printf_fp.c
+190	in printf_fp.c
+189	in printf_fp.c
+190	in printf_fp.c
+191	in printf_fp.c
+190	in printf_fp.c
+196	in printf_fp.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:962
+962	in printf_fp.c
+963	in printf_fp.c
+965	in printf_fp.c
+958	in printf_fp.c
+959	in printf_fp.c
+974	in printf_fp.c
+975	in printf_fp.c
+hack_digit (p=0x7fffffffd410) at printf_fp.c:167
+167	in printf_fp.c
+170	in printf_fp.c
+172	in printf_fp.c
+180	in printf_fp.c
+184	in printf_fp.c
+__mpn_divrem (qp=0x7fffffffd2d0, qextra_limbs=qextra_limbs@entry=0, np=0x7fffffffd310, nsize=1, dp=0x7fffffffd290, dsize=1)
+    at divrem.c:46
+46	divrem.c: No such file or directory.
+49	in divrem.c
+62	in divrem.c
+63	in divrem.c
+47	in divrem.c
+65	in divrem.c
+72	in divrem.c
+76	in divrem.c
+79	in divrem.c
+81	in divrem.c
+234	in divrem.c
+hack_digit (p=0x7fffffffd410) at printf_fp.c:186
+186	printf_fp.c: No such file or directory.
+189	in printf_fp.c
+187	in printf_fp.c
+190	in printf_fp.c
+189	in printf_fp.c
+190	in printf_fp.c
+191	in printf_fp.c
+190	in printf_fp.c
+196	in printf_fp.c
+207	in printf_fp.c
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:977
+977	in printf_fp.c
+979	in printf_fp.c
+982	in printf_fp.c
+993	in printf_fp.c
+get_rounding_mode () at ../sysdeps/generic/get-rounding-mode.h:94
+94	../sysdeps/generic/get-rounding-mode.h: No such file or directory.
+95	in ../sysdeps/generic/get-rounding-mode.h
+994	printf_fp.c: No such file or directory.
+round_away (mode=<optimized out>, more_bits=false, half_bit=false, last_digit_odd=48, negative=false)
+    at ../include/rounding-mode.h:52
+52	../include/rounding-mode.h: No such file or directory.
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:1093
+1093	printf_fp.c: No such file or directory.
+1100	in printf_fp.c
+1103	in printf_fp.c
+1116	in printf_fp.c
+1162	in printf_fp.c
+1164	in printf_fp.c
+1166	in printf_fp.c
+1164	in printf_fp.c
+1166	in printf_fp.c
+257	in printf_fp.c
+1169	in printf_fp.c
+1171	in printf_fp.c
+1173	in printf_fp.c
+1176	in printf_fp.c
+1185	in printf_fp.c
+1192	in printf_fp.c
+1185	in printf_fp.c
+1192	in printf_fp.c
+1197	in printf_fp.c
+__strlen_avx2 () at ../sysdeps/x86_64/multiarch/strlen-avx2.S:52
+52	../sysdeps/x86_64/multiarch/strlen-avx2.S: No such file or directory.
+53	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+54	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+57	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+58	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+59	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+62	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+63	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+64	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+72	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+332	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+333	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+334	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+338	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+__strlen_avx2 () at ../sysdeps/x86_64/multiarch/strlen-avx2.S:339
+339	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=0x7ffff7bb1560 <_nl_global_locale>, info=info@entry=0x7fffffffd5a0, 
+    args=args@entry=0x7fffffffd580) at printf_fp.c:1199
+1199	printf_fp.c: No such file or directory.
+1197	in printf_fp.c
+1199	in printf_fp.c
+1200	in printf_fp.c
+1204	in printf_fp.c
+1206	in printf_fp.c
+1204	in printf_fp.c
+1206	in printf_fp.c
+1204	in printf_fp.c
+1206	in printf_fp.c
+1217	in printf_fp.c
+1224	in printf_fp.c
+1225	in printf_fp.c
+1227	in printf_fp.c
+1230	in printf_fp.c
+1224	in printf_fp.c
+1225	in printf_fp.c
+1227	in printf_fp.c
+1230	in printf_fp.c
+1224	in printf_fp.c
+1225	in printf_fp.c
+1227	in printf_fp.c
+1230	in printf_fp.c
+1224	in printf_fp.c
+1225	in printf_fp.c
+1227	in printf_fp.c
+1230	in printf_fp.c
+1224	in printf_fp.c
+1225	in printf_fp.c
+1227	in printf_fp.c
+1230	in printf_fp.c
+1224	in printf_fp.c
+1225	in printf_fp.c
+1226	in printf_fp.c
+__mempcpy_avx_unaligned_erms () at ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:204
+204	../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S: No such file or directory.
+205	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+206	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+__memmove_avx_unaligned_erms () at ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:219
+219	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+220	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+264	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+265	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+267	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+268	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+269	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+270	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+271	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+272	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+273	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+274	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+275	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+__memmove_avx_unaligned_erms () at ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:277
+277	in ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+__GI___printf_fp_l (fp=fp@entry=0x7fffffffda40, loc=<optimized out>, info=info@entry=0x7fffffffd5a0, args=args@entry=0x7fffffffd580)
+    at printf_fp.c:1224
+1224	printf_fp.c: No such file or directory.
+1225	in printf_fp.c
+1227	in printf_fp.c
+1230	in printf_fp.c
+1224	in printf_fp.c
+1225	in printf_fp.c
+1227	in printf_fp.c
+1230	in printf_fp.c
+1224	in printf_fp.c
+1225	in printf_fp.c
+1227	in printf_fp.c
+1230	in printf_fp.c
+1224	in printf_fp.c
+1225	in printf_fp.c
+1227	in printf_fp.c
+1230	in printf_fp.c
+1224	in printf_fp.c
+1225	in printf_fp.c
+1227	in printf_fp.c
+1230	in printf_fp.c
+1224	in printf_fp.c
+1225	in printf_fp.c
+1227	in printf_fp.c
+1230	in printf_fp.c
+1224	in printf_fp.c
+1234	in printf_fp.c
+1251	in printf_fp.c
+1254	in printf_fp.c
+1261	in printf_fp.c
+1265	in printf_fp.c
+_IO_vfprintf_internal (s=s@entry=0x7fffffffda40, format=format@entry=0x5555555583ac "%s_%5f", ap=ap@entry=0x7fffffffdb70)
+    at vfprintf.c:1660
+1660	vfprintf.c: No such file or directory.
+1662	in vfprintf.c
+1670	in vfprintf.c
+__find_specmb (format=0x5555555583b2 "") at printf-parse.h:108
+108	printf-parse.h: No such file or directory.
+__strchrnul_avx2 () at ../sysdeps/x86_64/multiarch/strchr-avx2.S:45
+45	../sysdeps/x86_64/multiarch/strchr-avx2.S: No such file or directory.
+47	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+48	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+49	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+51	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+52	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+53	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+74	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+75	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+76	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+77	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+78	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+79	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+80	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+82	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+83	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+84	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+86	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+87	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+89	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+96	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+__strchrnul_avx2 () at ../sysdeps/x86_64/multiarch/strchr-avx2.S:97
+97	in ../sysdeps/x86_64/multiarch/strchr-avx2.S
+_IO_vfprintf_internal (s=s@entry=0x7fffffffda40, format=format@entry=0x5555555583ac "%s_%5f", ap=ap@entry=0x7fffffffdb70)
+    at vfprintf.c:1674
+1674	vfprintf.c: No such file or directory.
+1670	in vfprintf.c
+__find_specmb (format=0x5555555583b2 "") at printf-parse.h:108
+108	printf-parse.h: No such file or directory.
+_IO_vfprintf_internal (s=s@entry=0x7fffffffda40, format=format@entry=0x5555555583ac "%s_%5f", ap=ap@entry=0x7fffffffdb70)
+    at vfprintf.c:1674
+1674	vfprintf.c: No such file or directory.
+IO_validate_vtable (vtable=0x7ffff7bad360 <_IO_str_jumps>) at ../libio/libioP.h:872
+872	../libio/libioP.h: No such file or directory.
+873	in ../libio/libioP.h
+_IO_vfprintf_internal (s=s@entry=0x7fffffffda40, format=format@entry=0x5555555583ac "%s_%5f", ap=ap@entry=0x7fffffffdb70)
+    at vfprintf.c:1674
+1674	vfprintf.c: No such file or directory.
+__GI__IO_default_xsputn (f=0x7fffffffda40, data=0x5555555583b2, n=0) at genops.c:392
+392	genops.c: No such file or directory.
+_IO_vfprintf_internal (s=s@entry=0x7fffffffda40, format=format@entry=0x5555555583ac "%s_%5f", ap=ap@entry=0x7fffffffdb70)
+    at vfprintf.c:1676
+1676	vfprintf.c: No such file or directory.
+1674	in vfprintf.c
+1676	in vfprintf.c
+1696	in vfprintf.c
+1697	in vfprintf.c
+1700	in vfprintf.c
+__IO_vsprintf (string=<optimized out>, format=0x5555555583ac "%s_%5f", args=args@entry=0x7fffffffdb70) at iovsprintf.c:43
+43	iovsprintf.c: No such file or directory.
+45	in iovsprintf.c
+__sprintf (s=<optimized out>, format=<optimized out>) at sprintf.c:36
+36	sprintf.c: No such file or directory.
+subscribe (relay=0x55555575c960, channel_name=0x55555555810d "test", callback=0x0)
+    at /home/ryan/sailbot/sailbot-19/src/msg/subscriber.c:23
+23	    new_sub->py_callback = callback;
+26	    new_sub->channel_name = (char*)calloc(strlen(channel_name) + 1, sizeof(char));
+__strlen_avx2 () at ../sysdeps/x86_64/multiarch/strlen-avx2.S:52
+52	../sysdeps/x86_64/multiarch/strlen-avx2.S: No such file or directory.
+53	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+54	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+57	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+58	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+59	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+62	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+63	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+64	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+72	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+332	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+333	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+334	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+338	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+__strlen_avx2 () at ../sysdeps/x86_64/multiarch/strlen-avx2.S:339
+339	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+__libc_calloc (n=5, elem_size=1) at malloc.c:3379
+3379	malloc.c: No such file or directory.
+3366	in malloc.c
+3381	in malloc.c
+3366	in malloc.c
+3379	in malloc.c
+3366	in malloc.c
+3376	in malloc.c
+3366	in malloc.c
+3376	in malloc.c
+3381	in malloc.c
+3389	in malloc.c
+3390	in malloc.c
+3402	in malloc.c
+3404	in malloc.c
+3414	in malloc.c
+3415	in malloc.c
+3436	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=5) at malloc.c:3521
+3521	in malloc.c
+3553	in malloc.c
+3521	in malloc.c
+3553	in malloc.c
+3553	in malloc.c
+3557	in malloc.c
+3581	in malloc.c
+3583	in malloc.c
+3586	in malloc.c
+3588	in malloc.c
+3642	in malloc.c
+3644	in malloc.c
+3642	in malloc.c
+3644	in malloc.c
+3641	in malloc.c
+3722	in malloc.c
+3721	in malloc.c
+3722	in malloc.c
+3721	in malloc.c
+3722	in malloc.c
+3720	in malloc.c
+3726	in malloc.c
+3792	in malloc.c
+3752	in malloc.c
+3879	in malloc.c
+3731	in malloc.c
+3732	in malloc.c
+3752	in malloc.c
+3792	in malloc.c
+3732	in malloc.c
+3735	in malloc.c
+3736	in malloc.c
+3739	in malloc.c
+3749	in malloc.c
+3734	in malloc.c
+3749	in malloc.c
+3751	in malloc.c
+3750	in malloc.c
+3751	in malloc.c
+3755	in malloc.c
+3756	in malloc.c
+3755	in malloc.c
+3757	in malloc.c
+3760	in malloc.c
+3758	in malloc.c
+3759	in malloc.c
+3760	in malloc.c
+3762	in malloc.c
+3763	in malloc.c
+3766	in malloc.c
+3772	in malloc.c
+3766	in malloc.c
+3768	in malloc.c
+3773	in malloc.c
+alloc_perturb (n=<optimized out>, p=<optimized out>) at malloc.c:1887
+1887	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=5) at malloc.c:3769
+3769	in malloc.c
+3773	in malloc.c
+alloc_perturb (n=5, p=0x55555575c9a0 "\240\f\273\367\377\177") at malloc.c:1887
+1887	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=5) at malloc.c:4131
+4131	in malloc.c
+__libc_calloc (n=<optimized out>, elem_size=<optimized out>) at malloc.c:3438
+3438	in malloc.c
+3436	in malloc.c
+3438	in malloc.c
+3441	in malloc.c
+3469	in malloc.c
+3472	in malloc.c
+3458	in malloc.c
+3472	in malloc.c
+3483	in malloc.c
+3484	in malloc.c
+3485	in malloc.c
+3487	in malloc.c
+3495	in malloc.c
+3492	in malloc.c
+3493	in malloc.c
+3494	in malloc.c
+3495	in malloc.c
+3513	in malloc.c
+subscribe (relay=0x55555575c960, channel_name=0x55555555810d "test", callback=0x0)
+    at /home/ryan/sailbot/sailbot-19/src/msg/subscriber.c:27
+27	    strcpy(new_sub->channel_name, channel_name);
+__strcpy_sse2_unaligned () at ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S:47
+47	../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S: No such file or directory.
+49	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+54	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+55	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+56	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+297	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+298	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+299	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+300	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+301	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+311	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+312	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+359	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+360	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+590	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+591	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+592	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+__strcpy_sse2_unaligned () at ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S:601
+601	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+subscribe (relay=0x55555575c960, channel_name=0x55555555810d "test", callback=0x0)
+    at /home/ryan/sailbot/sailbot-19/src/msg/subscriber.c:29
+29	    register_subscriber(relay, new_sub);
+register_subscriber (relay=0x55555575c960, subscriber=0x55555575fb50) at /home/ryan/sailbot/sailbot-19/src/msg/relay.c:50
+50	    Channel* channel = get_channel(relay->channel_list, subscriber->channel_name);
+get_channel (channel_list=0x55555575b670, name=0x55555575c9a0 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel_list.c:85
+85	Channel* get_channel(ChannelList* channel_list, char* name) {
+86	    Channel* with_name = init_channel(name);
+init_channel (name=0x55555575c9a0 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:10
+10	    Channel* new_ch = (Channel*)malloc(sizeof(Channel));
+__GI___libc_malloc (bytes=24) at malloc.c:3028
+3028	malloc.c: No such file or directory.
+3033	in malloc.c
+3034	in malloc.c
+3039	in malloc.c
+3042	in malloc.c
+3040	in malloc.c
+3042	in malloc.c
+3045	in malloc.c
+3048	in malloc.c
+3050	in malloc.c
+tcache_get (tc_idx=0) at malloc.c:2941
+2941	in malloc.c
+2943	in malloc.c
+2944	in malloc.c
+__GI___libc_malloc (bytes=<optimized out>) at malloc.c:3081
+3081	in malloc.c
+init_channel (name=0x55555575c9a0 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:12
+12	    new_ch->name = (char*)malloc((strlen(name) + 1) * sizeof(char));
+__strlen_avx2 () at ../sysdeps/x86_64/multiarch/strlen-avx2.S:52
+52	../sysdeps/x86_64/multiarch/strlen-avx2.S: No such file or directory.
+53	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+54	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+57	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+58	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+59	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+62	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+63	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+64	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+72	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+332	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+333	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+334	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+338	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+__strlen_avx2 () at ../sysdeps/x86_64/multiarch/strlen-avx2.S:339
+339	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+__GI___libc_malloc (bytes=5) at malloc.c:3028
+3028	malloc.c: No such file or directory.
+3033	in malloc.c
+3034	in malloc.c
+3039	in malloc.c
+3042	in malloc.c
+3040	in malloc.c
+3042	in malloc.c
+3045	in malloc.c
+3048	in malloc.c
+3050	in malloc.c
+tcache_get (tc_idx=0) at malloc.c:2941
+2941	in malloc.c
+2943	in malloc.c
+2944	in malloc.c
+__GI___libc_malloc (bytes=<optimized out>) at malloc.c:3081
+3081	in malloc.c
+init_channel (name=0x55555575c9a0 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:13
+13	    strcpy(new_ch->name, name);
+__strcpy_sse2_unaligned () at ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S:47
+47	../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S: No such file or directory.
+49	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+54	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+55	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+56	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+297	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+298	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+299	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+300	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+301	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+311	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+312	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+359	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+360	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+590	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+591	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+592	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+__strcpy_sse2_unaligned () at ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S:601
+601	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+init_channel (name=0x55555575c9a0 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:15
+15	    new_ch->data_buffer = init_circular_buffer();
+init_circular_buffer () at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:22
+22	CircularBuffer* init_circular_buffer() {
+23	    CircularBuffer* new_buffer = (CircularBuffer*)malloc(sizeof(CircularBuffer));
+__GI___libc_malloc (bytes=4152) at malloc.c:3028
+3028	malloc.c: No such file or directory.
+3033	in malloc.c
+3034	in malloc.c
+3039	in malloc.c
+3042	in malloc.c
+3040	in malloc.c
+3042	in malloc.c
+3045	in malloc.c
+3055	in malloc.c
+3057	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=4152) at malloc.c:3521
+3521	in malloc.c
+3553	in malloc.c
+3521	in malloc.c
+3553	in malloc.c
+3557	in malloc.c
+3581	in malloc.c
+3639	in malloc.c
+3701	in malloc.c
+3702	in malloc.c
+3703	in malloc.c
+malloc_consolidate (av=av@entry=0x7ffff7bb0c40 <main_arena>) at malloc.c:4403
+4403	in malloc.c
+4422	in malloc.c
+4403	in malloc.c
+4433	in malloc.c
+4403	in malloc.c
+4432	in malloc.c
+4403	in malloc.c
+4435	in malloc.c
+4420	in malloc.c
+4435	in malloc.c
+4436	in malloc.c
+4492	in malloc.c
+4435	in malloc.c
+4436	in malloc.c
+4492	in malloc.c
+4435	in malloc.c
+4436	in malloc.c
+4492	in malloc.c
+4435	in malloc.c
+4436	in malloc.c
+4492	in malloc.c
+4435	in malloc.c
+4436	in malloc.c
+4492	in malloc.c
+4435	in malloc.c
+4436	in malloc.c
+4492	in malloc.c
+4435	in malloc.c
+4436	in malloc.c
+4492	in malloc.c
+4435	in malloc.c
+4436	in malloc.c
+4492	in malloc.c
+4435	in malloc.c
+4436	in malloc.c
+4492	in malloc.c
+4435	in malloc.c
+4436	in malloc.c
+4492	in malloc.c
+4493	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=4152) at malloc.c:3722
+3722	in malloc.c
+3721	in malloc.c
+3722	in malloc.c
+3721	in malloc.c
+3722	in malloc.c
+3720	in malloc.c
+3726	in malloc.c
+3792	in malloc.c
+3752	in malloc.c
+3879	in malloc.c
+3731	in malloc.c
+3732	in malloc.c
+3752	in malloc.c
+3792	in malloc.c
+3732	in malloc.c
+3735	in malloc.c
+3736	in malloc.c
+3739	in malloc.c
+3749	in malloc.c
+3734	in malloc.c
+3749	in malloc.c
+3783	in malloc.c
+3778	in malloc.c
+3779	in malloc.c
+3783	in malloc.c
+3812	in malloc.c
+3820	in malloc.c
+3821	in malloc.c
+3822	in malloc.c
+3821	in malloc.c
+3825	in malloc.c
+3822	in malloc.c
+3825	in malloc.c
+3865	in malloc.c
+3868	in malloc.c
+3877	in malloc.c
+3868	in malloc.c
+3878	in malloc.c
+3869	in malloc.c
+3870	in malloc.c
+3871	in malloc.c
+3872	in malloc.c
+3878	in malloc.c
+3887	in malloc.c
+3732	in malloc.c
+3893	in malloc.c
+3904	in malloc.c
+3906	in malloc.c
+3909	in malloc.c
+3906	in malloc.c
+3909	in malloc.c
+3910	in malloc.c
+3913	in malloc.c
+3914	in malloc.c
+3920	in malloc.c
+3922	in malloc.c
+3926	in malloc.c
+3925	in malloc.c
+3926	in malloc.c
+3929	in malloc.c
+3932	in malloc.c
+3931	in malloc.c
+3932	in malloc.c
+4104	in malloc.c
+alloc_perturb (n=<optimized out>, p=<optimized out>) at malloc.c:1887
+1887	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=4152) at malloc.c:4103
+4103	in malloc.c
+4104	in malloc.c
+alloc_perturb (n=4152, p=0x55555575b850 "\260\352uUUU") at malloc.c:1887
+1887	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=4152) at malloc.c:4131
+4131	in malloc.c
+__GI___libc_malloc (bytes=4152) at malloc.c:3058
+3058	in malloc.c
+3057	in malloc.c
+3058	in malloc.c
+3081	in malloc.c
+init_circular_buffer () at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:24
+24	    new_buffer->size = 0;
+25	    new_buffer->head = -1;
+26	    new_buffer->revolutions = ~0;  // So we start with 0 and avoid sp cases
+30	    pthread_mutexattr_init(&attr);
+__GI___pthread_mutexattr_init (attr=0x7fffffffdb94) at pthread_mutexattr_init.c:36
+36	pthread_mutexattr_init.c: No such file or directory.
+39	in pthread_mutexattr_init.c
+init_circular_buffer () at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:31
+31	    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+__GI___pthread_mutexattr_settype (attr=0x7fffffffdb94, kind=1) at pthread_mutexattr_settype.c:28
+28	pthread_mutexattr_settype.c: No such file or directory.
+29	in pthread_mutexattr_settype.c
+28	in pthread_mutexattr_settype.c
+33	in pthread_mutexattr_settype.c
+38	in pthread_mutexattr_settype.c
+41	in pthread_mutexattr_settype.c
+init_circular_buffer () at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:33
+33	    pthread_mutex_init(&new_buffer->mutex, &attr);
+__GI___pthread_mutex_init (mutex=0x55555575c860, mutexattr=0x7fffffffdb94) at pthread_mutex_init.c:58
+58	pthread_mutex_init.c: No such file or directory.
+77	in pthread_mutex_init.c
+80	in pthread_mutex_init.c
+101	in pthread_mutex_init.c
+104	in pthread_mutex_init.c
+106	in pthread_mutex_init.c
+117	in pthread_mutex_init.c
+146	in pthread_mutex_init.c
+157	in pthread_mutex_init.c
+159	in pthread_mutex_init.c
+160	in pthread_mutex_init.c
+init_circular_buffer () at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:35
+35	    return new_buffer;
+36	}
+init_channel (name=0x55555575c9a0 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:16
+16	    new_ch->subscriber_list = init_subscriber_list();
+init_subscriber_list () at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:36
+36	    SubscriberList* new_list = (SubscriberList*)malloc(sizeof(struct SubscriberList));
+__GI___libc_malloc (bytes=64) at malloc.c:3028
+3028	malloc.c: No such file or directory.
+3033	in malloc.c
+3034	in malloc.c
+3039	in malloc.c
+3042	in malloc.c
+3040	in malloc.c
+3042	in malloc.c
+3045	in malloc.c
+3048	in malloc.c
+3050	in malloc.c
+tcache_get (tc_idx=3) at malloc.c:2941
+2941	in malloc.c
+2943	in malloc.c
+2944	in malloc.c
+__GI___libc_malloc (bytes=<optimized out>) at malloc.c:3081
+3081	in malloc.c
+init_subscriber_list () at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:37
+37	    new_list->head = (SubscriberNode*)malloc(sizeof(SubscriberNode));
+__GI___libc_malloc (bytes=24) at malloc.c:3028
+3028	malloc.c: No such file or directory.
+3033	in malloc.c
+3034	in malloc.c
+3039	in malloc.c
+3042	in malloc.c
+3040	in malloc.c
+3042	in malloc.c
+3045	in malloc.c
+3048	in malloc.c
+3050	in malloc.c
+tcache_get (tc_idx=0) at malloc.c:2941
+2941	in malloc.c
+2943	in malloc.c
+2944	in malloc.c
+__GI___libc_malloc (bytes=<optimized out>) at malloc.c:3081
+3081	in malloc.c
+init_subscriber_list () at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:38
+38	    new_list->tail = (SubscriberNode*)malloc(sizeof(SubscriberNode));
+__GI___libc_malloc (bytes=24) at malloc.c:3028
+3028	malloc.c: No such file or directory.
+3033	in malloc.c
+3034	in malloc.c
+3039	in malloc.c
+3042	in malloc.c
+3040	in malloc.c
+3042	in malloc.c
+3045	in malloc.c
+3048	in malloc.c
+3050	in malloc.c
+tcache_get (tc_idx=0) at malloc.c:2941
+2941	in malloc.c
+2943	in malloc.c
+2944	in malloc.c
+__GI___libc_malloc (bytes=<optimized out>) at malloc.c:3081
+3081	in malloc.c
+init_subscriber_list () at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:40
+40	    new_list->head->prev_node = NULL;
+41	    new_list->tail->next_node = NULL;
+43	    new_list->head->next_node = new_list->tail;
+44	    new_list->tail->prev_node = new_list->head;
+46	    new_list->size = 0;
+48	    pthread_mutex_init(&new_list->mutex, NULL);
+__GI___pthread_mutex_init (mutex=0x55555575d930, mutexattr=0x0) at pthread_mutex_init.c:58
+58	pthread_mutex_init.c: No such file or directory.
+77	in pthread_mutex_init.c
+101	in pthread_mutex_init.c
+157	in pthread_mutex_init.c
+159	in pthread_mutex_init.c
+160	in pthread_mutex_init.c
+init_subscriber_list () at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:50
+50	    return new_list;
+51	}
+init_channel (name=0x55555575c9a0 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:17
+17	    return new_ch;
+18	}
+get_channel (channel_list=0x55555575b670, name=0x55555575c9a0 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel_list.c:88
+88	    pthread_mutex_lock(&channel_list->mutex);
+__GI___pthread_mutex_lock (mutex=0x55555575b688) at ../nptl/pthread_mutex_lock.c:65
+65	../nptl/pthread_mutex_lock.c: No such file or directory.
+67	in ../nptl/pthread_mutex_lock.c
+69	in ../nptl/pthread_mutex_lock.c
+64	in ../nptl/pthread_mutex_lock.c
+73	in ../nptl/pthread_mutex_lock.c
+75	in ../nptl/pthread_mutex_lock.c
+78	in ../nptl/pthread_mutex_lock.c
+79	in ../nptl/pthread_mutex_lock.c
+154	in ../nptl/pthread_mutex_lock.c
+157	in ../nptl/pthread_mutex_lock.c
+159	in ../nptl/pthread_mutex_lock.c
+162	in ../nptl/pthread_mutex_lock.c
+164	in ../nptl/pthread_mutex_lock.c
+165	in ../nptl/pthread_mutex_lock.c
+get_channel (channel_list=0x55555575b670, name=0x55555575c9a0 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel_list.c:90
+90	    void* result = bsearch((void*)&with_name,
+91	            (void*)channel_list->channels,
+90	    void* result = bsearch((void*)&with_name,
+__GI_bsearch (__key=0x7fffffffdbf8, __base=0x55555575b7c0, __nmemb=0, __size=8, __compar=0x555555556ad2 <compare_channels>)
+    at ../bits/stdlib-bsearch.h:22
+22	../bits/stdlib-bsearch.h: No such file or directory.
+29	in ../bits/stdlib-bsearch.h
+22	in ../bits/stdlib-bsearch.h
+29	in ../bits/stdlib-bsearch.h
+42	in ../bits/stdlib-bsearch.h
+43	in ../bits/stdlib-bsearch.h
+get_channel (channel_list=0x55555575b670, name=0x55555575c9a0 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel_list.c:96
+96	    pthread_mutex_unlock(&channel_list->mutex);
+__GI___pthread_mutex_unlock (mutex=0x55555575b688) at pthread_mutex_unlock.c:345
+345	pthread_mutex_unlock.c: No such file or directory.
+__pthread_mutex_unlock_usercnt (decr=1, mutex=0x55555575b688) at pthread_mutex_unlock.c:344
+344	in pthread_mutex_unlock.c
+345	in pthread_mutex_unlock.c
+__pthread_mutex_unlock_usercnt (decr=1, mutex=0x55555575b688) at pthread_mutex_unlock.c:38
+38	in pthread_mutex_unlock.c
+39	in pthread_mutex_unlock.c
+38	in pthread_mutex_unlock.c
+39	in pthread_mutex_unlock.c
+43	in pthread_mutex_unlock.c
+48	in pthread_mutex_unlock.c
+51	in pthread_mutex_unlock.c
+54	in pthread_mutex_unlock.c
+56	in pthread_mutex_unlock.c
+__GI___pthread_mutex_unlock (mutex=0x55555575b688) at pthread_mutex_unlock.c:346
+346	in pthread_mutex_unlock.c
+get_channel (channel_list=0x55555575b670, name=0x55555575c9a0 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel_list.c:98
+98	    destroy_channel(&with_name);
+destroy_channel (ch=0x7fffffffdbf8) at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:32
+32	    destroy_circular_buffer(&(**ch).data_buffer);
+destroy_circular_buffer (buffer=0x55555575b6e8) at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:105
+105	    empty_circular_buffer(*buffer);
+empty_circular_buffer (buffer=0x55555575b850) at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:91
+91	    pthread_mutex_lock(&buffer->mutex);
+__GI___pthread_mutex_lock (mutex=0x55555575c860) at ../nptl/pthread_mutex_lock.c:65
+65	../nptl/pthread_mutex_lock.c: No such file or directory.
+67	in ../nptl/pthread_mutex_lock.c
+69	in ../nptl/pthread_mutex_lock.c
+64	in ../nptl/pthread_mutex_lock.c
+73	in ../nptl/pthread_mutex_lock.c
+82	in ../nptl/pthread_mutex_lock.c
+93	in ../nptl/pthread_mutex_lock.c
+97	in ../nptl/pthread_mutex_lock.c
+100	in ../nptl/pthread_mutex_lock.c
+113	in ../nptl/pthread_mutex_lock.c
+115	in ../nptl/pthread_mutex_lock.c
+116	in ../nptl/pthread_mutex_lock.c
+154	in ../nptl/pthread_mutex_lock.c
+157	in ../nptl/pthread_mutex_lock.c
+159	in ../nptl/pthread_mutex_lock.c
+162	in ../nptl/pthread_mutex_lock.c
+164	in ../nptl/pthread_mutex_lock.c
+165	in ../nptl/pthread_mutex_lock.c
+empty_circular_buffer (buffer=0x55555575b850) at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:93
+93	    for (int i = 0; i < buffer->size; ++i) {
+97	    buffer->size = 0;
+98	    buffer->head = 0;
+100	    pthread_mutex_unlock(&buffer->mutex);
+__GI___pthread_mutex_unlock (mutex=0x55555575c860) at pthread_mutex_unlock.c:345
+345	pthread_mutex_unlock.c: No such file or directory.
+__pthread_mutex_unlock_usercnt (decr=1, mutex=0x55555575c860) at pthread_mutex_unlock.c:344
+344	in pthread_mutex_unlock.c
+345	in pthread_mutex_unlock.c
+__pthread_mutex_unlock_usercnt (decr=1, mutex=0x55555575c860) at pthread_mutex_unlock.c:38
+38	in pthread_mutex_unlock.c
+39	in pthread_mutex_unlock.c
+38	in pthread_mutex_unlock.c
+39	in pthread_mutex_unlock.c
+43	in pthread_mutex_unlock.c
+60	in pthread_mutex_unlock.c
+66	in pthread_mutex_unlock.c
+70	in pthread_mutex_unlock.c
+__GI___pthread_mutex_unlock (mutex=0x55555575c860) at pthread_mutex_unlock.c:345
+345	in pthread_mutex_unlock.c
+__pthread_mutex_unlock_usercnt (decr=1, mutex=0x55555575c860) at pthread_mutex_unlock.c:73
+73	in pthread_mutex_unlock.c
+48	in pthread_mutex_unlock.c
+51	in pthread_mutex_unlock.c
+54	in pthread_mutex_unlock.c
+56	in pthread_mutex_unlock.c
+__GI___pthread_mutex_unlock (mutex=0x55555575c860) at pthread_mutex_unlock.c:346
+346	in pthread_mutex_unlock.c
+empty_circular_buffer (buffer=0x55555575b850) at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:101
+101	}
+destroy_circular_buffer (buffer=0x55555575b6e8) at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:106
+106	    free(*buffer);
+__GI___libc_free (mem=0x55555575b850) at malloc.c:3086
+3086	malloc.c: No such file or directory.
+3091	in malloc.c
+3092	in malloc.c
+3098	in malloc.c
+3103	in malloc.c
+3101	in malloc.c
+3103	in malloc.c
+3121	in malloc.c
+3123	in malloc.c
+3124	in malloc.c
+_int_free (have_lock=0, p=0x55555575b840, av=0x7ffff7bb0c40 <main_arena>) at malloc.c:4149
+4149	in malloc.c
+4155	in malloc.c
+4156	in malloc.c
+4160	in malloc.c
+4169	in malloc.c
+4167	in malloc.c
+4170	in malloc.c
+4184	in malloc.c
+__GI___libc_free (mem=0x55555575b850) at malloc.c:3124
+3124	in malloc.c
+_int_free (have_lock=0, p=0x55555575b840, av=0x7ffff7bb0c40 <main_arena>) at malloc.c:4259
+4259	in malloc.c
+4262	in malloc.c
+4263	in malloc.c
+4262	in malloc.c
+4272	in malloc.c
+4268	in malloc.c
+4272	in malloc.c
+4275	in malloc.c
+4277	in malloc.c
+4275	in malloc.c
+4280	in malloc.c
+4283	in malloc.c
+4284	in malloc.c
+4285	in malloc.c
+4288	in malloc.c
+free_perturb (n=4144, p=0x55555575b850 "") at malloc.c:1894
+1894	in malloc.c
+_int_free (have_lock=0, p=0x55555575b840, av=0x7ffff7bb0c40 <main_arena>) at malloc.c:4291
+4291	in malloc.c
+4298	in malloc.c
+4303	in malloc.c
+4307	in malloc.c
+4316	in malloc.c
+4315	in malloc.c
+4317	in malloc.c
+4321	in malloc.c
+4319	in malloc.c
+4320	in malloc.c
+4321	in malloc.c
+4323	in malloc.c
+4324	in malloc.c
+4326	in malloc.c
+4327	in malloc.c
+4329	in malloc.c
+4330	in malloc.c
+4360	in malloc.c
+4380	in malloc.c
+__GI___libc_free (mem=<optimized out>) at malloc.c:3125
+3125	in malloc.c
+destroy_circular_buffer (buffer=0x55555575b6e8) at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:107
+107	    *buffer = (CircularBuffer*)NULL;
+108	}destroy_channel (ch=0x7fffffffdbf8) at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:33
+33	    destroy_subscriber_list(&(**ch).subscriber_list);
+destroy_subscriber_list (subscriber_list=0x55555575b6f0) at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:127
+127	    SubscriberNode* current = (**subscriber_list).head;
+129	    pthread_mutex_lock(&(*subscriber_list)->mutex);
+__GI___pthread_mutex_lock (mutex=0x55555575d930) at ../nptl/pthread_mutex_lock.c:65
+65	../nptl/pthread_mutex_lock.c: No such file or directory.
+67	in ../nptl/pthread_mutex_lock.c
+69	in ../nptl/pthread_mutex_lock.c
+64	in ../nptl/pthread_mutex_lock.c
+73	in ../nptl/pthread_mutex_lock.c
+75	in ../nptl/pthread_mutex_lock.c
+78	in ../nptl/pthread_mutex_lock.c
+79	in ../nptl/pthread_mutex_lock.c
+154	in ../nptl/pthread_mutex_lock.c
+157	in ../nptl/pthread_mutex_lock.c
+159	in ../nptl/pthread_mutex_lock.c
+162	in ../nptl/pthread_mutex_lock.c
+164	in ../nptl/pthread_mutex_lock.c
+165	in ../nptl/pthread_mutex_lock.c
+destroy_subscriber_list (subscriber_list=0x55555575b6f0) at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:131
+131	    while (current->next_node != (SubscriberNode*)NULL) {
+132	        current = current->next_node;
+133	        free(current->prev_node);
+__GI___libc_free (mem=0x55555575b700) at malloc.c:3086
+3086	malloc.c: No such file or directory.
+3091	in malloc.c
+3092	in malloc.c
+3098	in malloc.c
+3103	in malloc.c
+3101	in malloc.c
+3103	in malloc.c
+3121	in malloc.c
+3123	in malloc.c
+3124	in malloc.c
+_int_free (have_lock=0, p=0x55555575b6f0, av=0x7ffff7bb0c40 <main_arena>) at malloc.c:4149
+4149	in malloc.c
+4155	in malloc.c
+4156	in malloc.c
+4160	in malloc.c
+4169	in malloc.c
+4167	in malloc.c
+4170	in malloc.c
+4171	in malloc.c
+4173	in malloc.c
+tcache_put (tc_idx=0, chunk=0x55555575b6f0) at malloc.c:2929
+2929	in malloc.c
+2932	in malloc.c
+2930	in malloc.c
+2931	in malloc.c
+2932	in malloc.c
+__GI___libc_free (mem=<optimized out>) at malloc.c:3125
+3125	in malloc.c
+destroy_subscriber_list (subscriber_list=0x55555575b6f0) at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:131
+131	    while (current->next_node != (SubscriberNode*)NULL) {
+135	    free(current);
+__GI___libc_free (mem=0x55555575b740) at malloc.c:3086
+3086	malloc.c: No such file or directory.
+3091	in malloc.c
+3092	in malloc.c
+3098	in malloc.c
+3103	in malloc.c
+3101	in malloc.c
+3103	in malloc.c
+3121	in malloc.c
+3123	in malloc.c
+3124	in malloc.c
+_int_free (have_lock=0, p=0x55555575b730, av=0x7ffff7bb0c40 <main_arena>) at malloc.c:4149
+4149	in malloc.c
+4155	in malloc.c
+4156	in malloc.c
+4160	in malloc.c
+4169	in malloc.c
+4167	in malloc.c
+4170	in malloc.c
+4171	in malloc.c
+4173	in malloc.c
+tcache_put (tc_idx=0, chunk=0x55555575b730) at malloc.c:2929
+2929	in malloc.c
+2932	in malloc.c
+2930	in malloc.c
+2931	in malloc.c
+2932	in malloc.c
+__GI___libc_free (mem=<optimized out>) at malloc.c:3125
+3125	in malloc.c
+destroy_subscriber_list (subscriber_list=0x55555575b6f0) at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:137
+137	    pthread_mutex_unlock(&(*subscriber_list)->mutex);
+__GI___pthread_mutex_unlock (mutex=0x55555575d930) at pthread_mutex_unlock.c:345
+345	pthread_mutex_unlock.c: No such file or directory.
+__pthread_mutex_unlock_usercnt (decr=1, mutex=0x55555575d930) at pthread_mutex_unlock.c:344
+344	in pthread_mutex_unlock.c
+345	in pthread_mutex_unlock.c
+__pthread_mutex_unlock_usercnt (decr=1, mutex=0x55555575d930) at pthread_mutex_unlock.c:38
+38	in pthread_mutex_unlock.c
+39	in pthread_mutex_unlock.c
+38	in pthread_mutex_unlock.c
+39	in pthread_mutex_unlock.c
+43	in pthread_mutex_unlock.c
+48	in pthread_mutex_unlock.c
+51	in pthread_mutex_unlock.c
+54	in pthread_mutex_unlock.c
+56	in pthread_mutex_unlock.c
+__GI___pthread_mutex_unlock (mutex=0x55555575d930) at pthread_mutex_unlock.c:346
+346	in pthread_mutex_unlock.c
+destroy_subscriber_list (subscriber_list=0x55555575b6f0) at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:139
+139	    free(*subscriber_list);
+__GI___libc_free (mem=0x55555575d920) at malloc.c:3086
+3086	malloc.c: No such file or directory.
+3091	in malloc.c
+3092	in malloc.c
+3098	in malloc.c
+3103	in malloc.c
+3101	in malloc.c
+3103	in malloc.c
+3121	in malloc.c
+3123	in malloc.c
+3124	in malloc.c
+_int_free (have_lock=0, p=0x55555575d910, av=0x7ffff7bb0c40 <main_arena>) at malloc.c:4149
+4149	in malloc.c
+4155	in malloc.c
+4156	in malloc.c
+4160	in malloc.c
+4169	in malloc.c
+4167	in malloc.c
+4170	in malloc.c
+4171	in malloc.c
+4173	in malloc.c
+tcache_put (tc_idx=3, chunk=0x55555575d910) at malloc.c:2929
+2929	in malloc.c
+2932	in malloc.c
+2930	in malloc.c
+2931	in malloc.c
+2932	in malloc.c
+__GI___libc_free (mem=<optimized out>) at malloc.c:3125
+3125	in malloc.c
+destroy_subscriber_list (subscriber_list=0x55555575b6f0) at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:140
+140	    *subscriber_list = (SubscriberList*)NULL;
+142	}
+destroy_channel (ch=0x7fffffffdbf8) at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:34
+34	    free((**ch).name);
+__GI___libc_free (mem=0x55555575b6c0) at malloc.c:3086
+3086	malloc.c: No such file or directory.
+3091	in malloc.c
+3092	in malloc.c
+3098	in malloc.c
+3103	in malloc.c
+3101	in malloc.c
+3103	in malloc.c
+3121	in malloc.c
+3123	in malloc.c
+3124	in malloc.c
+_int_free (have_lock=0, p=0x55555575b6b0, av=0x7ffff7bb0c40 <main_arena>) at malloc.c:4149
+4149	in malloc.c
+4155	in malloc.c
+4156	in malloc.c
+4160	in malloc.c
+4169	in malloc.c
+4167	in malloc.c
+4170	in malloc.c
+4171	in malloc.c
+4173	in malloc.c
+tcache_put (tc_idx=0, chunk=0x55555575b6b0) at malloc.c:2929
+2929	in malloc.c
+2932	in malloc.c
+2930	in malloc.c
+2931	in malloc.c
+2932	in malloc.c
+__GI___libc_free (mem=<optimized out>) at malloc.c:3125
+3125	in malloc.c
+destroy_channel (ch=0x7fffffffdbf8) at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:35
+35	    *ch = (Channel*)NULL;
+36	}
+get_channel (channel_list=0x55555575b670, name=0x55555575c9a0 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel_list.c:100
+100	    if (result == NULL) {
+101	        return (Channel*)NULL;
+105	}
+register_subscriber (relay=0x55555575c960, subscriber=0x55555575fb50) at /home/ryan/sailbot/sailbot-19/src/msg/relay.c:52
+52	    if (channel == (Channel*)NULL) {
+53	        channel = init_channel(subscriber->channel_name);
+init_channel (name=0x55555575c9a0 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:10
+10	    Channel* new_ch = (Channel*)malloc(sizeof(Channel));
+__GI___libc_malloc (bytes=24) at malloc.c:3028
+3028	malloc.c: No such file or directory.
+3033	in malloc.c
+3034	in malloc.c
+3039	in malloc.c
+3042	in malloc.c
+3040	in malloc.c
+3042	in malloc.c
+3045	in malloc.c
+3048	in malloc.c
+3050	in malloc.c
+tcache_get (tc_idx=0) at malloc.c:2941
+2941	in malloc.c
+2943	in malloc.c
+2944	in malloc.c
+__GI___libc_malloc (bytes=<optimized out>) at malloc.c:3081
+3081	in malloc.c
+init_channel (name=0x55555575c9a0 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:12
+12	    new_ch->name = (char*)malloc((strlen(name) + 1) * sizeof(char));
+__strlen_avx2 () at ../sysdeps/x86_64/multiarch/strlen-avx2.S:52
+52	../sysdeps/x86_64/multiarch/strlen-avx2.S: No such file or directory.
+53	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+54	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+57	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+58	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+59	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+62	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+63	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+64	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+72	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+332	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+333	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+334	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+338	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+__strlen_avx2 () at ../sysdeps/x86_64/multiarch/strlen-avx2.S:339
+339	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+__GI___libc_malloc (bytes=5) at malloc.c:3028
+3028	malloc.c: No such file or directory.
+3033	in malloc.c
+3034	in malloc.c
+3039	in malloc.c
+3042	in malloc.c
+3040	in malloc.c
+3042	in malloc.c
+3045	in malloc.c
+3048	in malloc.c
+3050	in malloc.c
+tcache_get (tc_idx=0) at malloc.c:2941
+2941	in malloc.c
+2943	in malloc.c
+2944	in malloc.c
+__GI___libc_malloc (bytes=<optimized out>) at malloc.c:3081
+3081	in malloc.c
+init_channel (name=0x55555575c9a0 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:13
+13	    strcpy(new_ch->name, name);
+__strcpy_sse2_unaligned () at ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S:47
+47	../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S: No such file or directory.
+49	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+54	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+55	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+56	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+297	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+298	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+299	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+300	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+301	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+311	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+312	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+359	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+360	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+590	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+591	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+592	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+__strcpy_sse2_unaligned () at ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S:601
+601	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+init_channel (name=0x55555575c9a0 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:15
+15	    new_ch->data_buffer = init_circular_buffer();
+init_circular_buffer () at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:22
+22	CircularBuffer* init_circular_buffer() {
+23	    CircularBuffer* new_buffer = (CircularBuffer*)malloc(sizeof(CircularBuffer));
+__GI___libc_malloc (bytes=4152) at malloc.c:3028
+3028	malloc.c: No such file or directory.
+3033	in malloc.c
+3034	in malloc.c
+3039	in malloc.c
+3042	in malloc.c
+3040	in malloc.c
+3042	in malloc.c
+3045	in malloc.c
+3055	in malloc.c
+3057	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=4152) at malloc.c:3521
+3521	in malloc.c
+3553	in malloc.c
+3521	in malloc.c
+3553	in malloc.c
+3557	in malloc.c
+3581	in malloc.c
+3639	in malloc.c
+3701	in malloc.c
+3702	in malloc.c
+3722	in malloc.c
+3721	in malloc.c
+3722	in malloc.c
+3721	in malloc.c
+3722	in malloc.c
+3720	in malloc.c
+3726	in malloc.c
+3792	in malloc.c
+3752	in malloc.c
+3879	in malloc.c
+3731	in malloc.c
+3732	in malloc.c
+3752	in malloc.c
+3792	in malloc.c
+3732	in malloc.c
+3735	in malloc.c
+3736	in malloc.c
+3739	in malloc.c
+3749	in malloc.c
+3734	in malloc.c
+3749	in malloc.c
+3783	in malloc.c
+3778	in malloc.c
+3779	in malloc.c
+3783	in malloc.c
+3786	in malloc.c
+3785	in malloc.c
+3786	in malloc.c
+3791	in malloc.c
+3803	in malloc.c
+alloc_perturb (n=4152, p=<optimized out>) at malloc.c:1887
+1887	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=4152) at malloc.c:4131
+4131	in malloc.c
+__GI___libc_malloc (bytes=4152) at malloc.c:3058
+3058	in malloc.c
+3057	in malloc.c
+3058	in malloc.c
+3081	in malloc.c
+init_circular_buffer () at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:24
+24	    new_buffer->size = 0;
+25	    new_buffer->head = -1;
+26	    new_buffer->revolutions = ~0;  // So we start with 0 and avoid sp cases
+30	    pthread_mutexattr_init(&attr);
+__GI___pthread_mutexattr_init (attr=0x7fffffffdbd4) at pthread_mutexattr_init.c:36
+36	pthread_mutexattr_init.c: No such file or directory.
+39	in pthread_mutexattr_init.c
+init_circular_buffer () at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:31
+31	    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+__GI___pthread_mutexattr_settype (attr=0x7fffffffdbd4, kind=1) at pthread_mutexattr_settype.c:28
+28	pthread_mutexattr_settype.c: No such file or directory.
+29	in pthread_mutexattr_settype.c
+28	in pthread_mutexattr_settype.c
+33	in pthread_mutexattr_settype.c
+38	in pthread_mutexattr_settype.c
+41	in pthread_mutexattr_settype.c
+init_circular_buffer () at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:33
+33	    pthread_mutex_init(&new_buffer->mutex, &attr);
+__GI___pthread_mutex_init (mutex=0x55555575c860, mutexattr=0x7fffffffdbd4) at pthread_mutex_init.c:58
+58	pthread_mutex_init.c: No such file or directory.
+77	in pthread_mutex_init.c
+80	in pthread_mutex_init.c
+101	in pthread_mutex_init.c
+104	in pthread_mutex_init.c
+106	in pthread_mutex_init.c
+117	in pthread_mutex_init.c
+146	in pthread_mutex_init.c
+157	in pthread_mutex_init.c
+159	in pthread_mutex_init.c
+160	in pthread_mutex_init.c
+init_circular_buffer () at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:35
+35	    return new_buffer;
+36	}
+init_channel (name=0x55555575c9a0 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:16
+16	    new_ch->subscriber_list = init_subscriber_list();
+init_subscriber_list () at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:36
+36	    SubscriberList* new_list = (SubscriberList*)malloc(sizeof(struct SubscriberList));
+__GI___libc_malloc (bytes=64) at malloc.c:3028
+3028	malloc.c: No such file or directory.
+3033	in malloc.c
+3034	in malloc.c
+3039	in malloc.c
+3042	in malloc.c
+3040	in malloc.c
+3042	in malloc.c
+3045	in malloc.c
+3048	in malloc.c
+3050	in malloc.c
+tcache_get (tc_idx=3) at malloc.c:2941
+2941	in malloc.c
+2943	in malloc.c
+2944	in malloc.c
+__GI___libc_malloc (bytes=<optimized out>) at malloc.c:3081
+3081	in malloc.c
+init_subscriber_list () at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:37
+37	    new_list->head = (SubscriberNode*)malloc(sizeof(SubscriberNode));
+__GI___libc_malloc (bytes=24) at malloc.c:3028
+3028	malloc.c: No such file or directory.
+3033	in malloc.c
+3034	in malloc.c
+3039	in malloc.c
+3042	in malloc.c
+3040	in malloc.c
+3042	in malloc.c
+3045	in malloc.c
+3048	in malloc.c
+3050	in malloc.c
+tcache_get (tc_idx=0) at malloc.c:2941
+2941	in malloc.c
+2943	in malloc.c
+2944	in malloc.c
+__GI___libc_malloc (bytes=<optimized out>) at malloc.c:3081
+3081	in malloc.c
+init_subscriber_list () at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:38
+38	    new_list->tail = (SubscriberNode*)malloc(sizeof(SubscriberNode));
+__GI___libc_malloc (bytes=24) at malloc.c:3028
+3028	malloc.c: No such file or directory.
+3033	in malloc.c
+3034	in malloc.c
+3039	in malloc.c
+3042	in malloc.c
+3040	in malloc.c
+3042	in malloc.c
+3045	in malloc.c
+3048	in malloc.c
+3050	in malloc.c
+tcache_get (tc_idx=0) at malloc.c:2941
+2941	in malloc.c
+2943	in malloc.c
+2944	in malloc.c
+__GI___libc_malloc (bytes=<optimized out>) at malloc.c:3081
+3081	in malloc.c
+init_subscriber_list () at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:40
+40	    new_list->head->prev_node = NULL;
+41	    new_list->tail->next_node = NULL;
+43	    new_list->head->next_node = new_list->tail;
+44	    new_list->tail->prev_node = new_list->head;
+46	    new_list->size = 0;
+48	    pthread_mutex_init(&new_list->mutex, NULL);
+__GI___pthread_mutex_init (mutex=0x55555575d930, mutexattr=0x0) at pthread_mutex_init.c:58
+58	pthread_mutex_init.c: No such file or directory.
+77	in pthread_mutex_init.c
+101	in pthread_mutex_init.c
+157	in pthread_mutex_init.c
+159	in pthread_mutex_init.c
+160	in pthread_mutex_init.c
+init_subscriber_list () at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:50
+50	    return new_list;
+51	}
+init_channel (name=0x55555575c9a0 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:17
+17	    return new_ch;
+18	}
+register_subscriber (relay=0x55555575c960, subscriber=0x55555575fb50) at /home/ryan/sailbot/sailbot-19/src/msg/relay.c:54
+54	        add_channel(relay->channel_list, channel);
+add_channel (channel_list=0x55555575b670, channel=0x55555575b6c0) at /home/ryan/sailbot/sailbot-19/src/msg/channel_list.c:63
+63	    if (get_channel(channel_list, channel->name) != (Channel*)NULL) {
+get_channel (channel_list=0x55555575b670, name=0x55555575b740 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel_list.c:85
+85	Channel* get_channel(ChannelList* channel_list, char* name) {
+86	    Channel* with_name = init_channel(name);
+init_channel (name=0x55555575b740 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:10
+10	    Channel* new_ch = (Channel*)malloc(sizeof(Channel));
+__GI___libc_malloc (bytes=24) at malloc.c:3028
+3028	malloc.c: No such file or directory.
+3033	in malloc.c
+3034	in malloc.c
+3039	in malloc.c
+3042	in malloc.c
+3040	in malloc.c
+3042	in malloc.c
+3045	in malloc.c
+3048	in malloc.c
+3050	in malloc.c
+tcache_get (tc_idx=0) at malloc.c:2941
+2941	in malloc.c
+2943	in malloc.c
+2944	in malloc.c
+__GI___libc_malloc (bytes=<optimized out>) at malloc.c:3081
+3081	in malloc.c
+init_channel (name=0x55555575b740 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:12
+12	    new_ch->name = (char*)malloc((strlen(name) + 1) * sizeof(char));
+__strlen_avx2 () at ../sysdeps/x86_64/multiarch/strlen-avx2.S:52
+52	../sysdeps/x86_64/multiarch/strlen-avx2.S: No such file or directory.
+53	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+54	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+57	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+58	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+59	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+62	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+63	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+64	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+72	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+332	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+333	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+334	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+338	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+__strlen_avx2 () at ../sysdeps/x86_64/multiarch/strlen-avx2.S:339
+339	in ../sysdeps/x86_64/multiarch/strlen-avx2.S
+__GI___libc_malloc (bytes=5) at malloc.c:3028
+3028	malloc.c: No such file or directory.
+3033	in malloc.c
+3034	in malloc.c
+3039	in malloc.c
+3042	in malloc.c
+3040	in malloc.c
+3042	in malloc.c
+3045	in malloc.c
+3048	in malloc.c
+3050	in malloc.c
+tcache_get (tc_idx=0) at malloc.c:2941
+2941	in malloc.c
+2943	in malloc.c
+2944	in malloc.c
+__GI___libc_malloc (bytes=<optimized out>) at malloc.c:3081
+3081	in malloc.c
+init_channel (name=0x55555575b740 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:13
+13	    strcpy(new_ch->name, name);
+__strcpy_sse2_unaligned () at ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S:47
+47	../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S: No such file or directory.
+49	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+54	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+55	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+56	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+297	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+298	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+299	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+300	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+301	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+311	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+312	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+359	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+360	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+590	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+591	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+592	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+__strcpy_sse2_unaligned () at ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S:601
+601	in ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S
+init_channel (name=0x55555575b740 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:15
+15	    new_ch->data_buffer = init_circular_buffer();
+init_circular_buffer () at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:22
+22	CircularBuffer* init_circular_buffer() {
+23	    CircularBuffer* new_buffer = (CircularBuffer*)malloc(sizeof(CircularBuffer));
+__GI___libc_malloc (bytes=4152) at malloc.c:3028
+3028	malloc.c: No such file or directory.
+3033	in malloc.c
+3034	in malloc.c
+3039	in malloc.c
+3042	in malloc.c
+3040	in malloc.c
+3042	in malloc.c
+3045	in malloc.c
+3055	in malloc.c
+3057	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=4152) at malloc.c:3521
+3521	in malloc.c
+3553	in malloc.c
+3521	in malloc.c
+3553	in malloc.c
+3557	in malloc.c
+3581	in malloc.c
+3639	in malloc.c
+3701	in malloc.c
+3702	in malloc.c
+3722	in malloc.c
+3721	in malloc.c
+3722	in malloc.c
+3721	in malloc.c
+3722	in malloc.c
+3720	in malloc.c
+3726	in malloc.c
+3792	in malloc.c
+3752	in malloc.c
+3879	in malloc.c
+3731	in malloc.c
+3732	in malloc.c
+3752	in malloc.c
+3792	in malloc.c
+3732	in malloc.c
+3893	in malloc.c
+3904	in malloc.c
+3906	in malloc.c
+3909	in malloc.c
+3906	in malloc.c
+3909	in malloc.c
+3910	in malloc.c
+3913	in malloc.c
+3914	in malloc.c
+3920	in malloc.c
+3922	in malloc.c
+3926	in malloc.c
+3925	in malloc.c
+3926	in malloc.c
+3929	in malloc.c
+3932	in malloc.c
+3931	in malloc.c
+3932	in malloc.c
+4104	in malloc.c
+alloc_perturb (n=<optimized out>, p=<optimized out>) at malloc.c:1887
+1887	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=4152) at malloc.c:4103
+4103	in malloc.c
+4104	in malloc.c
+alloc_perturb (n=4152, p=0x55555575eac0 "\300\022\273\367\377\177") at malloc.c:1887
+1887	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=4152) at malloc.c:4131
+4131	in malloc.c
+__GI___libc_malloc (bytes=4152) at malloc.c:3058
+3058	in malloc.c
+3057	in malloc.c
+3058	in malloc.c
+3081	in malloc.c
+init_circular_buffer () at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:24
+24	    new_buffer->size = 0;
+25	    new_buffer->head = -1;
+26	    new_buffer->revolutions = ~0;  // So we start with 0 and avoid sp cases
+30	    pthread_mutexattr_init(&attr);
+__GI___pthread_mutexattr_init (attr=0x7fffffffdb74) at pthread_mutexattr_init.c:36
+36	pthread_mutexattr_init.c: No such file or directory.
+39	in pthread_mutexattr_init.c
+init_circular_buffer () at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:31
+31	    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+__GI___pthread_mutexattr_settype (attr=0x7fffffffdb74, kind=1) at pthread_mutexattr_settype.c:28
+28	pthread_mutexattr_settype.c: No such file or directory.
+29	in pthread_mutexattr_settype.c
+28	in pthread_mutexattr_settype.c
+33	in pthread_mutexattr_settype.c
+38	in pthread_mutexattr_settype.c
+41	in pthread_mutexattr_settype.c
+init_circular_buffer () at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:33
+33	    pthread_mutex_init(&new_buffer->mutex, &attr);
+__GI___pthread_mutex_init (mutex=0x55555575fad0, mutexattr=0x7fffffffdb74) at pthread_mutex_init.c:58
+58	pthread_mutex_init.c: No such file or directory.
+77	in pthread_mutex_init.c
+80	in pthread_mutex_init.c
+101	in pthread_mutex_init.c
+104	in pthread_mutex_init.c
+106	in pthread_mutex_init.c
+117	in pthread_mutex_init.c
+146	in pthread_mutex_init.c
+157	in pthread_mutex_init.c
+159	in pthread_mutex_init.c
+160	in pthread_mutex_init.c
+init_circular_buffer () at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:35
+35	    return new_buffer;
+36	}
+init_channel (name=0x55555575b740 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:16
+16	    new_ch->subscriber_list = init_subscriber_list();
+init_subscriber_list () at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:36
+36	    SubscriberList* new_list = (SubscriberList*)malloc(sizeof(struct SubscriberList));
+__GI___libc_malloc (bytes=64) at malloc.c:3028
+3028	malloc.c: No such file or directory.
+3033	in malloc.c
+3034	in malloc.c
+3039	in malloc.c
+3042	in malloc.c
+3040	in malloc.c
+3042	in malloc.c
+3045	in malloc.c
+3048	in malloc.c
+3050	in malloc.c
+tcache_get (tc_idx=3) at malloc.c:2941
+2941	in malloc.c
+2943	in malloc.c
+2944	in malloc.c
+__GI___libc_malloc (bytes=<optimized out>) at malloc.c:3081
+3081	in malloc.c
+init_subscriber_list () at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:37
+37	    new_list->head = (SubscriberNode*)malloc(sizeof(SubscriberNode));
+__GI___libc_malloc (bytes=24) at malloc.c:3028
+3028	malloc.c: No such file or directory.
+3033	in malloc.c
+3034	in malloc.c
+3039	in malloc.c
+3042	in malloc.c
+3040	in malloc.c
+3042	in malloc.c
+3045	in malloc.c
+3048	in malloc.c
+3055	in malloc.c
+3057	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=24) at malloc.c:3521
+3521	in malloc.c
+3553	in malloc.c
+3521	in malloc.c
+3553	in malloc.c
+3557	in malloc.c
+3581	in malloc.c
+3583	in malloc.c
+3586	in malloc.c
+3588	in malloc.c
+3642	in malloc.c
+3644	in malloc.c
+3642	in malloc.c
+3644	in malloc.c
+3641	in malloc.c
+3722	in malloc.c
+3721	in malloc.c
+3722	in malloc.c
+3721	in malloc.c
+3722	in malloc.c
+3720	in malloc.c
+3726	in malloc.c
+3792	in malloc.c
+3752	in malloc.c
+3879	in malloc.c
+3731	in malloc.c
+3732	in malloc.c
+3752	in malloc.c
+3792	in malloc.c
+3732	in malloc.c
+3893	in malloc.c
+3904	in malloc.c
+3977	in malloc.c
+3978	in malloc.c
+3979	in malloc.c
+3980	in malloc.c
+3981	in malloc.c
+3986	in malloc.c
+3990	in malloc.c
+3993	in malloc.c
+3990	in malloc.c
+3993	in malloc.c
+3990	in malloc.c
+3993	in malloc.c
+3995	in malloc.c
+3996	in malloc.c
+4000	in malloc.c
+4002	in malloc.c
+4004	in malloc.c
+4000	in malloc.c
+4002	in malloc.c
+4004	in malloc.c
+4000	in malloc.c
+4008	in malloc.c
+4011	in malloc.c
+4020	in malloc.c
+4023	in malloc.c
+4028	in malloc.c
+4025	in malloc.c
+4028	in malloc.c
+4031	in malloc.c
+4046	in malloc.c
+4041	in malloc.c
+4047	in malloc.c
+4055	in malloc.c
+4049	in malloc.c
+4050	in malloc.c
+4051	in malloc.c
+4052	in malloc.c
+4055	in malloc.c
+4056	in malloc.c
+4057	in malloc.c
+4059	in malloc.c
+4060	in malloc.c
+4062	in malloc.c
+4064	in malloc.c
+4065	in malloc.c
+4104	in malloc.c
+alloc_perturb (n=<optimized out>, p=<optimized out>) at malloc.c:1887
+1887	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=24) at malloc.c:4103
+4103	in malloc.c
+4104	in malloc.c
+alloc_perturb (n=24, p=0x55555575c9c0 "\260\022\273\367\377\177") at malloc.c:1887
+1887	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=24) at malloc.c:4131
+4131	in malloc.c
+__GI___libc_malloc (bytes=24) at malloc.c:3058
+3058	in malloc.c
+3057	in malloc.c
+3058	in malloc.c
+3081	in malloc.c
+init_subscriber_list () at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:38
+38	    new_list->tail = (SubscriberNode*)malloc(sizeof(SubscriberNode));
+__GI___libc_malloc (bytes=24) at malloc.c:3028
+3028	malloc.c: No such file or directory.
+3033	in malloc.c
+3034	in malloc.c
+3039	in malloc.c
+3042	in malloc.c
+3040	in malloc.c
+3042	in malloc.c
+3045	in malloc.c
+3048	in malloc.c
+3055	in malloc.c
+3057	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=24) at malloc.c:3521
+3521	in malloc.c
+3553	in malloc.c
+3521	in malloc.c
+3553	in malloc.c
+3557	in malloc.c
+3581	in malloc.c
+3583	in malloc.c
+3586	in malloc.c
+3588	in malloc.c
+3642	in malloc.c
+3644	in malloc.c
+3642	in malloc.c
+3644	in malloc.c
+3641	in malloc.c
+3722	in malloc.c
+3721	in malloc.c
+3722	in malloc.c
+3721	in malloc.c
+3722	in malloc.c
+3720	in malloc.c
+3726	in malloc.c
+3792	in malloc.c
+3752	in malloc.c
+3879	in malloc.c
+3731	in malloc.c
+3732	in malloc.c
+3752	in malloc.c
+3792	in malloc.c
+3732	in malloc.c
+3735	in malloc.c
+3736	in malloc.c
+3739	in malloc.c
+3749	in malloc.c
+3734	in malloc.c
+3749	in malloc.c
+3751	in malloc.c
+3750	in malloc.c
+3751	in malloc.c
+3755	in malloc.c
+3756	in malloc.c
+3755	in malloc.c
+3757	in malloc.c
+3760	in malloc.c
+3758	in malloc.c
+3759	in malloc.c
+3760	in malloc.c
+3762	in malloc.c
+3763	in malloc.c
+3766	in malloc.c
+3772	in malloc.c
+3766	in malloc.c
+3768	in malloc.c
+3773	in malloc.c
+alloc_perturb (n=<optimized out>, p=<optimized out>) at malloc.c:1887
+1887	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=24) at malloc.c:3769
+3769	in malloc.c
+3773	in malloc.c
+alloc_perturb (n=24, p=0x55555575c9e0 "\240\f\273\367\377\177") at malloc.c:1887
+1887	in malloc.c
+_int_malloc (av=av@entry=0x7ffff7bb0c40 <main_arena>, bytes=bytes@entry=24) at malloc.c:4131
+4131	in malloc.c
+__GI___libc_malloc (bytes=24) at malloc.c:3058
+3058	in malloc.c
+3057	in malloc.c
+3058	in malloc.c
+3081	in malloc.c
+init_subscriber_list () at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:40
+40	    new_list->head->prev_node = NULL;
+41	    new_list->tail->next_node = NULL;
+43	    new_list->head->next_node = new_list->tail;
+44	    new_list->tail->prev_node = new_list->head;
+46	    new_list->size = 0;
+48	    pthread_mutex_init(&new_list->mutex, NULL);
+__GI___pthread_mutex_init (mutex=0x55555575ea00, mutexattr=0x0) at pthread_mutex_init.c:58
+58	pthread_mutex_init.c: No such file or directory.
+77	in pthread_mutex_init.c
+101	in pthread_mutex_init.c
+157	in pthread_mutex_init.c
+159	in pthread_mutex_init.c
+160	in pthread_mutex_init.c
+init_subscriber_list () at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:50
+50	    return new_list;
+51	}
+init_channel (name=0x55555575b740 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:17
+17	    return new_ch;
+18	}
+get_channel (channel_list=0x55555575b670, name=0x55555575b740 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel_list.c:88
+88	    pthread_mutex_lock(&channel_list->mutex);
+__GI___pthread_mutex_lock (mutex=0x55555575b688) at ../nptl/pthread_mutex_lock.c:65
+65	../nptl/pthread_mutex_lock.c: No such file or directory.
+67	in ../nptl/pthread_mutex_lock.c
+69	in ../nptl/pthread_mutex_lock.c
+64	in ../nptl/pthread_mutex_lock.c
+73	in ../nptl/pthread_mutex_lock.c
+75	in ../nptl/pthread_mutex_lock.c
+78	in ../nptl/pthread_mutex_lock.c
+79	in ../nptl/pthread_mutex_lock.c
+154	in ../nptl/pthread_mutex_lock.c
+157	in ../nptl/pthread_mutex_lock.c
+159	in ../nptl/pthread_mutex_lock.c
+162	in ../nptl/pthread_mutex_lock.c
+164	in ../nptl/pthread_mutex_lock.c
+165	in ../nptl/pthread_mutex_lock.c
+get_channel (channel_list=0x55555575b670, name=0x55555575b740 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel_list.c:90
+90	    void* result = bsearch((void*)&with_name,
+91	            (void*)channel_list->channels,
+90	    void* result = bsearch((void*)&with_name,
+__GI_bsearch (__key=0x7fffffffdbd8, __base=0x55555575b7c0, __nmemb=0, __size=8, __compar=0x555555556ad2 <compare_channels>)
+    at ../bits/stdlib-bsearch.h:22
+22	../bits/stdlib-bsearch.h: No such file or directory.
+29	in ../bits/stdlib-bsearch.h
+22	in ../bits/stdlib-bsearch.h
+29	in ../bits/stdlib-bsearch.h
+42	in ../bits/stdlib-bsearch.h
+43	in ../bits/stdlib-bsearch.h
+get_channel (channel_list=0x55555575b670, name=0x55555575b740 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel_list.c:96
+96	    pthread_mutex_unlock(&channel_list->mutex);
+__GI___pthread_mutex_unlock (mutex=0x55555575b688) at pthread_mutex_unlock.c:345
+345	pthread_mutex_unlock.c: No such file or directory.
+__pthread_mutex_unlock_usercnt (decr=1, mutex=0x55555575b688) at pthread_mutex_unlock.c:344
+344	in pthread_mutex_unlock.c
+345	in pthread_mutex_unlock.c
+__pthread_mutex_unlock_usercnt (decr=1, mutex=0x55555575b688) at pthread_mutex_unlock.c:38
+38	in pthread_mutex_unlock.c
+39	in pthread_mutex_unlock.c
+38	in pthread_mutex_unlock.c
+39	in pthread_mutex_unlock.c
+43	in pthread_mutex_unlock.c
+48	in pthread_mutex_unlock.c
+51	in pthread_mutex_unlock.c
+54	in pthread_mutex_unlock.c
+56	in pthread_mutex_unlock.c
+__GI___pthread_mutex_unlock (mutex=0x55555575b688) at pthread_mutex_unlock.c:346
+346	in pthread_mutex_unlock.c
+get_channel (channel_list=0x55555575b670, name=0x55555575b740 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel_list.c:98
+98	    destroy_channel(&with_name);
+destroy_channel (ch=0x7fffffffdbd8) at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:32
+32	    destroy_circular_buffer(&(**ch).data_buffer);
+destroy_circular_buffer (buffer=0x55555575c948) at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:105
+105	    empty_circular_buffer(*buffer);
+empty_circular_buffer (buffer=0x55555575eac0) at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:91
+91	    pthread_mutex_lock(&buffer->mutex);
+__GI___pthread_mutex_lock (mutex=0x55555575fad0) at ../nptl/pthread_mutex_lock.c:65
+65	../nptl/pthread_mutex_lock.c: No such file or directory.
+67	in ../nptl/pthread_mutex_lock.c
+69	in ../nptl/pthread_mutex_lock.c
+64	in ../nptl/pthread_mutex_lock.c
+73	in ../nptl/pthread_mutex_lock.c
+82	in ../nptl/pthread_mutex_lock.c
+93	in ../nptl/pthread_mutex_lock.c
+97	in ../nptl/pthread_mutex_lock.c
+100	in ../nptl/pthread_mutex_lock.c
+113	in ../nptl/pthread_mutex_lock.c
+115	in ../nptl/pthread_mutex_lock.c
+116	in ../nptl/pthread_mutex_lock.c
+154	in ../nptl/pthread_mutex_lock.c
+157	in ../nptl/pthread_mutex_lock.c
+159	in ../nptl/pthread_mutex_lock.c
+162	in ../nptl/pthread_mutex_lock.c
+164	in ../nptl/pthread_mutex_lock.c
+165	in ../nptl/pthread_mutex_lock.c
+empty_circular_buffer (buffer=0x55555575eac0) at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:93
+93	    for (int i = 0; i < buffer->size; ++i) {
+97	    buffer->size = 0;
+98	    buffer->head = 0;
+100	    pthread_mutex_unlock(&buffer->mutex);
+__GI___pthread_mutex_unlock (mutex=0x55555575fad0) at pthread_mutex_unlock.c:345
+345	pthread_mutex_unlock.c: No such file or directory.
+__pthread_mutex_unlock_usercnt (decr=1, mutex=0x55555575fad0) at pthread_mutex_unlock.c:344
+344	in pthread_mutex_unlock.c
+345	in pthread_mutex_unlock.c
+__pthread_mutex_unlock_usercnt (decr=1, mutex=0x55555575fad0) at pthread_mutex_unlock.c:38
+38	in pthread_mutex_unlock.c
+39	in pthread_mutex_unlock.c
+38	in pthread_mutex_unlock.c
+39	in pthread_mutex_unlock.c
+43	in pthread_mutex_unlock.c
+60	in pthread_mutex_unlock.c
+66	in pthread_mutex_unlock.c
+70	in pthread_mutex_unlock.c
+__GI___pthread_mutex_unlock (mutex=0x55555575fad0) at pthread_mutex_unlock.c:345
+345	in pthread_mutex_unlock.c
+__pthread_mutex_unlock_usercnt (decr=1, mutex=0x55555575fad0) at pthread_mutex_unlock.c:73
+73	in pthread_mutex_unlock.c
+48	in pthread_mutex_unlock.c
+51	in pthread_mutex_unlock.c
+54	in pthread_mutex_unlock.c
+56	in pthread_mutex_unlock.c
+__GI___pthread_mutex_unlock (mutex=0x55555575fad0) at pthread_mutex_unlock.c:346
+346	in pthread_mutex_unlock.c
+empty_circular_buffer (buffer=0x55555575eac0) at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:101
+101	}
+destroy_circular_buffer (buffer=0x55555575c948) at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:106
+106	    free(*buffer);
+__GI___libc_free (mem=0x55555575eac0) at malloc.c:3086
+3086	malloc.c: No such file or directory.
+3091	in malloc.c
+3092	in malloc.c
+3098	in malloc.c
+3103	in malloc.c
+3101	in malloc.c
+3103	in malloc.c
+3121	in malloc.c
+3123	in malloc.c
+3124	in malloc.c
+_int_free (have_lock=0, p=0x55555575eab0, av=0x7ffff7bb0c40 <main_arena>) at malloc.c:4149
+4149	in malloc.c
+4155	in malloc.c
+4156	in malloc.c
+4160	in malloc.c
+4169	in malloc.c
+4167	in malloc.c
+4170	in malloc.c
+4184	in malloc.c
+__GI___libc_free (mem=0x55555575eac0) at malloc.c:3124
+3124	in malloc.c
+_int_free (have_lock=0, p=0x55555575eab0, av=0x7ffff7bb0c40 <main_arena>) at malloc.c:4259
+4259	in malloc.c
+4262	in malloc.c
+4263	in malloc.c
+4262	in malloc.c
+4272	in malloc.c
+4268	in malloc.c
+4272	in malloc.c
+4275	in malloc.c
+4277	in malloc.c
+4275	in malloc.c
+4280	in malloc.c
+4283	in malloc.c
+4284	in malloc.c
+4285	in malloc.c
+4288	in malloc.c
+free_perturb (n=4144, p=0x55555575eac0 "") at malloc.c:1894
+1894	in malloc.c
+_int_free (have_lock=0, p=0x55555575eab0, av=0x7ffff7bb0c40 <main_arena>) at malloc.c:4291
+4291	in malloc.c
+4298	in malloc.c
+4303	in malloc.c
+4307	in malloc.c
+4316	in malloc.c
+4315	in malloc.c
+4317	in malloc.c
+4321	in malloc.c
+4319	in malloc.c
+4320	in malloc.c
+4321	in malloc.c
+4323	in malloc.c
+4324	in malloc.c
+4326	in malloc.c
+4327	in malloc.c
+4329	in malloc.c
+4330	in malloc.c
+4360	in malloc.c
+4380	in malloc.c
+__GI___libc_free (mem=<optimized out>) at malloc.c:3125
+3125	in malloc.c
+destroy_circular_buffer (buffer=0x55555575c948) at /home/ryan/sailbot/sailbot-19/src/msg/circular_buffer.c:107
+107	    *buffer = (CircularBuffer*)NULL;
+108	}destroy_channel (ch=0x7fffffffdbd8) at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:33
+33	    destroy_subscriber_list(&(**ch).subscriber_list);
+destroy_subscriber_list (subscriber_list=0x55555575c950) at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:127
+127	    SubscriberNode* current = (**subscriber_list).head;
+129	    pthread_mutex_lock(&(*subscriber_list)->mutex);
+__GI___pthread_mutex_lock (mutex=0x55555575ea00) at ../nptl/pthread_mutex_lock.c:65
+65	../nptl/pthread_mutex_lock.c: No such file or directory.
+67	in ../nptl/pthread_mutex_lock.c
+69	in ../nptl/pthread_mutex_lock.c
+64	in ../nptl/pthread_mutex_lock.c
+73	in ../nptl/pthread_mutex_lock.c
+75	in ../nptl/pthread_mutex_lock.c
+78	in ../nptl/pthread_mutex_lock.c
+79	in ../nptl/pthread_mutex_lock.c
+154	in ../nptl/pthread_mutex_lock.c
+157	in ../nptl/pthread_mutex_lock.c
+159	in ../nptl/pthread_mutex_lock.c
+162	in ../nptl/pthread_mutex_lock.c
+164	in ../nptl/pthread_mutex_lock.c
+165	in ../nptl/pthread_mutex_lock.c
+destroy_subscriber_list (subscriber_list=0x55555575c950) at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:131
+131	    while (current->next_node != (SubscriberNode*)NULL) {
+132	        current = current->next_node;
+133	        free(current->prev_node);
+__GI___libc_free (mem=0x55555575c9c0) at malloc.c:3086
+3086	malloc.c: No such file or directory.
+3091	in malloc.c
+3092	in malloc.c
+3098	in malloc.c
+3103	in malloc.c
+3101	in malloc.c
+3103	in malloc.c
+3121	in malloc.c
+3123	in malloc.c
+3124	in malloc.c
+_int_free (have_lock=0, p=0x55555575c9b0, av=0x7ffff7bb0c40 <main_arena>) at malloc.c:4149
+4149	in malloc.c
+4155	in malloc.c
+4156	in malloc.c
+4160	in malloc.c
+4169	in malloc.c
+4167	in malloc.c
+4170	in malloc.c
+4171	in malloc.c
+4173	in malloc.c
+tcache_put (tc_idx=0, chunk=0x55555575c9b0) at malloc.c:2929
+2929	in malloc.c
+2932	in malloc.c
+2930	in malloc.c
+2931	in malloc.c
+2932	in malloc.c
+__GI___libc_free (mem=<optimized out>) at malloc.c:3125
+3125	in malloc.c
+destroy_subscriber_list (subscriber_list=0x55555575c950) at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:131
+131	    while (current->next_node != (SubscriberNode*)NULL) {
+135	    free(current);
+__GI___libc_free (mem=0x55555575c9e0) at malloc.c:3086
+3086	malloc.c: No such file or directory.
+3091	in malloc.c
+3092	in malloc.c
+3098	in malloc.c
+3103	in malloc.c
+3101	in malloc.c
+3103	in malloc.c
+3121	in malloc.c
+3123	in malloc.c
+3124	in malloc.c
+_int_free (have_lock=0, p=0x55555575c9d0, av=0x7ffff7bb0c40 <main_arena>) at malloc.c:4149
+4149	in malloc.c
+4155	in malloc.c
+4156	in malloc.c
+4160	in malloc.c
+4169	in malloc.c
+4167	in malloc.c
+4170	in malloc.c
+4171	in malloc.c
+4173	in malloc.c
+tcache_put (tc_idx=0, chunk=0x55555575c9d0) at malloc.c:2929
+2929	in malloc.c
+2932	in malloc.c
+2930	in malloc.c
+2931	in malloc.c
+2932	in malloc.c
+__GI___libc_free (mem=<optimized out>) at malloc.c:3125
+3125	in malloc.c
+destroy_subscriber_list (subscriber_list=0x55555575c950) at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:137
+137	    pthread_mutex_unlock(&(*subscriber_list)->mutex);
+__GI___pthread_mutex_unlock (mutex=0x55555575ea00) at pthread_mutex_unlock.c:345
+345	pthread_mutex_unlock.c: No such file or directory.
+__pthread_mutex_unlock_usercnt (decr=1, mutex=0x55555575ea00) at pthread_mutex_unlock.c:344
+344	in pthread_mutex_unlock.c
+345	in pthread_mutex_unlock.c
+__pthread_mutex_unlock_usercnt (decr=1, mutex=0x55555575ea00) at pthread_mutex_unlock.c:38
+38	in pthread_mutex_unlock.c
+39	in pthread_mutex_unlock.c
+38	in pthread_mutex_unlock.c
+39	in pthread_mutex_unlock.c
+43	in pthread_mutex_unlock.c
+48	in pthread_mutex_unlock.c
+51	in pthread_mutex_unlock.c
+54	in pthread_mutex_unlock.c
+56	in pthread_mutex_unlock.c
+__GI___pthread_mutex_unlock (mutex=0x55555575ea00) at pthread_mutex_unlock.c:346
+346	in pthread_mutex_unlock.c
+destroy_subscriber_list (subscriber_list=0x55555575c950) at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:139
+139	    free(*subscriber_list);
+__GI___libc_free (mem=0x55555575e9f0) at malloc.c:3086
+3086	malloc.c: No such file or directory.
+3091	in malloc.c
+3092	in malloc.c
+3098	in malloc.c
+3103	in malloc.c
+3101	in malloc.c
+3103	in malloc.c
+3121	in malloc.c
+3123	in malloc.c
+3124	in malloc.c
+_int_free (have_lock=0, p=0x55555575e9e0, av=0x7ffff7bb0c40 <main_arena>) at malloc.c:4149
+4149	in malloc.c
+4155	in malloc.c
+4156	in malloc.c
+4160	in malloc.c
+4169	in malloc.c
+4167	in malloc.c
+4170	in malloc.c
+4171	in malloc.c
+4173	in malloc.c
+tcache_put (tc_idx=3, chunk=0x55555575e9e0) at malloc.c:2929
+2929	in malloc.c
+2932	in malloc.c
+2930	in malloc.c
+2931	in malloc.c
+2932	in malloc.c
+__GI___libc_free (mem=<optimized out>) at malloc.c:3125
+3125	in malloc.c
+destroy_subscriber_list (subscriber_list=0x55555575c950) at /home/ryan/sailbot/sailbot-19/src/msg/subscriber_list.c:140
+140	    *subscriber_list = (SubscriberList*)NULL;
+142	}
+destroy_channel (ch=0x7fffffffdbd8) at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:34
+34	    free((**ch).name);
+__GI___libc_free (mem=0x55555575ea60) at malloc.c:3086
+3086	malloc.c: No such file or directory.
+3091	in malloc.c
+3092	in malloc.c
+3098	in malloc.c
+3103	in malloc.c
+3101	in malloc.c
+3103	in malloc.c
+3121	in malloc.c
+3123	in malloc.c
+3124	in malloc.c
+_int_free (have_lock=0, p=0x55555575ea50, av=0x7ffff7bb0c40 <main_arena>) at malloc.c:4149
+4149	in malloc.c
+4155	in malloc.c
+4156	in malloc.c
+4160	in malloc.c
+4169	in malloc.c
+4167	in malloc.c
+4170	in malloc.c
+4171	in malloc.c
+4173	in malloc.c
+tcache_put (tc_idx=0, chunk=0x55555575ea50) at malloc.c:2929
+2929	in malloc.c
+2932	in malloc.c
+2930	in malloc.c
+2931	in malloc.c
+2932	in malloc.c
+__GI___libc_free (mem=<optimized out>) at malloc.c:3125
+3125	in malloc.c
+destroy_channel (ch=0x7fffffffdbd8) at /home/ryan/sailbot/sailbot-19/src/msg/channel.c:35
+35	    *ch = (Channel*)NULL;
+36	}
+get_channel (channel_list=0x55555575b670, name=0x55555575b740 "test") at /home/ryan/sailbot/sailbot-19/src/msg/channel_list.c:100
+100	    if (result == NULL) {
+101	        return (Channel*)NULL;
+105	}
+add_channel (channel_list=0x55555575b670, channel=0x55555575b6c0) at /home/ryan/sailbot/sailbot-19/src/msg/channel_list.c:67
+67	    if (channel_list->size == channel_list->capacity) {
+71	    pthread_mutex_lock(&channel_list->mutex);
+__GI___pthread_mutex_lock (mutex=0x55555575b688) at ../nptl/pthread_mutex_lock.c:65
+65	../nptl/pthread_mutex_lock.c: No such file or directory.
+67	in ../nptl/pthread_mutex_lock.c
+69	in ../nptl/pthread_mutex_lock.c
+64	in ../nptl/pthread_mutex_lock.c
+73	in ../nptl/pthread_mutex_lock.c
+75	in ../nptl/pthread_mutex_lock.c
+78	in ../nptl/pthread_mutex_lock.c
+79	in ../nptl/pthread_mutex_lock.c
+154	in ../nptl/pthread_mutex_lock.c
+157	in ../nptl/pthread_mutex_lock.c
+159	in ../nptl/pthread_mutex_lock.c
+162	in ../nptl/pthread_mutex_lock.c
+164	in ../nptl/pthread_mutex_lock.c
+165	in ../nptl/pthread_mutex_lock.c
+add_channel (channel_list=0x55555575b670, channel=0x55555575b6c0) at /home/ryan/sailbot/sailbot-19/src/msg/channel_list.c:73
+73	    channel_list->channels[channel_list->size] = channel;
+74	    channel_list->size++;
+76	    qsort((void*)channel_list->channels,
+__GI_qsort (b=0x55555575b7c0, n=1, s=8, cmp=0x555555556ad2 <compare_channels>) at msort.c:308
+308	msort.c: No such file or directory.
+__GI___qsort_r (b=0x55555575b7c0, n=1, s=8, cmp=0x555555556ad2 <compare_channels>, arg=0x0) at msort.c:166
+166	in msort.c
+172	in msort.c
+167	in msort.c
+175	in msort.c
+177	in msort.c
+168	in msort.c
+177	in msort.c
+239	in msort.c
+234	in msort.c
+235	in msort.c
+236	in msort.c
+237	in msort.c
+239	in msort.c
+285	in msort.c
+287	in msort.c
+289	in msort.c
+290	in msort.c
+291	in msort.c
+297	in msort.c
+msort_with_tmp (n=1, b=0x55555575b7c0, p=0x7fffffffdb90) at msort.c:45
+45	in msort.c
+__GI___qsort_r (b=0x55555575b7c0, n=1, s=8, cmp=<optimized out>, arg=<optimized out>) at msort.c:299
+299	in msort.c
+
+Program received signal SIGSEGV, Segmentation fault.
+0x0000555555555ffb in test_subscribe_unsubscribe () at test_subscriber.c:149
+149	    assert(find_subscriber_node_by_id(get_channel(test_relay->channel_list, test_subscriber->channel_name)->subscriber_list, test_subscriber->id)==(SubscriberNode*)NULL);
+
+Program terminated with signal SIGSEGV, Segmentation fault.
+The program no longer exists.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+The program is not being run.
+Quit

@@ -8,6 +8,9 @@
 
 #include "../../../src/msg/subscriber.h"
 #include "../../../src/msg/relay.h"
+#include "../../../src/msg/channel.h"
+#include "../../../src/msg/subscriber_list.h"
+#include "../../../src/msg/channel_list.h"
 #include "test_subscriber.h"
 
 
@@ -88,13 +91,61 @@ static void tear_down() {
 
 // Test Definitions
 
+
+// External Structs
+
+struct Relay {
+    ChannelList *channel_list;
+    pthread_mutex_t mutex;
+};
+
+typedef struct SubscriberNode {
+    struct SubscriberNode* next_node;
+    struct SubscriberNode* prev_node;
+    Subscriber* subscriber;
+} SubscriberNode;
+
+struct SubscriberList {
+    SubscriberNode* head;
+    SubscriberNode* tail;
+    pthread_mutex_t mutex;
+    int size;
+};
+
+// External Static Funcs
+
+static SubscriberNode* find_subscriber_node_by_id(SubscriberList* subscriber_list, char* id) {
+    SubscriberNode* current = subscriber_list->head->next_node;
+    while (current != subscriber_list->tail
+            && strcmp(current->subscriber->id, id) !=  0) {
+        current = current->next_node;
+    }
+
+    if (current == subscriber_list->tail) {
+        return (SubscriberNode*)NULL;
+    }
+
+    return current;
+}
+
 /*
  * Tests the subscribe and unsubscribe methods.
  */
 static void test_subscribe_unsubscribe() { 
     Relay *test_relay = init_relay();
+
     Subscriber *test_subscriber = subscribe(test_relay, channel_name, test_callback);
+
     unsubscribe(test_relay, test_subscriber);
 
-    assert(false);  // The test shouldn't pass unless it's finished
+//    ChannelList *test_ch_list = test_relay->channel_list;
+
+//    Channel* test_channel = get_channel(test_ch_list, test_subscriber->channel_name);
+
+//    SubscriberList *test_sub_list = test_channel->subscriber_list;
+
+//    assert(find_subscriber_node_by_id(test_sub_list, test_subscriber->id)==(SubscriberNode*)NULL);
+
+    assert(find_subscriber_node_by_id(get_channel(test_relay->channel_list, test_subscriber->channel_name)->subscriber_list, test_subscriber->id)==(SubscriberNode*)NULL);
+//    assert(false);  // The test shouldn't pass unless it's finished
 }
