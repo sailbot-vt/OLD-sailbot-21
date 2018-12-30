@@ -6,8 +6,8 @@
 
 
 #include "test_relay.h"
-#include "../../../src/msg/relay.h"
-#include "../../../src/msg/subscriber.h"
+#include "../../src/msg/relay.h"
+#include "../../src/msg/subscriber.h"
 
 
 #define NUM_TESTS 2

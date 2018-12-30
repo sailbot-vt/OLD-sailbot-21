@@ -6,11 +6,11 @@
 #include <string.h>
 
 
-#include "../../../src/msg/subscriber.h"
-#include "../../../src/msg/relay.h"
-#include "../../../src/msg/channel.h"
-#include "../../../src/msg/subscriber_list.h"
-#include "../../../src/msg/channel_list.h"
+#include "../../src/msg/subscriber.h"
+#include "../../src/msg/relay.h"
+#include "../../src/msg/channel.h"
+#include "../../src/msg/subscriber_list.h"
+#include "../../src/msg/channel_list.h"
 #include "test_subscriber.h"
 
 

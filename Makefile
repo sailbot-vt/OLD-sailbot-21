@@ -7,10 +7,10 @@ init:
 	pip install -r requirements.txt; \
 	cd src/msg && $(MAKE) build
 	-mkdir bin
-	cd $(ROOT_DIR)/tests/msg_tests/c_tests && $(MAKE) build ROOT_DIR=$(ROOT_DIR)
+	cd $(ROOT_DIR)/tests/msg_tests && $(MAKE) build ROOT_DIR=$(ROOT_DIR)
 
 test:
-	cd tests/msg_tests/c_tests && $(MAKE) test ROOT_DIR=$(ROOT_DIR)
+	cd tests/msg_tests && $(MAKE) test ROOT_DIR=$(ROOT_DIR)
 	source ./p3_7env/bin/activate; \
 	export ENV test; \
 	python -m unittest discover -vcs tests

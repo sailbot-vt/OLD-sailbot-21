@@ -6,8 +6,8 @@
 
 
 #include "test_channel_list.h"
-#include "../../../src/msg/channel_list.h"
-#include "../../../src/msg/channel.h"
+#include "../../src/msg/channel_list.h"
+#include "../../src/msg/channel.h"
 
 
 #define NUM_TESTS 2

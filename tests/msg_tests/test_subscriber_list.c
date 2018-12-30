@@ -7,9 +7,9 @@
 
 
 #include "test_subscriber_list.h"
-#include "../../../src/msg/msg_types.h"
-#include "../../../src/msg/subscriber_list.h"
-#include "../../../src/msg/subscriber.h"
+#include "../../src/msg/msg_types.h"
+#include "../../src/msg/subscriber_list.h"
+#include "../../src/msg/subscriber.h"
 
 
 #define NUM_TESTS 3

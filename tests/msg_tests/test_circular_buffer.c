@@ -6,8 +6,8 @@
 
 
 #include "test_circular_buffer.h"
-#include "../../../src/msg/msg_types.h"
-#include "../../../src/msg/circular_buffer.h"
+#include "../../src/msg/msg_types.h"
+#include "../../src/msg/circular_buffer.h"
 
 
 #define NUM_TESTS 2
