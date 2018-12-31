@@ -4,3 +4,8 @@ python:
 
 install: make init
 script: make test
+
+notifications:
+  slack:
+    rooms:
+      - vt-sailbot:7gOKLogSZkfyIYCRhmupIiUC#boat-programming
