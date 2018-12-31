@@ -151,7 +151,7 @@ static void test_subscribe_unsubscribe() {
 
     assert(find_subscriber_node_by_id(test_sub_list, test_subscriber->id)==(SubscriberNode*)NULL);
 
-    free(test_relay);
+    destroy_relay(&test_relay);
 
     // free all the memory
 }
