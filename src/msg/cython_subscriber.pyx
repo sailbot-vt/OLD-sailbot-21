@@ -1,4 +1,9 @@
+from libc.stdint cimport uintptr_t
 from cpython.ref cimport PyObject
+
+
+cimport src.msg.cython_relay
+
 
 cdef extern from "subscriber.h":
     ctypedef struct Subscriber:
@@ -11,13 +16,13 @@ cdef extern from "subscriber.h":
 
 cdef class _Subscriber:
     cdef Subscriber* subscriber
-    cdef Relay* relay
+    cdef uintptr_t relay
 
     def __cinit__(self):
         self.subscriber = NULL
-        self.relay = NULL
+        self.relay = <uintptr_t>NULL
 
-    def subscribe(self, relay, channel_name, data_callback):
+    def subscribe(self, relay_wrapper, channel_name, data_callback):
         """Subscribe to an event channel.
 
         Keyword arguments:
@@ -25,9 +30,9 @@ cdef class _Subscriber:
         channel_name -- The name of the channel to subscribe to.
         data_callback -- Function to execute on event, passed data from publisher
         """
-        self.relay = <Relay*>relay.relay
-        self.subscriber = subscribe(self.relay, channel_name, <PyObject*>data_callback)
+        self.relay = <uintptr_t>relay_wrapper.get_relay()
+        self.subscriber = subscribe(<Relay*>self.relay, channel_name, <PyObject*>data_callback)
 
     def __dealloc__(self):
         cdef Subscriber* temp = <Subscriber*>self.subscriber
-        unsubscribe(self.relay, temp)
+        unsubscribe(<Relay*>self.relay, temp)

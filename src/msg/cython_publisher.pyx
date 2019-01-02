@@ -1,4 +1,8 @@
+from libc.stdint cimport uintptr_t
 import pickle
+
+
+cimport src.msg.cython_relay
 
 
 cdef extern from "publisher.h":
@@ -7,7 +11,7 @@ cdef extern from "publisher.h":
     void publish(Relay* relay, char* channel_name, void* data, size_t data_size)
 
 
-def _publish(relay, channel_name, data):
+def _publish(relay_wrapper, channel_name, data):
     """Publishes data to a channel.
 
     Keyword arguments:
@@ -19,4 +23,6 @@ def _publish(relay, channel_name, data):
     cdef size_t data_size = <int>sizeof(pickled_data)
     cdef void* data_ptr = <void*>pickled_data
 
-    publish(<Relay*>relay.relay, channel_name, data_ptr, data_size)
+    cdef uintptr_t relay = <uintptr_t>relay_wrapper.get_relay()
+
+    publish(<Relay*>relay, channel_name, data_ptr, data_size)

@@ -16,14 +16,17 @@ extensions = [
         Extension(name="cython_subscriber",
                   sources=["cython_subscriber.pyx"] + source_files,
                   include_dirs=dirs,
+                  compiler_directives={'language_level': 3},
                   extra_compile_args=['-std=gnu11']),
         Extension(name="cython_publisher",
                   sources=["cython_publisher.pyx"] + source_files,
                   include_dirs=dirs,
+                  compiler_directives={'language_level': 3},
                   extra_compile_args=['-std=gnu11']),
         Extension(name="cython_relay",
                   sources=["cython_relay.pyx"] + source_files,
                   include_dirs=dirs,
+                  compiler_directives={'language_level': 3},
                   extra_compile_args=['-std=gnu11'])
 ]
 
