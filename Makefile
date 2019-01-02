@@ -11,7 +11,7 @@ init:
 
 test:
 	cd tests/msg_tests && $(MAKE) test ROOT_DIR=$(ROOT_DIR)
-	source ./p3_7env/bin/activate; \
+	. ./p3_7env/bin/activate; \
 	export ENV test; \
 	python -m unittest discover -vcs tests
 
