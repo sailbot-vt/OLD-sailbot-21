@@ -8,7 +8,9 @@ Expected messgae to be object such that:
 """
 from threading import Thread
 from enum import Enum
-from src.msg import msg
+
+from pubsub import pub
+
 from src.sail.sail_servo_controller import SailServoController
 
 """ I don't know where to put these constants
@@ -32,9 +34,9 @@ class SailThread(Thread):
         """
         global sail_control
         sail_control = SailServoController(pwm_pin, duty_min, duty_max, angle_min, angle_max)
-        rc_command_subscriber = msg.Subscribe("RCComand", "rc_command_callback_function")
+        rc_command_subscriber = pub.subscribe("RCComand", self.rc_command_callback_function)
 
-    def rc_command_callback_function(data):
+    def rc_command_callback_function(self, data):
         if not data.TRIM_SAIL is None:
             delta_sail_angle = data.TRIM_SAIL
             sail_control.change_sail_angle(delta_sail_angle)
@@ -74,4 +76,4 @@ def make_sail_subscriber(sail_subscriber_type, channelName="RCComand", functionN
     if sail_subscriber_type == SailSubscriberType.Testable:
         return TestableSailSubscriber()
 
-    return msg.Subscribe(channelName, functionName)
+    return pub.subscribe(channelName, functionName)

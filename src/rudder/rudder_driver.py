@@ -7,14 +7,14 @@ Expected messgae to be object such that:
     -For TRIM_SAIL positive brings the winch in.
 """
 from threading import Thread
-from src.msg import msg
+from pubsub import pub
 from enum import Enum
 from src.rudder.rudder_servo_controller import RudderServoController
 import Adafruit_BBIO
 
 """ I don't know where to put these constants
 Most need to be determined by testing"""
-pwm_pin = 1 #Need to figure out
+pwm_pin = 1  # Need to figure out
 duty_max = 0
 duty_min = 0
 angle_max = 180
@@ -22,6 +22,7 @@ angle_min = -180
 mechanical_advantage = 1
 
 rudder_control = None
+
 
 class RudderThread(Thread):
     """ Thread to subscribe and move the servo as such."""
@@ -34,15 +35,16 @@ class RudderThread(Thread):
         pwm_pin = Adafruit_BBIO.PWM
         global rudder_control
         rudder_control = RudderServoController(pwm_pin, duty_min, duty_max, angle_min, angle_max, mechanical_advantage)
-        rc_command_subscriber = msg.Subscribe("RCComand", "rc_command_callback_function")
+        pub.subscribe("RCCommand", RudderThread.rc_command_callback_function)
 
+    @staticmethod
     def rc_command_callback_function(data):
         if not data.TURN_RUDDER is None:
             delta_rudder_angle = data.TURN_RUDDER
             rudder_control.change_rudder_angle(delta_rudder_angle)
 
 
-class TestableRudderSubscriber():
+class TestableRudderSubscriber:
     """
     Mock subscriber to feed artifical input to the rudder_control
     """
@@ -57,14 +59,17 @@ class TestableRudderSubscriber():
         Mock this method as it is the one that is called.
         """
         for angle in self.delta_angles:
-            self.rudder_control.change_rudder_angle(angle)
+            rudder_control.change_rudder_angle(angle)
+
 
 class RudderSubscriberType(Enum):
     Testable = 0,
     Production = 1
 
 
-def make_rudder_subscriber(rudder_subscriber_type, channelName="RCComand", functionName = "rc_command_callback_function"):
+def make_rudder_subscriber(rudder_subscriber_type,
+                           channel_name="RCComand",
+                           function_name="rc_command_callback_function"):
     """
     Create a subscriber that is real or mocked for the purpose of testing.
 
@@ -75,6 +80,7 @@ def make_rudder_subscriber(rudder_subscriber_type, channelName="RCComand", funct
     The correct type of subscriber.
     """
     if rudder_subscriber_type == RudderSubscriberType.Testable:
-        return TestableRudderSubscriber()
+        TestableRudderSubscriber()
+        return
 
-    return msg.Subscribe(channelName, functionName)
+    pub.subscribe(channel_name, function_name)
