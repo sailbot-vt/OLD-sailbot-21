@@ -80,7 +80,6 @@ def make_broadcaster(broadcaster_type=RCInputBroadcasterType.Messenger):
     Keyword arguments:
     broadcaster_type -- The type of broadcaster to create
 
-
     Returns:
     The correct RCBroadcaster for the environment."""
     if broadcaster_type == RCInputBroadcasterType.Messenger:

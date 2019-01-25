@@ -1,7 +1,9 @@
 import unittest
 from unittest.mock import MagicMock
 from tests.mock_bbio import Adafruit_BBIO
-from src.rc_input.rc_receiver import make_rc_receiver, RCReceiverType
+
+from src.rc_input.pin_config_reader import read_pin_config
+from src.rc_input.rc_receiver import RCReceiver, BBB_MAX_INPUT_VOLTAGE
 from src.rc_input.rc_broadcaster import make_broadcaster, RCInputBroadcasterType
 from src.navigation_mode import NavigationMode
 
@@ -18,12 +20,12 @@ class RCReceiverTests(unittest.TestCase):
         Adafruit_BBIO.GPIO.OUT = MagicMock(name='Adafruit.BBIO.GPIO.OUT')
 
         self.broadcaster = make_broadcaster(RCInputBroadcasterType.Testable)
-        self.r = make_rc_receiver(RCReceiverType.BBIO, broadcaster=self.broadcaster)
+        self.r = RCReceiver(broadcaster=self.broadcaster, pins=read_pin_config())
 
     def tearDown(self):
         """Resets the receiver each test run"""
         self.broadcaster = make_broadcaster(RCInputBroadcasterType.Testable)
-        self.r = make_rc_receiver(RCReceiverType.BBIO, broadcaster=self.broadcaster)
+        self.r = RCReceiver(broadcaster=self.broadcaster, pins=read_pin_config())
 
     def test_read_input(self):
         """Tests that the read_input method queries the ADC pins correctly.
@@ -39,8 +41,24 @@ class RCReceiverTests(unittest.TestCase):
 
     def test_scale_rudder(self):
         """Tests that the receiver reads and scales rudder input correctly"""
-        test_voltages = [0, 0.25, 0.5, 0.75, 1]
-        scaled_outputs = [-80, -20, 0, 20, 80]  # 80 * x^2
+        test_min = self.r.pins["RUDDER"].min_v
+        test_max = self.r.pins["RUDDER"].max_v
+        test_med = self.r.pins["RUDDER"].default_v
+        test_voltages = [
+            test_min,
+            (test_med + test_min) * 0.5,
+            test_med,
+            (test_max + test_med) * 0.5,
+            test_max
+        ]  # Quintiles
+        test_voltages = [v / BBB_MAX_INPUT_VOLTAGE for v in test_voltages]  # Scale to [0, 1]
+        scaled_outputs = [
+            -80,
+            -20,
+            0,
+            20,
+            80
+        ]  # 80 * x^2
 
         for index, (test_voltage, scaled_output) in enumerate(zip(test_voltages, scaled_outputs)):
             # Mock Adafruit_BBIO.ADC.read() method with the correct return value
@@ -52,12 +70,28 @@ class RCReceiverTests(unittest.TestCase):
             assert len(self.broadcaster.rudder_signals) == index + 1
 
             # The test outputs should match the expected values
-            assert self.broadcaster.rudder_signals[index] == scaled_output
+            assert abs(self.broadcaster.rudder_signals[index] - scaled_output) < 3
 
     def test_scale_trim(self):
         """Tests that the receiver reads and scales trim input correctly"""
-        test_voltages = [0, 0.25, 0.5, 0.75, 1]
-        scaled_outputs = [-20, -5, 0, 5, 20]  # 20 * x^2
+        test_min = self.r.pins["TRIM"].min_v
+        test_max = self.r.pins["TRIM"].max_v
+        test_med = self.r.pins["TRIM"].default_v
+        test_voltages = [
+            test_min,
+            (test_med + test_min) * 0.5,
+            test_med,
+            (test_max + test_med) * 0.5,
+            test_max
+        ]  # Quintiles
+        test_voltages = [v / BBB_MAX_INPUT_VOLTAGE for v in test_voltages]  # Scale to [0, 1]
+        scaled_outputs = [
+            -20,
+            -5,
+            0,
+            5,
+            20
+        ]  # 80 * x^2
 
         for index, (test_voltage, scaled_output) in enumerate(zip(test_voltages, scaled_outputs)):
             # Mock Adafruit_BBIO.ADC.read() method with the correct return value
@@ -69,7 +103,7 @@ class RCReceiverTests(unittest.TestCase):
             assert len(self.broadcaster.trim_signals) == index + 1
 
             # The test outputs should match the expected values
-            assert self.broadcaster.trim_signals[index] == scaled_output
+            assert abs(self.broadcaster.trim_signals[index] - scaled_output) < 1
 
     def test_detect_mode(self):
         """Tests that the receiver reads and transforms mode input correctly"""

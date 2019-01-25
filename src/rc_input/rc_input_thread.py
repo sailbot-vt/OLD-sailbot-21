@@ -25,5 +25,5 @@ class RCInputThread(Thread):
     def run(self):
         """Starts a regular input read interval."""
         while True:
-            self.receiver.read_input()
+            self.receiver.send_inputs()
             sleep(RC_READ_INTERVAL)
