@@ -2,11 +2,9 @@ from numpy import sign
 
 from src.navigation_mode import NavigationMode
 
-BBB_MAX_INPUT_VOLTAGE = 1.8
-
 
 class RCReceiver:
-    """An implementation of the receiver behaviors for a receiver using the BBB ADC pins."""
+    """Defines an RC receiver that sends data to a broadcaster."""
 
     def __init__(self, broadcaster, pins):
         """Initializes a new ADC receiver.

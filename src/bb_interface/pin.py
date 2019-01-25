@@ -1,14 +1,12 @@
 from enum import Enum
 from abc import ABC, abstractmethod
 
-import Adafruit_BBIO.ADC as ADC
-import Adafruit_BBIO.GPIO as GPIO
-
 
 class PinType(Enum):
     """An enum type to denote the type of pin"""
-    GPIO = 0,
-    ADC = 1
+    Testable = 0,
+    GPIO = 1,
+    ADC = 2
 
 
 class Pin(ABC):
@@ -29,19 +27,35 @@ class Pin(ABC):
         pass
 
 
+class TestablePin(Pin):
+    """Provides a Pin object to be used for testing."""
+    def __init__(self, name, read_value):
+        self.pin_name = name
+        self.value = read_value
+        self.written_values = []
+
+    def read(self):
+        return self.value
+
+    def set_state(self, state):
+        self.written_values.append(state)
+
+
 class ADCPin(Pin):
     """Provides an interface to an analog input pin"""
 
     MAX_INPUT_VOLTAGE = 1.8
 
-    def __init__(self, config):
+    def __init__(self, config, adc_lib):
         super().__init__(config)
 
         self.min_v = config.get("min_v")
         self.default_v = config.get("default_v")
         self.max_v = config.get("max_v")
 
-        ADC.setup()
+        self.adc_lib = adc_lib
+
+        self.adc_lib.setup()
 
     def read(self):
         """Reads the voltage being supplied to the pin.
@@ -50,8 +64,8 @@ class ADCPin(Pin):
         A floating-point value in [-1, 1], where -1 and 1 are min_v and max_v,
         respectively.
         """
-        ADC.read(self.pin_name)  # According to the Internet, we have to do this twice
-        raw_value = ADC.read(self.pin_name)
+        self.adc_lib.read(self.pin_name)  # According to the Internet, we have to do this twice
+        raw_value = self.adc_lib.read(self.pin_name)
         return self._normalize_voltage(raw_value)
 
     def read_v(self):
@@ -60,8 +74,8 @@ class ADCPin(Pin):
         Returns:
         The voltage currently being read by the pin.
         """
-        ADC.read(self.pin_name)
-        return ADCPin.MAX_INPUT_VOLTAGE * ADC.read(self.pin_name)
+        self.adc_lib.read(self.pin_name)
+        return ADCPin.MAX_INPUT_VOLTAGE * self.adc_lib.read(self.pin_name)
 
     def _normalize_voltage(self, read_value):
         v_range = self.max_v - self.min_v
@@ -72,15 +86,17 @@ class ADCPin(Pin):
 
 class GPIOPin(Pin):
     """Provides an interface to a GPIO pin"""
-    def __init__(self, config):
+    def __init__(self, config, gpio_lib):
         super().__init__(config)
 
-        self._io_type = GPIO.IN
+        self.gpio_lib = gpio_lib
+
+        self._io_type = gpio_lib.IN
 
         if config["io_type"] == "OUT":
-            self.io_type = GPIO.OUT
+            self.io_type = gpio_lib.OUT
         else:
-            self.io_type = GPIO.IN
+            self.io_type = gpio_lib.IN
 
     @property
     def io_type(self):
@@ -89,7 +105,7 @@ class GPIOPin(Pin):
     @io_type.setter
     def io_type(self, value):
         self._io_type = value
-        GPIO.setup(self.pin_name, value)
+        self.gpio_lib.setup(self.pin_name, value)
 
     def read(self):
         """Reads input from the pin.
@@ -97,8 +113,8 @@ class GPIOPin(Pin):
         Returns:
         True if there is voltage being supplied to the pin, false otherwise.
         """
-        self.io_type = GPIO.IN
-        return GPIO.input(self.pin_name)
+        self.io_type = self.gpio_lib.IN
+        return self.gpio_lib.input(self.pin_name)
 
     def set_state(self, state):
         """Sets the output state of the pin.
@@ -106,14 +122,14 @@ class GPIOPin(Pin):
         Keyword arguments:
         state -- Boolean, true will send out high voltage, false will send out low.
         """
-        self.io_type = GPIO.OUT
+        self.io_type = self.gpio_lib.OUT
         if state:
-            GPIO.output(self.pin_name, GPIO.HIGH)
+            self.gpio_lib.output(self.pin_name, self.gpio_lib.HIGH)
         else:
-            GPIO.output(self.pin_name, GPIO.LOW)
+            self.gpio_lib.output(self.pin_name, self.gpio_lib.LOW)
 
 
-def make_pin(config):
+def make_pin(config, mock_lib=None):
     """Method to create a new pin.
 
     Implements the factory design pattern.
@@ -124,9 +140,18 @@ def make_pin(config):
 
     Returns:
     The type of pin specified in the config.
-        """
-    pin_type = PinType[config["pin_type"]]
+    """
+    pin_type = PinType[config.get("pin_type") or "Testable"]
     if pin_type == PinType.ADC:
-        return ADCPin(config)
+        if mock_lib is None:
+            import Adafruit_BBIO.ADC as ADC
+            return ADCPin(config, ADC)
+        return ADCPin(config, mock_lib)
+    elif pin_type == PinType.GPIO:
+        if mock_lib is None:
+            import Adafruit_BBIO.GPIO as GPIO
+            return ADCPin(config, GPIO)
+        return GPIOPin(config, mock_lib)
     else:
-        return GPIOPin(config)
+        return TestablePin(name=config["pin_name"],
+                           read_value=config.get("read_value") or 0)

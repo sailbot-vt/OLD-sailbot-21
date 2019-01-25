@@ -19,7 +19,7 @@ class PinTests(unittest.TestCase):
             "pin_name": "Hello",
             "pin_type": "GPIO",
             "io_type": "IN"
-        })
+        }, mock_lib=Adafruit_BBIO.GPIO)
 
         # Fake HIGH voltage
         Adafruit_BBIO.GPIO.input = MagicMock(name='Adafruit.BBIO.GPIO.input',
@@ -45,7 +45,7 @@ class PinTests(unittest.TestCase):
             "pin_name": "Hello",
             "pin_type": "GPIO",
             "io_type": "OUT"
-        })
+        }, mock_lib=Adafruit_BBIO.GPIO)
 
         # Set to HIGH voltage
         gpio_pin.set_state(True)
@@ -66,7 +66,7 @@ class PinTests(unittest.TestCase):
             "min_v": 0,
             "default_v": 0.5,
             "max_v": 1
-        })
+        }, mock_lib=Adafruit_BBIO.ADC)
 
         # Tests the method
         assert abs(adc_pin.read_v() - 0.9) < 0.01
@@ -83,7 +83,7 @@ class PinTests(unittest.TestCase):
             "min_v": 0,
             "default_v": 0.5,
             "max_v": 1
-        })
+        }, mock_lib=Adafruit_BBIO.ADC)
 
         # Tests the method
         val = adc_pin.read()
