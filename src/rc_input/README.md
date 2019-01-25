@@ -31,8 +31,8 @@ Contains the functionality of an RC receiver, scaling inputs and sending them to
 ### `rc_broadcaster.py`
 Generates and publishes events based on inputs. Includes factory to get a testable broadcaster that records calls to the broadcaster.
 
-### `pin_config.yml`
-Stores the pin configuration for the RC receiver. See the header comment for formatting information.
+### `config.yml`
+Stores the pin configuration for the RC receiver as well as other configuration settings. See the header comment for formatting information.
 
-### `pin_config_reader.py`
-Parses the YAML config file into a Python dictionary for injection into an `RCReceiver`.
+### `config_reader.py`
+Parses the YAML config file into Python.
