@@ -24,7 +24,7 @@ pins:
     frequency: 50
 
 servos:
-  RUDDER:
+  MAIN:
     full_left_duty: 1
     full_right_duty: 2
     full_left_angle: -180

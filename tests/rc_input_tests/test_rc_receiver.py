@@ -1,6 +1,6 @@
 import unittest
 
-from src.bb_interface.pin import make_pin
+from src.hardware.pin import make_pin
 from src.rc_input.rc_receiver import RCReceiver
 from src.rc_input.rc_broadcaster import make_broadcaster, RCInputBroadcasterType
 from src.navigation_mode import NavigationMode

@@ -35,6 +35,18 @@ class TestablePin(Pin):
     def set_state(self, state):
         self.written_values.append(state)
 
+    def start(self, *args):
+        pass
+
+    def stop(self):
+        pass
+
+    def set_duty_cycle(self, value):
+        self.written_values.append(value)
+
+    def set_frequency(self, value):
+        self.written_values.append(value)
+
 
 class ADCPin(Pin):
     """Provides an interface to an analog input pin"""
@@ -128,12 +140,19 @@ class PWMPin(Pin):
     """Provides an interface to a PWM pin"""
     def __init__(self, config, pwm_lib):
         super().__init__(config)
-
         self.pwm_lib = pwm_lib
 
-    def start(self, duty):
-        self.pwm_lib.start(self.pin_name, duty)
+    def start(self, duty, frequency=60.0):
+        self.pwm_lib.start(self.pin_name, duty, frequency)
 
+    def stop(self):
+        self.pwm_lib.stop(self.pin_name)
+
+    def set_duty_cycle(self, duty_cycle):
+        self.pwm_lib.set_duty_cycle(self.pin_name, duty_cycle)
+
+    def set_frequency(self, duty_cycle):
+        self.pwm_lib.set_frequency(self.pin_name, duty_cycle)
 
 
 def make_pin(config, mock_lib=None):

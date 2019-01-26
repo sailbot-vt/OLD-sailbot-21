@@ -1,12 +1,13 @@
 import yaml
+import os
 
-from definitions import ROOT_DIR
 from src.hardware.pin import make_pin
 
 
 def read_pin_config():
     """Reads the pin configuration from config.yml and returns a matching dictionary"""
-    with open(ROOT_DIR + "/src/rc_input/config.yml", "r") as yml:
+    path = os.path.dirname(os.path.abspath(__file__))
+    with open(path + "/config.yml", "r") as yml:
         conf = yaml.load(yml)
         pins = {
             "RUDDER": make_pin(conf["pins"]["RUDDER"]),
@@ -20,7 +21,8 @@ def read_pin_config():
 
 def read_interval():
     """Reads the read interval from config.yml."""
-    with open(ROOT_DIR + "/src/rc_input/config.yml", "r") as yml:
+    path = os.path.dirname(os.path.abspath(__file__))
+    with open(path + "/src/rc_input/config.yml", "r") as yml:
         conf = yaml.load(yml)
         interval = conf["read interval"]
 
