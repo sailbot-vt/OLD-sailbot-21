@@ -140,6 +140,9 @@ class Vec2(Vec):
         self._y = float(y)
         super(Vec2, self).__init__(np.array([x, y], dtype=np.float32))
 
+    def __init__(self, data):
+        super(Vec2, self).__init__(data)
+
     @property
     def x(self):
         return self._x
