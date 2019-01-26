@@ -1,8 +1,11 @@
 init:
-	pip install virtualenv; \
-	virtualenv -p python3.7 p3_7env --no-site-packages; \
+	pip install virtualenv
+	virtualenv -p python3.7 p3_7env --no-site-packages
+
 	. ./p3_7env/bin/activate; \
 	pip install -r requirements.txt
+
+	-mkdir logs
 
 test:
 	. ./p3_7env/bin/activate; \
