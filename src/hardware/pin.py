@@ -21,11 +21,6 @@ class Pin(ABC):
         """
         self.pin_name = config["pin_name"]
 
-    @abstractmethod
-    def read(self):
-        """Returns a value scaled to [-1, 1]"""
-        pass
-
 
 class TestablePin(Pin):
     """Provides a Pin object to be used for testing."""
@@ -127,6 +122,18 @@ class GPIOPin(Pin):
             self.gpio_lib.output(self.pin_name, self.gpio_lib.HIGH)
         else:
             self.gpio_lib.output(self.pin_name, self.gpio_lib.LOW)
+
+
+class PWMPin(Pin):
+    """Provides an interface to a PWM pin"""
+    def __init__(self, config, pwm_lib):
+        super().__init__(config)
+
+        self.pwm_lib = pwm_lib
+
+    def start(self, duty):
+        self.pwm_lib.start(self.pin_name, duty)
+
 
 
 def make_pin(config, mock_lib=None):

@@ -1,0 +1,36 @@
+# Pins must have their function in all caps.
+# All pins must include
+#   pin_name -- The BBB name of the pin, e.g. "P0_0"
+#   pin_type -- The method for reading input from the pin, e.g. ADC
+#
+# Pin types in this module:
+#   - PWM
+#
+# PWM:
+#   PWM pins must specify
+#
+#
+#
+#
+# WARNING: YAML IS WHITESPACE SENSITIVE! PLEASE MATCH INDENTATION STYLE! This
+# means consistently use tabs or spaces, and use the indentation amounts in the
+# language spec available here: https://yaml.org/spec/1.2/spec.html
+
+
+pins:
+  RUDDER:
+    pin_name: "P0_0"
+    pin_type: "PWM"
+    frequency: 50
+
+servos:
+  RUDDER:
+    full_left_duty: 1
+    full_right_duty: 2
+    full_left_angle: -180
+    full_right_angle: 180
+
+rudder:
+  mechanical_adv: 1
+  full_port_angle: -70
+  full_starboard_angle: 70

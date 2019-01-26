@@ -3,7 +3,7 @@
 #   pin_name -- The BBB name of the pin, e.g. "P0_0"
 #   pin_type -- The method for reading input from the pin, e.g. ADC
 #
-# Pin types in this module:
+# Supported pin types:
 #   - ADC
 #   - GPIO
 #
@@ -22,11 +22,6 @@
 # language spec available here: https://yaml.org/spec/1.2/spec.html
 
 
-# How frequently the receiver checks for new inputs
-read interval: 50 / 1000  # seconds
-
-
-# The pins connected to channels from the physical receiver
 pins:
   RUDDER:
     pin_name: "P0_0"
