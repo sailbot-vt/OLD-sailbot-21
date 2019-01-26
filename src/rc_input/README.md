@@ -23,13 +23,16 @@ rc_reader.run()
 again.
 
 ### `rc_input_thread.py`
-Starts the event listening in RC receiver. Maybe this should go in `__init__.py`? Except that `__init__.py` is usually reserved for special purposes, and I don't know if this qualifies.
+Starts the event listening in RC receiver.
 
 ### `rc_receiver.py`
-Contains functionality of an RC receiver, including a factory method to get configuration-specific receiver models.
+Contains the functionality of an RC receiver, scaling inputs and sending them to the broadcaster.
 
 ### `rc_broadcaster.py`
 Generates and publishes events based on inputs. Includes factory to get a testable broadcaster that records calls to the broadcaster.
 
-### `__init.py__`
-Indicates that `rc_input` is a module.
+### `config.yml`
+Stores the pin configuration for the RC receiver as well as other configuration settings. See the header comment for formatting information.
+
+### `config_reader.py`
+Parses the YAML config file into Python.

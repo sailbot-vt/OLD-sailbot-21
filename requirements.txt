@@ -1,3 +1,4 @@
-Cython
+pypubsub
+pyyaml
 numpy
 scipy
