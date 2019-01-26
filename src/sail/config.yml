@@ -3,16 +3,11 @@
 #   pin_name -- The BBB name of the pin, e.g. "P0_0"
 #   pin_type -- The method for reading input from the pin, e.g. ADC
 #
-# Supported pin types:
-#   - ADC
-#   - GPIO
+# Pin types in this module:
+#   - PWM
 #
-# ADC:
-#   ADC pins must have io_type specified as either IN or OUT.
-#
-# GPIO:
-#   GPIO pins must specify min_v, default_v, and max_v, the minimum, default, and
-#   maximum voltages, respectively.
+# PWM:
+#   PWM pins must specify
 #
 #
 #
@@ -23,23 +18,18 @@
 
 
 pins:
-  RUDDER:
+  MAINSHEET:
     pin_name: "P0_0"
-    pin_type: "ADC"
-    min_v: .18
-    default_v: .26
-    max_v: .35
-  TRIM:
-    pin_name: "P0_0"
-    pin_type: "ADC"
-    min_v: .18
-    default_v: .26
-    max_v: .35
-  MODE1:
-    pin_name: "P0_0"
-    pin_type: "GPIO"
-    io_type: IN
-  MODE2:
-    pin_name: "P0_0"
-    pin_type: "GPIO"
-    io_type: IN
+    pin_type: "PWM"
+    frequency: 50
+
+servos:
+  MAIN:
+    full_left_duty: 1
+    full_right_duty: 2
+    full_left_angle: -180
+    full_right_angle: 180
+
+mainsheet:
+  sheeting_adv: 1
+  max_boom_angle: 85
