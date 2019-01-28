@@ -4,7 +4,7 @@ Sets up system and event logging.
 
 Logging is started by the `main.py` module, so that testing and debugging during normal development does not clutter the log files. The `logging` module provides `start()` and `stop()` hooks to manage logging sessions.
 
-Log files end in `.log` and are not tracked by version control. Each session generates a new log file with a header that includes the timestamp and GPS location, if available.
+Log files end in `.log.yml` and are not tracked by version control. Each session generates a new log file with a header that includes the timestamp and GPS location, if available.
 
 Log files are stored on the SailBOT server for two weeks. At the conclusion of every logging session, a background task will attempt to upload all the log files currently stored on the local machine to the server. Logs will be stored in the `%/logs/` directory (where `%` is the application root).
 
