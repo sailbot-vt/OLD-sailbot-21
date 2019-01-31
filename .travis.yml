@@ -5,7 +5,9 @@ python:
 install: make init
 script: make test
 
-after_success: coveralls
+after_success:
+  - . ./p3_7env/bin/activate
+  - coveralls
 
 notifications:
   slack:
