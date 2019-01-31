@@ -10,6 +10,6 @@ init:
 test:
 	. ./p3_7env/bin/activate; \
 	export ENV test; \
-	python -m unittest discover -vcs tests
+	coverage run --source src -m unittest discover -vcs tests
 
 .PHONY: init test clean

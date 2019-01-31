@@ -1,6 +1,7 @@
 # sailbot-19
 
 [![Build status](https://travis-ci.com/vt-sailbot/sailbot-19.svg?branch=master)](https://travis-ci.com/vt-sailbot/sailbot-19)
+[![Coverage Status](https://coveralls.io/repos/github/vt-sailbot/sailbot-19/badge.svg?branch=master)](https://coveralls.io/github/vt-sailbot/sailbot-19?branch=master)
 [![License information](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://github.com/vt-sailbot/sailbot-19/blob/master/LICENSE)
 [![Python version](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/)
 
