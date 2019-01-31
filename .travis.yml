@@ -5,6 +5,8 @@ python:
 install: make init
 script: make test
 
+after_success: coveralls
+
 notifications:
   slack:
     rooms:
