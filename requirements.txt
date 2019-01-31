@@ -2,3 +2,4 @@ pypubsub
 pyyaml
 numpy
 scipy
+opencv-python-headless
