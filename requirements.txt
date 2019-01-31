@@ -3,5 +3,5 @@ pyyaml
 numpy
 scipy
 opencv-python-headless
-coverage
+coverage==4.0.3
 python-coveralls
