@@ -20,7 +20,7 @@ Errors include failed calls to hardware interfaces, and numerical methods failin
 
 #### Data logs
 
-All queries to hardware interfaces should be logged. All modules actively querying hardware interfaces should provide interfaces for a simulation to trigger calls that would normally follow a hardware query, with the ability to pass the values that would normally be returned from the query.
+All queries to hardware interfaces should be logged. All modules actively querying hardware interfaces should provide pre-query hooks to set the return value of the hardware query.
 
 Logging sessions are fully replayable. The top-level `sim.replay` module provides an interface to replay sessions. Options for real-time, fast-forward, and continuous replay are provided.
 
