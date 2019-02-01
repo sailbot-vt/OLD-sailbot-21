@@ -26,3 +26,5 @@ Any code pushed to this repository will automatically be subject to all existing
 To run tests locally before pushing, run `make test` on macOS or Linux, or run each command under `test` in `Makefile` separately on Windows.
 
 Test coverage should be as complete as is practical – for most classes, it should be 90% to 100%. Recall that robustness is our first design requirement.
+
+To view test coverage, run `coverage report` in the context of the `p3_7env` virtual environment.

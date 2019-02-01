@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import MagicMock
+
 from src.rudder.rudder import Rudder
 
 
