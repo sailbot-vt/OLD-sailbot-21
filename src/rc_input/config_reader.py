@@ -22,7 +22,7 @@ def read_pin_config():
 def read_interval():
     """Reads the read interval from config.yml."""
     path = os.path.dirname(os.path.abspath(__file__))
-    with open(path + "/src/rc_input/config.yml", "r") as yml:
+    with open(path + "/config.yml", "r") as yml:
         conf = yaml.load(yml)
         interval = conf["read interval"]
 

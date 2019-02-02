@@ -6,7 +6,8 @@ class PinType(Enum):
     """An enum type to denote the type of pin"""
     Testable = 0,
     GPIO = 1,
-    ADC = 2
+    ADC = 2,
+    PWM = 3
 
 
 class Pin(ABC):
@@ -62,7 +63,10 @@ class ADCPin(Pin):
 
         self.adc_lib = adc_lib
 
-        self.adc_lib.setup()
+        try:
+            self.adc_lib.setup()
+        except:
+            pass
 
     def read(self):
         """Reads the voltage being supplied to the pin.
@@ -112,7 +116,10 @@ class GPIOPin(Pin):
     @io_type.setter
     def io_type(self, value):
         self._io_type = value
-        self.gpio_lib.setup(self.pin_name, value)
+        try:
+            self.gpio_lib.setup(self.pin_name, value)
+        except:
+            pass
 
     def read(self):
         """Reads input from the pin.
@@ -176,8 +183,13 @@ def make_pin(config, mock_lib=None):
     elif pin_type == PinType.GPIO:
         if mock_lib is None:
             import Adafruit_BBIO.GPIO as GPIO
-            return ADCPin(config, GPIO)
+            return GPIOPin(config, GPIO)
         return GPIOPin(config, mock_lib)
+    elif pin_type == PinType.PWM:
+        if mock_lib is None:
+            import Adafruit_BBIO.PWM as PWM
+            return PWMPin(config, PWM)
+        return PWMPin(config, mock_lib)
     else:
         return TestablePin(name=config["pin_name"],
                            read_value=config.get("read_value") or 0)
