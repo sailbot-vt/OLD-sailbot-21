@@ -29,22 +29,22 @@ read interval: 50 / 1000  # seconds
 # The pins connected to channels from the physical receiver
 pins:
   RUDDER:
-    pin_name: "P0_0"
+    pin_name: "AIN0"
     pin_type: "ADC"
     min_v: .18
     default_v: .26
     max_v: .35
   TRIM:
-    pin_name: "P0_0"
+    pin_name: "AIN2"
     pin_type: "ADC"
     min_v: .18
     default_v: .26
     max_v: .35
   MODE1:
-    pin_name: "P0_0"
+    pin_name: "GPIO_115"
     pin_type: "GPIO"
     io_type: IN
   MODE2:
-    pin_name: "P0_0"
+    pin_name: "GPIO_117"
     pin_type: "GPIO"
     io_type: IN
