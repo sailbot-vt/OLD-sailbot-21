@@ -4,9 +4,10 @@ import os
 from src.hardware.pin import make_pin
 
 
-def read_pin_config(mock_bbio=None):
+def read_pin_config(mock_bbio=None, path=None):
     """Reads the pin configuration from config.yml and returns a matching dictionary"""
-    path = os.path.dirname(os.path.abspath(__file__))
+    if path is None:
+        path = os.path.dirname(os.path.abspath(__file__))
     with open(path + "/config.yml", "r") as yml:
         conf = yaml.load(yml)
         if mock_bbio is None:
@@ -31,9 +32,10 @@ def read_pin_config(mock_bbio=None):
     return pins
 
 
-def read_interval():
+def read_interval(path=None):
     """Reads the read interval from config.yml."""
-    path = os.path.dirname(os.path.abspath(__file__))
+    if path is None:
+        path = os.path.dirname(os.path.abspath(__file__))
     with open(path + "/config.yml", "r") as yml:
         conf = yaml.load(yml)
         interval = conf["read interval"]
