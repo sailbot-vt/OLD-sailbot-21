@@ -176,7 +176,9 @@ class UARTPin(Pin):
 
     def cleanup(self):
         """ Cleans up the UART"""
-        self.uart_lib.cleanup()
+        # self.uart_lib.cleanup()
+        # Above code apparently causes kernal panic
+        pass
 
 def make_pin(config, mock_lib=None):
     """Method to create a new pin.

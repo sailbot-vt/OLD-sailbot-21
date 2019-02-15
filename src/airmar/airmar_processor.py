@@ -1,7 +1,14 @@
 import math
 
 class AirmarProcessor:
+    """Defines an airmar data processor that stores ship data given a pnmea2 object"""
+
     def __init__(self):
+        """Initializes a new airmar data processor.
+
+        Returns:
+        A new AirmarProcessor
+        """
         self.ship_data = {
             "WIND_SPEED_CURRENT": 0.0,
             "WIND_SPEED_AVERAGE": 0.0,
@@ -15,14 +22,39 @@ class AirmarProcessor:
         }
 
     def update_data(self, data):
+        """ Updates the wind and boat data in the ship data dictionary given a pnmea2 object
+
+        Keyword arguments:
+        data -- a pynmea2 object containing wind and boat data.
+        """
         self._update_wind_data(data=data)
         self._update_boat_data(data=data)
-        pass
+
+    def get_data(self):
+        """ Retrieves the current ship_data dictionary from the processor
+
+        Returns:
+        A dictionary with keys:
+            'WIND_SPEED_CURRENT', 'WIND_SPEED_AVERAGE',
+            'WIND_DIRECTION_CURRENT', 'WIND_DIRECTION_AVERAGE',
+            'BOAT_LATITUDE', 'BOAT_LONGITUDE', 'BOAT_HEADING', and
+            'BOAT_SPEED' associated to floats representing current values.
+        """
+        return self.ship_data
 
 
     ### --- WIND UPDATES --- ###
 
     def _update_wind_data(self, data):
+        """ Updates the current and average wind speed and direction if availible.
+
+        Keyword arguments:
+        data -- a pynmea2 object containing wind_speed_meters
+            and direction_true
+
+        Side Effects:
+        Updates processor's dictionary 'ship_data'
+        """
         if data.wind_speed_meters is not None and data.direction_true is not None:
             wind_speed = float(data.wind_speed_meters)
             wind_direc = float(data.wind_direction_true)
@@ -32,6 +64,16 @@ class AirmarProcessor:
             self._update_wind_averages(wind_speed=wind_speed, wind_direc=wind_direc)
 
     def _update_wind_averages(self, wind_speed, wind_direc):
+        """ Calculates and writes to the ship data the average wind speed and direction.
+
+        Keyword arguments:
+        ship_data -- the 'old' wind speed and direction averages
+        wind_speed -- the current wind speed read.
+        wind_direc -- the current wind direction read.
+
+        Side Effects:
+        Updates processor's dictionary 'ship_data'
+        """
         wind_direc = math.radians(wind_direc)
         wind_direc_old = math.radians(self.ship_data["WIND_DIRECTION_AVERAGE"])
 
@@ -45,34 +87,77 @@ class AirmarProcessor:
         new_y = wind_speed * math.sin(wind_direc)
 
         # Weighted values
-        weight = 0.3
+        weight = 0.3         # working constant from old code
         x = old_x * (1 - weight) + new_x * (weight)
         y = old_y * (1 - weight) + new_y * (weight)
 
-        self.ship_data["WIND_SPEED_AVERAGE"] = math.sqrt(x*x + y*y)
-        self.ship_data["WIND_DIRECTION_AVERAGE"] = math.degrees(math.atan2(x, y)) % 360
+        magnitude = math.sqrt(x*x + y*y)
+        direction = math.degrees(math.atan2(x, y)) % 360
+
+        self.ship_data["WIND_SPEED_AVERAGE"] = magnitude
+        self.ship_data["WIND_DIRECTION_AVERAGE"] = direction
 
 
     ### --- BOAT UPDATES ---- ###
 
     def _update_boat_data(self, data):
+        """ Updates the boat's latitude, longitude, heading and speed
+
+        Keyword arguments:
+        data -- a pynmea2 object containing 'latitude', 'longitude', 'heading', and 'speed'
+
+        Side Effects:
+        Updates processor's dictionary 'ship_data'
+        """
         self._update_boat_lat(data=data)
         self._update_boat_long(data=data)
         self._update_boat_head(data=data)
         self._update_boat_speed(data=data)
 
     def _update_boat_lat(self, data):
+        """ Updates the boat's latitude.
+
+        Keyword arguments:
+        data -- a pynmea2 object containing 'latitude'
+
+        Side Effects:
+        Updates processor's dictionary 'ship_data'
+        """
         if data.latitude is not None and fload(data.latitude) > 10:
             self.ship_data["BOAT_LATITUDE"] = float(data.latitude)
 
     def _update_boat_long(self, data):
+        """ Updates the boat's longitude.
+
+        Keyword arguments:
+        data -- a pynmea2 object containing 'longitude'
+
+        Side Effects:
+        Updates processor's dictionary 'ship_data'
+        """
         if data.longitude is not None and float(data.longitude) < -10:
             self.ship_data["BOAT_LONGITUDE"] = float(data.longitude)
 
     def _update_boat_head(self, data):
+        """ Updates the boat's heading.
+
+        Keyword arguments:
+        data -- a pynmea2 object containing 'heading'
+
+        Side Effects:
+        Updates processor's dictionary 'ship_data'
+        """
         if data.heading is not None:
             self.ship_data["BOAT_HEADING"] = float(data.heading) % 360
 
     def _update_boat_speed(self, data):
+        """ Updates the boat's speed.
+
+        Keyword arguments:
+        data -- a pynmea2 object containing 'speed'
+
+        Side Effects:
+        Updates processor's dictionary 'ship_data'
+        """
         if data.speed is not None:
             self.ship_data["BOAT_SPEED"] = float(data.speed)
