@@ -5,7 +5,7 @@ from pubsub import pub
 
 class AirmarBroadcasterType(Enum):
     Testable = 0,
-    Messanger = 1
+    Messenger = 1
 
 
 class AirmarBroadcaster(ABC):
