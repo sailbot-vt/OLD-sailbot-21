@@ -22,8 +22,8 @@ class AirmarReceiver:
         self.uart_pin.setup()
         self.port.open()
 
-    def send_ship_data(self):
-        """Sends ship data to the broadcaster to be published.
+    def send_airmar_data(self):
+        """Sends airmar data to the broadcaster to be published.
 
         Preconditions:
         ship_data dictionary must include keys:
@@ -35,10 +35,10 @@ class AirmarReceiver:
             'BOAT_SPEED'
 
         Side effects:
-        Updates ship data dictionary
+        Updates airmar_data dictionary in AirmarProcessor
         Does not broadcast if value in dictionary is None
         """
-        self._update_ship_data()
+        self._update_airmar_data()
         data = self.processor.get_data()
         self.broadcaster.read_wind_speed(wind_speed=data["WIND_SPEED_AVERAGE"])
         self.broadcaster.read_wind_heading(wind_head=data["WIND_HEADING_AVERAGE"])
@@ -47,11 +47,11 @@ class AirmarReceiver:
         self.broadcaster.read_boat_heading(boat_head=data["BOAT_HEADING"])
         self.broadcaster.read_boat_speed(boat_speed=data["BOAT_SPEED"])
 
-    def _update_ship_data(self):
-        """ Sends NMEASentence object to airmar processor to update ship data."""
+    def _update_airmar_data(self):
+        """ Sends NMEASentence object to airmar processor to update airmar data."""
         nmea_obj = self._parse_msg()
         if nmea_obj is not None:
-            self.processor.update_data(data=nmea_obj)
+            self.processor.update_airmar_data(data=nmea_obj)
 
     def _parse_msg(self):
         """ Reads NMEA0183 message from serial port.
