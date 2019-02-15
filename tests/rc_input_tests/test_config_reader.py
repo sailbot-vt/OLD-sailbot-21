@@ -12,7 +12,7 @@ class RCConfigReaderTests(unittest.TestCase):
     """Tests methods in RC Config Reader"""
     def setUp(self):
         """Sets up the path of test config.yaml for each test method"""
-        self.path = path = os.path.dirname(os.path.abspath(__file__))
+        self.path = os.path.dirname(os.path.abspath(__file__))
 
     def test_read_pin_config(self):
         Adafruit_BBIO.GPIO.setup = MagicMock(name='Adafruit.BBIO.GPIO.setup')

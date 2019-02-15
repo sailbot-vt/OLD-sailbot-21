@@ -95,8 +95,7 @@ class ADCPin(Pin):
         v_range = self.max_v - self.min_v
         read_v = ADCPin.MAX_INPUT_VOLTAGE * read_value
         shift_factor = self.min_v
-        # Between -1 and 1
-        return 2 * (((read_v - shift_factor) / v_range) - 0.5)
+        return 2 * (((read_v - shift_factor) / v_range) - 0.5) # Between -1 and 1
 
 
 class GPIOPin(Pin):
@@ -181,7 +180,7 @@ class UARTPin(Pin):
         Keyword arguments:
         channel -- UART channel to set up. One of "UART1", "UART2", "UART4" or "UART5"
         """
-        self.uart_lib.setup_uart(channel)
+        self.uart_lib.setup(channel)
 
     def cleanup(self):
         """ Cleans up the UART"""
