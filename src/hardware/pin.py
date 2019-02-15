@@ -7,7 +7,8 @@ class PinType(Enum):
     Testable = 0,
     GPIO = 1,
     ADC = 2,
-    PWM = 3
+    PWM = 3,
+    UART = 4
 
 
 class Pin(ABC):
