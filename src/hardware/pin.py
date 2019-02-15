@@ -205,7 +205,7 @@ def make_pin(config, mock_lib=None):
         if mock_lib is None:
             import Adafruit_BBIO.PWM as PWM
             return PWMPin(config, PWM)
-        return PWMPin(config, mock_lib
+        return PWMPin(config, mock_lib)
     elif pin_type == PinType.UART:
         if mock_lib isNone:
             import Adafruit_BBIO.UART as UART
