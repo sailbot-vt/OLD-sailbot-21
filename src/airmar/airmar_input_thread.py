@@ -1,6 +1,8 @@
 from threading import Thread
 from time import sleep
 
+import serial
+
 from src.airmar.config_reader import read_pin_config, read_interval
 from src.airmar.airmar_receiver import AirmarReceiver
 
@@ -13,7 +15,7 @@ class AirmarInputThread(Thread):
 
         # TODO: Move params to config if this is actually used
         # Serial port used to read nmea sentences
-        port = serial.Serial(port="/dev/tty01", baudrate=4800, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial)
+        port = serial.Serial(port="/dev/tty01", baudrate=4800, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS, timeout=0)
 
         self.receiver = AirmarReceiver(read_pin_config(mock_bbio=mock_bbio), port)
 
