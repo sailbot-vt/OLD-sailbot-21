@@ -2,7 +2,7 @@ import pynmea2
 
 class AirmarReceiver:
     """Defines an Airmar receiver that sends data to a processor."""
-    def __init__(self, pin, port):
+    def __init__(self, broadcaster, pin, port):
         """Initializes a new airmar receiver.
 
         Keyword arguments:
@@ -11,17 +11,44 @@ class AirmarReceiver:
         Returns:
         A new Airmar Receiver
         """
+        self.broadcaster = broadcaster
         self.uart_pin = pin
         self.port = port
         self.processor = AirmarProcessor()
+
 
     def start(self):
         """ Sets up uart pin and open serial port to start listening."""
         self.uart_pin.setup()
         self.port.open()
 
-    def send_data(self):
-        """ Sends pynmea2 object to airmar processor to store ship data."""
+    def send_ship_data(self):
+        """Sends ship data to the broadcaster to be published.
+
+        Preconditions:
+        ship_data dictionary must include keys:
+            'WIND_SPEED_AVERAGE'
+            'WIND_HEADING_AVERAGE'
+            'BOAT_LATITUDE'
+            'BOAT_LONGITUDE'
+            'BOAT_HEADING'
+            'BOAT_SPEED'
+
+        Side effects:
+        Updates ship data dictionary
+        Does not broadcast if value in dictionary is None
+        """
+        self._update_ship_data()
+        data = self.processor.get_data()
+        self.broadcaster.read_wind_speed(wind_speed=data["WIND_SPEED_AVERAGE"])
+        self.broadcaster.read_wind_heading(wind_head=data["WIND_HEADING_AVERAGE"])
+        self.broadcaster.read_boat_latitude(boat_lat=data["BOAT_LATITUDE"])
+        self.broadcaster.read_boat_longitude(boat_long=data["BOAT_LONGITUDE"])
+        self.broadcaster.read_boat_heading(boat_head=data["BOAT_HEADING"])
+        self.broadcaster.read_boat_speed(boat_speed=data["BOAT_SPEED"])
+
+    def _update_ship_data(self):
+        """ Sends pynmea2 object to airmar processor to update ship data."""
         # PyPubsub or keep as a dict?
         msg = self._read_msg()
         if msg is not None:

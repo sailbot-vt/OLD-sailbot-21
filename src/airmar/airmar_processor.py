@@ -10,15 +10,15 @@ class AirmarProcessor:
         A new AirmarProcessor
         """
         self.ship_data = {
-            "WIND_SPEED_CURRENT": 0.0,
-            "WIND_SPEED_AVERAGE": 0.0,
+            "WIND_SPEED_CURRENT": None,
+            "WIND_SPEED_AVERAGE": None,
             # wind heading in degrees
-            "WIND_DIRECTION_CURRENT": 0.0,
-            "WIND_DIRECTION_AVERAGE": 0.0,
-            "BOAT_LATITUDE": 0.0,
-            "BOAT_LONGITUDE": 0.0,
-            "BOAT_HEADING": 0.0,
-            "BOAT_SPEED": 0.0
+            "WIND_HEADING_CURRENT": None,
+            "WIND_HEADING_AVERAGE": None,
+            "BOAT_LATITUDE": None,
+            "BOAT_LONGITUDE": None,
+            "BOAT_HEADING": None,
+            "BOAT_SPEED": None
         }
 
     def update_data(self, data):
@@ -36,9 +36,9 @@ class AirmarProcessor:
         Returns:
         A dictionary with keys:
             'WIND_SPEED_CURRENT', 'WIND_SPEED_AVERAGE',
-            'WIND_DIRECTION_CURRENT', 'WIND_DIRECTION_AVERAGE',
+            'WIND_HEADING_CURRENT', 'WIND_HEADING_AVERAGE',
             'BOAT_LATITUDE', 'BOAT_LONGITUDE', 'BOAT_HEADING', and
-            'BOAT_SPEED' associated to floats representing current values.
+            'BOAT_SPEED' associated to floats representing current values of resepective keys.
         """
         return self.ship_data
 
@@ -46,7 +46,7 @@ class AirmarProcessor:
     ### --- WIND UPDATES --- ###
 
     def _update_wind_data(self, data):
-        """ Updates the current and average wind speed and direction if availible.
+        """ Updates the current and average wind speed and heading if availible.
 
         Keyword arguments:
         data -- a pynmea2 object containing wind_speed_meters
@@ -57,45 +57,45 @@ class AirmarProcessor:
         """
         if data.wind_speed_meters is not None and data.direction_true is not None:
             wind_speed = float(data.wind_speed_meters)
-            wind_direc = float(data.wind_direction_true)
+            wind_head = float(data.wind_direction_true)
             self.ship_data["WIND_SPEED_CURRENT"] = wind_speed
-            self.ship_data["WIND_DIRECTION_CURRENT"] = wind_direc
+            self.ship_data["WIND_HEADING_CURRENT"] = wind_head
 
-            self._update_wind_averages(wind_speed=wind_speed, wind_direc=wind_direc)
+            self._update_wind_averages(wind_speed=wind_speed, wind_angle=wind_head)
 
-    def _update_wind_averages(self, wind_speed, wind_direc):
-        """ Calculates and writes to the ship data the average wind speed and direction.
+    def _update_wind_averages(self, wind_speed, wind_angle):
+        """ Calculates and writes to the ship data the average wind speed and heading.
 
         Keyword arguments:
         ship_data -- the 'old' wind speed and direction averages
-        wind_speed -- the current wind speed read.
-        wind_direc -- the current wind direction read.
+        wind_speed -- the current wind speed read in meters.
+        wind_direc -- the current wind heading read in degrees.
 
         Side Effects:
         Updates processor's dictionary 'ship_data'
         """
-        wind_direc = math.radians(wind_direc)
-        wind_direc_old = math.radians(self.ship_data["WIND_DIRECTION_AVERAGE"])
+        wind_angle = math.radians(wind_angle)
+        wind_angle_old = math.radians(self.ship_data["WIND_HEADING_AVERAGE"])
 
         wind_speed_old = self.ship_data["WIND_SPEED_AVERAGE"]
 
         # calculate components
-        old_x = wind_speed_old * math.cos(wind_direc_old)
-        old_y = wind_speed_old * math.sin(wind_direc_old)
+        old_x = wind_speed_old * math.cos(wind_angle_old)
+        old_y = wind_speed_old * math.sin(wind_angle_old)
 
-        new_x = wind_speed * math.cos(wind_direc)
-        new_y = wind_speed * math.sin(wind_direc)
+        new_x = wind_speed * math.cos(wind_angle)
+        new_y = wind_speed * math.sin(wind_angle)
 
         # Weighted values
         weight = 0.3         # working constant from old code
         x = old_x * (1 - weight) + new_x * (weight)
         y = old_y * (1 - weight) + new_y * (weight)
 
-        magnitude = math.sqrt(x*x + y*y)
-        direction = math.degrees(math.atan2(x, y)) % 360
+        speed = math.sqrt(x*x + y*y)
+        heading = math.degrees(math.atan2(x, y)) % 360
 
-        self.ship_data["WIND_SPEED_AVERAGE"] = magnitude
-        self.ship_data["WIND_DIRECTION_AVERAGE"] = direction
+        self.ship_data["WIND_SPEED_AVERAGE"] = speed
+        self.ship_data["WIND_HEADING_AVERAGE"] = heading
 
 
     ### --- BOAT UPDATES ---- ###
@@ -115,7 +115,7 @@ class AirmarProcessor:
         self._update_boat_speed(data=data)
 
     def _update_boat_lat(self, data):
-        """ Updates the boat's latitude.
+        """ Updates the boat's latitude. Only accepts values > 10.
 
         Keyword arguments:
         data -- a pynmea2 object containing 'latitude'
@@ -123,11 +123,11 @@ class AirmarProcessor:
         Side Effects:
         Updates processor's dictionary 'ship_data'
         """
-        if data.latitude is not None and fload(data.latitude) > 10:
+        if data.latitude is not None and float(data.latitude) > 10:
             self.ship_data["BOAT_LATITUDE"] = float(data.latitude)
 
     def _update_boat_long(self, data):
-        """ Updates the boat's longitude.
+        """ Updates the boat's longitude. Only accepts values < -10
 
         Keyword arguments:
         data -- a pynmea2 object containing 'longitude'
