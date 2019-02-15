@@ -74,6 +74,7 @@ class TestableAirmarBroadcaster(AirmarBroadcaster):
         self.wind_speeds = []
         self.wind_heads = []
         self.boat_lats = []
+        self.boat_longs = []
         self.boat_heads = []
         self.boat_speeds = []
 
@@ -89,11 +90,15 @@ class TestableAirmarBroadcaster(AirmarBroadcaster):
         if boat_lat is not None:
             self.boat_lats.append(boat_lat)
 
+    def read_boat_longitude(self, boat_long=None):
+        if boat_long is not None:
+            self.boat_longs.append(boat_long)
+
     def read_boat_heading(self, boat_head):
         if boat_head is not None:
             self.boat_heads.append(boat_head)
 
-    def read_boat_speeds(self, boat_speed):
+    def read_boat_speed(self, boat_speed):
         if boat_speed is not None:
             self.boat_speeds.append(boat_speed)
 
@@ -103,23 +108,27 @@ class AirmarMessenger(AirmarBroadcaster):
 
     def read_wind_speed(self, wind_speed=None):
         if wind_speed is not None:
-            pub.sendMessage("set wind speed", wind_speed)
+            pub.sendMessage(topicName="set wind speed", msgData=wind_speed)
 
     def read_wind_heading(self, wind_head=None):
         if wind_head is not None:
-            pub.sendMessage("set wind heading", wind_head)
+            pub.sendMessage(topicName="set wind heading", msgData=wind_head)
 
     def read_boat_latitude(self, boat_lat=None):
         if boat_lat is not None:
-            pub.sendMessage("set boat latitude", boat_lat)
+            pub.sendMessage(topicName="set boat latitude", msgData=boat_lat)
+
+    def read_boat_longitude(self, boat_long=None):
+        if boat_long is not None:
+            pub.sendMessage(topicName="set boat longitude", msgData=boat_long)
 
     def read_boat_heading(self, boat_head=None):
         if boat_head is not None:
-            pub.sendMessage("set boat heading", boat_head)
+            pub.sendMessage("set boat heading", msgData=boat_head)
 
     def read_boat_speed(self, boat_speed=None):
         if boat_speed is not None:
-            pub.sendMessage("set boat speed", boat_speed)
+            pub.sendMessage("set boat speed", msgData=boat_speed)
 
 
 def make_broadcaster(broadcaster_type=AirmarBroadcasterType.Messenger):
