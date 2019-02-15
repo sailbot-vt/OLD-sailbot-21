@@ -1,7 +1,11 @@
 import pynmea2
 
+from src.airmar.airmar_processor import AirmarProcessor
+
+
 class AirmarReceiver:
     """Defines an Airmar receiver that sends data to a processor."""
+
     def __init__(self, broadcaster, pin, port):
         """Initializes a new airmar receiver.
 
@@ -15,7 +19,6 @@ class AirmarReceiver:
         self.uart_pin = pin
         self.port = port
         self.processor = AirmarProcessor()
-
 
     def start(self):
         """ Sets up uart pin and open serial port to start listening."""
@@ -39,9 +42,10 @@ class AirmarReceiver:
         Does not broadcast if value in dictionary is None
         """
         self._update_airmar_data()
-        data = self.processor.get_data()
+        data = self.processor.get_airmar_data()
         self.broadcaster.read_wind_speed(wind_speed=data["WIND_SPEED_AVERAGE"])
-        self.broadcaster.read_wind_heading(wind_head=data["WIND_HEADING_AVERAGE"])
+        self.broadcaster.read_wind_heading(
+            wind_head=data["WIND_HEADING_AVERAGE"])
         self.broadcaster.read_boat_latitude(boat_lat=data["BOAT_LATITUDE"])
         self.broadcaster.read_boat_longitude(boat_long=data["BOAT_LONGITUDE"])
         self.broadcaster.read_boat_heading(boat_head=data["BOAT_HEADING"])
@@ -51,7 +55,7 @@ class AirmarReceiver:
         """ Sends NMEASentence object to airmar processor to update airmar data."""
         nmea_obj = self._parse_msg()
         if nmea_obj is not None:
-            self.processor.update_airmar_data(data=nmea_obj)
+            self.processor.update_airmar_data(nmea=nmea_obj)
 
     def _parse_msg(self):
         """ Reads NMEA0183 message from serial port.
@@ -96,7 +100,7 @@ class AirmarReceiver:
             return None
         return cleaned_msg
 
-    def stop():
+    def stop(self):
         """ Stops the pin
 
         WARNING: According to lib docs, causes kernal panic.

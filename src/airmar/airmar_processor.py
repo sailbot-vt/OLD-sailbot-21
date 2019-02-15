@@ -1,5 +1,6 @@
 import math
 
+
 class AirmarProcessor:
     """Defines an airmar data processor that stores airmar data given a NMEASentence object"""
 
@@ -42,7 +43,6 @@ class AirmarProcessor:
         """
         return self.airmar_data
 
-
     ### --- WIND UPDATES --- ###
 
     def _update_wind_data(self, nmea):
@@ -61,7 +61,8 @@ class AirmarProcessor:
             self.airmar_data["WIND_SPEED_CURRENT"] = wind_speed
             self.airmar_data["WIND_HEADING_CURRENT"] = wind_head
 
-            self._update_wind_averages(wind_speed=wind_speed, wind_angle=wind_head)
+            self._update_wind_averages(
+                wind_speed=wind_speed, wind_angle=wind_head)
 
     def _update_wind_averages(self, wind_speed, wind_angle):
         """ Calculates and writes to the ship data the average wind speed and heading.
@@ -96,7 +97,6 @@ class AirmarProcessor:
 
         self.airmar_data["WIND_SPEED_AVERAGE"] = speed
         self.airmar_data["WIND_HEADING_AVERAGE"] = heading
-
 
     ### --- BOAT UPDATES ---- ###
 

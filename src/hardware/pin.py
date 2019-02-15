@@ -25,6 +25,7 @@ class Pin(ABC):
 
 class TestablePin(Pin):
     """Provides a Pin object to be used for testing."""
+
     def __init__(self, name, read_value):
         self.pin_name = name
         self.value = read_value
@@ -75,7 +76,8 @@ class ADCPin(Pin):
         A floating-point value in [-1, 1], where -1 and 1 are min_v and max_v,
         respectively.
         """
-        self.adc_lib.read(self.pin_name)  # According to the Internet, we have to do this twice
+        self.adc_lib.read(
+            self.pin_name)  # According to the Internet, we have to do this twice
         raw_value = self.adc_lib.read(self.pin_name)
         return self._normalize_voltage(raw_value)
 
@@ -92,11 +94,13 @@ class ADCPin(Pin):
         v_range = self.max_v - self.min_v
         read_v = ADCPin.MAX_INPUT_VOLTAGE * read_value
         shift_factor = self.min_v
-        return 2 * (((read_v - shift_factor) / v_range) - 0.5)  # Between -1 and 1
+        # Between -1 and 1
+        return 2 * (((read_v - shift_factor) / v_range) - 0.5)
 
 
 class GPIOPin(Pin):
     """Provides an interface to a GPIO pin"""
+
     def __init__(self, config, gpio_lib):
         super().__init__(config)
 
@@ -142,8 +146,10 @@ class GPIOPin(Pin):
         else:
             self.gpio_lib.output(self.pin_name, self.gpio_lib.LOW)
 
+
 class PWMPin(Pin):
     """Provides an interface to a PWM pin"""
+
     def __init__(self, config, pwm_lib):
         super().__init__(config)
         self.pwm_lib = pwm_lib
@@ -160,8 +166,10 @@ class PWMPin(Pin):
     def set_frequency(self, duty_cycle):
         self.pwm_lib.set_frequency(self.pin_name, duty_cycle)
 
+
 class UARTPin(Pin):
     """Provides an interface to a UART pin"""
+
     def __init__(self, config, uart_lib):
         super().__init__(config)
         self.uart_lib = uart_lib
@@ -179,6 +187,7 @@ class UARTPin(Pin):
         # self.uart_lib.cleanup()
         # Above code apparently causes kernal panic
         pass
+
 
 def make_pin(config, mock_lib=None):
     """Method to create a new pin.
@@ -209,7 +218,7 @@ def make_pin(config, mock_lib=None):
             return PWMPin(config, PWM)
         return PWMPin(config, mock_lib)
     elif pin_type == PinType.UART:
-        if mock_lib isNone:
+        if mock_lib is None:
             import Adafruit_BBIO.UART as UART
             return UARTPin(config, UART)
     else:

@@ -74,3 +74,6 @@ cmake-build-*/
 
 # CMake
 [C|c][M|m]ake*
+
+# VSCode
+.vscode/

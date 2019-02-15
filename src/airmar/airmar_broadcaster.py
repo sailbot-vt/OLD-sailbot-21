@@ -3,7 +3,6 @@ from enum import Enum
 from pubsub import pub
 
 
-
 class AirmarBroadcasterType(Enum):
     Testable = 0,
     Messanger = 1
@@ -68,9 +67,9 @@ class AirmarBroadcaster(ABC):
         pass
 
 
-
 class TestableAirmarBroadcaster(AirmarBroadcaster):
     """ A broadcaster built to test methods that need to broadcast."""
+
     def __init__(self):
         self.wind_speeds = []
         self.wind_heads = []
@@ -99,7 +98,6 @@ class TestableAirmarBroadcaster(AirmarBroadcaster):
             self.boat_speeds.append(boat_speed)
 
 
-
 class AirmarMessenger(AirmarBroadcaster):
     """Implements an interface with the pub/sub messaging system to broadcast airmar data."""
 
@@ -122,7 +120,6 @@ class AirmarMessenger(AirmarBroadcaster):
     def read_boat_speed(self, boat_speed=None):
         if boat_speed is not None:
             pub.sendMessage("set boat speed", boat_speed)
-
 
 
 def make_broadcaster(broadcaster_type=AirmarBroadcasterType.Messenger):
