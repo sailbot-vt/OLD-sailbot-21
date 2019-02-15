@@ -1,7 +1,7 @@
 import math
 
 class AirmarProcessor:
-    """Defines an airmar data processor that stores ship data given a pnmea2 object"""
+    """Defines an airmar data processor that stores ship data given a NMEASentence object"""
 
     def __init__(self):
         """Initializes a new airmar data processor.
@@ -21,14 +21,14 @@ class AirmarProcessor:
             "BOAT_SPEED": None
         }
 
-    def update_data(self, data):
-        """ Updates the wind and boat data in the ship data dictionary given a pnmea2 object
+    def update_data(self, nmea):
+        """ Updates the wind and boat data in the ship data dictionary given a NMEASentence object
 
         Keyword arguments:
-        data -- a pynmea2 object containing wind and boat data.
+        nmea -- a NMEASentence object containing wind and boat data.
         """
-        self._update_wind_data(data=data)
-        self._update_boat_data(data=data)
+        self._update_wind_data(nmea=nmea)
+        self._update_boat_data(nmea=nmea)
 
     def get_data(self):
         """ Retrieves the current ship_data dictionary from the processor
@@ -45,19 +45,19 @@ class AirmarProcessor:
 
     ### --- WIND UPDATES --- ###
 
-    def _update_wind_data(self, data):
+    def _update_wind_data(self, nmea):
         """ Updates the current and average wind speed and heading if availible.
 
         Keyword arguments:
-        data -- a pynmea2 object containing wind_speed_meters
+        nmea -- a NMEASentence object containing wind_speed_meters
             and direction_true
 
         Side Effects:
         Updates processor's dictionary 'ship_data'
         """
         if data.wind_speed_meters is not None and data.direction_true is not None:
-            wind_speed = float(data.wind_speed_meters)
-            wind_head = float(data.wind_direction_true)
+            wind_speed = float(nmea.wind_speed_meters)
+            wind_head = float(nmea.wind_direction_true)
             self.ship_data["WIND_SPEED_CURRENT"] = wind_speed
             self.ship_data["WIND_HEADING_CURRENT"] = wind_head
 
@@ -100,64 +100,64 @@ class AirmarProcessor:
 
     ### --- BOAT UPDATES ---- ###
 
-    def _update_boat_data(self, data):
+    def _update_boat_data(self, nmea):
         """ Updates the boat's latitude, longitude, heading and speed
 
         Keyword arguments:
-        data -- a pynmea2 object containing 'latitude', 'longitude', 'heading', and 'speed'
+        nmea -- a NMEASentence object containing 'latitude', 'longitude', 'heading', and 'speed'
 
         Side Effects:
         Updates processor's dictionary 'ship_data'
         """
-        self._update_boat_lat(data=data)
-        self._update_boat_long(data=data)
-        self._update_boat_head(data=data)
-        self._update_boat_speed(data=data)
+        self._update_boat_lat(nmea=nmea)
+        self._update_boat_long(nmea=nmea)
+        self._update_boat_head(nmea=nmea)
+        self._update_boat_speed(nmea=nmea)
 
-    def _update_boat_lat(self, data):
+    def _update_boat_lat(self, nmea):
         """ Updates the boat's latitude. Only accepts values > 10.
 
         Keyword arguments:
-        data -- a pynmea2 object containing 'latitude'
+        nmea -- a NMEASentence object containing 'latitude'
 
         Side Effects:
         Updates processor's dictionary 'ship_data'
         """
-        if data.latitude is not None and float(data.latitude) > 10:
-            self.ship_data["BOAT_LATITUDE"] = float(data.latitude)
+        if nmea.latitude is not None and float(nmea.latitude) > 10:
+            self.ship_data["BOAT_LATITUDE"] = float(nmea.latitude)
 
-    def _update_boat_long(self, data):
+    def _update_boat_long(self, nmea):
         """ Updates the boat's longitude. Only accepts values < -10
 
         Keyword arguments:
-        data -- a pynmea2 object containing 'longitude'
+        nmea -- a NMEASentence object containing 'longitude'
 
         Side Effects:
         Updates processor's dictionary 'ship_data'
         """
-        if data.longitude is not None and float(data.longitude) < -10:
-            self.ship_data["BOAT_LONGITUDE"] = float(data.longitude)
+        if nmea.longitude is not None and float(nmea.longitude) < -10:
+            self.ship_data["BOAT_LONGITUDE"] = float(nmea.longitude)
 
-    def _update_boat_head(self, data):
+    def _update_boat_head(self, nmea):
         """ Updates the boat's heading.
 
         Keyword arguments:
-        data -- a pynmea2 object containing 'heading'
+        nmea -- a NMEASentence object containing 'heading'
 
         Side Effects:
         Updates processor's dictionary 'ship_data'
         """
-        if data.heading is not None:
-            self.ship_data["BOAT_HEADING"] = float(data.heading) % 360
+        if nmea.heading is not None:
+            self.ship_data["BOAT_HEADING"] = float(nmea.heading) % 360
 
-    def _update_boat_speed(self, data):
+    def _update_boat_speed(self, nmea):
         """ Updates the boat's speed.
 
         Keyword arguments:
-        data -- a pynmea2 object containing 'speed'
+        nmea -- a NMEASentence object containing 'speed'
 
         Side Effects:
         Updates processor's dictionary 'ship_data'
         """
-        if data.speed is not None:
-            self.ship_data["BOAT_SPEED"] = float(data.speed)
+        if nmea.speed is not None:
+            self.ship_data["BOAT_SPEED"] = float(nmea.speed)
