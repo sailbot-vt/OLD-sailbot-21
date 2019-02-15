@@ -142,7 +142,6 @@ class GPIOPin(Pin):
         else:
             self.gpio_lib.output(self.pin_name, self.gpio_lib.LOW)
 
-
 class PWMPin(Pin):
     """Provides an interface to a PWM pin"""
     def __init__(self, config, pwm_lib):
@@ -161,6 +160,23 @@ class PWMPin(Pin):
     def set_frequency(self, duty_cycle):
         self.pwm_lib.set_frequency(self.pin_name, duty_cycle)
 
+class UARTPin(Pin):
+    """Provides an interface to a UART pin"""
+    def __init__(self, config, uart_lib):
+        super().__init__(config)
+        self.uart_lib = uart_lib
+
+    def setup(self, channel):
+        """ Set up and start the UART channel. This will export the given UART so that it can be accessed by other software that controls its serial lines.
+
+        Keyword arguments:
+        channel -- UART channel to set up. One of "UART1", "UART2", "UART4" or "UART5"
+        """
+        self.uart_lib.setup_uart(channel)
+
+    def cleanup(self):
+        """ Cleans up the UART"""
+        self.uart_lib.cleanup()
 
 def make_pin(config, mock_lib=None):
     """Method to create a new pin.
@@ -189,7 +205,11 @@ def make_pin(config, mock_lib=None):
         if mock_lib is None:
             import Adafruit_BBIO.PWM as PWM
             return PWMPin(config, PWM)
-        return PWMPin(config, mock_lib)
+        return PWMPin(config, mock_lib
+    elif pin_type == PinType.UART:
+        if mock_lib isNone:
+            import Adafruit_BBIO.UART as UART
+            return UARTPin(config, UART)
     else:
         return TestablePin(name=config["pin_name"],
                            read_value=config.get("read_value") or 0)
