@@ -19,6 +19,7 @@ class AirmarInputThread(Thread):
 
         # TODO: Move params to config if this is actually used
         # Serial port used to read nmea sentences
+        # Might have to do port=`ls /dev/serial/by-id/`
         self.port = serial.Serial(port="/dev/tty01", baudrate=4800, parity=serial.PARITY_NONE,
                                   stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS, timeout=0)
 

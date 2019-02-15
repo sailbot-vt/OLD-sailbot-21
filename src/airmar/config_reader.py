@@ -23,6 +23,6 @@ def read_interval(path=None):
         path = os.path.dirname(os.path.abspath(__file__))
     with open(path + "/config.yml", "r") as yml:
         conf = yaml.load(yml)
-        interval = conf("read interval")
+        interval = conf["read interval"]
 
     return interval

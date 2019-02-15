@@ -22,8 +22,7 @@ class AirmarConfigReaderTests(unittest.TestCase):
 
         pin = read_pin_config(mock_bbio=Adafruit_BBIO, path=self.path)
 
-        assert pin.pin_name == "UART"
-        Adafruit_BBIO.UART.setup.assert_called_with("UART1")
+        assert pin.pin_name == "P0_0"
 
     def test_read_interval(self):
         """Tests read_interval"""
