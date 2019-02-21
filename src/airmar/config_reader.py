@@ -29,11 +29,14 @@ def read_interval(path=None):
     return interval
 
 
-def read_port_config(path=None):
+def read_port_config(mock_port=None, path=None):
     """ Reads the settings for serial port communication from config.yml"""
     if path is None:
         path = os.path.dirname(os.path.abspath(__file__))
     with open*(path + "/config.yml", "r") as yml:
         conf = yaml.load(yml)
-        port = make_port(conf["ports"]["SERIAL"])
+        if mock_port is None:
+            port = make_port(conf["ports"]["SERIAL"])
+        else:
+            port = make_port(conf["ports"]["SERIAL"], mock_lib=mock_port.Serial)
     return port

@@ -9,15 +9,15 @@ from src.airmar.airmar_broadcaster import make_broadcaster, AirmarBroadcasterTyp
 class AirmarInputThread(Thread):
     """A separate thread to manage reading the airmar inputs."""
 
-    def __init__(self, mock_bbio=None):
+    def __init__(self, mock_bbio=None, mock_port=None):
         """Builds a new airmar input thread."""
         super().__init__()
 
         self.broadcaster = make_broadcaster(AirmarBroadcasterType.Messenger)
 
         self.receiver = AirmarReceiver(broadcaster=self.broadcaster, pin=read_pin_config(
-            mock_bbio=mock_bbio), port=read_port_config())
-
+            mock_bbio=mock_bbio), port=read_port_config(mock_port=mock_port))
+            
         self.keep_reading = True
         self.read_interval = read_interval()
 

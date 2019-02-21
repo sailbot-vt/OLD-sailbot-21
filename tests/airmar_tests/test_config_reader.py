@@ -3,10 +3,12 @@ from unittest.mock import MagicMock
 
 import os
 from tests.mock_bbio import Adafruit_BBIO
+from tests.mock_port import serial
 from src.hardware.pin import make_pin
 
 from src.airmar.config_reader import read_pin_config
 from src.airmar.config_reader import read_interval
+from src.airmar.config_reader import read_port_config
 
 
 class AirmarConfigReaderTests(unittest.TestCase):
@@ -27,3 +29,9 @@ class AirmarConfigReaderTests(unittest.TestCase):
     def test_read_interval(self):
         """Tests read_interval"""
         assert read_interval(path=self.path) == "50 / 1000"
+
+    def test_read_port_config(self):
+        """Tests read_port_config"""
+        port = read_port_config(path=self.path)
+
+        assert port.port_name == "/dev/tty01"
