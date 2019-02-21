@@ -1,6 +1,8 @@
 from enum import Enum
 from abc import ABC, abstractmethod
 
+import serial
+
 
 class PortType(Enum):
     Testable = 0,
@@ -31,9 +33,9 @@ class Port(ABC):
 class TestablePort(Port):
     """ Provides a port object to be used for testing."""
 
-    def __init__(self, name, read_value):
-        self.pin_name = name
-        self.value = read_value
+    def __init__(self, config):
+        super().__init__(config)
+        self.value = config.get("read_value") or 0
 
     def open(self):
         pass
@@ -45,14 +47,12 @@ class TestablePort(Port):
 class SerialPort(Port):
     """ Provides a serial port object."""
 
-    def __init__(self, config, serial_lib):
+    def __init__(self, config, port):
         # serial_lib used was pyserial
         super().__init__(config)
         self.baudrate = config["baudrate"]
         self.timeout = config["timeout"]
-        self.port = serial_lib.Serial(
-            port=self.port_name, baudrate=self.baudrate, timeout=self.timeout)
-        # Default: parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS
+        self.port = port
 
     def open(self):
         self.port.open()
@@ -74,7 +74,7 @@ class SerialPort(Port):
 
 
 def make_port(config, mock_lib=None):
-    """ Cretes a new communication port.
+    """ Creates a new communication port.
 
     Implements the factory design pattern.
 
@@ -87,8 +87,12 @@ def make_port(config, mock_lib=None):
     port_type = PortType[config.get("port_type") or "Testable"]
     if port_type == PortType.Serial:
         if mock_lib is None:
-            import serial as serial_lib
-            return SerialPort(config=config, serial_lib=serial_lib)
-        return SerialPort(config=config, serial_lib=mock_lib)
+            # Default: parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS
+            port = serial.Serial(
+                port=config["port_name"],
+                baudrate=config["baudrate"],
+                timeout=config["timeout"])
+            return SerialPort(config=config, port=port)
+        return SerialPort(config=config, port=mock_lib)
     else:
-        return TestablePort(name=config["port_name"], read_value=config.get("read_value") or 0)
+        return TestablePort(config=config)

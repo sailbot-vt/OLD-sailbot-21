@@ -26,7 +26,7 @@ ports:
     # port_name can be found through: 'ls /dev/serial/by-id/'
     # or 'ls /dev/tty*'
     port_name: "/dev/tty01"
-    port_type: "Serial"
+    port_type: "Testable"
     baudrate: 4800
     timeout: 0
 
