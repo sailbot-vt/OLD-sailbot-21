@@ -62,13 +62,20 @@ class AirmarReceiver:
 
         Returns:
         A NMEASentence object containing ship data.
+        None if a message could not be processed correctly.
         """
         raw_msg = self._read_raw_msg()
         cleaned_msg = self._clean_raw_msg(raw_msg=raw_msg)
 
         if cleaned_msg is None:
+            # TODO log error.
             return None
-        return pynmea2.parse(cleaned_msg)
+        try:
+            nmea = pynmea2.parse(cleaned_msg)
+        except Exception as e:
+            # TODO log error.
+            return None
+        return nmea
 
     def _read_raw_msg(self):
         """ Reads in the bytes from the serial port.
@@ -95,7 +102,7 @@ class AirmarReceiver:
         # TODO: regex way to do this.
         # Note: nmea0183 sentences starts with $ or ! and
         # ends in <CR><LF> (hex:0x0d, dec:13)(hex:0x0d, dec:13)
-        cleaned_msg = ""
+        cleaned_msg = raw_msg
         if len(cleaned_msg) < 2:
             return None
         return cleaned_msg

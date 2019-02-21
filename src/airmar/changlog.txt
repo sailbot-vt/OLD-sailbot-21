@@ -1,0 +1,4 @@
+- TODO: log errors from parsing messages
+- Add serial/comm abstract base class to src.hardware
+- Move serial port constructor to config_reader.py
+

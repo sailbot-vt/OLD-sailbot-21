@@ -3,7 +3,7 @@ from time import sleep
 
 import serial
 
-from src.airmar.config_reader import read_pin_config, read_interval
+from src.airmar.config_reader import read_pin_config, read_interval, read_port_config
 from src.airmar.airmar_receiver import AirmarReceiver
 from src.airmar.airmar_broadcaster import make_broadcaster, AirmarBroadcasterType
 
@@ -20,8 +20,8 @@ class AirmarInputThread(Thread):
         # TODO: Move params to config if this is actually used
         # Serial port used to read nmea sentences
         # Might have to do port=`ls /dev/serial/by-id/`
-        self.port = serial.Serial(port="/dev/tty01", baudrate=4800, parity=serial.PARITY_NONE,
-                                  stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS, timeout=0)
+        self.port = serial.Serial(port="/dev/tty01", baudrate=4800, timeout=0)
+        # parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS,
 
         self.receiver = AirmarReceiver(broadcaster=self.broadcaster, pin=read_pin_config(
             mock_bbio=mock_bbio), port=self.port)
