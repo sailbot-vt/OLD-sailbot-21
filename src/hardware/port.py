@@ -1,10 +1,10 @@
 from enum import Enum
 from abc import ABC, abstractmethod
 
+
 class PortType(Enum):
     Testable = 0,
-    Serial = 1,
-    USB = 2
+    Serial = 1
 
 
 class Port(ABC):
@@ -19,6 +19,14 @@ class Port(ABC):
         """
         self.port_name = config["port_name"]
 
+    @abstractmethod
+    def open(self):
+        pass
+
+    @abstractmethod
+    def read(self):
+        pass
+
 
 class TestablePort(Port):
     """ Provides a port object to be used for testing."""
@@ -26,25 +34,61 @@ class TestablePort(Port):
     def __init__(self, name, read_value):
         self.pin_name = name
         self.value = read_value
-        self.written_values = []
+
+    def open(self):
+        pass
 
     def read(self):
         return self.value
 
-    def set_state(self, state):
-        self.written_values.append(state)
 
-    def start(self, *args):
-        pass
+class SerialPort(Port):
+    """ Provides a serial port object."""
 
-    def stop(self):
-        pass
+    def __init__(self, config, serial_lib):
+        # serial_lib used was pyserial
+        super().__init__(config)
+        self.baudrate = config["baudrate"]
+        self.timeout = config["timeout"]
+        self.port = serial_lib.Serial(
+            port=self.port_name, baudrate=self.baudrate, timeout=self.timeout)
+        # Default: parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS
 
-    class SerialPort(Port):
+    def open(self):
+        self.port.open()
 
-        def __init__(self, config, serial_lib):
-            super().__init__(config)
+    def read(self):
+        """ Reads in message from serial port.
 
-            self.baudrate = config["baudrate"]
-            self.timeout = config["timeout"]
+        Returns:
+        The message read or 'None' if nothing was read.
+        """
+        try:
+            bytes = self.port.inWaiting()
+        except:
+            bytes = 0
+        msg = self.port.read(size=bytes)
+        if len(msg) < 2:
+            return None
+        return msg
 
+
+def make_port(config, mock_lib=None):
+    """ Cretes a new communication port.
+
+    Implements the factory design pattern.
+
+    Keyword arguments:
+    config -- A port configuration dictionary.
+
+    Returns:
+    The type of port specified in the config.
+    """
+    port_type = PortType[config.get("port_type") or "Testable"]
+    if port_type == PortType.Serial:
+        if mock_lib is None:
+            import serial as serial_lib
+            return SerialPort(config=config, serial_lib=serial_lib)
+        return SerialPort(config=config, serial_lib=mock_lib)
+    else:
+        return TestablePort(name=config["port_name"], read_value=config.get("read_value") or 0)

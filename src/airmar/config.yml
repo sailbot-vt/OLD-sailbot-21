@@ -20,12 +20,15 @@
 # How frequently the receiver checks for new inputs
 read interval: 50 / 1000  # seconds
 
-# Settings to configure for serial communication
-# port can be found through: 'ls /dev/serial/by-id/'
-serial:
-  port_name: "/dev/tty01"
-  baudrate: 4800
-  timeout: 0
+# Settings to configure for port communication
+ports:
+  SERIAL:
+    # port_name can be found through: 'ls /dev/serial/by-id/'
+    # or 'ls /dev/tty*'
+    port_name: "/dev/tty01"
+    port_type: "Serial"
+    baudrate: 4800
+    timeout: 0
 
 
 # The pins connected to channels from the physical receiver

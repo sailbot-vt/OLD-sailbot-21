@@ -21,7 +21,7 @@ class AirmarReceiver:
         self.processor = AirmarProcessor()
 
     def start(self):
-        """ Sets up uart pin and open serial port to start listening."""
+        """ Sets up uart pin and open port to start listening."""
         self.uart_pin.setup()
         self.port.open()
 
@@ -64,48 +64,16 @@ class AirmarReceiver:
         A NMEASentence object containing ship data.
         None if a message could not be processed correctly.
         """
-        raw_msg = self._read_raw_msg()
-        cleaned_msg = self._clean_raw_msg(raw_msg=raw_msg)
+        msg = self.port.read()
 
-        if cleaned_msg is None:
-            # TODO log error.
+        if msg is None:
             return None
         try:
-            nmea = pynmea2.parse(cleaned_msg)
-        except Exception as e:
+            nmea = pynmea2.parse(msg)
+        except Exception:
             # TODO log error.
             return None
         return nmea
-
-    def _read_raw_msg(self):
-        """ Reads in the bytes from the serial port.
-
-        Returns:
-        The raw sentence read in from the serial port.
-        """
-        try:
-            bytes = self.port.inWaiting()
-        except:
-            bytes = 0
-        raw_msg = self.port.read(size=bytes)
-        return raw_msg
-
-    def _clean_raw_msg(self, raw_msg):
-        """ Cleans the raw message from serial port.
-
-        Keyword arguments:
-        raw_message -- The raw bytes read from serial port.
-
-        Returns:
-        The cleaned sentence in NMEA 0183.
-        """
-        # TODO: regex way to do this.
-        # Note: nmea0183 sentences starts with $ or ! and
-        # ends in <CR><LF> (hex:0x0d, dec:13)(hex:0x0d, dec:13)
-        cleaned_msg = raw_msg
-        if len(cleaned_msg) < 2:
-            return None
-        return cleaned_msg
 
     def stop(self):
         """ Stops the pin
@@ -113,4 +81,3 @@ class AirmarReceiver:
         WARNING: According to lib docs, causes kernal panic.
         """
         self.uart_pin.cleanup()
-        

@@ -2,6 +2,7 @@ import yaml
 import os
 
 from src.hardware.pin import make_pin
+from src.hardware.port import make_port
 
 
 def read_pin_config(mock_bbio=None, path=None):
@@ -30,4 +31,9 @@ def read_interval(path=None):
 
 def read_port_config(path=None):
     """ Reads the settings for serial port communication from config.yml"""
-    pass
+    if path is None:
+        path = os.path.dirname(os.path.abspath(__file__))
+    with open*(path + "/config.yml", "r") as yml:
+        conf = yaml.load(yml)
+        port = make_port(conf["ports"]["SERIAL"])
+    return port
