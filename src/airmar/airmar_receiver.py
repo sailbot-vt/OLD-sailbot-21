@@ -113,3 +113,4 @@ class AirmarReceiver:
         WARNING: According to lib docs, causes kernal panic.
         """
         self.uart_pin.cleanup()
+        

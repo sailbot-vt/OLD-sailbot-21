@@ -29,8 +29,5 @@ def read_interval(path=None):
 
 
 def read_port_config(path=None):
-    """ Reads the settings for serial port communitcaiont from config.yml"""
-    if path is None:
-        path = os.path.dirname(os.path.abspath(__file__))
-    with open(path + "/config.yml". "r") as yml:
-        conf = yaml.load(yml)
+    """ Reads the settings for serial port communication from config.yml"""
+    pass

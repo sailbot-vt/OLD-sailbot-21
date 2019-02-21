@@ -1,5 +1,5 @@
 from enum import Enum
-import abc import ABC, abstractmethod
+from abc import ABC, abstractmethod
 
 class PortType(Enum):
     Testable = 0,
@@ -47,3 +47,4 @@ class TestablePort(Port):
 
             self.baudrate = config["baudrate"]
             self.timeout = config["timeout"]
+
