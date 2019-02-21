@@ -38,5 +38,5 @@ def read_port_config(mock_port=None, path=None):
         if mock_port is None:
             port = make_port(conf["ports"]["SERIAL"])
         else:
-            port = make_port(conf["ports"]["SERIAL"], mock_lib=mock_port.Serial)
+            port = make_port(conf["ports"]["SERIAL"], mock_port=mock_port.Serial)
     return port

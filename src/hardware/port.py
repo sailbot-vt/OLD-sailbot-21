@@ -23,10 +23,17 @@ class Port(ABC):
 
     @abstractmethod
     def open(self):
+        """ Opens/starts port. """
         pass
 
     @abstractmethod
     def read(self):
+        """ Reads in next message from port. """
+        pass
+    
+    @abstractmethod
+    def close(self):
+        """ Closes/stops port. """
         pass
 
 
@@ -43,6 +50,9 @@ class TestablePort(Port):
     def read(self):
         return self.value
 
+    def close(self):
+        pass
+
 
 class SerialPort(Port):
     """ Provides a serial port object."""
@@ -50,8 +60,6 @@ class SerialPort(Port):
     def __init__(self, config, port):
         # serial_lib used was pyserial
         super().__init__(config)
-        self.baudrate = config["baudrate"]
-        self.timeout = config["timeout"]
         self.port = port
 
     def open(self):
@@ -61,38 +69,39 @@ class SerialPort(Port):
         """ Reads in message from serial port.
 
         Returns:
-        The message read or 'None' if nothing was read.
+        The message read.
         """
         try:
             bytes = self.port.inWaiting()
         except:
             bytes = 0
-        msg = self.port.read(size=bytes)
-        if len(msg) < 2:
-            return None
-        return msg
+        return self.port.read(size=bytes)
+
+    def close(self):
+        self.port.close()
 
 
-def make_port(config, mock_lib=None):
+def make_port(config, mock_port=None):
     """ Creates a new communication port.
-
-    Implements the factory design pattern.
 
     Keyword arguments:
     config -- A port configuration dictionary.
+    mock_lib -- A mock port object for testing.
 
     Returns:
     The type of port specified in the config.
     """
     port_type = PortType[config.get("port_type") or "Testable"]
     if port_type == PortType.Serial:
-        if mock_lib is None:
-            # Default: parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS
+        if mock_port is None:
             port = serial.Serial(
+            # Default: parity=serial.PARITY_NONE, 
+            #   stopbits=serial.STOPBITS_ONE, 
+            #   bytesize=serial.EIGHTBITS
                 port=config["port_name"],
                 baudrate=config["baudrate"],
                 timeout=config["timeout"])
             return SerialPort(config=config, port=port)
-        return SerialPort(config=config, port=mock_lib)
+        return SerialPort(config=config, port=mock_port)
     else:
         return TestablePort(config=config)

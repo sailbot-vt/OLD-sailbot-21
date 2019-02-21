@@ -4,44 +4,27 @@ import math
 class AirmarProcessor:
     """Defines an airmar data processor that stores airmar data given a NMEASentence object"""
 
-    def __init__(self):
+    def __init__(self, broadcaster):
         """Initializes a new airmar data processor.
 
         Returns:
         A new AirmarProcessor
         """
-        self.airmar_data = {
-            "WIND_SPEED_CURRENT": None,
-            "WIND_SPEED_AVERAGE": None,
+        self.broadcaster = broadcaster
+        self.wind_data = {
+            "WIND_SPEED": None,
             # wind heading in degrees
-            "WIND_HEADING_CURRENT": None,
-            "WIND_HEADING_AVERAGE": None,
-            "BOAT_LATITUDE": None,
-            "BOAT_LONGITUDE": None,
-            "BOAT_HEADING": None,
-            "BOAT_SPEED": None
+            "WIND_HEADING": None,
         }
 
     def update_airmar_data(self, nmea):
-        """ Updates the wind and boat data in the ship data dictionary given a NMEASentence object
+        """ Updates the wind and boat data in the broadcaster given a NMEASentence object
 
         Keyword arguments:
         nmea -- a NMEASentence object containing wind and boat data.
         """
         self._update_wind_data(nmea=nmea)
         self._update_boat_data(nmea=nmea)
-
-    def get_airmar_data(self):
-        """ Retrieves the current airmar_data dictionary from the processor
-
-        Returns:
-        A dictionary with keys:
-            'WIND_SPEED_CURRENT', 'WIND_SPEED_AVERAGE',
-            'WIND_HEADING_CURRENT', 'WIND_HEADING_AVERAGE',
-            'BOAT_LATITUDE', 'BOAT_LONGITUDE', 'BOAT_HEADING', and
-            'BOAT_SPEED' associated to floats representing current values of resepective keys.
-        """
-        return self.airmar_data
 
     ### --- WIND UPDATES --- ###
 
@@ -53,13 +36,11 @@ class AirmarProcessor:
             and direction_true
 
         Side Effects:
-        Updates processor's dictionary 'airmar_data'
+        Sends wind data to the airmar broadcaster.
         """
         if nmea.wind_speed_meters is not None and nmea.direction_true is not None:
             wind_speed = float(nmea.wind_speed_meters)
             wind_head = float(nmea.wind_direction_true)
-            self.airmar_data["WIND_SPEED_CURRENT"] = wind_speed
-            self.airmar_data["WIND_HEADING_CURRENT"] = wind_head
 
             self._update_wind_averages(
                 wind_speed=wind_speed, wind_angle=wind_head)
@@ -73,12 +54,13 @@ class AirmarProcessor:
         wind_direc -- the current wind heading read in degrees.
 
         Side Effects:
-        Updates processor's dictionary 'airmar_data'
+        Updates wind data dictionary in processor.
+        Sends wind data to the airmar broadcaster.
         """
         wind_angle = math.radians(wind_angle)
-        wind_angle_old = math.radians(self.airmar_data["WIND_HEADING_AVERAGE"])
+        wind_angle_old = math.radians(self.wind_data["WIND_HEADING"])
 
-        wind_speed_old = self.airmar_data["WIND_SPEED_AVERAGE"]
+        wind_speed_old = self.wind_data["WIND_SPEED"]
 
         # calculate components
         old_x = wind_speed_old * math.cos(wind_angle_old)
@@ -95,8 +77,11 @@ class AirmarProcessor:
         speed = math.sqrt(x*x + y*y)
         heading = math.degrees(math.atan2(x, y)) % 360
 
-        self.airmar_data["WIND_SPEED_AVERAGE"] = speed
-        self.airmar_data["WIND_HEADING_AVERAGE"] = heading
+        # Updates dictionary
+        self.wind_data["WIND_SPEED"] = speed
+        self.wind_data["WIND_HEADING"] = heading
+        self.broadcaster.read_wind_speed(wind_speed=speed)
+        self.broadcaster.read_wind_heading(wind_heading=heading)
 
     ### --- BOAT UPDATES ---- ###
 
@@ -107,7 +92,8 @@ class AirmarProcessor:
         nmea -- a NMEASentence object containing 'latitude', 'longitude', 'heading', and 'speed'
 
         Side Effects:
-        Updates processor's dictionary 'airmar_data'
+        Updates wind data dictionary in processor.
+        Sends boat data to the airmar broadcaster.
         """
         self._update_boat_lat(nmea=nmea)
         self._update_boat_long(nmea=nmea)
@@ -121,10 +107,11 @@ class AirmarProcessor:
         nmea -- a NMEASentence object containing 'latitude'
 
         Side Effects:
-        Updates processor's dictionary 'airmar_data'
+        Sends boat data to the airmar broadcaster.
         """
         if nmea.latitude is not None and float(nmea.latitude) > 10:
-            self.airmar_data["BOAT_LATITUDE"] = float(nmea.latitude)
+            boat_lat = float(nmea.latitude)
+            self.broadcaster.read_boat_latitude(boat_lat=boat_lat)
 
     def _update_boat_long(self, nmea):
         """ Updates the boat's longitude. Only accepts values < -10
@@ -133,10 +120,11 @@ class AirmarProcessor:
         nmea -- a NMEASentence object containing 'longitude'
 
         Side Effects:
-        Updates processor's dictionary 'airmar_data'
+        Sends boat data to the airmar broadcaster
         """
         if nmea.longitude is not None and float(nmea.longitude) < -10:
-            self.airmar_data["BOAT_LONGITUDE"] = float(nmea.longitude)
+            boat_long = float(nmea.longitude)
+            self.broadcaster.read_boat_longitude(boat_long=boat_long)
 
     def _update_boat_head(self, nmea):
         """ Updates the boat's heading.
@@ -145,10 +133,11 @@ class AirmarProcessor:
         nmea -- a NMEASentence object containing 'heading'
 
         Side Effects:
-        Updates processor's dictionary 'airmar_data'
+        Sends boat data to the airmar broadcaster
         """
         if nmea.heading is not None:
-            self.airmar_data["BOAT_HEADING"] = float(nmea.heading) % 360
+            boat_head = float(nmea.heading) % 360
+            self.broadcaster.read_boat_heading(boat_head=boat_head)
 
     def _update_boat_speed(self, nmea):
         """ Updates the boat's speed.
@@ -157,7 +146,8 @@ class AirmarProcessor:
         nmea -- a NMEASentence object containing 'speed'
 
         Side Effects:
-        Updates processor's dictionary 'airmar_data'
+        Sends boat data to the airmar broadcaster
         """
         if nmea.speed is not None:
-            self.airmar_data["BOAT_SPEED"] = float(nmea.speed)
+            boat_speed = float(nmea.speed)
+            self.broadcaster.read_boat_speed(boat_speed=boat_speed)
