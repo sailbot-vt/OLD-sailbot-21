@@ -36,6 +36,15 @@ class Port(ABC):
         """ Closes/stops port. """
         pass
 
+    @abstractmethod
+    def is_open(self):
+        """ Checks if the port is opened.
+
+        Returns:
+        True if port is open.
+        """
+        pass
+
 
 class TestablePort(Port):
     """ Provides a port object to be used for testing."""
@@ -45,6 +54,9 @@ class TestablePort(Port):
         self.value = config.get("read_value") or 0
 
     def open(self):
+        pass
+        
+    def is_open(self):
         pass
 
     def read(self):
@@ -63,6 +75,9 @@ class SerialPort(Port):
 
     def open(self):
         self.port.open()
+
+    def is_open(self):
+        return self.port.isOpen()
 
     def read(self):
         """ Reads in message from serial port.

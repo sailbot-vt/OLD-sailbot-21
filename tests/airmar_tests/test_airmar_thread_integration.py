@@ -39,12 +39,22 @@ class AirmarThreadTests(unittest.TestCase):
 
     def test_wind(self):
         """ Tests that wind speed data was recorded """
+
         pass
 
     def test_boat_gps(self):
         """ Tests that boat latitudes and longitudes were recorded """
-        pass
-    
+        sentence = "$GPGLL,3751.65,S,14507.36,E*77"
+        # Lat: 49 deg. 16.45 min. South
+        # Long 123 deg. 12.12 min. East
+        serial.Serial.read = MagicMock(
+            name='serial.Serial.read', return_value=sentence)
+
+        self.airmar_input_thread.receiver.send_airmar_data()
+
+        assert self.broadcaster.boat_lats[0] == 16.45
+        assert self.broadcaster.boat_longs[0] == 12.12
+
     def test_boat_move(self):
         """ Tests that boat heading and speed were recorded """
         pass

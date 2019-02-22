@@ -101,7 +101,7 @@ class AirmarProcessor:
         self._update_boat_speed(nmea=nmea)
 
     def _update_boat_lat(self, nmea):
-        """ Updates the boat's latitude. Only accepts values > 10.
+        """ Updates the boat's latitude.
 
         Keyword arguments:
         nmea -- a NMEASentence object containing 'latitude'
@@ -109,12 +109,12 @@ class AirmarProcessor:
         Side Effects:
         Sends boat data to the airmar broadcaster.
         """
-        if nmea.latitude is not None and float(nmea.latitude) > 10:
+        if nmea.latitude is not None:  # and float(nmea.latitude) > 10:
             boat_lat = float(nmea.latitude)
             self.broadcaster.read_boat_latitude(boat_lat=boat_lat)
 
     def _update_boat_long(self, nmea):
-        """ Updates the boat's longitude. Only accepts values < -10
+        """ Updates the boat's longitude.
 
         Keyword arguments:
         nmea -- a NMEASentence object containing 'longitude'
@@ -122,7 +122,7 @@ class AirmarProcessor:
         Side Effects:
         Sends boat data to the airmar broadcaster
         """
-        if nmea.longitude is not None and float(nmea.longitude) < -10:
+        if nmea.longitude is not None:  # and float(nmea.longitude) < -10:
             boat_long = float(nmea.longitude)
             self.broadcaster.read_boat_longitude(boat_long=boat_long)
 
