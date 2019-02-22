@@ -15,7 +15,6 @@ class AirmarThreadTests(unittest.TestCase):
     def setUp(self):
         serial.Serial.open = MagicMock(name='serial.Serial.open')
         serial.Serial.close = MagicMock(name='serial.Serial.close')
-        serial.Serial.read = MagicMock(name='serial.Serial.read')
         serial.Serial.inWaiting = MagicMock(name='serial.Serial.inWaiting')
         Adafruit_BBIO.UART.setup = MagicMock(name='Adafruit_BBIO.UART.setup')
 
@@ -24,5 +23,12 @@ class AirmarThreadTests(unittest.TestCase):
             mock_port=serial,
             broadcaster_type=AirmarBroadcasterType.Testable)
 
-    def test_run(self):
-        pass
+    @patch('src.airmar.airmar_broadcaster.pub', autospec=True)
+    def test_none(self, mock_pub):
+        """ Tests that nothing is broadcasted when nothing is read. """
+        serial.Serial.read = MagicMock(name='serial.Serial.read',
+                                       return_value="")
+
+        self.airmar_input_thread.receiver.send_airmar_data()
+
+        mock_pub.sendMessage.assert_not_called()
