@@ -17,6 +17,7 @@ class AirmarThreadTests(unittest.TestCase):
         serial.Serial.close = MagicMock(name='serial.Serial.close')
         serial.Serial.inWaiting = MagicMock(name='serial.Serial.inWaiting')
         serial.Serial.read = MagicMock(name='serial.Serial.read')
+        serial.Serial.isOpen = MagicMock(name='serial.Serial.isOpen')
         Adafruit_BBIO.UART.setup = MagicMock(name='Adafruit_BBIO.UART.setup')
 
         self.airmar_input_thread = AirmarInputThread(

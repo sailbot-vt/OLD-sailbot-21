@@ -23,7 +23,7 @@ class AirmarProcessor:
         Keyword arguments:
         nmea -- a NMEASentence object containing wind and boat data.
         """
-        self._update_wind_data(nmea=nmea)
+        # self._update_wind_data(nmea=nmea)
         self._update_boat_data(nmea=nmea)
 
     ### --- WIND UPDATES --- ###

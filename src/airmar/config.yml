@@ -39,7 +39,7 @@ read interval: 50 / 1000  # seconds
 # Settings to configure for port communication
 ports:
   SERIAL:
-    port_name: "/dev/tty01"
+    port_name: "/dev/tty0"
     port_type: "SERIAL"
     baudrate: 4800
     timeout: 0
@@ -48,6 +48,6 @@ ports:
 # The pins connected to channels from the physical receiver
 pins:
   UART:
-    pin_name: "P0_0"
+    pin_name: "P9_24"
     pin_type: "UART"
-    channel: "UART1"
+    channel: "UART4"
