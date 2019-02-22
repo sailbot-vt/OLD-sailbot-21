@@ -1,3 +1,19 @@
+# Ports must have their function in all caps.
+# All ports must include
+#   port_name -- The path of the port
+#   port_type -- The method of communication, e.g. SERIAL, USB
+#
+# Port types in this module:
+#   - SERIAL
+#
+# SERIAL:
+#   Serial pins must specify 
+#   port_name: which can be found through
+#       'ls /dev/tty*' or 'ls /dev/serial/by-id'
+#   baudrate: standard - 4800, or 38400 (though most nmea instruments
+#       cannot operate at 38400)
+#   timeout: time rest for port.
+# 
 # Pins must have their function in all caps.
 # All pins must include
 #   pin_name -- The BBB name of the pin, e.g. "P0_0"
@@ -23,10 +39,8 @@ read interval: 50 / 1000  # seconds
 # Settings to configure for port communication
 ports:
   SERIAL:
-    # port_name can be found through: 'ls /dev/serial/by-id/'
-    # or 'ls /dev/tty*'
     port_name: "/dev/tty01"
-    port_type: "Serial"
+    port_type: "SERIAL"
     baudrate: 4800
     timeout: 0
 

@@ -5,8 +5,8 @@ import serial
 
 
 class PortType(Enum):
-    Testable = 0,
-    Serial = 1
+    TESTABLE = 0,
+    SERIAL = 1
 
 
 class Port(ABC):
@@ -91,8 +91,8 @@ def make_port(config, mock_port=None):
     Returns:
     The type of port specified in the config.
     """
-    port_type = PortType[config.get("port_type") or "Testable"]
-    if port_type == PortType.Serial:
+    port_type = PortType[config.get("port_type")]
+    if port_type == PortType.SERIAL:
         if mock_port is None:
             port = serial.Serial(
             # Default: parity=serial.PARITY_NONE, 
