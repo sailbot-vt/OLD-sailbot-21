@@ -30,7 +30,7 @@ class Port(ABC):
     def read(self):
         """ Reads in next message from port. """
         pass
-    
+
     @abstractmethod
     def close(self):
         """ Closes/stops port. """
@@ -58,7 +58,6 @@ class SerialPort(Port):
     """ Provides a serial port object."""
 
     def __init__(self, config, port):
-        # serial_lib used was pyserial
         super().__init__(config)
         self.port = port
 
@@ -95,9 +94,6 @@ def make_port(config, mock_port=None):
     if port_type == PortType.SERIAL:
         if mock_port is None:
             port = serial.Serial(
-            # Default: parity=serial.PARITY_NONE, 
-            #   stopbits=serial.STOPBITS_ONE, 
-            #   bytesize=serial.EIGHTBITS
                 port=config["port_name"],
                 baudrate=config["baudrate"],
                 timeout=config["timeout"])
