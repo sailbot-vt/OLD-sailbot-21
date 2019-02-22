@@ -1,5 +1,5 @@
 import pynmea2
-from pubsub import pub
+
 from src.airmar.airmar_processor import AirmarProcessor
 
 
