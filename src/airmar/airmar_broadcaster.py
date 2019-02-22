@@ -79,44 +79,56 @@ class TestableAirmarBroadcaster(AirmarBroadcaster):
         self.boat_speeds = []
 
     def read_wind_speed(self, wind_speed=None):
-        self.wind_speeds.append(wind_speed)
+        if wind_speed is not None:
+            self.wind_speeds.append(wind_speed)
 
     def read_wind_heading(self, wind_head=None):
-        self.wind_heads.append(wind_head)
+        if wind_head is not None:
+            self.wind_heads.append(wind_head)
 
     def read_boat_latitude(self, boat_lat=None):
-        self.boat_lats.append(boat_lat)
+        if boat_lat is not None:
+            self.boat_lats.append(boat_lat)
 
     def read_boat_longitude(self, boat_long=None):
-        self.boat_longs.append(boat_long)
+        if boat_long is not None:
+            self.boat_longs.append(boat_long)
 
     def read_boat_heading(self, boat_head):
-        self.boat_heads.append(boat_head)
+        if boat_head is not None:
+            self.boat_heads.append(boat_head)
 
     def read_boat_speed(self, boat_speed):
-        self.boat_speeds.append(boat_speed)
+        if boat_speed is not None:
+            self.boat_speeds.append(boat_speed)
 
 
 class AirmarMessenger(AirmarBroadcaster):
     """Implements an interface with the pub/sub messaging system to broadcast airmar data."""
 
     def read_wind_speed(self, wind_speed=None):
-        pub.sendMessage(topicName="set wind speed", msgData=wind_speed)
+        if wind_speed is not None:
+            pub.sendMessage(topicName="set wind speed", msgData=wind_speed)
 
     def read_wind_heading(self, wind_head=None):
-        pub.sendMessage(topicName="set wind heading", msgData=wind_head)
+        if wind_head is not None:
+            pub.sendMessage(topicName="set wind heading", msgData=wind_head)
 
     def read_boat_latitude(self, boat_lat=None):
-        pub.sendMessage(topicName="set boat latitude", msgData=boat_lat)
+        if boat_lat is not None:
+            pub.sendMessage(topicName="set boat latitude", msgData=boat_lat)
 
     def read_boat_longitude(self, boat_long=None):
-        pub.sendMessage(topicName="set boat longitude", msgData=boat_long)
+        if boat_long is not None:
+            pub.sendMessage(topicName="set boat longitude", msgData=boat_long)
 
     def read_boat_heading(self, boat_head=None):
-        pub.sendMessage(topicName="set boat heading", msgData=boat_head)
+        if boat_head is not None:
+            pub.sendMessage(topicName="set boat heading", msgData=boat_head)
 
     def read_boat_speed(self, boat_speed=None):
-        pub.sendMessage(topicName="set boat speed", msgData=boat_speed)
+        if boat_speed is not None:
+            pub.sendMessage(topicName="set boat speed", msgData=boat_speed)
 
 
 def make_broadcaster(broadcaster_type=None):
