@@ -69,8 +69,9 @@ class AirmarReceiver:
                 data, self.stored_data = line.split("\r\n")
                 line = ""
                 return data
+        return line
 
     def stop(self):
-        """ Stops the pin """
+        """ Stops the pin and port """
         self.port.close()
         self.uart_pin.cleanup()
