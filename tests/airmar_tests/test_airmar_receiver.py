@@ -22,7 +22,7 @@ class AirmarReceiverTest(unittest.TestCase):
         serial.Serial.inWaiting = MagicMock(name='serial.Serial.inWaiting')
         serial.Serial.read = MagicMock(name='serial.Serial.read')
         serial.Serial.isOpen = MagicMock(name='serial.Serial.isOpen')
-        Adafruit_BBIO.UART.setup = MagicMock(name='Adafruit_BBIO.UART.setup')
+        Adafruit_BBIO.UART.setup = MagicMock(name='Adafruit_BBIO.UART.setUp')
 
         port_conf = {
             "port_name": "/dev/tty0",
@@ -44,6 +44,19 @@ class AirmarReceiverTest(unittest.TestCase):
 
         self.receiver = AirmarReceiver(
             broadcaster=broadcaster, pin=pin, port=port)
+
+    def test_start_stop(self):
+        """ Tests start opens port, setup UART, flags is_running true
+        Tests stop closes port, flags is_running false
+        """
+        self.receiver.start()
+        serial.Serial.open.assert_called_once()
+        Adafruit_BBIO.UART.setup.assert_called_once()
+        assert self.receiver.is_running
+
+        self.receiver.stop()
+        serial.Serial.close.assert_called_once()
+        assert not self.receiver.is_running
 
     def test_split_messages(self):
         serial.Serial.isOpen.return_value = True

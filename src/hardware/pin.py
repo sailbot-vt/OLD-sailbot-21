@@ -172,15 +172,16 @@ class UARTPin(Pin):
 
     def __init__(self, config, uart_lib):
         super().__init__(config)
+        self.channel = config["channel"]
         self.uart_lib = uart_lib
 
-    def setup(self, channel):
+    def setup(self):
         """ Set up and start the UART channel. This will export the given UART so that it can be accessed by other software that controls its serial lines.
 
         Keyword arguments:
         channel -- UART channel to set up. One of "UART1", "UART2", "UART4" or "UART5"
         """
-        self.uart_lib.setup(channel)
+        self.uart_lib.setup(self.channel)
 
     def cleanup(self):
         """ Cleans up the UART"""
