@@ -24,9 +24,15 @@ class AirmarInputThread(Thread):
         self.read_interval = read_interval()
 
     def run(self):
-        """Starts a regular read interval."""
-        self.receiver.start()
+        """Starts a regular read interval.
+
+        Side effects:
+        -- self.keep_reading : True, receiver start, if not started/stopped
+        -- self.keep_reading : False, receiver stop
+        """
         while self.keep_reading:
+            if not self.receiver.is_running:
+                self.receiver.start()
             self.receiver.send_airmar_data()
             sleep(self.read_interval)
         self.receiver.stop()

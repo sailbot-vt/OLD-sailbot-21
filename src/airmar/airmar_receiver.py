@@ -16,6 +16,7 @@ class AirmarReceiver:
         Returns:
         A new Airmar Receiver
         """
+        self.is_running = False
         self.stored_data = ""
         self.uart_pin = pin
         self.port = port
@@ -25,6 +26,7 @@ class AirmarReceiver:
         """ Sets up uart pin and open port to start listening."""
         self.uart_pin.setup()
         self.port.open()
+        self.is_running = True
 
     def send_airmar_data(self):
         """ Sends NMEASentence object to airmar processor to broadcast airmar data."""
@@ -75,3 +77,4 @@ class AirmarReceiver:
         """ Stops the pin and port """
         self.port.close()
         self.uart_pin.cleanup()
+        self.is_running = False
