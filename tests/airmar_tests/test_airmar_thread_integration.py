@@ -13,7 +13,6 @@ class AirmarThreadTests(unittest.TestCase):
     """Integreation tests for AirmarInputThread"""
 
     def setUp(self):
-        self.serial = serial.Serial
         serial.Serial.open = MagicMock(name='serial.Serial.open')
         serial.Serial.close = MagicMock(name='serial.Serial.close')
         serial.Serial.inWaiting = MagicMock(name='serial.Serial.inWaiting')
