@@ -49,6 +49,7 @@ class AirmarReceiverTest(unittest.TestCase):
         """ Tests start opens port, setup UART, flags is_running true
         Tests stop closes port, flags is_running false
         """
+        serial.Serial.isOpen.return_value = False
         self.receiver.start()
         serial.Serial.open.assert_called_once()
         Adafruit_BBIO.UART.setup.assert_called_once()

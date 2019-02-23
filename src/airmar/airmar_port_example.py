@@ -3,7 +3,7 @@ from src.airmar.airmar_broadcaster import AirmarBroadcasterType
 
 from time import sleep
 
-airmar_reader = AirmarInputThread(broadcaster_type=AirmarBroadcasterType.Messenger)
+airmar_reader = AirmarInputThread(broadcaster_type=AirmarBroadcasterType.Testable)
 broadcaster = airmar_reader.broadcaster
 
 airmar_reader.start()
