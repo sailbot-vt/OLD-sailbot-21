@@ -47,10 +47,13 @@ class AirmarReceiverTest(unittest.TestCase):
 
     def test_split_messages(self):
         serial.Serial.isOpen.return_value = True
-        serial.Serial.read.return_value = "test\r\ntest2\r\n"
+        self.receiver.remaining_input = "test0\r\n"
+        serial.Serial.read.return_value = "test1\r\ntest2\r\n"
 
+        string0 = self.receiver._read_msg()
         string1 = self.receiver._read_msg()
         string2 = self.receiver._read_msg()
 
-        self.assertEqual(string1, "test")
+        self.assertEqual(string0, "test0")
+        self.assertEqual(string1, "test1")
         self.assertEqual(string2, "test2")

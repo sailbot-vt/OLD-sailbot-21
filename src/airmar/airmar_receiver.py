@@ -17,7 +17,7 @@ class AirmarReceiver:
         A new Airmar Receiver
         """
         self.is_running = False
-        self.stored_data = ""
+        self.remaining_input = ""
         self.uart_pin = pin
         self.port = port
         self.processor = AirmarProcessor(broadcaster=broadcaster)
@@ -59,16 +59,16 @@ class AirmarReceiver:
         """
         line = ""
         while self.port.is_open():
-            if self.stored_data:
-                line = self.stored_data
-                self.stored_data = ""
+            if self.remaining_input:
+                line = self.remaining_input
+                self.remaining_input = ""
 
             port_buffer = self.port.read()
             if port_buffer:
                 line = line + port_buffer
 
             if re.search("\r\n", line):
-                data, self.stored_data = line.split("\r\n")
+                data, self.remaining_input = line.split("\r\n", 1)
                 line = ""
                 return data
         return line
