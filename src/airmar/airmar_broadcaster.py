@@ -108,27 +108,27 @@ class AirmarMessenger(AirmarBroadcaster):
 
     def read_wind_speed(self, wind_speed=None):
         if wind_speed is not None:
-            pub.sendMessage(topicName="set wind speed", speed=wind_speed)
+            pub.sendMessage(topicName="set wind speed", msgData=wind_speed)
 
     def read_wind_heading(self, wind_head=None):
         if wind_head is not None:
-            pub.sendMessage(topicName="set wind heading", deg=wind_head)
+            pub.sendMessage(topicName="set wind heading", msgData=wind_head)
 
     def read_boat_latitude(self, boat_lat=None):
         if boat_lat is not None:
-            pub.sendMessage(topicName="set boat latitude", lat=boat_lat)
+            pub.sendMessage(topicName="set boat latitude", msgData=boat_lat)
 
     def read_boat_longitude(self, boat_long=None):
         if boat_long is not None:
-            pub.sendMessage(topicName="set boat longitude", long=boat_long)
+            pub.sendMessage(topicName="set boat longitude", msgData=boat_long)
 
     def read_boat_heading(self, boat_head=None):
         if boat_head is not None:
-            pub.sendMessage(topicName="set boat heading", deg=boat_head)
+            pub.sendMessage(topicName="set boat heading", msgData=boat_head)
 
     def read_boat_speed(self, boat_speed=None):
         if boat_speed is not None:
-            pub.sendMessage(topicName="set boat speed", speed=boat_speed)
+            pub.sendMessage(topicName="set boat speed", msgData=boat_speed)
 
 
 def make_broadcaster(broadcaster_type=None):
@@ -142,8 +142,7 @@ def make_broadcaster(broadcaster_type=None):
     Returns:
     The correct AirmarBroadcaster for the environment.
     """
-    if broadcaster_type == None:
-        # Default broadcaster
+    if broadcaster_type == AirmarBroadcasterType.Messenger:
         return AirmarMessenger()
 
     return TestableAirmarBroadcaster()

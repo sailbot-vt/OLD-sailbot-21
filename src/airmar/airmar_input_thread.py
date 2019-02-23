@@ -12,7 +12,10 @@ class AirmarInputThread(Thread):
     def __init__(self, mock_bbio=None, mock_port=None, broadcaster_type=None):
         """Builds a new airmar input thread."""
         super().__init__()
-
+        if broadcaster_type is None:
+            # Default broadcaster:
+            broadcaster_type = AirmarBroadcasterType.Messenger
+            
         self.broadcaster = make_broadcaster(broadcaster_type=broadcaster_type)
         self.pin = read_pin_config(mock_bbio=mock_bbio)
         self.port = read_port_config(mock_port=mock_port)

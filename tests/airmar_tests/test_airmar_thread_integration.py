@@ -1,6 +1,5 @@
 import unittest
 from unittest.mock import patch, MagicMock
-import sys
 
 from tests.mock_bbio import Adafruit_BBIO
 from tests.mock_port import serial
