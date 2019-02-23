@@ -1,0 +1,50 @@
+# Pins must have their function in all caps.
+# All pins must include
+#   pin_name -- The BBB name of the pin, e.g. "P0_0"
+#   pin_type -- The method for reading input from the pin, e.g. ADC
+#
+# Pin types in this module:
+#   - ADC
+#   - GPIO
+#
+# ADC:
+#   ADC pins must have io_type specified as either IN or OUT.
+#
+# GPIO:
+#   GPIO pins must specify min_v, default_v, and max_v, the minimum, default, and
+#   maximum voltages, respectively.
+#
+#
+#
+#
+# WARNING: YAML IS WHITESPACE SENSITIVE! PLEASE MATCH INDENTATION STYLE! This
+# means consistently use tabs or spaces, and use the indentation amounts in the
+# language spec available here: https://yaml.org/spec/1.2/spec.html
+
+
+# How frequently the receiver checks for new inputs
+read interval: 50 / 1000  # seconds
+
+
+# The pins connected to channels from the physical receiver
+pins:
+  RUDDER:
+    pin_name: "ADC_PIN"
+    pin_type: "ADC"
+    min_v: .18
+    default_v: .26
+    max_v: .35
+  TRIM:
+    pin_name: "ADC_PIN"
+    pin_type: "ADC"
+    min_v: .18
+    default_v: .26
+    max_v: .35
+  MODE1:
+    pin_name: "GPIO_PIN"
+    pin_type: "GPIO"
+    io_type: IN
+  MODE2:
+    pin_name: "GPIO_PIN"
+    pin_type: "GPIO"
+    io_type: IN

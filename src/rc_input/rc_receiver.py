@@ -1,4 +1,5 @@
 from numpy import sign
+from pubsub import pub
 
 from src.navigation_mode import NavigationMode
 
@@ -6,17 +7,15 @@ from src.navigation_mode import NavigationMode
 class RCReceiver:
     """Defines an RC receiver that sends data to a broadcaster."""
 
-    def __init__(self, broadcaster, pins):
+    def __init__(self, pins):
         """Initializes a new ADC receiver.
 
         Keyword arguments:
-        broadcaster -- An RC broadcaster object.
         pins -- The pin map with keys 'TRIM', 'RUDDER', 'MODE1', and 'MODE2' associated with Pin objects.
 
         Returns:
         A new BBIOReceiver
         """
-        self.broadcaster = broadcaster
         self.pins = pins
 
     def send_inputs(self):
@@ -25,9 +24,9 @@ class RCReceiver:
         Keyword arguments:
         inputs – Inputs to be sent. A dictionary with keys 'RUDDER', 'TRIM', and 'MODE'
         """
-        self.broadcaster.move_rudder(degrees_starboard=self._get_rudder_input())
-        self.broadcaster.change_trim(degrees_in=self._get_trim_input())
-        self.broadcaster.change_mode(mode=self._get_mode())
+        pub.sendMessage("set rudder", deg=self._get_rudder_input())
+        pub.sendMessage("set trim", deg=self._get_trim_input())
+        pub.sendMessage("set nav mode", mode=self._get_mode())
 
     def _get_rudder_input(self):
         """Scales the rudder values from the raw value to degrees to starboard.
