@@ -74,7 +74,8 @@ class SerialPort(Port):
         self.port = port
 
     def open(self):
-        self.port.open()
+        if not self.port.is_open:
+            self.port.open()
 
     def is_open(self):
         return self.port.isOpen()
