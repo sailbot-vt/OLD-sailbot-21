@@ -33,9 +33,14 @@ class AirmarInputThread(Thread):
         -- self.keep_reading : True, receiver start, if not started/stopped
         -- self.keep_reading : False, receiver stop
         """
+        self.keep_reading = True
         while self.keep_reading:
             if not self.receiver.is_running:
                 self.receiver.start()
             self.receiver.send_airmar_data()
             sleep(self.read_interval)
         self.receiver.stop()
+
+    def stop(self):
+        """ Pauses current thread without killing it. """
+        self.keep_reading = False
