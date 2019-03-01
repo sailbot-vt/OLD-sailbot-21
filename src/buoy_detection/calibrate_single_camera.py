@@ -67,7 +67,7 @@ def test_view_checkerboard(image_path):
 
             ret, corners = cv2.findChessboardCorners(grey, (7, 6), None)
             if ret:
-                cv2.drawChessboardCorners(img, (7, 6), corners, ret)
+                cv2.drawChessboardCorners(img, (10,7), corners, ret)
                 cv2.imshow('img', img)
                 k = cv2.waitKey(33)
                 if k == 27:
@@ -78,10 +78,11 @@ def calibrate(camera_number, camera_width, camera_height, image_path):
 
     # termination criteria
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
-
+    c_rows = 6
+    c_cols = 9
     # prepare object points, like (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0)
-    objp = np.zeros((6 * 7, 3), np.float32)
-    objp[:, :2] = np.mgrid[0:7, 0:6].T.reshape(-1, 2)
+    objp = np.zeros((c_rows*c_cols, 3), np.float32)
+    objp[:, :2] = np.mgrid[0:c_cols, 0:c_rows].T.reshape(-1, 2)
 
     # Arrays to store object points and image points from all the images.
     objpoints = []  # 3d point in real world space
@@ -92,26 +93,26 @@ def calibrate(camera_number, camera_width, camera_height, image_path):
             img = cv2.imread(curr)
             grey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-            ret, corners = cv2.findChessboardCorners(grey, (7, 6), None)
+            ret, corners = cv2.findChessboardCorners(grey, (6,9), None)
 
             if ret:
                 objpoints.append(objp)
-                cv2.cornerSubPix(grey, corners, (11, 11), (-1, -1), criteria)
-                imgpoints.append(corners)
 
+                corners2 = cv2.cornerSubPix(grey, corners, (11,11), (-1, -1), criteria)
+                imgpoints.append(corners)
+                cv2.drawChessboardCorners(img, (7,6), corners2, ret)
+                cv2.imshow("frame", img)
+                cv2.waitKey(200)
+    if len(objpoints) <= 1:
+        raise Exception("Chessboard corners not detected!")
     ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, grey.shape[::-1], None, None)
     img = cv2.imread(image_path + "IMG_0.jpg")
     h, w = img.shape[:2]
-    newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w, h), 1, (w, h))
-    return newcameramtx, roi
+    new_camera_matrix, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w, h), 1, (w, h))
+    return (new_camera_matrix, roi, mtx, objpoints, imgpoints)
 
-
-def main():
-    #Create image correction matrix and roi
-    image_path = generate_images(0, 1280, 720)
-    test_view_checkerboard(0, 1280, 720, image_path)
-    matrix, roi = calibrate(0, 1280, 720, image_path)
-
-
-
-main()
+#Example usage
+#def main():
+#    image_path = generate_images(0, 1920, 1080)
+#    (new_mtx, roi, mtx, None, None) = calibrate(0, 1920, 1080, image_path)
+#main()
