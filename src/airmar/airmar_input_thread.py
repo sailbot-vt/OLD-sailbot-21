@@ -15,13 +15,17 @@ class AirmarInputThread(Thread):
         if broadcaster_type is None:
             # Default broadcaster:
             broadcaster_type = AirmarBroadcasterType.Messenger
-            
-        self.broadcaster = make_broadcaster(broadcaster_type=broadcaster_type)
-        self.pin = read_pin_config(mock_bbio=mock_bbio)
-        self.port = read_port_config(mock_port=mock_port)
 
-        self.receiver = AirmarReceiver(
-            broadcaster=self.broadcaster, pin=self.pin, port=self.port)
+        self.broadcaster = make_broadcaster(broadcaster_type=broadcaster_type)
+        self.pins = read_pin_config(mock_bbio=mock_bbio)
+        self.ports = read_port_config(mock_port=mock_port)
+
+        self.receivers = {
+            "WIND": AirmarReceiver(
+            broadcaster=self.broadcaster, pin=self.pins["WIND"], port=self.ports["WIND"]),
+            "BOAT": AirmarReceiver(
+            broadcaster=self.broadcaster, pin=self.pins["BOAT"], port=self.ports["BOAT"])
+        }
 
         self.keep_reading = True
         self.read_interval = read_interval()
@@ -35,11 +39,14 @@ class AirmarInputThread(Thread):
         """
         self.keep_reading = True
         while self.keep_reading:
-            if not self.receiver.is_running:
-                self.receiver.start()
-            self.receiver.send_airmar_data()
-            sleep(self.read_interval)
-        self.receiver.stop()
+            for receiver in self.receivers.values():
+                if not receiver.is_running:
+                    receiver.start()
+                receiver.send_airmar_data()
+                sleep(read_interval)
+        else:
+            for receiver in self.receivers.values():
+                receiver.stop()
 
     def stop(self):
         """ Pauses current thread without killing it. """

@@ -38,16 +38,24 @@ read interval: 50 / 1000  # seconds
 
 # Settings to configure for port communication
 ports:
-  SERIAL:
-    port_name: "/dev/tty0"
+  WIND:
+    port_name: "/dev/tty01"
+    port_type: "SERIAL"
+    baudrate: 4800
+    timeout: 0
+  BOAT:
+    port_name: "/dev/tty04"
     port_type: "SERIAL"
     baudrate: 4800
     timeout: 0
 
-
 # The pins connected to channels from the physical receiver
 pins:
-  UART:
-    pin_name: "P9_24"
+  WIND:
+    pin_name: "P9_26" # TXD P9_24
+    pin_type: "UART"
+    channel: "UART1"
+  BOAT:
+    pin_name: "P9_11" # TXD P9_13
     pin_type: "UART"
     channel: "UART4"
