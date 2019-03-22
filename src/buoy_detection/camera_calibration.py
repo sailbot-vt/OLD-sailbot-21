@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import os
-import glob
 
 
 # Calibrate a single camera by taking pictures of a printed out checkerboard
@@ -185,8 +184,8 @@ def stereo_test():
     (camera_height1, camera_width1, left_xmap, left_ymap, left_roi, right_xmap, right_ymap, right_roi) = stereo_calibrate(0, 640, 480, 0, 640, 480)
     np.savez_compressed("./x", camera_height1, camera_width1, left_xmap, left_ymap, left_roi, right_xmap, right_ymap,
                         right_roi)
-    cal = np.load("./x.npz", allow_pickle=False)
-    print(cal)
+    cal = np.load("./x.npz", allow_pickle=True)
+    print(cal["leftMapX"])
     # image_size = tuple(calibration["image_size"])
     # leftMapX = calibration["leftMapX"]
     # leftMapY = calibration["leftMapY"]
@@ -194,12 +193,14 @@ def stereo_test():
     # rightMapX = calibration["rightMapX"]
     # rightMapY = calibration["rightMapY"]
     # rightROI = tuple(calibration["rightROI"]
-
-
+def run():
+    cal = np.load("./x.npz", allow_pickle=False)
+    print(cal['arr_1'])
+    #['arr_7', 'arr_2', 'arr_1', 'arr_4', 'arr_5', 'arr_0', 'arr_6', 'arr_3']
 
 #def mono_test():
 #    image_path = generate_images(0, 1920, 1080)
 #    (new_mtx, roi, mtx, None, None) = calibrate(0, 1920, 1080, image_path)
 
 
-stereo_test()
+run()
