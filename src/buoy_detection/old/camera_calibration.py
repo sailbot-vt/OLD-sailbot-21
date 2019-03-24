@@ -91,8 +91,8 @@ def calibrate(camera_number, camera_width, camera_height, image_path):
             curr = image_path + filename
             img = cv2.imread(curr)
             grey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-            ret, corners = cv2.findChessboardCorners(grey, (6,9), None)
+            imageSize = grey.shape[::-1]
+            ret, corners = cv2.findChessboardCorners(grey, (c_rows, c_cols), None)
 
             if ret:
                 objpoints.append(objp)
@@ -114,93 +114,75 @@ def calibrate(camera_number, camera_width, camera_height, image_path):
 
 def stereo_calibrate(camera_number1, camera_width1, camera_height1, camera_number2, camera_width2, camera_height2):
 
-
+    TERMINATION_CRITERIA = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 30,
+                            0.001)
 
     stereo_calibration_criteria = (cv2.TERM_CRITERIA_MAX_ITER + cv2.TERM_CRITERIA_EPS, 100, 1e-5)
     stereo_calibration_flags = cv2.CALIB_FIX_INTRINSIC
 
 
     image_path1 = generate_images(camera_number1, camera_width1, camera_height1)
-    (left_distortion_coeff, left_roi, left_mtx, left_objpoints, left_imagepoints) = calibrate(
+    (left_distortion_coeff, left_roi, left_mtx, left_objpoints, left_image_points) = calibrate(
         camera_number1,
         camera_width1,
         camera_height1,
         image_path1)
 
     image_path2 = generate_images(camera_number2, camera_width2, camera_height2)
-    (right_distortion_coeff, right_roi, right_mtx, right_objpoints, right_imagepoints) = calibrate(
+    (right_distortion_coeff, right_roi, right_mtx, right_objpoints, right_image_points) = calibrate(
         camera_number2,
         camera_width2,
         camera_height2,
         image_path2)
 
+    print("Calibrating left camera...")
+    _, leftCameraMatrix, leftDistortionCoefficients, _, _ = cv2.calibrateCamera(
+        left_objpoints, left_image_points, (camera_width1, camera_height1), None, None)
+    print("Calibrating right camera...")
+    _, rightCameraMatrix, rightDistortionCoefficients, _, _ = cv2.calibrateCamera(
+        left_objpoints, right_image_points, (camera_width1, camera_height1), None, None)
 
-    stereocalibration_retval, left_mtx, left_distortion_coeff, \
-    right_mtx, right_distortion_coeff, R, T, E, F = cv2.stereoCalibrate(
-        left_objpoints,
-        left_imagepoints,
-        right_imagepoints,
-        left_mtx,
-        left_distortion_coeff,
-        right_mtx,
-        right_distortion_coeff,
-        (camera_height1, camera_width1),
-        criteria=stereo_calibration_criteria,
-        flags=stereo_calibration_flags)
+    print("Calibrating cameras together...")
+    (_, _, _, _, _, rotationMatrix, translationVector, _, _) = cv2.stereoCalibrate(
+        left_objpoints, left_image_points, right_image_points,
+        leftCameraMatrix, leftDistortionCoefficients,
+        rightCameraMatrix, rightDistortionCoefficients,
+        (camera_width1, camera_height1), None, None, None, None,
+        cv2.CALIB_FIX_INTRINSIC, TERMINATION_CRITERIA)
 
+    print("Rectifying cameras...")
+    (leftRectification, rightRectification, leftProjection, rightProjection,
+     dispartityToDepthMap, left_roi, right_roi) = cv2.stereoRectify(
+        leftCameraMatrix, leftDistortionCoefficients,
+        rightCameraMatrix, rightDistortionCoefficients,
+        (camera_width1, camera_height1), rotationMatrix, translationVector,
+        None, None, None, None, None,
+        cv2.CALIB_ZERO_DISPARITY, .25)
 
-    (leftRectification, rightRectification, leftProjection,
-     rightProjection,
-     disparity_to_depth_map,
-     left_roi, right_roi) = cv2.stereoRectify(
-        left_mtx,
-        left_distortion_coeff,
-        right_mtx,
-        right_distortion_coeff,
-        (camera_height1, camera_width1),
-        R,
-        T, alpha=1)
-
+    print("Saving calibration...")
     left_xmap, left_ymap = cv2.initUndistortRectifyMap(
-        left_mtx,
-        left_distortion_coeff,
-        leftRectification,
-        leftProjection,
-        (camera_height1, camera_width1),
-        cv2.CV_32FC1)
+        leftCameraMatrix, leftDistortionCoefficients, leftRectification,
+        leftProjection, (camera_width1, camera_height1), cv2.CV_32FC1)
 
     right_xmap, right_ymap = cv2.initUndistortRectifyMap(
-        right_mtx,
-        right_distortion_coeff,
-        rightRectification,
-        rightProjection,
-        (camera_height1, camera_width1),
-        cv2.CV_32FC1)
+        rightCameraMatrix, rightDistortionCoefficients, rightRectification,
+        rightProjection, (camera_width2, camera_height2), cv2.CV_32FC1)
+
+    cv2.destroyAllWindows()
 
     return (camera_height1, camera_width1, left_xmap, left_ymap, left_roi, right_xmap, right_ymap, right_roi)
 
 
 def stereo_test():
-    (camera_height1, camera_width1, left_xmap, left_ymap, left_roi, right_xmap, right_ymap, right_roi) = stereo_calibrate(0, 640, 480, 0, 640, 480)
-    np.savez_compressed("./x", camera_height1, camera_width1, left_xmap, left_ymap, left_roi, right_xmap, right_ymap,
-                        right_roi)
-    cal = np.load("./x.npz", allow_pickle=True)
-    print(cal["leftMapX"])
-    # image_size = tuple(calibration["image_size"])
-    # leftMapX = calibration["leftMapX"]
-    # leftMapY = calibration["leftMapY"]
-    # leftROI = tuple(calibration["leftROI"])
-    # rightMapX = calibration["rightMapX"]
-    # rightMapY = calibration["rightMapY"]
-    # rightROI = tuple(calibration["rightROI"]
-def run():
-    cal = np.load("./x.npz", allow_pickle=False)
-    print(cal['arr_1'])
-    #['arr_7', 'arr_2', 'arr_1', 'arr_4', 'arr_5', 'arr_0', 'arr_6', 'arr_3']
+    (camera_height1, camera_width1, left_xmap, left_ymap, left_roi, right_xmap, right_ymap, right_roi) = stereo_calibrate(0, 1280, 720, 1, 1280, 720)
+    np.savez("./x", camera_height1 = camera_height1, camera_width1 = camera_width1, left_xmap = left_xmap, left_ymap = left_ymap, left_roi = left_roi, right_xmap = right_xmap, right_ymap = right_ymap,
+                        right_roi = right_roi)
 
+def run():
+    stereo_test()
 #def mono_test():
 #    image_path = generate_images(0, 1920, 1080)
-#    (new_mtx, roi, mtx, None, None) = calibrate(0, 1920, 1080, image_path)
+#    (new_mtx, roi, mtx, None, None) =  calibrate(0, 1920, 1080, image_path)
 
 
 run()
