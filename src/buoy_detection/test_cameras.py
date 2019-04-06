@@ -1,7 +1,15 @@
 import cv2
-
+import numpy as np
 left = cv2.VideoCapture(0)
-right = cv2.VideoCapture(2)
+right = cv2.VideoCapture(1)
+
+CHESSBOARD_CALIBRATION_SIZE = (6, 9)
+
+
+left.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+left.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+right.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+right.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
 while(True):
 
     # Grab first in order to reduce asynchronous issues and latency

@@ -14,6 +14,18 @@ left_roi = tuple(calibration["left_roi"])
 right_xmap = calibration["right_xmap"]
 right_ymap = calibration["right_ymap"]
 right_roi = tuple(calibration["right_roi"])
+print("left_xmap")
+print(left_xmap)
+print("left_ymap")
+print(left_ymap)
+print("left_ROI")
+print(left_roi)
+print("right_xmap")
+print(right_xmap)
+print("right_ymap")
+print(right_ymap)
+print("right_ROI")
+print(right_roi)
 
 left = cv2.VideoCapture(0)
 right = cv2.VideoCapture(2)
@@ -28,7 +40,6 @@ stereoMatcher.setSpeckleRange(16)
 stereoMatcher.setSpeckleWindowSize(45)
 
 while(True):
-
     # Grab first in order to reduce asynchronous issues and latency
     if not left.grab() or not right.grab():
         print("Frames not grabbed")
