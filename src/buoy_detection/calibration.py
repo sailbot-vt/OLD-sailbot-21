@@ -22,9 +22,9 @@ OPTIMIZE_ALPHA = 0.25
 TERMINATION_CRITERIA = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 30,0.001)
 
 
-left_camera_directory = "C:/Users/Wylans xps 13/PycharmProjects/SailBOT19/src/buoy_detection/camera_capture/LEFT"
-right_camera_directory = "C:/Users/Wylans xps 13/PycharmProjects/SailBOT19/src/buoy_detection/camera_capture/RIGHT"
-out_file = "C:/Users/Wylans xps 13/PycharmProjects/SailBOT19/src/buoy_detection/camera_capture/stereo_calibration.npz"
+left_camera_directory = "/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/LEFT"
+right_camera_directory = "/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/RIGHT"
+out_file = "/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/stereo_calibration.npz"
 
 def findChessboards(imageDirectory):
     """
@@ -54,13 +54,14 @@ def findChessboards(imageDirectory):
             object_points.append(OBJECT_POINT_ZERO)
             cv2.cornerSubPix(image_grey, corners, (11, 11), (-1, -1), TERMINATION_CRITERIA)
             image_points.append(corners)
-
+        else:
+            print(image_path)
         cv2.drawChessboardCorners(image, CHESSBOARD_CALIBRATION_SIZE, corners, has_corners)
         cv2.imshow(imageDirectory, image)
 
         cv2.waitKey(1)
 
-    cv2.destroyWindow(imageDirectory)
+    #cv2.destroyWindow(imageDirectory)
 
     print("Found corners in {0} out of {1} images".format(len(image_points), len(images)))
 

@@ -1,7 +1,7 @@
 import cv2
 
-LEFT_PATH = "C:/Users/Wylans xps 13/PycharmProjects/SailBOT19/src/buoy_detection/camera_capture/LEFT/{:01d}.png"
-RIGHT_PATH = "C:/Users/Wylans xps 13/PycharmProjects/SailBOT19/src/buoy_detection/camera_capture/RIGHT/{:01d}.png"
+LEFT_PATH = "/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/LEFT/{:01d}.png"
+RIGHT_PATH = "/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/RIGHT{:01d}.png"
 
 left = cv2.VideoCapture(0)
 right = cv2.VideoCapture(1)

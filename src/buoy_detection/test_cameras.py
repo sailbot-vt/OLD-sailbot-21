@@ -28,4 +28,4 @@ while(True):
 
 left.release()
 right.release()
-cv2.destroyAllWindows()
+#cv2.destroyAllWindows()

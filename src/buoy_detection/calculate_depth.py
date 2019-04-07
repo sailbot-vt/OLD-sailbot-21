@@ -5,7 +5,7 @@ REMAP_INTERPOLATION = cv2.INTER_LINEAR
 
 DEPTH_VISUALIZATION_SCALE = 128
 
-calibration = np.load("C:/Users/Wylans xps 13/PycharmProjects/SailBOT19/src/buoy_detection/camera_capture/stereo_calibration.npz", allow_pickle=False)
+calibration = np.load("/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/stereo_calibration.npz", allow_pickle=False)
 
 image_size = tuple(calibration["image_size"])
 left_xmap = calibration["left_xmap"]
@@ -14,21 +14,12 @@ left_roi = tuple(calibration["left_roi"])
 right_xmap = calibration["right_xmap"]
 right_ymap = calibration["right_ymap"]
 right_roi = tuple(calibration["right_roi"])
-print("left_xmap")
-print(left_xmap)
-print("left_ymap")
-print(left_ymap)
-print("left_ROI")
 print(left_roi)
-print("right_xmap")
-print(right_xmap)
-print("right_ymap")
-print(right_ymap)
-print("right_ROI")
 print(right_roi)
 
+
 left = cv2.VideoCapture(0)
-right = cv2.VideoCapture(2)
+right = cv2.VideoCapture(1)
 
 stereoMatcher = cv2.StereoBM_create()
 stereoMatcher.setMinDisparity(4)
@@ -65,4 +56,4 @@ while(True):
 
 left.release()
 right.release()
-cv2.destroyAllWindows()
+#cv2.destroyAllWindows()
