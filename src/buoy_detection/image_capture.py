@@ -8,7 +8,7 @@ LEFT_PATH = "/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_det
 RIGHT_PATH = "/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/RIGHT/"
 left = cv2.VideoCapture(0)
 right = cv2.VideoCapture(1)
-
+DRAW_IMAGE = True#False
 
 
 LEFT = LEFT_PATH + "{:01d}.png"
@@ -22,8 +22,9 @@ while True:
         break
     grabbed, left_frame = left.retrieve()
     grabbed, right_frame = right.retrieve()
-    cv2.imshow('left', left_frame)
-    cv2.imshow('right', right_frame)
+    if DRAW_IMAGE:
+        cv2.imshow('left', left_frame)
+        cv2.imshow('right', right_frame)
     key = cv2.waitKey(1)
     if key%256 == 32:
         cv2.imwrite(LEFT.format(frame_count), left_frame)
@@ -36,5 +37,5 @@ while True:
 
 left.release()
 right.release()
-cv2.destroyAllWindows()
+
 

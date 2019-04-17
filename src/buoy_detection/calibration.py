@@ -7,10 +7,11 @@ import cv2
 #Solve PnP function
 # This is the real size of the single squares (print with laser)
 #psi camera
-CHESSBOARD_SQUARE_SIZE = 1
+CHESSBOARD_SQUARE_SIZE = .0265 #Length of square of checkerboard in meters
 #Frame rate over resolution
 CHESSBOARD_CALIBRATION_SIZE = (6, 9)
 CHESSBOARD_OPTIONS = (cv2.CALIB_CB_NORMALIZE_IMAGE | cv2.CALIB_CB_FAST_CHECK | cv2.CALIB_CB_ADAPTIVE_THRESH)
+DRAW_IMAGE = False
 
 #Required size for cv2
 OBJECT_POINT_ZERO = np.zeros((CHESSBOARD_CALIBRATION_SIZE[0] * CHESSBOARD_CALIBRATION_SIZE[1], 3), np.float32)
@@ -21,10 +22,46 @@ OPTIMIZE_ALPHA = 0.25
 
 TERMINATION_CRITERIA = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 30,0.001)
 
+unreadable = []
 
 left_camera_directory = "/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/LEFT"
 right_camera_directory = "/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/RIGHT"
-out_file = "/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/stereo_calibration.npz"
+out_file1 = "/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/stereo_calibration.npz"
+out_file2 = "/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/projection_matrices.npz"
+
+print("Doing pre image check...")
+left_images = glob.glob("{0}/*.png".format(left_camera_directory))
+right_images = glob.glob("{0}/*.png".format(right_camera_directory))
+
+for x in left_images:
+    image = cv2.imread(x)
+    image_grey = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    has_corners, corners = cv2.findChessboardCorners(image_grey, CHESSBOARD_CALIBRATION_SIZE, cv2.CALIB_CB_FAST_CHECK)
+    if not has_corners:
+        unreadable.append(x.split("/")[-1])
+
+for x in right_images:
+    if x.split("/")[-1] not in unreadable:
+        image = cv2.imread(x)
+        image_grey = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        has_corners, corners = cv2.findChessboardCorners(image_grey, CHESSBOARD_CALIBRATION_SIZE, cv2.CALIB_CB_FAST_CHECK)
+        if not has_corners:
+            unreadable.append(x.split("/")[-1])
+    else:
+        pass
+if len(unreadable) > 0:
+    print("Chessboard not found in the following images. Removing them...")
+for x in unreadable:
+    print(x)
+    try:
+        os.remove(left_camera_directory + "/" + x)
+    except:
+        pass
+for x in unreadable:
+    try:
+        os.remove(right_camera_directory + "/" + x)
+    except:
+        pass
 
 def findChessboards(imageDirectory):
     """
@@ -42,7 +79,6 @@ def findChessboards(imageDirectory):
     left_camera_size = None
 
 
-
     for image_path in sorted(images):
         image = cv2.imread(image_path)
         image_grey = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -56,8 +92,9 @@ def findChessboards(imageDirectory):
             image_points.append(corners)
         else:
             print(image_path)
-        cv2.drawChessboardCorners(image, CHESSBOARD_CALIBRATION_SIZE, corners, has_corners)
-        cv2.imshow(imageDirectory, image)
+        if DRAW_IMAGE:
+            cv2.drawChessboardCorners(image, CHESSBOARD_CALIBRATION_SIZE, corners, has_corners)
+            cv2.imshow(imageDirectory, image)
 
         cv2.waitKey(1)
 
@@ -143,8 +180,10 @@ right_xmap, right_ymap = cv2.initUndistortRectifyMap(
         rightCameraMatrix, rightDistortionCoefficients, rightRectification,
         rightProjection, left_camera_size, cv2.CV_32FC1)
 
-np.savez_compressed(out_file, image_size=left_camera_size,
+np.savez_compressed(out_file1, image_size=left_camera_size,
         left_xmap=left_xmap, left_ymap=left_ymap, left_roi=left_roi,
         right_xmap=right_xmap, right_ymap=right_ymap, right_roi=right_roi)
-
+np.savez_compressed(out_file2, leftRectification = leftRectification, rightRectification=rightRectification, leftProjection=leftProjection, rightProjection=rightProjection,
+        Q_matrix=Q_matrix)
 cv2.destroyAllWindows()
+

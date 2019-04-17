@@ -4,7 +4,7 @@ import cv2
 REMAP_INTERPOLATION = cv2.INTER_LINEAR
 
 DEPTH_VISUALIZATION_SCALE = 128
-
+DRAW_IMAGE = True121
 calibration = np.load("/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/stereo_calibration.npz", allow_pickle=False)
 
 image_size = tuple(calibration["image_size"])
@@ -45,11 +45,11 @@ while(True):
     grey_left = cv2.cvtColor(fixed_left, cv2.COLOR_BGR2GRAY)
     grey_right = cv2.cvtColor(fixed_right, cv2.COLOR_BGR2GRAY)
     depth = stereoMatcher.compute(grey_left, grey_right)
-
-    cv2.imshow('left', grey_left)
-    cv2.imshow('right', grey_right)
-    depth = depth.astype(np.uint8)
-    cv2.imshow('depth', depth)
+    if DRAW_IMAGE:
+        cv2.imshow('left', grey_left)
+        cv2.imshow('right', grey_right)
+        depth = depth.astype(np.uint8)
+        cv2.imshow('depth', depth)
     # Press escape to quit
     if cv2.waitKey(33) == 27:
         break
