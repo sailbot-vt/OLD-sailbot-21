@@ -4,7 +4,7 @@ import cv2
 
 left = cv2.VideoCapture(0)
 right = cv2.VideoCapture(1)
-
+count = 0
 while(True):
 
     # Grab first in order to reduce asynchronous issues and latency
@@ -29,7 +29,7 @@ while(True):
 
     if cv2.waitKey(33) == 27:
         break
-
+    count += 1
 left.release()
 right.release()
 cv2.destroyAllWindows()
