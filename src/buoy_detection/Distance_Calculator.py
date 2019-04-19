@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-from . Depth_Map import Depth_Map as Depth
+from src.buoy_detection.Depth_Map import Depth_Map as Depth
 
 class DistanceCalculator():
 
@@ -15,6 +15,7 @@ class DistanceCalculator():
         self.PURPLE_RED_HIGH = np.array([180, 255, 255])
         self.kernel = np.ones((7, 7), np.uint8)
         self.depth_calculator = Depth(calibrationDirectory, DRAW_IMAGE = False)
+        self.DRAW_IMAGE = DRAW_IMAGE
 
 
     def findBuoyPixels(self):
@@ -25,35 +26,30 @@ class DistanceCalculator():
         :return:
         The pixels in which we see the buoy
         """
-        image = self.depth_calculator.calculateDepthMap()
-        #image mask
-        hsv = cv2.Color(image, cv2.COLOR_BAYER_BG2BGR)
-        hsv = cv2.GaussianBlur(hsv, (15,15),0)
-        orange_red = cv2.inRange(hsv, self.RED_ORANGE_LOW, self.RED_ORANGE_HIGH)
-        purple_red = cv2.inRange(hsv, self.PURPLE_RED_LOW, self.PURPLE_RED_HIGH)
-        mask = orange_red + purple_red
+        frame = self.depth_calculator.calculateDepthMap()
+        hsv = cv2.cvtColor(frame, cv2.COLOR_RGB2HSV)
 
-        opened_mask = cv2.dilate(mask, self.kernel)
+        RED_ORANGE_LOW = np.array([100, 100, 0])
+        RED_ORANGE_HIGH = np.array([255, 230, 200])
+        kernel_open = np.ones((6, 6))
+        kernel_close = np.ones((10, 10))
 
-        __, cnts, __ = cv2.findContours(opened_mask.copy(), cv2.RETR_TREE. cv2.CHAIN_APPROX_SIMPLE)
+        mask = cv2.inRange(hsv, RED_ORANGE_LOW, RED_ORANGE_HIGH)
+        mask_open = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel_open)
+        mask_close = cv2.morphologyEx(mask_open, cv2.MORPH_CLOSE, kernel_close)
+        mask = mask_close
 
-        if len(cnts) == 0:
-            print("Contours not found")
-            if self.DRAW_IMAGE:
-                cv2.imshow_split(opened_mask, image, title = "Window")
-        cnt = max(cnts, key = cv2.contourArea)
-
-        cnt = cv2.convexHull(cnt)
-        M = cv2.moments(cnt)
-        if M["m00"] != 0:
-            cX = int(M["m10"] / M["m00"])
-            cY = int(M["m01"] / M["m00"])
-            return (cX, cY)
-        else:
-            print("No Moments found")
-            cv2.imshow_split(opened_mask, image, title = "Moments")
+        contours, __ = cv2.findContours(mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        if len(contours) <= 0:
             return None
-
+        elif len(contours) > 0:
+            biggest = sorted(contours, key=cv2.contourArea)[-1]
+            if self.DRAW_IMAGE:
+                cv2.drawContours(frame, contours, -1, (0, 255, 0), 3)
+                x, y, w, h = cv2.boundingRect(biggest)
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+            moment = cv2.moments(biggest)
+            return int(moment['m10'] / moment['m00']), int(moment['m01'] / moment['m00'])
 
     def getDisparityValue(self, xPixel, yPixel):
         disparity = self.depth_calculator.calculateDepthMap()
@@ -64,6 +60,7 @@ class DistanceCalculator():
         #If the detected center pixel is near the edges, return just the disparity of that one pixel
         if xPixel <= 1 or yPixel <= 1 or xPixel >= 639 or yPixel >= 479:
             return disparity[xPixel][yPixel]
+
         #Otherwise, return the average of the surrounding pixels for a little more accuracy
         array = disparity[xPixel - 1: xPixel + 1, yPixel - 1: yPixel + 1]
         return sum(array)/array.size
@@ -82,8 +79,8 @@ class DistanceCalculator():
         #d:= disparity:
 
         #D = b*f/d
-        return self.baseline*self.focal_length/disparity_value
+        return (self.baseline*self.focal_length/disparity_value)
 
-
-dist = DistanceCalculator("/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/stereo_calibration.npz")
-dist.getDisparity(50,50)
+# Example usage:
+#dist = DistanceCalculator("/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/stereo_calibration.npz")
+#dist.getDisparity()
