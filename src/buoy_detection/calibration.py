@@ -182,7 +182,8 @@ right_xmap, right_ymap = cv2.initUndistortRectifyMap(
 
 np.savez_compressed(out_file1, image_size=left_camera_size,
         left_xmap=left_xmap, left_ymap=left_ymap, left_roi=left_roi,
-        right_xmap=right_xmap, right_ymap=right_ymap, right_roi=right_roi)
+        right_xmap=right_xmap, right_ymap=right_ymap, right_roi=right_roi, Q_matrix = Q_matrix)
+
 np.savez_compressed(out_file2, leftRectification = leftRectification, rightRectification=rightRectification, leftProjection=leftProjection, rightProjection=rightProjection,
         Q_matrix=Q_matrix)
 cv2.destroyAllWindows()

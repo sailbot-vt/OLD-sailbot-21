@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
-from src.buoy_detection.Depth_Map import Depth_Map as Depth
-
+from src.buoy_detection.Depth_Map_Calculator import Depth_Map as Depth
+from math import sin, cos, asin, atan2, pi
 class DistanceCalculator():
 
     def __init__(self, calibrationDirectory, baseline = .2, focal_length = 56, DRAW_IMAGE = False):
@@ -14,9 +14,8 @@ class DistanceCalculator():
         self.PURPLE_RED_LOW = np.array([160, 100, 100])
         self.PURPLE_RED_HIGH = np.array([180, 255, 255])
         self.kernel = np.ones((7, 7), np.uint8)
-        self.depth_calculator = Depth(calibrationDirectory, DRAW_IMAGE = False)
+        self.depth_map_calculator = Depth(calibrationDirectory, DRAW_IMAGE = False)
         self.DRAW_IMAGE = DRAW_IMAGE
-
 
     def findBuoyPixels(self):
         """
@@ -26,7 +25,7 @@ class DistanceCalculator():
         :return:
         The pixels in which we see the buoy
         """
-        frame = self.depth_calculator.calculateDepthMap()
+        frame = self.depth_map_calculator.calculateDepthMap()
         hsv = cv2.cvtColor(frame, cv2.COLOR_RGB2HSV)
 
         RED_ORANGE_LOW = np.array([100, 100, 0])
@@ -51,8 +50,38 @@ class DistanceCalculator():
             moment = cv2.moments(biggest)
             return int(moment['m10'] / moment['m00']), int(moment['m01'] / moment['m00'])
 
+    def getAngleToPixel(self, xPixel):
+        distance_from_center = xPixel - self.depth_map_calculator.image_size[0]/2
+        return distance_from_center*self.depth_map_calculator.pixel_degrees
+
+    def getBuoyGPSLocation(self, boat_lat, boat_lon, distance, bearing):
+        """
+        Gets the predicted gps location of the buoy based on the current gps location, angle to the buoy, and the distance to the buoy
+
+        The math was found from here:
+        https://stackoverflow.com/questions/19352921/how-to-use-direction-angle-and-speed-to-calculate-next-times-latitude-and-longi
+
+        :param boat_lat:  the current latitude of the boat
+        :param boat_lon:  the current longitude of the boat
+        :param distance:  the predicted distance to the buoy
+        :param bearing:  the bearing (angle) to the buoy in radians
+        :return:
+        """
+        buoy_lat = asin(sin(boat_lat) * cos(distance) + cos(boat_lat) * sin(distance) * cos(bearing))
+        d_lon = atan2(sin(bearing) * sin(distance) * cos(boat_lat), cos(distance) - sin(boat_lat) * sin(buoy_lat))
+        buoy_lon = ((boat_lon - d_lon + pi) % 2 * pi) - pi
+        return np.rad2deg(buoy_lat), np.rad2deg(buoy_lon)
+
+
     def getDisparityValue(self, xPixel, yPixel):
-        disparity = self.depth_calculator.calculateDepthMap()
+        """
+        Gets the disparity value from the disparity matrix if it is near an edge. Otherwise, gets an average of disparity values from surrounding pixels
+
+        :param xPixel: the x coordinate in the disparity map
+        :param yPixel: the y coordinate in the disparity map
+        :return: the disparity value
+        """
+        disparity = self.depth_map_calculator.calculateDepthMap()
 
         if disparity is None:
             return None
@@ -65,7 +94,7 @@ class DistanceCalculator():
         array = disparity[xPixel - 1: xPixel + 1, yPixel - 1: yPixel + 1]
         return sum(array)/array.size
 
-    def getDistance(self,disparity_value):
+    def getDistance(self, disparity_value):
         """
         Get the distance of the given disparity value using the two cameras' offsets, as well as the focal length and the calculated dispairty value
         :param disparity_value: the value of the disparity map that we use to calculate distance
@@ -79,7 +108,7 @@ class DistanceCalculator():
         #d:= disparity:
 
         #D = b*f/d
-        return (self.baseline*self.focal_length/disparity_value)
+        return self.baseline*self.depth_map_calculator.focal_length/disparity_value
 
 # Example usage:
 #dist = DistanceCalculator("/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/stereo_calibration.npz")

@@ -1,9 +1,10 @@
 import numpy as np
 import cv2
+from math import tan
 
 
 class Depth_Map():
-    def __init__(self, calibrationDirectory, DRAW_IMAGE = False):
+    def __init__(self, calibrationDirectory, FOV = 56, DRAW_IMAGE = False):
         self.calibration = None
         try:
             self.calibration = np.load(
@@ -16,6 +17,9 @@ class Depth_Map():
             self.right_xmap = self.calibration["right_xmap"]
             self.right_ymap = self.calibration["right_ymap"]
             self.right_roi = tuple(self.calibration["right_roi"])
+            self.pixel_degrees = 45/(self.image_size[0]^2 + self.image_size[1])^1/2
+            self.FOV_RADS = np.deg2rad(56)
+            self.focal_length = self.calibration["Q_matrix"][0][0]
         except:
             print("Depth_Map Object could not load calibration data in given location")
 
