@@ -2,16 +2,17 @@ import glob
 import os
 import numpy as np
 import cv2
+from time import sleep
 
 ###
 #Solve PnP function
 # This is the real size of the single squares (print with laser)
-#psi camera
+# psi camera
 CHESSBOARD_SQUARE_SIZE = .0265 #Length of square of checkerboard in meters
 #Frame rate over resolution
-CHESSBOARD_CALIBRATION_SIZE = (6, 9)
+CHESSBOARD_CALIBRATION_SIZE = (5,7)
 CHESSBOARD_OPTIONS = (cv2.CALIB_CB_NORMALIZE_IMAGE | cv2.CALIB_CB_FAST_CHECK | cv2.CALIB_CB_ADAPTIVE_THRESH)
-DRAW_IMAGE = False
+DRAW_IMAGE = True
 
 #Required size for cv2
 OBJECT_POINT_ZERO = np.zeros((CHESSBOARD_CALIBRATION_SIZE[0] * CHESSBOARD_CALIBRATION_SIZE[1], 3), np.float32)
@@ -95,6 +96,7 @@ def findChessboards(imageDirectory):
         if DRAW_IMAGE:
             cv2.drawChessboardCorners(image, CHESSBOARD_CALIBRATION_SIZE, corners, has_corners)
             cv2.imshow(imageDirectory, image)
+            sleep(.1)
 
         cv2.waitKey(1)
 
@@ -141,25 +143,25 @@ right_object_points, right_image_points = get_matching_points(file_names,
 
 object_points = left_object_points
 
-print("calibrating left camera")
+print("calibrating left camera...")
 _, leftCameraMatrix, leftDistortionCoefficients, _, _ = cv2.calibrateCamera(
         object_points, left_image_points, left_camera_size, None, None)
-
-print("calibrating right camera")
+print("Done")
+print("calibrating right camera...")
 _, rightCameraMatrix, rightDistortionCoefficients, _, _ = cv2.calibrateCamera(
         object_points, right_image_points, left_camera_size, None, None)
-
+print("Done")
 #rotationMatrix is the rotation between coordinate systems of the first and second cameras
 #translationVector is the translation between the coordinate systems of the two cameras
-print("calibrating stereo cameras")
+print("calibrating stereo cameras...")
 (_, _, _, _, _, rotationMatrix, translationVector, _, _) = cv2.stereoCalibrate(
         object_points, left_image_points, right_image_points,
         leftCameraMatrix, leftDistortionCoefficients,
         rightCameraMatrix, rightDistortionCoefficients,
         left_camera_size, None, None, None, None,
         cv2.CALIB_FIX_INTRINSIC, TERMINATION_CRITERIA)
-
-print("Starting stereo rectification")
+print("Done")
+print("Starting stereo rectification...")
 #Rectification matrices are the 3x3 rotation matrices for each of the two cameras
 #Project matrices are the new rectified coordinate systems for each of the two cameras
 #Q is the disparity to depth mapping
@@ -170,9 +172,9 @@ print("Starting stereo rectification")
                 left_camera_size, rotationMatrix, translationVector,
                 None, None, None, None, None,
                 cv2.CALIB_ZERO_DISPARITY, OPTIMIZE_ALPHA)
-
+print("Done")
 #X and y maps are the projection maps
-print("Saving the stereo calibration")
+print("Saving the stereo calibration...")
 left_xmap, left_ymap = cv2.initUndistortRectifyMap(
         leftCameraMatrix, leftDistortionCoefficients, leftRectification,
         leftProjection, left_camera_size, cv2.CV_32FC1)
@@ -187,4 +189,4 @@ np.savez_compressed(out_file1, image_size=left_camera_size,
 np.savez_compressed(out_file2, leftRectification = leftRectification, rightRectification=rightRectification, leftProjection=leftProjection, rightProjection=rightProjection,
         Q_matrix=Q_matrix)
 cv2.destroyAllWindows()
-
+print("Done")

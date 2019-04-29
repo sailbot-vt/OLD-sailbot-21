@@ -2,18 +2,25 @@ import cv2
 import glob
 import os
 
-CHESSBOARD_CALIBRATION_SIZE = (6,9)
-IMAGES_TO_TAKE = 100
+CHESSBOARD_CALIBRATION_SIZE = (5,7)
+IMAGES_TO_TAKE = 200
 LEFT_PATH = "/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/LEFT/"
 RIGHT_PATH = "/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/RIGHT/"
 left = cv2.VideoCapture(0)
 right = cv2.VideoCapture(1)
-DRAW_IMAGE = True#False
+DRAW_IMAGE = True
 
 
 LEFT = LEFT_PATH + "{:01d}.png"
 RIGHT = RIGHT_PATH + "{:01d}.png"
 frame_count = 0
+
+#Clear out the directory first
+for f in glob.glob(LEFT_PATH + "*"):
+    os.remove(f)
+for f in glob.glob(RIGHT_PATH + "*"):
+    os.remove(f)
+
 
 while True:
 
@@ -22,6 +29,7 @@ while True:
         break
     grabbed, left_frame = left.retrieve()
     grabbed, right_frame = right.retrieve()
+
     if DRAW_IMAGE:
         cv2.imshow('left', left_frame)
         cv2.imshow('right', right_frame)
