@@ -14,7 +14,7 @@ class SailThread(Thread):
         super().__init__()
         servo = Servo(build_pin_from_config(), read_servo_config())
         self.mainsheet = Mainsheet(servo, read_mainsheet_config())
-        pub.subscribe("set trim", self.received_trim_command)
+        pub.subscribe(self.received_trim_command, "set trim")
 
     def received_trim_command(self, degrees_in):
         self.mainsheet.trim_in_by(degrees_in)
