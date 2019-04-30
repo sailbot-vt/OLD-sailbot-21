@@ -4,7 +4,8 @@ from src.buoy_detection.Depth_Map_Calculator import Depth_Map as Depth
 from math import sin, cos, asin, atan2, pi
 class DistanceCalculator():
 
-    def __init__(self, calibrationDirectory, baseline = .2, focal_length = 56, DRAW_IMAGE = False):
+#Focal length is 56 at red dot and 75 at blue dot
+    def __init__(self, calibrationDirectory, baseline = .2, focal_length = 75, DRAW_IMAGE = False):
 
         self.baseline = baseline
         self.focal_length = focal_length
