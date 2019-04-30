@@ -1,15 +1,14 @@
 import numpy as np
 import cv2
-from math import tan
+import os
 
-
+# Focal length is 56 at red dot and 75 at blue dot
+path = os.path.realpath(__file__)[:-len(os.path.basename(__file__))] + "stereo_calibration.npz"
 class Depth_Map():
-    def __init__(self, calibrationDirectory, FOV = 56, DRAW_IMAGE = False):
+    def __init__(self, calibration_directory = path, FOV = 56, baseline = .2, DRAW_IMAGE = False):
         self.calibration = None
         try:
-            self.calibration = np.load(
-                self.cal_dir,
-                allow_pickle=False)
+            self.calibration = np.load(self.calibration_directory, allow_pickle=False)
             self.image_size = tuple(self.calibration["image_size"])
             self.left_xmap = self.calibration["left_xmap"]
             self.left_ymap = self.calibration["left_ymap"]
@@ -17,9 +16,10 @@ class Depth_Map():
             self.right_xmap = self.calibration["right_xmap"]
             self.right_ymap = self.calibration["right_ymap"]
             self.right_roi = tuple(self.calibration["right_roi"])
-            self.pixel_degrees = 45/(self.image_size[0]^2 + self.image_size[1])^1/2
+            self.pixel_degrees = 45/(self.image_size[0]^2 + self.image_size[1]^2)^1/2
             self.FOV_RADS = np.deg2rad(56)
             self.focal_length = self.calibration["Q_matrix"][0][0]
+            self.baseline = baseline
         except:
             print("Depth_Map Object could not load calibration data in given location")
 
@@ -75,7 +75,7 @@ class Depth_Map():
     def getLeftCameraImage(self):
         """
         Gets a single frame of the left camera
-        :return:
+        :return: a remapped frame from the camera
         """
         if not self.left.grab():
             print("Could not grab left camera image")
@@ -87,7 +87,7 @@ class Depth_Map():
     def getRightCameraImage(self):
         """
         Gets a single frame of the right camera
-        :return:
+        :return: a remapped frame from the camera
         """
         if not self.right.grab():
             print("Could not grab left camera image")

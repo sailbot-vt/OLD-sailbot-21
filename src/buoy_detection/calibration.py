@@ -25,10 +25,12 @@ TERMINATION_CRITERIA = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 30,0
 
 unreadable = []
 
-left_camera_directory = "/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/LEFT"
-right_camera_directory = "/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/RIGHT"
-out_file1 = "/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/stereo_calibration.npz"
-out_file2 = "/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/projection_matrices.npz"
+
+path = os.path.realpath(__file__)[:-len(os.path.basename(__file__))]
+left_camera_directory = path + "LEFT"
+right_camera_directory = path + "RIGHT"
+out_file1 = path + "stereo_calibration.npz"
+out_file2 = path + "projection_matrices.npz"
 
 print("Doing pre image check...")
 left_images = glob.glob("{0}/*.png".format(left_camera_directory))

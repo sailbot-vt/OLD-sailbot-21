@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-
+import os
 
 CHESSBOARD_CALIBRATION_SIZE = (6, 9)
 
@@ -8,7 +8,7 @@ CHESSBOARD_CALIBRATION_SIZE = (6, 9)
 
 def test():
     left = cv2.VideoCapture(0)
-    right = cv2.VideoCapture(1)
+    right = cv2.VideoCapture(2)
     left.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
     left.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
     right.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
@@ -141,5 +141,6 @@ def testDisparityMap():
         cv2.imshow('depth', depth)
         if cv2.waitKey(33) == 27:
             break
-testDisparityMap()
 
+
+test()

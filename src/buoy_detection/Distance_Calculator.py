@@ -2,20 +2,19 @@ import numpy as np
 import cv2
 from src.buoy_detection.Depth_Map_Calculator import Depth_Map as Depth
 from math import sin, cos, asin, atan2, pi
+import os
 class DistanceCalculator():
+    path = os.path.realpath(__file__)[:-len(os.path.basename(__file__))] + "stereo_calibration.npz"
 
-#Focal length is 56 at red dot and 75 at blue dot
-    def __init__(self, calibrationDirectory, baseline = .2, focal_length = 75, DRAW_IMAGE = False):
+    def __init__(self, calibration_directory = path, DRAW_IMAGE = False):
 
-        self.baseline = baseline
-        self.focal_length = focal_length
         self.DRAW_IMAGE = DRAW_IMAGE
         self.RED_ORANGE_LOW = np.array([0, 150, 150])
         self.RED_ORANGE_HIGH = np.array([15, 255, 255])
         self.PURPLE_RED_LOW = np.array([160, 100, 100])
         self.PURPLE_RED_HIGH = np.array([180, 255, 255])
         self.kernel = np.ones((7, 7), np.uint8)
-        self.depth_map_calculator = Depth(calibrationDirectory, DRAW_IMAGE = False)
+        self.depth_map_calculator = Depth(calibration_directory, DRAW_IMAGE = False)
         self.DRAW_IMAGE = DRAW_IMAGE
 
     def findBuoyPixels(self):
@@ -90,10 +89,19 @@ class DistanceCalculator():
         return self.baseline*self.depth_map_calculator.focal_length/disparity_value
 
 
-    def getBearingToPixel(self, xPixel):
+    def getBearingFromxPixel(self, xPixel, real_bearing):
+        """
+
+        :param xPixel: the pixel in the x direction in qhich we see the buoy
+        :param real_bearing: the real bearing of the boat as read by the airmar
+        :return: the predicted bearing of the buoy taking into consideration the real bearing of the boat
+        """
         distance_from_center = xPixel - self.depth_map_calculator.image_size[0]/2
-        return distance_from_center*self.depth_map_calculator.pixel_degrees
-#STILL NEED TO CALCULATE ANGLE TO PIXEL CORRECTLY
+        relative_bearing = distance_from_center*self.depth_map_calculator.pixel_degrees
+
+        new_bearing = real_bearing + relative_bearing
+        return ((new_bearing % 360) + 360) % 360
+
 
     def getBuoyGPSLocation(self, boat_lat, boat_lon, distance, bearing):
         """
@@ -111,10 +119,11 @@ class DistanceCalculator():
         int
         earth_radius = 6371000;
         distance = distance / earth_radius
-        #buoy_lat = asin(sin(boat_lat) * cos(distance) + cos(boat_lat) * sin(distance) * cos(bearing))
-        #d_lon = atan2(sin(bearing) * sin(distance) * cos(boat_lat), cos(distance) - sin(boat_lat) * sin(buoy_lat))
-        #buoy_lon = ((boat_lon - d_lon + pi) % 2 * pi) - pi
-        #return np.rad2deg(buoy_lat), np.rad2deg(buoy_lon)
+        # First attempt (might work?)
+        # buoy_lat = asin(sin(boat_lat) * cos(distance) + cos(boat_lat) * sin(distance) * cos(bearing))
+        # d_lon = atan2(sin(bearing) * sin(distance) * cos(boat_lat), cos(distance) - sin(boat_lat) * sin(buoy_lat))
+        # buoy_lon = ((boat_lon - d_lon + pi) % 2 * pi) - pi
+        # return np.rad2deg(buoy_lat), np.rad2deg(buoy_lon)
 
 
         # Here is another version if the previous isn't working well
@@ -122,7 +131,8 @@ class DistanceCalculator():
         a = atan2(sin(bearing) * sin(distance) * cos(boat_lat), cos(distance) - sin(boat_lat) * sin(lat2));
         lon2 = boat_lon + a;
         lon2 = (lon2 + 3 * pi) % (2 * pi) - pi;
-        return (np.rad2deg(lat2), np.rad2deg(lon2))
+
+        return np.rad2deg(lat2), np.rad2deg(lon2)
 
 # Example usage:
 #dist = DistanceCalculator("/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/stereo_calibration.npz")
