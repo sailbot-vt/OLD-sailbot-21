@@ -14,7 +14,7 @@ class RudderThread(Thread):
         super().__init__()
         servo = Servo(build_pin_from_config(), read_servo_config())
         self.rudder_control = Rudder(servo, read_rudder_config())
-        pub.subscribe("set rudder", self.received_rudder_command)
+        pub.subscribe(self.received_rudder_command, "set rudder")
 
     def received_rudder_command(self, degrees_starboard):
         self.rudder_control.change_rudder_angle(degrees_starboard)

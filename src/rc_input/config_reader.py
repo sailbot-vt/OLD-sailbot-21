@@ -40,4 +40,4 @@ def read_interval(path=None):
         conf = yaml.load(yml)
         interval = conf["read interval"]
 
-    return interval
+    return eval(interval)
