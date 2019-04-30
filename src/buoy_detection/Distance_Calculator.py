@@ -50,28 +50,6 @@ class DistanceCalculator():
             moment = cv2.moments(biggest)
             return int(moment['m10'] / moment['m00']), int(moment['m01'] / moment['m00'])
 
-    def getAngleToPixel(self, xPixel):
-        distance_from_center = xPixel - self.depth_map_calculator.image_size[0]/2
-        return distance_from_center*self.depth_map_calculator.pixel_degrees
-
-    def getBuoyGPSLocation(self, boat_lat, boat_lon, distance, bearing):
-        """
-        Gets the predicted gps location of the buoy based on the current gps location, angle to the buoy, and the distance to the buoy
-
-        The math was found from here:
-        https://stackoverflow.com/questions/19352921/how-to-use-direction-angle-and-speed-to-calculate-next-times-latitude-and-longi
-
-        :param boat_lat:  the current latitude of the boat
-        :param boat_lon:  the current longitude of the boat
-        :param distance:  the predicted distance to the buoy
-        :param bearing:  the bearing (angle) to the buoy in radians
-        :return:
-        """
-        buoy_lat = asin(sin(boat_lat) * cos(distance) + cos(boat_lat) * sin(distance) * cos(bearing))
-        d_lon = atan2(sin(bearing) * sin(distance) * cos(boat_lat), cos(distance) - sin(boat_lat) * sin(buoy_lat))
-        buoy_lon = ((boat_lon - d_lon + pi) % 2 * pi) - pi
-        return np.rad2deg(buoy_lat), np.rad2deg(buoy_lon)
-
 
     def getDisparityValue(self, xPixel, yPixel):
         """
@@ -109,6 +87,41 @@ class DistanceCalculator():
 
         #D = b*f/d
         return self.baseline*self.depth_map_calculator.focal_length/disparity_value
+
+
+    def getBearingToPixel(self, xPixel):
+        distance_from_center = xPixel - self.depth_map_calculator.image_size[0]/2
+        return distance_from_center*self.depth_map_calculator.pixel_degrees
+#STILL NEED TO CALCULATE ANGLE TO PIXEL CORRECTLY
+
+    def getBuoyGPSLocation(self, boat_lat, boat_lon, distance, bearing):
+        """
+        Gets the predicted gps location of the buoy based on the current gps location, angle to the buoy, and the distance to the buoy
+
+        The math was found from here:
+        https://stackoverflow.com/questions/19352921/how-to-use-direction-angle-and-speed-to-calculate-next-times-latitude-and-longi
+
+        :param boat_lat:  the current latitude of the boat
+        :param boat_lon:  the current longitude of the boat
+        :param distance:  the predicted distance to the buoy in meters
+        :param bearing:  the bearing (angle) to the buoy in radians
+        :return:
+        """
+        int
+        earth_radius = 6371000;
+        distance = distance / earth_radius
+        #buoy_lat = asin(sin(boat_lat) * cos(distance) + cos(boat_lat) * sin(distance) * cos(bearing))
+        #d_lon = atan2(sin(bearing) * sin(distance) * cos(boat_lat), cos(distance) - sin(boat_lat) * sin(buoy_lat))
+        #buoy_lon = ((boat_lon - d_lon + pi) % 2 * pi) - pi
+        #return np.rad2deg(buoy_lat), np.rad2deg(buoy_lon)
+
+
+        # Here is another version if the previous isn't working well
+        lat2 = asin(sin(boat_lat) * cos(distance) + cos(boat_lat) * sin(distance) * cos(bearing));
+        a = atan2(sin(bearing) * sin(distance) * cos(boat_lat), cos(distance) - sin(boat_lat) * sin(lat2));
+        lon2 = boat_lon + a;
+        lon2 = (lon2 + 3 * pi) % (2 * pi) - pi;
+        return (np.rad2deg(lat2), np.rad2deg(lon2))
 
 # Example usage:
 #dist = DistanceCalculator("/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/stereo_calibration.npz")
