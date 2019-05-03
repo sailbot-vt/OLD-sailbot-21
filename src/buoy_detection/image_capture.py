@@ -2,20 +2,23 @@ import cv2
 import glob
 import os
 
-CHESSBOARD_CALIBRATION_SIZE = (5,7)
 IMAGES_TO_TAKE = 200
-left = cv2.VideoCapture(0)
-right = cv2.VideoCapture(1)
+left = cv2.VideoCapture(2)
+right = cv2.VideoCapture(3)
+left.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+left.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+right.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+right.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 DRAW_IMAGE = True
 
 # Create the paths to store images if they do not exist yet
 path = os.path.realpath(__file__)[:-len(os.path.basename(__file__))]
-LEFT_PATH = path + "LEFT"
-RIGHT_PATH = path + "RIGHT"
-
+LEFT_PATH = path + "LEFT/"
+RIGHT_PATH = path + "RIGHT/"
+print(LEFT_PATH)
 if not os.path.exists(LEFT_PATH):
     try:
-        os.mkdir(LEFT_PATH)
+        os     .mkdir(LEFT_PATH)
     except:
         pass
 if not os.path.exists(RIGHT_PATH):

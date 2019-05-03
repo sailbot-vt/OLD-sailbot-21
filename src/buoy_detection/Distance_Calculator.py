@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-from src.buoy_detection.Depth_Map_Calculator import Depth_Map as Depth
+from src.buoy_detection.Depth_Map_Calculator import Depth_Map
 from math import sin, cos, asin, atan2, pi
 import os
 class DistanceCalculator():
@@ -14,7 +14,7 @@ class DistanceCalculator():
         self.PURPLE_RED_LOW = np.array([160, 100, 100])
         self.PURPLE_RED_HIGH = np.array([180, 255, 255])
         self.kernel = np.ones((7, 7), np.uint8)
-        self.depth_map_calculator = Depth(calibration_directory, DRAW_IMAGE = False)
+        self.depth_map_calculator = Depth_Map(calibration_directory, DRAW_IMAGE = DRAW_IMAGE)
         self.DRAW_IMAGE = DRAW_IMAGE
 
     def findBuoyPixels(self):
@@ -25,8 +25,8 @@ class DistanceCalculator():
         :return:
         The pixels in which we see the buoy
         """
-        frame = self.depth_map_calculator.calculateDepthMap()
-        hsv = cv2.cvtColor(frame, cv2.COLOR_RGB2HSV)
+        left_frame, disparity = self.depth_map_calculator.calculateDepthMap()
+        hsv = cv2.cvtColor(left_frame, cv2.COLOR_RGB2HSV)
 
         RED_ORANGE_LOW = np.array([100, 100, 0])
         RED_ORANGE_HIGH = np.array([255, 230, 200])
@@ -44,12 +44,12 @@ class DistanceCalculator():
         elif len(contours) > 0:
             biggest = sorted(contours, key=cv2.contourArea)[-1]
             if self.DRAW_IMAGE:
-                cv2.drawContours(frame, contours, -1, (0, 255, 0), 3)
+                cv2.drawContours(left_frame, contours, -1, (0, 255, 0), 3)
                 x, y, w, h = cv2.boundingRect(biggest)
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+                cv2.rectangle(left_frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
             moment = cv2.moments(biggest)
             return int(moment['m10'] / moment['m00']), int(moment['m01'] / moment['m00'])
-
+        return None
 
     def getDisparityValue(self, xPixel, yPixel):
         """

@@ -1,18 +1,21 @@
 import cv2
 import numpy as np
 import os
+import glob
+import time
+from src.buoy_detection.Depth_Map_Calculator import Depth_Map
+from src.buoy_detection.Distance_Calculator import DistanceCalculator
 
-CHESSBOARD_CALIBRATION_SIZE = (6, 9)
-
-
+CHESSBOARD_CALIBRATION_SIZE = (6, 8)
+TERMINATION_CRITERIA = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 30,0.001)
 
 def test():
-    left = cv2.VideoCapture(0)
-    right = cv2.VideoCapture(2)
-    left.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-    left.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-    right.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-    right.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+    left = cv2.VideoCapture(2)
+    right = cv2.VideoCapture(3)
+    left.set(cv2.CAP_PROP_FRAME_HEIGHT, 640)
+    left.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
+    right.set(cv2.CAP_PROP_FRAME_HEIGHT, 640)
+    right.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
     while(True):
 
         # Grab first in order to reduce asynchronous issues and latency
@@ -32,6 +35,22 @@ def test():
     left.release()
     right.release()
 
+def testFindCheckerboard():
+    path = os.path.realpath(__file__)[:-len(os.path.basename(__file__))]
+    left_camera_directory = path + "LEFT"
+    left_images = glob.glob("{0}/*.png".format(left_camera_directory))
+    for image_path in sorted(left_images):
+        print(image_path)
+        image = cv2.imread(image_path)
+        image_grey = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+        has_corners, corners = cv2.findChessboardCorners(image_grey, CHESSBOARD_CALIBRATION_SIZE, cv2.CALIB_CB_FAST_CHECK)
+
+        if has_corners:
+            cv2.cornerSubPix(image_grey, corners, (11, 11), (-1, -1), TERMINATION_CRITERIA)
+            cv2.drawChessboardCorners(image, CHESSBOARD_CALIBRATION_SIZE, corners, has_corners)
+            cv2.imshow(left_camera_directory, image)
+            #time.sleep(.2)
 
 
 def testFindBuoyPixels():
@@ -143,4 +162,18 @@ def testDisparityMap():
             break
 
 
-test()
+
+def getCameraNumbers():
+    cams = []
+    cams_test = 10
+    for i in range(0, cams_test):
+        cap = cv2.VideoCapture(i)
+        test, frame = cap.read()
+        if test:
+            cams.append(i)
+    print(cams)
+
+
+#cal = np.load("/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/stereo_calibration.npz",allow_pickle=False)
+#left_xmap = cal["left_xmap"]
+#left_ymap = cal["left_ymap"]
