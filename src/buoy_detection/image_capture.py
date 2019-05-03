@@ -5,10 +5,6 @@ import os
 IMAGES_TO_TAKE = 200
 left = cv2.VideoCapture(2)
 right = cv2.VideoCapture(3)
-left.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-left.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-right.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-right.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 DRAW_IMAGE = True
 
 # Create the paths to store images if they do not exist yet

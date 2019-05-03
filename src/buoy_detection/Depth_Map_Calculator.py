@@ -29,21 +29,17 @@ class Depth_Map():
         self.baseline = baseline
         self.left = cv2.VideoCapture(camera_numbers[0])
         self.right = cv2.VideoCapture(camera_numbers[1])
-        self.left.set(cv2.CAP_PROP_FRAME_HEIGHT, 640)
-        self.left.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
-        self.right.set(cv2.CAP_PROP_FRAME_HEIGHT, 640)
-        self.right.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
         self.DRAW_IMAGE = DRAW_IMAGE
         self.stereoMatcher = cv2.StereoBM_create()
-        self.stereoMatcher.setMinDisparity(4)
-        self.stereoMatcher.setNumDisparities(128)
-        self.stereoMatcher.setBlockSize(21)
+        self.stereoMatcher.setMinDisparity(16)
+        self.stereoMatcher.setNumDisparities(112-16)
         self.stereoMatcher.setROI1(self.left_roi)
         self.stereoMatcher.setROI2(self.right_roi)
-        self.stereoMatcher.setSpeckleRange(16)
-        self.stereoMatcher.setSpeckleWindowSize(45)
+        self.stereoMatcher.setSpeckleRange(128)
+        self.stereoMatcher.setSpeckleWindowSize(100)
+
         self.REMAP_INTERPOLATION = cv2.INTER_LINEAR
-        self.DEPTH_VISUALIZATION_SCALE = 128
+        self.DEPTH_VISUALIZATION_SCALE = 32
 
 
 

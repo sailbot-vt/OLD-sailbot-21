@@ -12,10 +12,6 @@ TERMINATION_CRITERIA = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 30,0
 def test():
     left = cv2.VideoCapture(2)
     right = cv2.VideoCapture(3)
-    left.set(cv2.CAP_PROP_FRAME_HEIGHT, 640)
-    left.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
-    right.set(cv2.CAP_PROP_FRAME_HEIGHT, 640)
-    right.set(cv2.CAP_PROP_FRAME_WIDTH, 480)
     while(True):
 
         # Grab first in order to reduce asynchronous issues and latency
@@ -54,58 +50,46 @@ def testFindCheckerboard():
 
 
 def testFindBuoyPixels():
-    left = cv2.VideoCapture(1)
-    #right = cv2.VideoCapture(2)
+    dist_calc = DistanceCalculator()
     while True:
 
         if cv2.waitKey(33) == 27:
             break
 
         # Closing is the opposite. It dilates and then erodes in order to fill in missing detections within detected images.
-        kernel_close = np.ones((10, 10))
+        kernel_close = np.ones((2, 2))
+        kernel_open = np.ones((12,12))
+        frame, disparity = dist_calc.depth_map_calculator.calculateDepthMap()
+        frame_copy = frame
+        disparity_copy = disparity
 
+        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-        read, frame = left.retrieve()
+        RED_ORANGE_LOW = np.array([10,100, 20],np.uint8)
+        RED_ORANGE_HIGH = np.array([25,255,555],np.uint8)
 
-
-
-        # image mask
-        if not read:
-            print("not grabbed")
-            return
-        hsv = cv2.cvtColor(frame, cv2.COLOR_RGB2HSV)
-
-
-        RED_ORANGE_LOW = np.array([100, 100, 0])
-        RED_ORANGE_HIGH = np.array([255, 230, 200])
-        kernel_open = np.ones((6, 6))
-
-        mask = cv2.inRange(hsv, RED_ORANGE_LOW, RED_ORANGE_HIGH)
+        #mask = cv2.inRange(hsv, RED_ORANGE_LOW, RED_ORANGE_HIGH)
+        mask = cv2.inRange(hsv, (10, 100, 20), (15,255,255))
         mask_open = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel_open)
-        mask_close = cv2.morphologyEx(mask_open, cv2.MORPH_CLOSE, kernel_close)
+        mask = mask_open
+        mask_close = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel_close)
         mask = mask_close
 
         contours, __ = cv2.findContours(mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         if len(contours) > 0:
-            cv2.drawContours(frame, contours, -1, (0, 255, 0), 3)
+            cv2.drawContours(frame_copy, contours, -1, (0, 255, 0), 3)
             biggest = sorted(contours, key=cv2.contourArea)[-1]
             x, y, w, h = cv2.boundingRect(biggest)
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-        cv2.imshow("frameee", frame)
+            cv2.rectangle(frame_copy, (x, y), (x + w, y + h), (0, 0, 255), 2)
+            cv2.rectangle(disparity_copy, (x,y), (x + w, y + h), (0, 0, 255), 2)
+        cv2.imshow("frameee", frame_copy)
+        cv2.imshow("disparity", disparity_copy)
 
-        RED_ORANGE_HIGH = np.array([210, 100, 0])
-        RED_ORANGE_LOW = np.array([255, 200, 20])
-        kernel_open = np.ones((6, 6))
-
-        mask = cv2.inRange(hsv, RED_ORANGE_LOW, RED_ORANGE_HIGH)
-        mask_open = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel_open)
-        mask_close = cv2.morphologyEx(mask_open, cv2.MORPH_CLOSE, kernel_close)
-        mask = mask_close
 
         contours, __ = cv2.findContours(mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         for i in range(len(contours)):
             x, y, w, h = cv2.boundingRect(contours[i])
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+            cv2.rectangle(frame_copy, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
         if len(contours) >= 1:
             # How to get center of object using moments:
@@ -174,6 +158,7 @@ def getCameraNumbers():
     print(cams)
 
 
-#cal = np.load("/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/stereo_calibration.npz",allow_pickle=False)
-#left_xmap = cal["left_xmap"]
-#left_ymap = cal["left_ymap"]
+#x = DistanceCalculator(DRAW_IMAGE= True)
+#while True:
+#    x.depth_map_calculator.calculateDepthMap()
+testFindBuoyPixels()

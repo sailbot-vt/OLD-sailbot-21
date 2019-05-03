@@ -26,16 +26,23 @@ class DistanceCalculator():
         The pixels in which we see the buoy
         """
         left_frame, disparity = self.depth_map_calculator.calculateDepthMap()
-        hsv = cv2.cvtColor(left_frame, cv2.COLOR_RGB2HSV)
 
-        RED_ORANGE_LOW = np.array([100, 100, 0])
-        RED_ORANGE_HIGH = np.array([255, 230, 200])
-        kernel_open = np.ones((6, 6))
-        kernel_close = np.ones((10, 10))
+        kernel_close = np.ones((2, 2))
+        kernel_open = np.ones((12, 12))
 
-        mask = cv2.inRange(hsv, RED_ORANGE_LOW, RED_ORANGE_HIGH)
+        frame_copy = left_frame
+        disparity_copy = disparity
+
+        hsv = cv2.cvtColor(left_frame, cv2.COLOR_BGR2HSV)
+
+        #RED_ORANGE_LOW = np.array([10, 100, 20], np.uint8)
+        #RED_ORANGE_HIGH = np.array([25, 255, 555], np.uint8)
+
+        # mask = cv2.inRange(hsv, RED_ORANGE_LOW, RED_ORANGE_HIGH)
+        mask = cv2.inRange(hsv, (10, 100, 20), (15, 255, 255))
         mask_open = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel_open)
-        mask_close = cv2.morphologyEx(mask_open, cv2.MORPH_CLOSE, kernel_close)
+        mask = mask_open
+        mask_close = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel_close)
         mask = mask_close
 
         contours, __ = cv2.findContours(mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
