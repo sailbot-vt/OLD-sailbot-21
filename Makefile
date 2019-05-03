@@ -1,24 +1,22 @@
+HOST = $(shell hostname)
+
+#WRITE ALL CONDITIONALS AND STUFF IN BASH SCRIPT
+
 init:
-	./install-python.sh
+	
+	./install-packages.sh
 
-	pip install virtualenv
-	virtualenv -p python3.7 p3_7env --no-site-packages
-
-	. ./p3_7env/bin/activate; \
-	pip install -r requirements.txt
-
-	-. ./p3_7env/bin/activate; \
-	pip install Adafruit_BBIO
+	pip3 install -r requirements.txt
+	pip3 install Adafruit_BBIO
 
 	-mkdir logs
 
 test:
-	. ./p3_7env/bin/activate; \
+	
 	export ENV test; \
 	coverage run --source src -m unittest discover -vcs tests
 
 run:
-	. ./p3_7env/bin/activate; \
-	python main.py
+	python3 main.py
 
 .PHONY: init test run
