@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source ./set_py3_alias
+
 ./install-packages.sh
 
 if [ "$HOSTNAME" = beaglebone ]; then
