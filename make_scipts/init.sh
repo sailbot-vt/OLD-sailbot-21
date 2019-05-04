@@ -7,7 +7,7 @@ if [ "$HOSTNAME" = beaglebone ]; then
 	pip3 install Adafruit_BBIO
 else
 	./install-python.sh
-	pip3 install virtualenv
+	pip install virtualenv
 	virtualenv -p python3.7 p3_7env --system-site-packages
 
 	./p3_7env/bin/activate; \
