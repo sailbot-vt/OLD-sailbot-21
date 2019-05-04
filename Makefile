@@ -1,22 +1,13 @@
-HOST = $(shell hostname)
-
-#WRITE ALL CONDITIONALS AND STUFF IN BASH SCRIPT
-
 init:
-	
-	./install-packages.sh
 
-	pip3 install -r requirements.txt
-	pip3 install Adafruit_BBIO
-
-	-mkdir logs
+	. make_scipts/init.sh
 
 test:
-	
-	export ENV test; \
-	coverage run --source src -m unittest discover -vcs tests
+
+	. make_scipts/test.sh
 
 run:
-	python3 main.py
+
+	./make_scipts/run.sh
 
 .PHONY: init test run
