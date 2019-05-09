@@ -39,7 +39,6 @@ class nmea():
 
         return output_sentences
 
-
     def resume(self):
         body = "PAMTX,1"
         return "${0}*{1}\r\n".format(body, self.checksum(body))

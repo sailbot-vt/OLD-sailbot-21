@@ -32,6 +32,16 @@ class Port(ABC):
         pass
 
     @abstractmethod
+    def read_line(self, terminator='\n'):
+        """ Reads in next line from port. """
+        pass
+
+    @abstractmethod
+    def write(self, msg):
+        """ Writes message to port. """
+        pass
+
+    @abstractmethod
     def close(self):
         """ Closes/stops port. """
         pass
@@ -59,6 +69,12 @@ class TestablePort(Port):
     def is_open(self):
         pass
 
+    def write(self, msg):
+        return msg
+
+    def read_line(self, terminator='\n'):
+        return self.value + terminator
+
     def read(self):
         return self.value
 
@@ -72,10 +88,14 @@ class SerialPort(Port):
     def __init__(self, config, port):
         super().__init__(config)
         self.port = port
+        self.remaining_input = ""
 
     def open(self):
         if not self.is_open():
             self.port.open()
+
+    def write(self, input):
+        self.port.write(input)
 
     def is_open(self):
         return self.port.isOpen()
@@ -91,6 +111,29 @@ class SerialPort(Port):
         except:
             bytes = 0
         return self.port.read(size=bytes)
+
+    def read_line(self, terminator='\n'):
+        """ Reads in next line from serial port.
+
+        Returns:
+        Fully 
+        """
+        line = ""
+        while self.is_open():
+            if self.remaining_input:
+                line = self.remaining_input
+                self.remaining_input = ""
+            
+            next_bytes = self.read()
+            if next_bytes:
+                line += next_bytes:
+
+            if re.search(terminator, line):
+                data, self.remaining_input = line.split(terminator, 1)
+                line = ""
+                return data
+        return line
+
 
     def close(self):
         self.port.close()

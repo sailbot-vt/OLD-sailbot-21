@@ -1,7 +1,7 @@
 from threading import Thread
 from time import sleep
 
-from src.airmar.config_reader import read_pin_config, read_interval, read_port_config
+from src.airmar.config_reader import read_pin_config, read_interval, read_port_config, read_sentences
 from src.airmar.airmar_receiver import AirmarReceiver
 from src.airmar.airmar_broadcaster import make_broadcaster, AirmarBroadcasterType
 
@@ -16,16 +16,13 @@ class AirmarInputThread(Thread):
             # Default broadcaster:
             broadcaster_type = AirmarBroadcasterType.Messenger
 
-        self.broadcaster = make_broadcaster(broadcaster_type=broadcaster_type)
-        self.pins = read_pin_config(mock_bbio=mock_bbio)
-        self.ports = read_port_config(mock_port=mock_port)
+        broadcaster = make_broadcaster(broadcaster_type=broadcaster_type)
+        pin = read_pin_config(mock_bbio=mock_bbio)
+        port = read_port_config(mock_port=mock_port)
+        sentences = read_sentences()
 
-        self.receivers = {
-            "WIND": AirmarReceiver(
-            broadcaster=self.broadcaster, pin=self.pins["WIND"], port=self.ports["WIND"]),
-            "BOAT": AirmarReceiver(
-            broadcaster=self.broadcaster, pin=self.pins["BOAT"], port=self.ports["BOAT"])
-        }
+        self.receiver = AirmarReceiver(
+            broadcaster=broadcaster, sentences=sentences, pin=pin, port=port)
 
         self.keep_reading = True
         self.read_interval = read_interval()
@@ -38,15 +35,14 @@ class AirmarInputThread(Thread):
         -- self.keep_reading : False, receiver stop
         """
         self.keep_reading = True
+        self.keep_reading = True
         while self.keep_reading:
-            for receiver in self.receivers.values():
-                if not receiver.is_running:
-                    receiver.start()
-                receiver.send_airmar_data()
-                sleep(read_interval)
+            if not self.receiver.is_running:
+                self.receiver.start()
+            self.receiver.send_airmar_data()
+            sleep(self.read_interval)
         else:
-            for receiver in self.receivers.values():
-                receiver.stop()
+            self.receiver.stop()
 
     def stop(self):
         """ Pauses current thread without killing it. """
