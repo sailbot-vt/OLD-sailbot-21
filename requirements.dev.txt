@@ -5,4 +5,4 @@ coverage
 pynmea2
 pyserial
 scipy
-opencv
+opencv-python
