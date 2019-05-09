@@ -2,7 +2,7 @@ from enum import Enum
 from abc import ABC, abstractmethod
 
 import serial
-
+import re
 
 class PortType(Enum):
     TESTABLE = 0,
@@ -126,7 +126,7 @@ class SerialPort(Port):
             
             next_bytes = self.read()
             if next_bytes:
-                line += next_bytes:
+                line += + next_bytes:
 
             if re.search(terminator, line):
                 data, self.remaining_input = line.split(terminator, 1)
