@@ -94,8 +94,8 @@ class SerialPort(Port):
         if not self.is_open():
             self.port.open()
 
-    def write(self, input):
-        self.port.write(input)
+    def write(self, msg):
+        self.port.write(msg)
 
     def is_open(self):
         return self.port.isOpen()
@@ -116,23 +116,24 @@ class SerialPort(Port):
         """ Reads in next line from serial port.
 
         Returns:
-        Fully 
+        line, None if port not opened.
         """
-        line = ""
         while self.is_open():
+            line = ""
             if self.remaining_input:
                 line = self.remaining_input
                 self.remaining_input = ""
             
             next_bytes = self.read()
             if next_bytes:
-                line += + next_bytes:
+                line += next_bytes
 
             if re.search(terminator, line):
                 data, self.remaining_input = line.split(terminator, 1)
                 line = ""
-                return data
-        return line
+                # appends terminator back
+                return data + terminator
+        return None
 
 
     def close(self):
