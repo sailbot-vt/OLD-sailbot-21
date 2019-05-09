@@ -20,13 +20,16 @@ def read_pin_config(mock_bbio=None, path=None):
     return pin
 
 
-def read_sentences(path=None):
+def read_ids(path=None):
+    """ Reads the nmea sentence id's to enable from config.yml
+    and returns list of ids."""
     if path is None:
         path = os.path.dirname(os.path.abspath(__file__))
     with open(path + "config.yml", "r") as yml:
         conf = yaml.load(yml)
-        sentences = conf["sentences"]
-    return sentences
+        ids = conf["sentences"]
+    return ids
+
 
 def read_interval(path=None):
     """Reads the read interval from config.yml"""
@@ -49,5 +52,5 @@ def read_port_config(mock_port=None, path=None):
         if mock_port is None:
             port = make_port(conf["port"])
         else:
-            port = make_port(conf["port"], mock_port=mock_port.Serial)
+            port = make_port(conf["port"], mock_port=mock_port)
     return port
