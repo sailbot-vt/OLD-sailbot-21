@@ -1,0 +1,8 @@
+pypubsub
+pyyaml
+numpy
+coverage
+pynmea2
+pyserial
+scipy
+opencv-python

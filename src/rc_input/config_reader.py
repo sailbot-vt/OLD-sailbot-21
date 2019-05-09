@@ -1,5 +1,6 @@
-import yaml
 import os
+
+import yaml
 
 from src.hardware.pin import make_pin
 
@@ -40,4 +41,4 @@ def read_interval(path=None):
         conf = yaml.load(yml)
         interval = conf["read interval"]
 
-    return interval
+    return eval(interval)

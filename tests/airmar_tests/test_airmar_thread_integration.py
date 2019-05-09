@@ -34,12 +34,12 @@ class AirmarThreadTests(unittest.TestCase):
         serial.Serial.read.return_value = "\r\n"
         self.airmar_input_thread.receiver.send_airmar_data()
 
-        self.assertEquals(len(self.broadcaster.wind_speeds), 0)
-        self.assertEquals(len(self.broadcaster.wind_heads), 0)
-        self.assertEquals(len(self.broadcaster.boat_lats), 0)
-        self.assertEquals(len(self.broadcaster.boat_longs), 0)
-        self.assertEquals(len(self.broadcaster.boat_heads), 0)
-        self.assertEquals(len(self.broadcaster.boat_speeds), 0)
+        self.assertEqual(len(self.broadcaster.wind_speeds), 0)
+        self.assertEqual(len(self.broadcaster.wind_heads), 0)
+        self.assertEqual(len(self.broadcaster.boat_lats), 0)
+        self.assertEqual(len(self.broadcaster.boat_longs), 0)
+        self.assertEqual(len(self.broadcaster.boat_heads), 0)
+        self.assertEqual(len(self.broadcaster.boat_speeds), 0)
 
     def test_wind(self):
         """ Tests that wind speed data was recorded """
