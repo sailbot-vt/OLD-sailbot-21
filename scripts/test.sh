@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ $HOSTNAME == beaglebone ]; then
+if [[ $HOSTNAME == beaglebone ]]; then
 	export ENV test; \
 	coverage run --source src -m unittest discover -vcs tests
 else

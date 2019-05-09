@@ -1,0 +1,9 @@
+pypubsub
+pyyaml
+numpy
+coverage==4.0.3
+python-coveralls
+pynmea2
+pyserial
+opencv
+scipy

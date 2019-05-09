@@ -1,13 +1,10 @@
 init:
-
-	bash ./make_scipts/init.sh
+	bash ./scripts/init.sh
 
 test:
-
-	bash ./make_scipts/test.sh
+	bash ./scripts/test.sh
 
 run:
-
-	bash ./make_scipts/run.sh
+	bash ./scripts/run.sh
 
 .PHONY: init test run

@@ -17,7 +17,7 @@ apt-get install -y libbz2-dev libsqlite3-dev libreadline-dev zlib1g-dev libncurs
 apt-get install -y make
 
 # Get needed packages
-./install-packages.sh
+install-packages.sh
 
 # Create temporary working directory
 mkdir /tmp/py-transient

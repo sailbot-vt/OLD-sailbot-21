@@ -1,0 +1,6 @@
+pypubsub
+pyyaml
+numpy
+pynmea2
+pyserial
+Adafruit_BBIO

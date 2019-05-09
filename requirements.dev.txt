@@ -1,7 +1,8 @@
 pypubsub
 pyyaml
 numpy
-coverage==4.0.3
-python-coveralls
+coverage
 pynmea2
 pyserial
+scipy
+opencv
