@@ -13,17 +13,20 @@ def read_pin_config(mock_bbio=None, path=None):
     with open(path + "/config.yml", "r") as yml:
         conf = yaml.load(yml)
         if mock_bbio is None:
-            pins = {
-                "WIND": make_pin(conf["pins"]["WIND"]),
-                "BOAT": make_pin(conf["pins"]["BOAT"])
-            }
+            pin = make_pin(conf["pin"])
         else:
-            pins = {
-                "WIND": make_pin(conf["pins"]["WIND"], mock_lib=mock_bbio.UART),
-                "BOAT": make_pin(conf["pins"]["BOAT"], mock_lib=mock_bbio.UART)
-            }
-    return pins
+            pin = make_pin(conf["pin"], mock_lib=mock_bbio.UART)
 
+    return pin
+
+
+def read_sentences(path=None):
+    if path is None:
+        path = os.path.dirname(os.path.abspath(__file__))
+    with open(path + "config.yml", "r") as yml:
+        conf = yaml.load(yml)
+        sentences = conf["sentences"]
+    return sentences
 
 def read_interval(path=None):
     """Reads the read interval from config.yml"""
@@ -44,13 +47,7 @@ def read_port_config(mock_port=None, path=None):
     with open(path + "/config.yml", "r") as yml:
         conf = yaml.load(yml)
         if mock_port is None:
-            ports = {
-                "WIND": make_port(conf["ports"]["WIND"]),
-                "BOAT": make_port(conf["ports"]["BOAT"])
-            }
+            port = make_port(conf["port"])
         else:
-            ports = {
-                "WIND": make_port(conf["ports"]["WIND"], mock_port=mock_port.Serial),
-                "BOAT": make_port(conf["ports"]["BOAT"], mock_port=mock_port.Serial)
-            }
-    return ports
+            port = make_port(conf["port"], mock_port=mock_port.Serial)
+    return port
