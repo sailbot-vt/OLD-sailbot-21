@@ -18,11 +18,11 @@ else
 
     if [[ $TRAVIS ]]; then
         # Install test dependencies
-        ./p3_7env/bin/activate; \
+        . ./p3_7env/bin/activate; \
 	    pip install -r requirements.test.txt
 	else
 	    # Install dev dependencies
-	    ./p3_7env/bin/activate; \
+	    . ./p3_7env/bin/activate; \
 	    pip install -r requirements.dev.txt
     fi
 fi
