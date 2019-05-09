@@ -24,8 +24,10 @@ class nmea():
 
         Returns:
         A list of data fields, where sentence id is first element.
-        Refer to 300WX User Technical Manual_0183 for detailed descriptions of
-        data fields.
+        
+        Note: Empty data fields == ''.
+            Refer to 300WX User Technical Manual_0183 for detailed descriptions of
+            data fields.
         """
         parsed = parse.parse(self.nmea_format, sentence)
         body = parsed[0]
