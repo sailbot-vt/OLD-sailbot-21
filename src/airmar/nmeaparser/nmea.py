@@ -1,56 +1,108 @@
 import parse
 
 class nmea():
+    """ Defines nmea parser that can read, write, and parse nmea0183 sentences 
+
+    Refer to 300 WX User Technical Manual_0183 for descriptions of fields
+    """
     def __init__(self):
-        self.format = "${0}*{1}\r\n"
+        """ Initializes an nmea parser 
+        
+        NMEA0183 sentence format: $<0:args>*<chksum>\r\n
+        """
+        self.nmea_format = "${0}*{1}\r\n"
     
-    def parse(self, sentence):
-        # pip install parse here.
-        parsed = parse.parse(self.format, sentence)
+    def parse(self, sentence, separator=','):
+        """ Parses a given sentence
+
+        Keyword arguments:
+        sentence -- A string of a valid NMEA0183 sentence with valid checksum
+            Precondition: start and line terminator must be included
+        separator -- 
+            The separator between each field in the nmea sentence. 
+            Default: ','
+
+        Returns:
+        A list of data fields, where sentence id is first element.
+        Refer to 300WX User Technical Manual_0183 for detailed descriptions of
+        data fields.
+        """
+        parsed = parse.parse(self.nmea_format, sentence)
         body = parsed[0]
         checksum = parsed[1]
         if self.checksum(body) == checksum:
-            return body.split(',')
+            return body.split(separator)
         return None
 
-    def enable(self, sentence_ids=["ALL"], frequency=1):
-        sentence_body = "PAMTC,EN,{0},1,{1},,"
+    def toggle(self, sentence_ids=["ALL"], frequency=1, enable=1):
+        """ Creates a sentence to toggle sentence(s) to be read in.
+        
+        Keyword arguments:
+        setence_ids --
+            A list of id's to enable/disable.
+            Default: ["ALL"], to enable/disable all sentences
+        frequency -- 
+            seconds to wait before transmitting a sentence
+            Default: 1 second
+        enable --
+            Enables or disable the given sentence id's from 
+            transmitting. [1 = enable, 0 = disable]
+            Default: 1
+
+        Returns:
+        The list of sentences to transmit to airmar to toggle sentence id
+        """
+        sentence_body = "PAMTC,EN,{0},{1},{2},,"
         settings_sentences = []
         for sid in sentence_ids:
-            settings_sentences.append(sentence_body.format(sid, frequency))
+            settings_sentences.append(sentence_body.format(sid, enable, frequency))
  
         output_sentences = []
         for body in settings_sentences:
-            sent = "${0}*{1}\r\n".format(body, self.checksum(body))
+            sent = self.nmea_format.format(body, self.checksum(body))
             output_sentences.append(sent)
 
         return output_sentences
 
-    def disable(self, sentence_ids=["ALL"], frequency=1):
-        sentence_body = "PAMTC,EN,{0},0,{1},,"
-        settings_sentences = []
-        for sid in sentence_ids:
-            settings_sentences.append(sentence_body.format(sid, frequency))
- 
-        output_sentences = []
-        for body in settings_sentences:
-            sent = "${0}*{1}\r\n".format(body, self.checksum(body))
-            output_sentences.append(sent)
+    def power(self, resume=1):
+        """ Creates a sentence to resume or pause data transmition
 
-        return output_sentences
+        Keyword Arguments:
+        resume -- 1 to resume, 0 to pause
 
-    def resume(self):
-        body = "PAMTX,1"
-        return "${0}*{1}\r\n".format(body, self.checksum(body))
-
-    def pause(self):
-        body = "PAMTX,0"
-        return "${0}*{1}\r\n".format(body, self.checksum(body))
+        Return:
+        Sentence representing resume/pause
+        """
+        body = "PAMTX,{}".format(resume)
+        return self.nmea_format.format(body, self.checksum(body))
 
     def post(self):
-        return "$PAMTC,POST*7F\r\n"
+        """ Creates a sentence to perform POST (Power On Self Test)
+
+        Return:
+        Sentence representing POST for airmar.
+        """
+        body = "PAMTC,POST"
+        return self.nmea_format.format(body, self.checksum(body))
+
+    def factory_reset(self):
+        """ Creates a sentence to factory reset
+
+        Return:
+        Sentence representing factory reset for airmar.
+        """
+        body = "PAMTX,1"
+        return self.nmea_format.format(body, self.checksum(body))
 
     def checksum(self, sentence):
+        """ Gets checksum for sentence body
+
+        Keyword Arguments:
+        sentence -- A valid nmea0183 sentence body (between '$' and '*')
+
+        Returns:
+        checksum for sentence body as uppercase hexcode.
+        """
         checksum = 0
         # XOR all characters in string
         for c in sentence:
