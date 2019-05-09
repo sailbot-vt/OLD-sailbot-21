@@ -1,5 +1,6 @@
-import pynmea2
 import re
+
+import pynmea2
 
 from src.airmar.airmar_processor import AirmarProcessor
 

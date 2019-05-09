@@ -24,8 +24,8 @@ class RCThreadTests(unittest.TestCase):
 
         self.rc_input_thread.receiver.send_inputs()
 
-        self.assertAlmostEqual(-80, mock_pub.method_calls[0][2]["deg"], 2)
-        self.assertAlmostEqual(-20, mock_pub.method_calls[1][2]["deg"], 2)
+        self.assertAlmostEqual(-80, mock_pub.method_calls[0][2]["degrees_starboard"], 2)
+        self.assertAlmostEqual(-20, mock_pub.method_calls[1][2]["degrees_in"], 2)
         mock_pub.sendMessage.assert_any_call("set nav mode", mode=NavigationMode.MANUAL)
 
     @patch('src.rc_input.rc_receiver.pub', autospec=True)
@@ -37,8 +37,8 @@ class RCThreadTests(unittest.TestCase):
 
         self.rc_input_thread.receiver.send_inputs()
 
-        self.assertAlmostEqual(0, mock_pub.method_calls[0][2]["deg"], 2)
-        self.assertAlmostEqual(0, mock_pub.method_calls[1][2]["deg"], 2)
+        self.assertAlmostEqual(0, mock_pub.method_calls[0][2]["degrees_starboard"], 2)
+        self.assertAlmostEqual(0, mock_pub.method_calls[1][2]["degrees_in"], 2)
         mock_pub.sendMessage.assert_any_call("set nav mode", mode=NavigationMode.MANUAL)
 
     @patch('src.rc_input.rc_receiver.pub', autospec=True)
@@ -50,8 +50,8 @@ class RCThreadTests(unittest.TestCase):
 
         self.rc_input_thread.receiver.send_inputs()
 
-        self.assertAlmostEqual(80, mock_pub.method_calls[0][2]["deg"], 2)
-        self.assertAlmostEqual(20, mock_pub.method_calls[1][2]["deg"], 2)
+        self.assertAlmostEqual(80, mock_pub.method_calls[0][2]["degrees_starboard"], 2)
+        self.assertAlmostEqual(20, mock_pub.method_calls[1][2]["degrees_in"], 2)
         mock_pub.sendMessage.assert_any_call("set nav mode", mode=NavigationMode.MANUAL)
 
 

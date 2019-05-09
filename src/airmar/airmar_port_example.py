@@ -1,7 +1,7 @@
-from src.airmar.airmar_input_thread import AirmarInputThread
-from src.airmar.airmar_broadcaster import AirmarBroadcasterType
-
 from time import sleep
+
+from src.airmar.airmar_broadcaster import AirmarBroadcasterType
+from src.airmar.airmar_input_thread import AirmarInputThread
 
 airmar_reader = AirmarInputThread(broadcaster_type=AirmarBroadcasterType.Testable)
 broadcaster = airmar_reader.broadcaster

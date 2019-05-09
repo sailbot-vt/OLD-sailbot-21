@@ -3,7 +3,7 @@ from threading import Thread
 from pubsub import pub
 
 from src.hardware.servo import Servo
-from src.rudder.config_reader import build_pin_from_config, read_servo_config,\
+from src.rudder.config_reader import build_pin_from_config, read_servo_config, \
     read_rudder_config
 from src.rudder.rudder import Rudder
 

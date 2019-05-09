@@ -1,12 +1,11 @@
-import sys
 import math
-import numpy as np
-import scipy.optimize
-import scipy.interpolate
+import sys
 
+import numpy as np
+import scipy.interpolate
+import scipy.optimize
 
 from src.utils.vec import Vec2
-
 
 PATH_RESOLUTION = 10
 

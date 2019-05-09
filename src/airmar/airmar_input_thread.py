@@ -1,9 +1,9 @@
 from threading import Thread
 from time import sleep
 
-from src.airmar.config_reader import read_pin_config, read_interval, read_port_config
-from src.airmar.airmar_receiver import AirmarReceiver
 from src.airmar.airmar_broadcaster import make_broadcaster, AirmarBroadcasterType
+from src.airmar.airmar_receiver import AirmarReceiver
+from src.airmar.config_reader import read_pin_config, read_interval, read_port_config
 
 
 class AirmarInputThread(Thread):
