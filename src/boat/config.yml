@@ -4,6 +4,32 @@
 #   https://yaml.org/spec/1.2/spec.html
 
 
+velocity prediction assumptions:
+  # Minimum boat velocity (m/s)
+  min_v: 0
+
+  # Maximum boat velocity (m/s)
+  max_v: 10
+
+  # Minimum heel angle (deg)
+  min_phi: 0
+
+  # Maximum heel angle (deg)
+  max_phi: 80
+
+  # Minimum crew arm (m)
+  min_b: 0
+
+  # Maximum crew arm (m)
+  max_b: 0
+
+  # Minimum flattening factor
+  min_f: 0
+
+  # Maximum flattening factor
+  max_f: 0
+
+
 hull constants:
   # Displacement volume canoe body (m^3)
   divcan: 0
@@ -53,7 +79,7 @@ hull constants:
   # Center of gravity above keel (m)
   kg: 0
 
-  # Transv metacenter above keel (m)
+  # Transverse metacenter above keel (m)
   km: 0
 
 
@@ -61,7 +87,7 @@ keel constants:
   # Displacement volume of keel (m^3)
   dvk: 0
 
-  # ?
+  # Keel planform area (m^2)
   apk: 0
 
   # Area of skeg (m^2)
@@ -70,7 +96,7 @@ keel constants:
   # Wet surface area of keel (m^2)
   sk: 0
 
-  # ?
+  # Keel vertical center of buoyancy (m)
   zcbk: 0
 
   # Mean chord length of keel (m)
@@ -96,7 +122,7 @@ rudder constants:
   # Displacement volume of rudder (m^3)
   dvr: 0
 
-  # ?
+  # Rudder planform area (m^2)
   apr: 0
 
   # Wet surface area of rudder (m^2)
