@@ -9,13 +9,13 @@ from src.broadcaster.broadcaster import make_broadcaster, BroadcasterType
 class AirmarInputThread(Thread):
     """A separate thread to manage reading the airmar inputs."""
 
-    def __init__(self, mock_bbio=None, mock_port=None, broadcaster_type=None):
+    def __init__(self, mock_bbio=None, mock_port=None, broadcaster_type=None, filename=None):
         """Builds a new airmar input thread."""
         super().__init__()
 
         if broadcaster_type is None:
             broadcaster_type = BroadcasterType.Messenger
-        self.broadcaster = make_broadcaster(broadcaster_type=broadcaster_type)
+        self.broadcaster = make_broadcaster(broadcaster_type=broadcaster_type, filename=filename)
         
         pin = read_pin_config(mock_bbio=mock_bbio)
         port = read_port_config(mock_port=mock_port)
