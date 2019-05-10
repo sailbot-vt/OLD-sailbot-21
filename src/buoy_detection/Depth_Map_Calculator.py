@@ -4,7 +4,7 @@ import os
 from math import sqrt
 import time
 # Focal length is 56 at red dot and 75 at blue dot
-
+# Baseline should be in meters
 path = os.path.realpath(__file__)[:-len(os.path.basename(__file__))] + "stereo_calibration.npz"
 class Depth_Map():
 
@@ -30,18 +30,17 @@ class Depth_Map():
         self.left = cv2.VideoCapture(camera_numbers[0])
         self.right = cv2.VideoCapture(camera_numbers[1])
         self.DRAW_IMAGE = DRAW_IMAGE
-        self.stereoMatcher = cv2.StereoBM_create()
-        self.stereoMatcher.setMinDisparity(16)
-        self.stereoMatcher.setNumDisparities(112-16)
-        self.stereoMatcher.setROI1(self.left_roi)
-        self.stereoMatcher.setROI2(self.right_roi)
-        self.stereoMatcher.setSpeckleRange(128)
-        self.stereoMatcher.setSpeckleWindowSize(100)
-
+        self.bm = cv2.StereoBM_create()
+        self.bm.setMinDisparity(0)
+        self.bm.setNumDisparities(160)
+        self.bm.setBlockSize(5)
+        self.bm.setROI1(self.left_roi)
+        self.bm.setROI2(self.right_roi)
+        self.bm.setUniquenessRatio(15)
+        self.bm.setSpeckleWindowSize(0)
+        self.bm.setSpeckleRange(2)
         self.REMAP_INTERPOLATION = cv2.INTER_LINEAR
         self.DEPTH_VISUALIZATION_SCALE = 32
-
-
 
     def calculateDepthMap(self):
         """
@@ -64,8 +63,9 @@ class Depth_Map():
         fixed_right = self.getRightCameraImage()
         grey_left = cv2.cvtColor(fixed_left, cv2.COLOR_BGR2GRAY)
         grey_right = cv2.cvtColor(fixed_right, cv2.COLOR_BGR2GRAY)
-        depth = self.stereoMatcher.compute(grey_left, grey_right)
+        depth = self.bm.compute(grey_left, grey_right)
         depth = depth.astype(np.uint8)
+        blur = cv2.bilateralFilter(depth, 4, 75, 75)
         if self.DRAW_IMAGE:
             cv2.imshow('left', grey_left)
             cv2.imshow('right', grey_right)

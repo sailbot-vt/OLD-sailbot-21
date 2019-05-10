@@ -157,8 +157,8 @@ def getCameraNumbers():
             cams.append(i)
     print(cams)
 
+getCameraNumbers()
+x = DistanceCalculator(DRAW_IMAGE= True, camera_numbers=(0,1))
+while True:
+    x.depth_map_calculator.calculateDepthMap()
 
-#x = DistanceCalculator(DRAW_IMAGE= True)
-#while True:
-#    x.depth_map_calculator.calculateDepthMap()
-testFindBuoyPixels()
