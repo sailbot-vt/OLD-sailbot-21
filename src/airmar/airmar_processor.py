@@ -26,18 +26,18 @@ class AirmarProcessor:
             # <7> Speed over ground, km/h to the nearest 0.1 km/h
             if nmea[7] is None or nmea[1] is None:
                 return
-            self._update_boat_speed(nmea[7], nmea[1])
+            self._update_boat_speed(float(nmea[7]), float(nmea[1]))
         elif sid is "GPGGA":
             # <2> Latitude <4> Longitude: to nearest .0001 minutes
             if nmea[2] is None or nmea[4] is None:
                 return
-            self._update_boat_gps(nmea[2], nmea[4])
+            self._update_boat_gps(float(nmea[2]), float(nmea[4]))
         elif sid is "WIMWD":
             # <1> Wind direction, 0.0 to 359.9 degrees True to nearest .1 degree
             # <7> Wind speed, meters/second, to nearest 0.1 m/s
             if nmea[7] is None or nmea[1] is None:
                 return
-            self._update_wind(nmea[7], nmea[1])
+            self._update_wind(float(nmea[7]), float(nmea[1]))
         elif sid is "WIVWR":
             # <1> Measured wind angle relative to vessel, 0 to 180 degrees,
             #   left/right of vessel heading, to the nearest 0.1 degree
@@ -90,10 +90,10 @@ class AirmarProcessor:
         
 
     def _update_boat_gps(self, latitude, longitude):
-        self.data["boat latitude"] = float(latitude)
-        self.data["boat longitude"] = float(longitude)
+        self.data["boat latitude"] = latitude
+        self.data["boat longitude"] = longitude
 
     def _update_boat_speed(self, speed, head):
-        self.data["boat speed"] = float(speed)
-        self.data["boat heading"] = float(head) % 360
+        self.data["boat speed"] = speed
+        self.data["boat heading"] = head % 360
     

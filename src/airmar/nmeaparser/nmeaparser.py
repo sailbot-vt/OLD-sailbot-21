@@ -1,6 +1,6 @@
 import parse
 
-class nmea():
+class NmeaParser():
     """ Defines nmea parser that can read, write, and parse nmea0183 sentences 
 
     Refer to 300 WX User Technical Manual_0183 for descriptions of fields
@@ -55,12 +55,12 @@ class nmea():
         The list of sentences to transmit to airmar to toggle sentence id
         """
         sentence_body = "PAMTC,EN,{0},{1},{2},,"
-        settings_sentences = []
+        s_bodies = []
         for sid in sentence_ids:
-            settings_sentences.append(sentence_body.format(sid, enable, frequency))
+            s_bodies.append(sentence_body.format(sid, enable, frequency))
  
         output_sentences = []
-        for body in settings_sentences:
+        for body in s_bodies:
             sent = self.nmea_format.format(body, self.checksum(body))
             output_sentences.append(sent)
 
@@ -93,7 +93,7 @@ class nmea():
         Return:
         Sentence representing factory reset for airmar.
         """
-        body = "PAMTX,1"
+        body = "PAMTC,EN,ERST"
         return self.nmea_format.format(body, self.checksum(body))
 
     def checksum(self, sentence):
@@ -110,4 +110,4 @@ class nmea():
         for c in sentence:
             checksum = checksum ^ ord(c)
 
-        return '{:x}'.format(checksum).upper()
+        return '{:02x}'.format(checksum).upper()

@@ -1,7 +1,7 @@
 import re
 
 from src.airmar.airmar_processor import AirmarProcessor
-from src.airmar.nmeaparser.nmea import nmea
+from src.airmar.nmeaparser.nmeaparser import NmeaParser
 
 
 class AirmarReceiver:
@@ -16,7 +16,7 @@ class AirmarReceiver:
         Returns:
         A new Airmar Receiver
         """
-        self.parser = nmea()
+        self.parser = NmeaParser()
         self.ids = ids
         self.is_running = False
         self.uart_pin = pin
