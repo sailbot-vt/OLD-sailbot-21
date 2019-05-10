@@ -32,12 +32,15 @@ class AirmarReceiver:
         self.port.open()
         # Resumes sentence transmition
         # TODO encoding variable to field
-        self.port.write("{}".format(self.parser.power(resume=1)).encode('UTF-8'))
+        self.port.write(
+            "{}".format(self.parser.power(resume=1)).encode(self.port.encoding))
         # Disable all sentence transmitions first.
-        self.port.write("{}".format(self.parser.toggle(enable=0)).encode('UTF-8'))
+        self.port.write(
+            "{}".format(self.parser.toggle(enable=0)).encode(self.port.encoding))
         for sid in self.ids:
             # Enables sentences specified by config
-            self.port.write("{}".format(self.parser.toggle(sid)).encode('UTF-8'))
+            self.port.write(
+                "{}".format(self.parser.toggle(sid)).encode(self.port.encoding))
         self.is_running = True
 
     def send_airmar_data(self):
@@ -50,7 +53,8 @@ class AirmarReceiver:
     def stop(self):
         """ Stops the pin and port """
         # Suspends sentences.
-        self.port.write("{}".format(self.parser.power(resume=0)).encode('UTF-8'))
+        self.port.write(
+            "{}".format(self.parser.power(resume=0)).encode(self.port.encoding))
         self.port.close()
         self.uart_pin.cleanup()
         self.is_running = False
