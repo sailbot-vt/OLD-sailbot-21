@@ -118,7 +118,7 @@ class SerialPort(Port):
         """ Reads in next line from serial port.
 
         Returns:
-        line as a string, None if port not opened.
+        line as string, None if port not opened.
         """
         terminator = terminator.encode(self.encoding)
         checks = 0
@@ -138,7 +138,8 @@ class SerialPort(Port):
                 line = bytearray()
                 # appends terminator back
                 data.extend(terminator)
-                return bytes(data)
+                # full line read, so we can decode.
+                return bytes(data).decode(self.encoding)
             checks += 1
         return None
 
