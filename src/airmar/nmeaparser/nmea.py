@@ -25,7 +25,7 @@ class nmea():
         Returns:
         A list of data fields, where sentence id is first element.
         
-        Note: Empty data fields == ''.
+        Note: Empty data fields == None.
             Refer to 300WX User Technical Manual_0183 for detailed descriptions of
             data fields.
         """
@@ -33,7 +33,13 @@ class nmea():
         body = parsed[0]
         checksum = parsed[1]
         if self.checksum(body) == checksum:
-            return body.split(separator)
+            fields = body.split(separator)
+            for i in range(len(fields)):
+                if fields[i] == '':
+                    fields[i] = None
+            return fields         
+            # Shame this one liner didnt work: 
+            # return [field.replace('', None) for field in body.split(separator)]
         return None
 
     def toggle(self, sentence_ids=["ALL"], frequency=1, enable=1):
