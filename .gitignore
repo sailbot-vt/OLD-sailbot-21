@@ -76,3 +76,6 @@ cmake-build-*/
 ../src/buoy_detection/camera_capture/
 # CMake
 [C|c][M|m]ake*
+
+# VSCode
+.vscode/

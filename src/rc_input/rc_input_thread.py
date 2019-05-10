@@ -3,7 +3,6 @@ from time import sleep
 
 from src.rc_input.config_reader import read_pin_config, read_interval
 from src.rc_input.rc_receiver import RCReceiver
-from src.rc_input.rc_broadcaster import make_broadcaster, RCInputBroadcasterType
 
 
 class RCInputThread(Thread):
@@ -11,12 +10,11 @@ class RCInputThread(Thread):
 
     Should accept multiple boat configurations, and should be general enough to allow for easy extension.
     """
-    def __init__(self):
+    def __init__(self, mock_bbio=None):
         """Builds a new RC input thread."""
         super().__init__()
 
-        self.broadcaster = make_broadcaster(RCInputBroadcasterType.Messenger)
-        self.receiver = RCReceiver(broadcaster=self.broadcaster, pins=read_pin_config())
+        self.receiver = RCReceiver(read_pin_config(mock_bbio=mock_bbio))
 
         self.keep_reading = True
         self.read_interval = read_interval()

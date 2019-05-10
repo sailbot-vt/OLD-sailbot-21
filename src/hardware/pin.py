@@ -1,5 +1,5 @@
+from abc import ABC
 from enum import Enum
-from abc import ABC, abstractmethod
 
 
 class PinType(Enum):
@@ -7,7 +7,8 @@ class PinType(Enum):
     Testable = 0,
     GPIO = 1,
     ADC = 2,
-    PWM = 3
+    PWM = 3,
+    UART = 4
 
 
 class Pin(ABC):
@@ -25,6 +26,7 @@ class Pin(ABC):
 
 class TestablePin(Pin):
     """Provides a Pin object to be used for testing."""
+
     def __init__(self, name, read_value):
         self.pin_name = name
         self.value = read_value
@@ -75,7 +77,8 @@ class ADCPin(Pin):
         A floating-point value in [-1, 1], where -1 and 1 are min_v and max_v,
         respectively.
         """
-        self.adc_lib.read(self.pin_name)  # According to the Internet, we have to do this twice
+        self.adc_lib.read(
+            self.pin_name)  # According to the Internet, we have to do this twice
         raw_value = self.adc_lib.read(self.pin_name)
         return self._normalize_voltage(raw_value)
 
@@ -92,11 +95,12 @@ class ADCPin(Pin):
         v_range = self.max_v - self.min_v
         read_v = ADCPin.MAX_INPUT_VOLTAGE * read_value
         shift_factor = self.min_v
-        return 2 * (((read_v - shift_factor) / v_range) - 0.5)  # Between -1 and 1
+        return 2 * (((read_v - shift_factor) / v_range) - 0.5) # Between -1 and 1
 
 
 class GPIOPin(Pin):
     """Provides an interface to a GPIO pin"""
+
     def __init__(self, config, gpio_lib):
         super().__init__(config)
 
@@ -145,6 +149,7 @@ class GPIOPin(Pin):
 
 class PWMPin(Pin):
     """Provides an interface to a PWM pin"""
+
     def __init__(self, config, pwm_lib):
         super().__init__(config)
         self.pwm_lib = pwm_lib
@@ -160,6 +165,29 @@ class PWMPin(Pin):
 
     def set_frequency(self, duty_cycle):
         self.pwm_lib.set_frequency(self.pin_name, duty_cycle)
+
+
+class UARTPin(Pin):
+    """Provides an interface to a UART pin"""
+
+    def __init__(self, config, uart_lib):
+        super().__init__(config)
+        self.channel = config["channel"]
+        self.uart_lib = uart_lib
+
+    def setup(self):
+        """ Set up and start the UART channel. This will export the given UART so that it can be accessed by other software that controls its serial lines.
+
+        Keyword arguments:
+        channel -- UART channel to set up. One of "UART1", "UART2", "UART4" or "UART5"
+        """
+        self.uart_lib.setup(self.channel)
+
+    def cleanup(self):
+        """ Cleans up the UART"""
+        # self.uart_lib.cleanup()
+        # Above code apparently causes kernal panic
+        pass
 
 
 def make_pin(config, mock_lib=None):
@@ -190,6 +218,11 @@ def make_pin(config, mock_lib=None):
             import Adafruit_BBIO.PWM as PWM
             return PWMPin(config, PWM)
         return PWMPin(config, mock_lib)
+    elif pin_type == PinType.UART:
+        if mock_lib is None:
+            import Adafruit_BBIO.UART as UART
+            return UARTPin(config, UART)
+        return UARTPin(config, mock_lib)
     else:
         return TestablePin(name=config["pin_name"],
                            read_value=config.get("read_value") or 0)

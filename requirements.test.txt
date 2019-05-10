@@ -1,7 +1,9 @@
 pypubsub
 pyyaml
 numpy
-scipy
-opencv-python-headless
 coverage==4.0.3
 python-coveralls
+parse
+pyserial
+opencv-python
+scipy

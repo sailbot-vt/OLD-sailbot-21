@@ -1,9 +1,8 @@
 import unittest
 from unittest.mock import MagicMock
 
-from tests.mock_bbio import Adafruit_BBIO
-
 from src.hardware.pin import make_pin, ADCPin
+from tests.mock_bbio import Adafruit_BBIO
 
 
 class PinTests(unittest.TestCase):
@@ -74,8 +73,8 @@ class PinTests(unittest.TestCase):
     @staticmethod
     def test_adc_read():
         # Set up the pin
-        Adafruit_BBIO.ADC.setup = MagicMock(name='Adafruit.BBIO.GPIO.setup')
-        Adafruit_BBIO.ADC.read = MagicMock(name='Adafruit.BBIO.GPIO.setup',
+        Adafruit_BBIO.ADC.setup = MagicMock(name='Adafruit.BBIO.ADC.read')
+        Adafruit_BBIO.ADC.read = MagicMock(name='Adafruit.BBIO.ADC.read',
                                            return_value=(1 / ADCPin.MAX_INPUT_VOLTAGE))
         adc_pin = make_pin({
             "pin_name": "Hello",
@@ -90,14 +89,14 @@ class PinTests(unittest.TestCase):
         err = abs(val - 1)
         assert err < 0.01
 
-        Adafruit_BBIO.ADC.read = MagicMock(name='Adafruit.BBIO.GPIO.setup',
+        Adafruit_BBIO.ADC.read = MagicMock(name='Adafruit.BBIO.ADC.read',
                                            return_value=(0.5 / ADCPin.MAX_INPUT_VOLTAGE))
 
         val = adc_pin.read()
         err = abs(val - 0)
         assert err < 0.01
 
-        Adafruit_BBIO.ADC.read = MagicMock(name='Adafruit.BBIO.GPIO.setup',
+        Adafruit_BBIO.ADC.read = MagicMock(name='Adafruit.BBIO.ADC.read',
                                            return_value=0)
 
         val = adc_pin.read()
