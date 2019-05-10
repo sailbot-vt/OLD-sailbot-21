@@ -54,7 +54,6 @@ port:
   port_name: "/dev/tty01"
   port_type: "SERIAL"
   frequency: 1  # seconds
-  encoding: "utf-8"
   baudrate: 4800
   timeout: 0
 
