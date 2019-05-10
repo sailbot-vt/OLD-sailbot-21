@@ -120,21 +120,24 @@ class SerialPort(Port):
         Returns:
         line as a string, None if port not opened.
         """
-        while self.is_open():
+        checks = 0
+        # TODO: # checks to config
+        while self.is_open() and checks <= 100:
             line = ""
-            if self.remaining_input:
+            if len(self.remaining_input) > 0:
                 line = self.remaining_input
                 self.remaining_input = ""
             
             next_bytes = self.read().decode(self.encoding)
-            if next_bytes:
+            if len(next_bytes) > 0:
                 line += next_bytes
 
-            if re.search(terminator, line):
+            if len(line) > 0 and re.search(terminator, line):
                 data, self.remaining_input = line.split(terminator, 1)
                 line = ""
                 # appends terminator back
                 return data + terminator
+            checks += 1
         return None
 
 

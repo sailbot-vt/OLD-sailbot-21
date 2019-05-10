@@ -37,8 +37,13 @@ class PortTests(unittest.TestCase):
                                     return_value=msg)
 
         self.assertEquals(self.port.read_line(terminator="\r\n"), "test\r\n")
+        self.port.read = MagicMock(name="serial.Serial.read",
+                                    return_value=b"test4\r\n")
         self.assertEquals(self.port.read_line(terminator="\r\n"), "test2\r\n")
+        self.port.read = MagicMock(name="serial.Serial.read",
+                                    return_value=b'')
         self.assertEquals(self.port.read_line(terminator="\r\n"), "test3\r\n")
-
+        self.assertEquals(self.port.read_line(terminator="\r\n"), "test4\r\n")
+        self.assertEquals(self.port.read_line(terminator="\r\n"), None)
         serial.Serial.isOpen.return_value = False
         self.assertEquals(self.port.read_line(terminator="\r\n"), None)
