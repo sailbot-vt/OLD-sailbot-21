@@ -15,14 +15,14 @@ class AirmarInputThread(Thread):
 
         if broadcaster_type is None:
             broadcaster_type = BroadcasterType.Messenger
-        broadcaster = make_broadcaster(broadcaster_type=broadcaster_type)
+        self.broadcaster = make_broadcaster(broadcaster_type=broadcaster_type)
         
         pin = read_pin_config(mock_bbio=mock_bbio)
         port = read_port_config(mock_port=mock_port)
         ids = read_ids()
 
         self.receiver = AirmarReceiver(
-            broadcaster=broadcaster, ids=ids, pin=pin, port=port)
+            broadcaster=self.broadcaster, ids=ids, pin=pin, port=port)
 
         self.keep_reading = True
         self.read_interval = read_interval()
