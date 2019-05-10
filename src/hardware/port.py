@@ -88,6 +88,7 @@ class SerialPort(Port):
 
     def __init__(self, config, port):
         super().__init__(config)
+        self.encoding = config["encoding"]
         self.port = port
         self.remaining_input = ""
 
@@ -117,7 +118,7 @@ class SerialPort(Port):
         """ Reads in next line from serial port.
 
         Returns:
-        line, None if port not opened.
+        line as a string, None if port not opened.
         """
         while self.is_open():
             line = ""
@@ -125,7 +126,7 @@ class SerialPort(Port):
                 line = self.remaining_input
                 self.remaining_input = ""
             
-            next_bytes = self.read()
+            next_bytes = self.read().decode(self.encoding)
             if next_bytes:
                 line += next_bytes
 
