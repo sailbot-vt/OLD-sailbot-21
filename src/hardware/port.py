@@ -117,6 +117,10 @@ class SerialPort(Port):
     def read_line(self, terminator='\n'):
         """ Reads in next line from serial port.
 
+        Key Arguments:
+        terminator -- line terminator to look for as a string.
+            Default: '\n'
+
         Returns:
         line as string, None if port not opened.
         """
