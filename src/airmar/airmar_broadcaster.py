@@ -13,56 +13,21 @@ class AirmarBroadcaster(ABC):
     Messages are async to prevent them from blocking eachother, since RC input may need a high priority."""
 
     @abstractmethod
-    def read_wind_speed(self, wind_speed=None):
-        """Broadcasts the average wind speed recorded by airmar.
-
-        Keyword arguments:
-        wind_speed -- The wind speed in meters.
-        """
+    def update_data(self, data=None):
+        """ Updates data dictionary with new dictionary. """
         pass
 
     @abstractmethod
-    def read_wind_heading(self, wind_head=None):
-        """Broadcasts the average wind heading recorded by airmar.
-
-        Keyword arguments:
-        wind_head -- The wind heading in degrees.
-        """
-        pass
-
-    @abstractmethod
-    def read_boat_latitude(self, boat_lat=None):
-        """Broadcasts the boat's latitude recorded by airmar.
-
-        Keyword arguments:
-        boat_lat -- The boat's latitude.
-        """
-        pass
-
-    @abstractmethod
-    def read_boat_longitude(self, boat_long=None):
-        """Broadcasts the boat's longitude recorded by airmar.
-
-        Keyword arguments:
-        boat_long -- The boat's longitude.
-        """
-        pass
-
-    @abstractmethod
-    def read_boat_heading(self, boat_head=None):
-        """Broadcasts the boat's heading recorded by airmar.
-
-        Keyword arguments:
-        boat_head -- The boat's heading in degrees.
-        """
-        pass
-
-    @abstractmethod
-    def read_boat_speed(self, boat_speed=None):
-        """Broadcasts the boat's speed recorded by airmar.
-
-        Keyword arguments:
-        boat_speed -- The boat's speed in meters
+    def read_data(self, key=None):
+        """ Reads the data currently stored in data dictionary.
+        
+        Keyword Arguments:
+        key -- The id that matches key in dictionary
+            Default: None
+        
+        Returns:
+        Matching data value of key, or data dictionary if key is not
+        provided or invalid
         """
         pass
 
@@ -71,64 +36,43 @@ class TestableAirmarBroadcaster(AirmarBroadcaster):
     """ A broadcaster built to test methods that need to broadcast."""
 
     def __init__(self):
-        self.wind_speeds = []
-        self.wind_heads = []
-        self.boat_lats = []
-        self.boat_longs = []
-        self.boat_heads = []
-        self.boat_speeds = []
+        self.data = None
 
-    def read_wind_speed(self, wind_speed=None):
-        if wind_speed is not None:
-            self.wind_speeds.append(wind_speed)
+    def update_data(self, data=None):
+        if data is not None:
+            self.data = data
 
-    def read_wind_heading(self, wind_head=None):
-        if wind_head is not None:
-            self.wind_heads.append(wind_head)
-
-    def read_boat_latitude(self, boat_lat=None):
-        if boat_lat is not None:
-            self.boat_lats.append(boat_lat)
-
-    def read_boat_longitude(self, boat_long=None):
-        if boat_long is not None:
-            self.boat_longs.append(boat_long)
-
-    def read_boat_heading(self, boat_head):
-        if boat_head is not None:
-            self.boat_heads.append(boat_head)
-
-    def read_boat_speed(self, boat_speed):
-        if boat_speed is not None:
-            self.boat_speeds.append(boat_speed)
+    def read_data(self, key=None):
+        if self.data is not None:
+            if key is not None and self.data.has_key(key):
+                return self.data[key]
+        # Returns entire data dictionary if no key/invalid key provided
+        return self.data
 
 
 class AirmarMessenger(AirmarBroadcaster):
     """Implements an interface with the pub/sub messaging system to broadcast airmar data."""
 
-    def read_wind_speed(self, wind_speed=None):
-        if wind_speed is not None:
-            pub.sendMessage(topicName="set wind speed", msgData=wind_speed)
+    def update_data(self, data=None):
+        if data is not None:
+            self.data = data
 
-    def read_wind_heading(self, wind_head=None):
-        if wind_head is not None:
-            pub.sendMessage(topicName="set wind heading", msgData=wind_head)
+    def read_data(self, key=None):
+        """ Publishes data to pubsub. 
+        
+        Keyword Arguments:
+        key -- The id that matches key in dictionary
+            Default: None
 
-    def read_boat_latitude(self, boat_lat=None):
-        if boat_lat is not None:
-            pub.sendMessage(topicName="set boat latitude", msgData=boat_lat)
-
-    def read_boat_longitude(self, boat_long=None):
-        if boat_long is not None:
-            pub.sendMessage(topicName="set boat longitude", msgData=boat_long)
-
-    def read_boat_heading(self, boat_head=None):
-        if boat_head is not None:
-            pub.sendMessage(topicName="set boat heading", msgData=boat_head)
-
-    def read_boat_speed(self, boat_speed=None):
-        if boat_speed is not None:
-            pub.sendMessage(topicName="set boat speed", msgData=boat_speed)
+        Returns:
+        None if no key is provided/invalid
+        data from map if successfully published
+        """
+        if key is None or not self.data.has_key(key):
+            return None
+        value = self.data[key]
+        pub.sendMessage(topicName="set {}".format(key), msgData=value)
+        return value
 
 
 def make_broadcaster(broadcaster_type=None):
