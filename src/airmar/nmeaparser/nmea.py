@@ -33,13 +33,7 @@ class nmea():
         body = parsed[0]
         checksum = parsed[1]
         if self.checksum(body) == checksum:
-            fields = body.split(separator)
-            for i in range(len(fields)):
-                if fields[i] == '':
-                    fields[i] = None
-            return fields         
-            # Shame this one liner didnt work: 
-            # return [field.replace('', None) for field in body.split(separator)]
+            return [None if field == '' else field for field in body.split(separator)]
         return None
 
     def toggle(self, sentence_ids=["ALL"], frequency=1, enable=1):
