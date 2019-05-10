@@ -1,3 +1,5 @@
+import itertools
+
 import unittest
 from unittest.mock import MagicMock
 
@@ -31,19 +33,23 @@ class PortTests(unittest.TestCase):
 
     def test_serial_read_line(self):
         """ Tests that serial port reads line correctly. """
-        msg = b"test\r\ntest2\r\ntest3\r\n"
-                # Create port
-        self.port.read = MagicMock(name="serial.Serial.read",
-                                    return_value=msg)
-
+        self.port.read = MagicMock(name="serial.Serial.read")
+        # Simulates a buffer : 1, 2, 3 == one read
+        # 4 == second read, 5 = third read
+        # all other calls to read == null byte
+        self.port.read.side_effect = itertools.chain(
+            # Note, multi-lines and cut off line, last one not terminated
+            [b"test\r\ntest2\r\ntest", b"3\r\ntest4\r\n", b"test5"], 
+            itertools.repeat(b'')
+        )
+        # test1, 2, 3, 4
         self.assertEquals(self.port.read_line(terminator="\r\n"), "test\r\n")
-        self.port.read = MagicMock(name="serial.Serial.read",
-                                    return_value=b"test4\r\n")
         self.assertEquals(self.port.read_line(terminator="\r\n"), "test2\r\n")
-        self.port.read = MagicMock(name="serial.Serial.read",
-                                    return_value=b'')
         self.assertEquals(self.port.read_line(terminator="\r\n"), "test3\r\n")
         self.assertEquals(self.port.read_line(terminator="\r\n"), "test4\r\n")
+        # Unterminated line to buffer
         self.assertEquals(self.port.read_line(terminator="\r\n"), None)
+        self.assertEquals(self.port.remaining_input, bytearray(b'test5'))
+        # serial port not open
         serial.Serial.isOpen.return_value = False
         self.assertEquals(self.port.read_line(terminator="\r\n"), None)

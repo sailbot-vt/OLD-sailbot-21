@@ -140,6 +140,7 @@ class SerialPort(Port):
                 data.extend(terminator)
                 # full line read, so we can decode.
                 return bytes(data).decode(self.encoding)
+            self.remaining_input = line
             checks += 1
         return None
 
