@@ -43,7 +43,7 @@ class TestableBroadcaster(Broadcaster):
             self.data = data
 
     def read_data(self, key=None):
-        if self.data is None or key is None or not key in self.data:
+        if self.data is None or key is None or not key in self.data or self.data[key] is None:
             return None
         return self.data[key]
         
@@ -67,10 +67,10 @@ class Messenger(Broadcaster):
             Default: None
 
         Returns:
-        None if no key is provided/invalid
+        None if no key is provided/invalid, data/data[key] not initialized
         data from map if successfully published
         """
-        if self.data is None or key is None or not key in self.data:
+        if self.data is None or key is None or not key in self.data or self.data[key] is None:
             return None
         value = self.data[key]
         pub.sendMessage(topicName="set {}".format(key), msgData=value)
@@ -92,7 +92,7 @@ class FileWriter(Broadcaster):
     def read_data(self, key=None):
         # Appends to end of file.
         f = open(self.filename, "a")
-        if self.data is None or key is None or not key in self.data:
+        if self.data is None or key is None or not key in self.data or self.data[key] is None:
             return None
         value = self.data[key]
         f.write(self.line_format.format(datetime.now().__str__(), key, value))
