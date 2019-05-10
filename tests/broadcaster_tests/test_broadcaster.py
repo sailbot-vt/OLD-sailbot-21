@@ -50,6 +50,10 @@ class BroadcasterTests(unittest.TestCase):
         self.messenger.update_data(self.data)
         self.filewriter.update_data(self.data)
 
+        self.assertEquals(self.testable.read_data(), None)
+        self.assertEquals(self.messenger.read_data(), None)
+        self.assertEquals(self.filewriter.read_data(), None)
+
         self.assertEquals(self.testable.read_data(key="inval"), None)
         self.assertEquals(self.messenger.read_data(key="inval"), None)
         self.assertEquals(self.filewriter.read_data(key="inval"), None)
