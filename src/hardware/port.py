@@ -163,13 +163,14 @@ def make_port(config, mock_port=None):
     Returns:
     The type of port specified in the config.
     """
-    port_type = PortType[config.get("port_type")]
+    port_type = PortType[config["port_type"]]
     if port_type == PortType.SERIAL:
         if mock_port is None:
             port = serial.Serial(
                 port=config["port_name"],
                 baudrate=config["baudrate"],
-                timeout=config["timeout"])
+                timeout=config["timeout"]
+            )
             return SerialPort(config=config, port=port)
         return SerialPort(config=config, port=mock_port)
     else:

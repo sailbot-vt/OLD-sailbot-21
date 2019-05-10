@@ -52,7 +52,7 @@ sentences:
 # Settings to configure for port communication
 port:
   port_name: "/dev/tty01"
-  port_type: "SERIAL"
+  port_type: "TESTABLE"
   frequency: 1  # seconds
   baudrate: 4800
   timeout: 0
