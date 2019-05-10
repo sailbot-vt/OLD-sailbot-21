@@ -80,6 +80,7 @@ class FileWriter(Broadcaster):
     def __init__(self, filename):
         self.filename = filename
         self.data = None
+        self.line_format = "[{0:20s}]\t\t[Requested: {1} -- Data: {2}]\n"
 
     def update_data(self, data=None):
         if data is not None:
@@ -91,7 +92,7 @@ class FileWriter(Broadcaster):
         if key is None or not self.data.has_key(key):
             return None
         value = self.data[key]
-        f.write("[{0:20s}]\t\t[Requested: {1} -- Data: {2}]\n".format(datetime.now().__str__(), key, value))
+        f.write(self.line_format.format(datetime.now().__str__(), key, value))
         return value
 
 
