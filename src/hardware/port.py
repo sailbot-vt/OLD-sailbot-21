@@ -90,7 +90,7 @@ class SerialPort(Port):
         super().__init__(config)
         self.encoding = config["encoding"]
         self.port = port
-        self.remaining_input = ""
+        self.remaining_input = bytearray()
 
     def open(self):
         if not self.is_open():
@@ -120,23 +120,25 @@ class SerialPort(Port):
         Returns:
         line as a string, None if port not opened.
         """
+        terminator = terminator.encode(self.encoding)
         checks = 0
         # TODO: # checks to config
         while self.is_open() and checks <= 100:
-            line = ""
+            line = bytearray()
             if len(self.remaining_input) > 0:
                 line = self.remaining_input
-                self.remaining_input = ""
+                self.remaining_input = bytearray()
             
-            next_bytes = self.read().decode(self.encoding)
+            next_bytes = bytearray(self.read())
             if len(next_bytes) > 0:
-                line += next_bytes
+                line.extend(next_bytes)
 
             if len(line) > 0 and re.search(terminator, line):
                 data, self.remaining_input = line.split(terminator, 1)
-                line = ""
+                line = bytearray()
                 # appends terminator back
-                return data + terminator
+                data.extend(terminator)
+                return bytes(data)
             checks += 1
         return None
 
