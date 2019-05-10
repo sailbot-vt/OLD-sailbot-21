@@ -10,7 +10,9 @@ from src.hardware.port import make_port
 
 class PortTests(unittest.TestCase):
     """ Tests Port methods. """
+    
     def setUp(self):
+        """ Create testing fields """
         serial.Serial.isOpen = MagicMock(name="serial.Serial.isOpen",
                                     return_value=True)
         self.port = make_port({

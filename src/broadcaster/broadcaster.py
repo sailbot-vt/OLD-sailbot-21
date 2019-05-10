@@ -43,15 +43,17 @@ class TestableBroadcaster(Broadcaster):
             self.data = data
 
     def read_data(self, key=None):
-        if self.data is not None:
-            if key is not None and self.data.has_key(key):
-                return self.data[key]
-        # Returns entire data dictionary if no key/invalid key provided
-        return self.data
+        if self.data is None or key is None or not key in self.data:
+            return None
+        return self.data[key]
+        
 
 
 class Messenger(Broadcaster):
     """Implements an interface with the pub/sub messaging system to broadcast data."""
+
+    def __init__(self):
+        self.data = None
 
     def update_data(self, data=None):
         if data is not None:
@@ -68,7 +70,7 @@ class Messenger(Broadcaster):
         None if no key is provided/invalid
         data from map if successfully published
         """
-        if key is None or not self.data.has_key(key):
+        if self.data is None or key is None or not key in self.data:
             return None
         value = self.data[key]
         pub.sendMessage(topicName="set {}".format(key), msgData=value)
@@ -90,7 +92,7 @@ class FileWriter(Broadcaster):
     def read_data(self, key=None):
         # Appends to end of file.
         f = open(self.filename, "a")
-        if key is None or not self.data.has_key(key):
+        if self.data is None or key is None or not key in self.data:
             return None
         value = self.data[key]
         f.write(self.line_format.format(datetime.now().__str__(), key, value))
