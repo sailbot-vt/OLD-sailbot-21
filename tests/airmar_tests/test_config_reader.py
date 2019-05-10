@@ -1,16 +1,13 @@
+import os
 import unittest
 from unittest.mock import MagicMock
 
-import os
-from tests.mock_bbio import Adafruit_BBIO
-from tests.mock_port import serial
-from src.hardware.pin import make_pin
-from src.hardware.port import make_port
-
-from src.airmar.config_reader import read_ids
 from src.airmar.config_reader import read_interval
 from src.airmar.config_reader import read_pin_config
 from src.airmar.config_reader import read_port_config
+from tests.mock_bbio import Adafruit_BBIO
+from tests.mock_port import serial
+
 
 class ConfigReaderTests(unittest.TestCase):
     """ Tests Airmar Config reader methods """

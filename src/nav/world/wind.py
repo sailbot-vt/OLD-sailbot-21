@@ -1,5 +1,4 @@
 import math
-from src.utils.vec import Vec2
 
 
 def true_wind(apparent_wind, current_velocity):

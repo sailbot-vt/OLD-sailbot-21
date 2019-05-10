@@ -1,12 +1,10 @@
+import os
 import unittest
 
-import os
-from tests.mock_bbio import Adafruit_BBIO
-from src.hardware.pin import make_pin
-
 from src.rudder.config_reader import build_pin_from_config
-from src.rudder.config_reader import read_servo_config
 from src.rudder.config_reader import read_rudder_config
+from src.rudder.config_reader import read_servo_config
+
 
 class RudderConfigReaderTests(unittest.TestCase):
     """Tests methods in Rudder Config Reader"""

@@ -1,6 +1,6 @@
 import src.rc_input.rc_input_thread as rc
-import src.sail.sail_thread as sail
 import src.rudder.rudder_thread as rudder
+import src.sail.sail_thread as sail
 
 
 def main():

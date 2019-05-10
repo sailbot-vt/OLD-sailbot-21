@@ -1,11 +1,9 @@
 import itertools
-
 import unittest
 from unittest.mock import MagicMock
 
-from tests.mock_port import serial
-
 from src.hardware.port import make_port
+from tests.mock_port import serial
 
 
 class PortTests(unittest.TestCase):

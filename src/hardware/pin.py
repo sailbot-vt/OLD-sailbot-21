@@ -1,5 +1,5 @@
+from abc import ABC
 from enum import Enum
-from abc import ABC, abstractmethod
 
 
 class PinType(Enum):

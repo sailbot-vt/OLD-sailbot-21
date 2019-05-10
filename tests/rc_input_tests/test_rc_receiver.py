@@ -40,7 +40,7 @@ class RCReceiverTests(unittest.TestCase):
 
             self.r.send_inputs()
 
-            mock_pub.sendMessage.assert_any_call("set rudder", deg=scaled_output)
+            mock_pub.sendMessage.assert_any_call("set rudder", degrees_starboard=scaled_output)
 
     @patch('src.rc_input.rc_receiver.pub', autospec=True)
     def test_scale_trim(self, mock_pub):
@@ -54,7 +54,7 @@ class RCReceiverTests(unittest.TestCase):
 
             self.r.send_inputs()
 
-            mock_pub.sendMessage.assert_any_call("set trim", deg=scaled_output)
+            mock_pub.sendMessage.assert_any_call("set trim", degrees_in=scaled_output)
 
     @patch('src.rc_input.rc_receiver.pub', autospec=True)
     def test_detect_mode(self, mock_pub):

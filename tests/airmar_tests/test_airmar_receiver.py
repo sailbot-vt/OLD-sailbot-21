@@ -1,16 +1,14 @@
 import unittest
 from unittest.mock import MagicMock
 
+from src.airmar.airmar_receiver import AirmarReceiver
+from src.broadcaster.broadcaster import BroadcasterType
+from src.broadcaster.broadcaster import make_broadcaster
+from src.hardware.pin import make_pin
+from src.hardware.port import make_port
 from tests.mock_bbio import Adafruit_BBIO
 from tests.mock_port import serial
 
-from src.broadcaster.broadcaster import make_broadcaster
-from src.broadcaster.broadcaster import BroadcasterType
-
-from src.hardware.pin import make_pin
-from src.hardware.port import make_port
-
-from src.airmar.airmar_receiver import AirmarReceiver
 
 class AirmarIntegrationTests(unittest.TestCase):
     """ Tests airmar program """

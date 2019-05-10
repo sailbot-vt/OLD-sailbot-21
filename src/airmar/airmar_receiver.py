@@ -1,5 +1,3 @@
-import re
-
 from src.airmar.airmar_processor import AirmarProcessor
 from src.airmar.nmeaparser.nmeaparser import NmeaParser
 

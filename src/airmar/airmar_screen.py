@@ -2,6 +2,7 @@ import os
 from time import sleep
 
 from src.airmar.airmar_input_thread import AirmarInputThread
+
 from src.broadcaster.broadcaster import BroadcasterType
 
 airmar = AirmarInputThread(broadcaster_type=BroadcasterType.Testable)
