@@ -89,18 +89,21 @@ class FileWriter(Broadcaster):
         pass
 
 
-def make_broadcaster(broadcaster_type=None):
+def make_broadcaster(broadcaster_type=None, filename=None):
     """Creates a new broadcaster.
 
     Implements the factory pattern.
 
     Keyword arguments:
     broadcaster_type -- The type of broadaster to create
+    filename -- File name of file to write data to.
+        Default: None if not needed.
 
     Returns:
     The correct broadcaster for the environment.
     """
     if broadcaster_type == BroadcasterType.Messenger:
         return Messenger()
-
+    if broadcaster_type == BroadcasterType.FileWriter:
+        return FileWriter(filename)
     return TestableBroadcaster()
