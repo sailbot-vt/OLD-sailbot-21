@@ -3,12 +3,13 @@ from enum import Enum
 from pubsub import pub
 
 
-class AirmarBroadcasterType(Enum):
+class BroadcasterType(Enum):
     Testable = 0,
-    Messenger = 1
+    Messenger = 1,
+    FileWriter = 2
 
 
-class AirmarBroadcaster(ABC):
+class Broadcaster(ABC):
     """An abstract class to hide the interface required to notify the rest of the system of airmar input events.
     Messages are async to prevent them from blocking eachother, since RC input may need a high priority."""
 
@@ -32,7 +33,7 @@ class AirmarBroadcaster(ABC):
         pass
 
 
-class TestableAirmarBroadcaster(AirmarBroadcaster):
+class TestableBroadcaster(Broadcaster):
     """ A broadcaster built to test methods that need to broadcast."""
 
     def __init__(self):
@@ -50,8 +51,8 @@ class TestableAirmarBroadcaster(AirmarBroadcaster):
         return self.data
 
 
-class AirmarMessenger(AirmarBroadcaster):
-    """Implements an interface with the pub/sub messaging system to broadcast airmar data."""
+class Messenger(Broadcaster):
+    """Implements an interface with the pub/sub messaging system to broadcast data."""
 
     def update_data(self, data=None):
         if data is not None:
@@ -75,8 +76,24 @@ class AirmarMessenger(AirmarBroadcaster):
         return value
 
 
+class FileWriter(Broadcaster):
+    """Implements an interface to write data to file. """
+
+    def __init__(self, filename):
+        self.filename = filename
+        self.data = None
+
+    def update_data(self, data=None):
+        if data is not None:
+            self.data = data
+    
+    def read_data(self, key=None):
+        # TODO finish
+        pass
+
+
 def make_broadcaster(broadcaster_type=None):
-    """Creates a new, implementation-relevant AirmarBroadcaster.
+    """Creates a new broadcaster.
 
     Implements the factory pattern.
 
@@ -84,9 +101,9 @@ def make_broadcaster(broadcaster_type=None):
     broadcaster_type -- The type of broadaster to create
 
     Returns:
-    The correct AirmarBroadcaster for the environment.
+    The correct broadcaster for the environment.
     """
-    if broadcaster_type == AirmarBroadcasterType.Messenger:
-        return AirmarMessenger()
+    if broadcaster_type == BroadcasterType.Messenger:
+        return Messenger()
 
-    return TestableAirmarBroadcaster()
+    return TestableBroadcaster()

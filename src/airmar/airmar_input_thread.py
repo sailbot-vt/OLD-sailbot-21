@@ -3,7 +3,7 @@ from time import sleep
 
 from src.airmar.config_reader import read_pin_config, read_interval, read_port_config, read_ids
 from src.airmar.airmar_receiver import AirmarReceiver
-from src.airmar.airmar_broadcaster import make_broadcaster, AirmarBroadcasterType
+from src.broadcaster.broadcaster import make_broadcaster, BroadcasterType
 
 
 class AirmarInputThread(Thread):
@@ -14,7 +14,7 @@ class AirmarInputThread(Thread):
         super().__init__()
 
         if broadcaster_type is None:
-            broadcaster_type = AirmarBroadcasterType.Messenger
+            broadcaster_type = BroadcasterType.Messenger
         broadcaster = make_broadcaster(broadcaster_type=broadcaster_type)
         
         pin = read_pin_config(mock_bbio=mock_bbio)

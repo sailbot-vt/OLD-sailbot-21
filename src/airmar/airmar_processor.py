@@ -5,10 +5,12 @@ class AirmarProcessor:
     """ Defines an airmar data processor that stores airmar data given a NMEASentence object
 
     Note: Can only process $GPVTG, $GPGGA, and $WIMWD NMEA0183 sentences.
+
+    TODO Update this processor to make it less hardcoded: placing sentence parsers in nmeaparser package
     """
 
     def __init__(self, broadcaster):
-        """Initializes a new airmar data processor.
+        """ Initializes a new airmar data processor.
 
         Returns:
         A new AirmarProcessor
