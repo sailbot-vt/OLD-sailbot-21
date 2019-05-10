@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from pubsub import pub
 
+from pubsub import pub
+from datetime import datetime
 
 class BroadcasterType(Enum):
     Testable = 0,
@@ -85,8 +86,13 @@ class FileWriter(Broadcaster):
             self.data = data
     
     def read_data(self, key=None):
-        # TODO finish
-        pass
+        # Appends to end of file.
+        f = open(self.filename, "a")
+        if key is None or not self.data.has_key(key):
+            return None
+        value = self.data[key]
+        f.write("[{0:20s}]\t\t[Requested: {1} -- Data: {2}]\n".format(datetime.now().__str__(), key, value))
+        return value
 
 
 def make_broadcaster(broadcaster_type=None, filename=None):
