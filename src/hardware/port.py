@@ -1,8 +1,9 @@
-from enum import Enum
 from abc import ABC, abstractmethod
+from enum import Enum
 
-import serial
 import re
+import serial
+
 
 class PortType(Enum):
     TESTABLE = 0,

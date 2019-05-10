@@ -1,8 +1,8 @@
 from threading import Thread
 from time import sleep
 
-from src.airmar.config_reader import read_pin_config, read_interval, read_port_config, read_ids
 from src.airmar.airmar_receiver import AirmarReceiver
+from src.airmar.config_reader import read_pin_config, read_interval, read_port_config, read_ids
 from src.broadcaster.broadcaster import make_broadcaster, BroadcasterType
 
 

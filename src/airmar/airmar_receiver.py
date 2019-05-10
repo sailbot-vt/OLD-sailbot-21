@@ -1,7 +1,7 @@
 import re
 
-from src.airmar.nmeaparser.nmea import nmea
 from src.airmar.airmar_processor import AirmarProcessor
+from src.airmar.nmeaparser.nmea import nmea
 
 
 class AirmarReceiver:

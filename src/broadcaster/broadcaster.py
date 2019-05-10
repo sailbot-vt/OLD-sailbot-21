@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
+from datetime import datetime
 from enum import Enum
 
 from pubsub import pub
-from datetime import datetime
+
 
 class BroadcasterType(Enum):
     Testable = 0,
