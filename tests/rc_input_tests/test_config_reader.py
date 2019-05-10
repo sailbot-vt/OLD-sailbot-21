@@ -1,11 +1,10 @@
+import os
 import unittest
 from unittest.mock import MagicMock
 
-import os
-from tests.mock_bbio import Adafruit_BBIO
-
-from src.rc_input.config_reader import read_pin_config
 from src.rc_input.config_reader import read_interval
+from src.rc_input.config_reader import read_pin_config
+from tests.mock_bbio import Adafruit_BBIO
 
 
 class RCConfigReaderTests(unittest.TestCase):

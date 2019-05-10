@@ -1,3 +1,4 @@
+import re
 from abc import ABC, abstractmethod
 from enum import Enum
 
@@ -32,6 +33,16 @@ class Port(ABC):
         pass
 
     @abstractmethod
+    def read_line(self, terminator='\n'):
+        """ Reads in next line from port. """
+        pass
+
+    @abstractmethod
+    def write(self, msg):
+        """ Writes message to port. """
+        pass
+
+    @abstractmethod
     def close(self):
         """ Closes/stops port. """
         pass
@@ -59,6 +70,12 @@ class TestablePort(Port):
     def is_open(self):
         pass
 
+    def write(self, msg):
+        return msg
+
+    def read_line(self, terminator='\n'):
+        return self.value + terminator
+
     def read(self):
         return self.value
 
@@ -71,11 +88,16 @@ class SerialPort(Port):
 
     def __init__(self, config, port):
         super().__init__(config)
+        self.encoding = config["encoding"]
         self.port = port
+        self.remaining_input = bytearray()
 
     def open(self):
         if not self.is_open():
             self.port.open()
+
+    def write(self, msg):
+        self.port.write(msg)
 
     def is_open(self):
         return self.port.isOpen()
@@ -92,6 +114,41 @@ class SerialPort(Port):
             bytes = 0
         return self.port.read(size=bytes)
 
+    def read_line(self, terminator='\n'):
+        """ Reads in next line from serial port.
+
+        Key Arguments:
+        terminator -- line terminator to look for as a string.
+            Default: '\n'
+
+        Returns:
+        line as string, None if port not opened.
+        """
+        terminator = terminator.encode(self.encoding)
+        checks = 0
+        # TODO: # checks to config
+        while self.is_open() and checks <= 100:
+            line = bytearray()
+            if len(self.remaining_input) > 0:
+                line = self.remaining_input
+                self.remaining_input = bytearray()
+            
+            next_bytes = bytearray(self.read())
+            if len(next_bytes) > 0:
+                line.extend(next_bytes)
+
+            if len(line) > 0 and re.search(terminator, line):
+                data, self.remaining_input = line.split(terminator, 1)
+                line = bytearray()
+                # appends terminator back
+                data.extend(terminator)
+                # full line read, so we can decode.
+                return bytes(data).decode(self.encoding)
+            self.remaining_input = line
+            checks += 1
+        return None
+
+
     def close(self):
         self.port.close()
 
@@ -106,13 +163,14 @@ def make_port(config, mock_port=None):
     Returns:
     The type of port specified in the config.
     """
-    port_type = PortType[config.get("port_type")]
+    port_type = PortType[config["port_type"]]
     if port_type == PortType.SERIAL:
         if mock_port is None:
             port = serial.Serial(
                 port=config["port_name"],
                 baudrate=config["baudrate"],
-                timeout=config["timeout"])
+                timeout=config["timeout"]
+            )
             return SerialPort(config=config, port=port)
         return SerialPort(config=config, port=mock_port)
     else:

@@ -1,73 +1,71 @@
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
 
+from src.airmar.airmar_receiver import AirmarReceiver
+from src.broadcaster.broadcaster import BroadcasterType
+from src.broadcaster.broadcaster import make_broadcaster
+from src.hardware.pin import make_pin
+from src.hardware.port import make_port
 from tests.mock_bbio import Adafruit_BBIO
 from tests.mock_port import serial
 
-from src.airmar.airmar_broadcaster import make_broadcaster
-from src.airmar.airmar_broadcaster import AirmarBroadcasterType
 
-from src.hardware.pin import make_pin
-from src.hardware.port import make_port
-
-from src.airmar.airmar_receiver import AirmarReceiver
-
-
-class AirmarReceiverTest(unittest.TestCase):
-    """ Test cases for Airmar Receiver """
+class AirmarIntegrationTests(unittest.TestCase):
+    """ Tests airmar program """
 
     def setUp(self):
+        """ Initialize testing receiver """
         serial.Serial.open = MagicMock(name='serial.Serial.open')
         serial.Serial.close = MagicMock(name='serial.Serial.close')
         serial.Serial.inWaiting = MagicMock(name='serial.Serial.inWaiting')
         serial.Serial.read = MagicMock(name='serial.Serial.read')
         serial.Serial.isOpen = MagicMock(name='serial.Serial.isOpen')
-        Adafruit_BBIO.UART.setup = MagicMock(name='Adafruit_BBIO.UART.setUp')
+        serial.Serial.write = MagicMock(name='serial.Serial.write')
+        Adafruit_BBIO.UART.setup = MagicMock(name='Adafruit_BBIO.UART.setup')
 
-        port_conf = {
-            "port_name": "/dev/tty0",
-            "port_type": "SERIAL",
-            "baudrate": 4800,
-            "timeout": 0
-        }
-
-        pin_conf = {
+        pin = make_pin(config={
             "pin_name": "P0_0",
             "pin_type": "UART",
             "channel": "UART1"
-        }
+        }, mock_lib=Adafruit_BBIO.UART)
 
-        pin = make_pin(pin_conf, mock_lib=Adafruit_BBIO.UART)
-        port = make_port(port_conf, mock_port=serial.Serial)
+        port = make_port(config={
+            "port_name": "/dev/tty0",
+            "port_type": "SERIAL",
+            "baudrate": "4800",
+            "encoding": "UTF-8",
+            "timeout": 0 
+        }, mock_port=serial.Serial)
+
+        ids = ["VTG", "MWD", "GGA"]
+
         broadcaster = make_broadcaster(
-            broadcaster_type=AirmarBroadcasterType.Testable)
+            broadcaster_type=BroadcasterType.Testable)
 
         self.receiver = AirmarReceiver(
-            broadcaster=broadcaster, pin=pin, port=port)
+            broadcaster=broadcaster,
+            ids=ids, pin=pin, port=port)
 
     def test_start_stop(self):
-        """ Tests start opens port, setup UART, flags is_running true
-        Tests stop closes port, flags is_running false
+        """ 
+        Tests start opens port, setup UART, flags is_running true
+        Tests stop closes port, flags is_running false 
         """
         serial.Serial.isOpen.return_value = False
         self.receiver.start()
-        serial.Serial.open.assert_called_once()
-        Adafruit_BBIO.UART.setup.assert_called_once()
         assert self.receiver.is_running
 
         self.receiver.stop()
-        serial.Serial.close.assert_called_once()
         assert not self.receiver.is_running
 
-    def test_split_messages(self):
-        serial.Serial.isOpen.return_value = True
-        self.receiver.remaining_input = "test0\r\n"
-        serial.Serial.read.return_value = "test1\r\ntest2\r\n"
-
-        string0 = self.receiver._read_msg()
-        string1 = self.receiver._read_msg()
-        string2 = self.receiver._read_msg()
-
-        self.assertEqual(string0, "test0")
-        self.assertEqual(string1, "test1")
-        self.assertEqual(string2, "test2")
+    def test_send_airmar_data(self):
+        """ Tests update airmar data called """
+        self.receiver.processor.update_airmar_data = MagicMock(
+                name='receiver.processor.update_airmar_data')
+        self.receiver.parser.parse = MagicMock(
+            name='receiver.parser.parse', 
+            return_value=None)
+        self.receiver.send_airmar_data()
+        self.receiver.parser.parse.return_value = ["test"] 
+        self.receiver.send_airmar_data()
+        self.receiver.processor.update_airmar_data.assert_called_once

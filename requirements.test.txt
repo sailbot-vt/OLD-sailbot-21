@@ -3,7 +3,7 @@ pyyaml
 numpy
 coverage==4.0.3
 python-coveralls
-pynmea2
+parse
 pyserial
 opencv-python
 scipy

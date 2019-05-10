@@ -1,9 +1,9 @@
 import unittest
 from unittest.mock import patch, MagicMock
 
-from tests.mock_bbio import Adafruit_BBIO
-from src.rc_input.rc_input_thread import RCInputThread
 from src.navigation_mode import NavigationMode
+from src.rc_input.rc_input_thread import RCInputThread
+from tests.mock_bbio import Adafruit_BBIO
 
 
 class RCThreadTests(unittest.TestCase):

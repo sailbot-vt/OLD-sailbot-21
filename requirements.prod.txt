@@ -2,5 +2,6 @@ pypubsub
 pyyaml
 numpy
 pynmea2
+parse
 pyserial
 Adafruit_BBIO
