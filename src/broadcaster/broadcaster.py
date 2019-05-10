@@ -15,7 +15,8 @@ class Broadcaster(ABC):
 
     @abstractmethod
     def update_data(self, data=None):
-        """ Updates data dictionary with new dictionary. """
+        """ Updates data dictionary with new dictionary. Data must be packaged into dictionary such that
+        key represents data type, value represents data. """
         pass
 
     @abstractmethod
@@ -25,10 +26,6 @@ class Broadcaster(ABC):
         Keyword Arguments:
         key -- The id that matches key in dictionary
             Default: None
-        
-        Returns:
-        Matching data value of key, or data dictionary if key is not
-        provided or invalid
         """
         pass
 
