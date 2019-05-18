@@ -1,5 +1,5 @@
 from src.airmar.airmar_processor import AirmarProcessor
-from src.airmar.nmeaparser.nmeaparser import NmeaParser
+from src.airmar.nmeaparser.nmea_parser import NmeaParser
 
 
 class AirmarReceiver:
