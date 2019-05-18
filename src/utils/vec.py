@@ -126,7 +126,7 @@ class Vec(object):
 
     @classmethod
     def random(cls, n):
-        return Vec(np.random.rand((n)))
+        return Vec(np.random.rand(n))
 
     @classmethod
     def square_distance(cls, a, b):
@@ -139,9 +139,6 @@ class Vec2(Vec):
         self._x = float(x)
         self._y = float(y)
         super(Vec2, self).__init__(np.array([x, y], dtype=np.float32))
-
-    def __init__(self, data):
-        super(Vec2, self).__init__(data)
 
     @property
     def x(self):
@@ -163,3 +160,4 @@ class Vec2(Vec):
 
     def angle(self):
         return math.atan(self.y / self.x)
+
