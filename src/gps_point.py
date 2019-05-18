@@ -39,3 +39,8 @@ class GPSPoint:
         The compass bearing corresponding to the ray defined by the Cartesian angle
         """
         return (90 - cartesian_angle) % 360
+
+    @staticmethod
+    def distance(a, b):
+        """Calculates the distance between two GPS points"""
+        return vec.Vec.distance(a.pt, b.pt)

@@ -5,6 +5,9 @@ import numpy
 import scipy
 
 
+# THIS IS BROKEN, DO NOT USE #
+
+
 def predict_velocity(world, t, boat, direction, velocity_config):
     """Predicts the velocity.
 
