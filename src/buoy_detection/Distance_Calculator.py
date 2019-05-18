@@ -119,7 +119,6 @@ class DistanceCalculator():
         :param bearing:  the bearing (angle) to the buoy in radians
         :return:
         """
-        int
         earth_radius = 6371000;
         distance = distance / earth_radius
         # First attempt (might work?)

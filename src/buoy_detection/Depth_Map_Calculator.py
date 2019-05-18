@@ -30,6 +30,7 @@ class Depth_Map():
         self.left = cv2.VideoCapture(camera_numbers[0])
         self.right = cv2.VideoCapture(camera_numbers[1])
         self.DRAW_IMAGE = DRAW_IMAGE
+        
         self.bm = cv2.StereoBM_create()
         self.bm.setMinDisparity(0)
         self.bm.setNumDisparities(160)
@@ -65,7 +66,6 @@ class Depth_Map():
         grey_right = cv2.cvtColor(fixed_right, cv2.COLOR_BGR2GRAY)
         depth = self.bm.compute(grey_left, grey_right)
         depth = depth.astype(np.uint8)
-        blur = cv2.bilateralFilter(depth, 4, 75, 75)
         if self.DRAW_IMAGE:
             cv2.imshow('left', grey_left)
             cv2.imshow('right', grey_right)
