@@ -45,7 +45,7 @@ read interval: 50 / 1000  # seconds
 sentences:
   - "GPVTG"
   - "GPGGA"
-  - "WIMWD"
+  - "WIVWT"
   - "WIVWR"
 
 
