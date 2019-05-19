@@ -34,9 +34,10 @@ class AirmarReceiver:
         # Disable all sentence transmitions first.
         self.port.write(
             "{}".format(self.parser.toggle(enable=0)).encode(self.port.encoding))
-        for sid in self.parser.toggle(self.ids):
+        toggles = self.parser.toggle(self.ids)
+        for toggle in toggles:
             # Enables sentences specified by config
-            self.port.write("{}".format(sid).encode(self.port.encoding))
+            self.port.write("{}".format(toggle).encode(self.port.encoding))
         self.is_running = True
 
     def send_airmar_data(self):
