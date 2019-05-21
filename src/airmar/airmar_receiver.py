@@ -25,7 +25,7 @@ class AirmarReceiver:
         """ Sets up uart pin and open port to start listening. 
         Enables sentences specified by ids field to airmar serial port."""
         self.uart_pin.setup()
-        # Close port before open needed.
+        # Close port before open needed during force quit.
         self.port.close()
         self.port.open()
         # Resumes sentence transmition

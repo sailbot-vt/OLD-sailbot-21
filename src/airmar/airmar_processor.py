@@ -1,99 +1,84 @@
 import math
+from src.airmar.nmeaparser.nmea_sentence import get_sentence_interface
 
 class AirmarProcessor:
-    """ TODO temprorary processor to be refactored into separate data objects
-    to handle more nmea sentences """
     def __init__(self, broadcaster):
         self.broadcaster = broadcaster
         self.data = {
-            "wind speed" : None,
-            "wind heading" : None,
+            "wind speed apparent" : None,
+            "wind angle apparent" : None,
+            "wind speed true": None,
+            "wind angle true": None,
             "boat latitude": None,
             "boat longitude": None,
             "boat heading" : None,
             "boat speed": None
         }
+        self.raw = dict()
 
     def update_airmar_data(self, nmea):
-        # GPVTG, GPGGA, WIMWD, WIVWR
-        # Field numeration taken from airmar manual
         sid = nmea[0]
         if sid is None:
-            # Sentence identifier not given.
             return
-        elif sid is "GPVTG":
-            # <1> Course over ground degrees True, to nearest 0.1 degree
-            # <7> Speed over ground, km/h to the nearest 0.1 km/h
-            if nmea[7] is None or nmea[1] is None:
-                return
-            self._update_boat_speed(float(nmea[7]), float(nmea[1]))
-        elif sid is "GPGGA":
-            # <2> Latitude <4> Longitude: to nearest .0001 minutes
-            if nmea[2] is None or nmea[4] is None:
-                return
-            self._update_boat_gps(float(nmea[2]), float(nmea[4]))
-        elif sid is "WIMWD":
-            # <1> Wind direction, 0.0 to 359.9 degrees True to nearest .1 degree
-            # <7> Wind speed, meters/second, to nearest 0.1 m/s
-            if nmea[7] is None or nmea[1] is None:
-                return
-            self._update_wind(float(nmea[7]), float(nmea[1]))
-        elif sid is "WIVWR":
-            # <1> Measured wind angle relative to vessel, 0 to 180 degrees,
-            #   left/right of vessel heading, to the nearest 0.1 degree
-            # <2> L = left, or R = right
-            # <3> Measured wind speed, knots to the nearest 0.1 knot
-            # <5> Wind speed, meters per second to the nearest 0.1 m/s
-            # <7> Wind speed, km/h to the nearest km/h
-            # TODO Implement this to data dictionary
-            return
-        else:
-            # Sentence not known.
-            return
-        self.broadcaster.update_data(data=self.data)
+        get_sentence_interface(sid).update_data(self.raw, nmea)
 
-        # TODO should I broadcast data from processor?
-        # or control manually
+        # TODO Update list with more interfaces
+        if sid in ["WIVWT", "WIVWR"]:
+            self._update_wind(sid)
+        elif sid in ["GPGGA"]:
+            self._update_boat_gps(sid)
+        elif sid in ["GPVTG"]:
+            self._update_boat_speed(sid)
+
+        self.broadcaster.update_data(data=self.data)
         for key in self.data.keys():
             self.broadcaster.read_data(key=key)
 
-    def _update_wind(self, wind_speed, wind_angle):
-        # This was taken from old code for averages.
-        if self.data["wind heading"] is None:
-            self.data["wind heading"] = wind_angle
-        if self.data["wind speed"] is None:
-            self.data["wind speed"] = wind_speed
+    def _update_wind(self, sid):
+        speed_key = "wind speed apparent"
+        angle_key = "wind angle apparent"
+        if sid is "WIVWT":
+            # Update true wind values instead
+            speed_key = "wind speed true"
+            angle_key = "wind angle true"
+        # Set old values = new values if no old values
+        if self.data[angle_key] is None:
+            self.data[angle_key] = float(self.raw[sid]["wind_angle_degree"]) % 360
+        if self.data[speed_key] is None:
+            self.data[speed_key] = float(self.raw[sid]["wind_speed_mps"])
+
+        self.data[speed_key], self.data[angle_key] = self._scale_avg_polar_coords(
+            old_magnitude=self.data[speed_key],
+            old_angle=self.data[angle_key],
+            new_magnitude=float(self.raw[sid]["wind_speed_mps"]),
+            new_angle=float(self.raw[sid]["wind_angle_degree"]) % 360
+        )
+
+    def _scale_avg_polar_coords(self, old_magnitude, old_angle, new_magnitude, new_angle):
+        # Convert to radians
+        new_angle = math.radian(new_angle)
+        old_angle = math.radian(old_angle)
+
+        # Calculate components
+        old_x = old_magnitude * math.sin(old_angle)
+        old_y = old_magnitude * math.cos(old_angle)
+        new_x = new_magnitude * math.sin(new_angle)
+        new_y = new_magnitude * math.cos(new_angle)
         
-        wind_angle = math.radians(wind_angle)
-        wind_angle_old = math.radians(self.data["wind heading"])
-
-        wind_speed_old = self.data["wind speed"]
-
-        # calculate components
-        old_x = wind_speed_old * math.sin(wind_angle_old)
-        old_y = wind_speed_old * math.cos(wind_angle_old)
-
-        new_x = wind_speed * math.sin(wind_angle)
-        new_y = wind_speed * math.cos(wind_angle)
-
         # Weighted values
-        weight = 0.3  # Supposedly working weight from old code
-        x = old_x * (1 - weight) + new_x * (weight)
-        y = old_y * (1 - weight) + new_y * (weight)
+        weight = 0.3
+        x = old_x * (1 - weight) + new_x * weight
+        y = old_y * (1 - weight) + new_y * weight
 
-        speed = math.sqrt(x*x + y*y)
-        heading = math.degrees(math.atan2(x, y)) % 360
+        return math.sqrt(x*x + y*y), math.degrees(math.atan2(x, y)) % 360
 
-        # Updates dictionary
-        self.data["wind speed"] = speed
-        self.data["wind heading"] = heading
-        
+    def _update_boat_gps(self, sid):
+        if self.raw.has_key(sid):
+            self.data["boat latitude"] = float(self.raw[sid]["latitude"])
+            self.data["boat longitude"] = float(self.raw[sid]["longitude"])
 
-    def _update_boat_gps(self, latitude, longitude):
-        self.data["boat latitude"] = latitude
-        self.data["boat longitude"] = longitude
-
-    def _update_boat_speed(self, speed, head):
-        self.data["boat speed"] = speed
-        self.data["boat heading"] = head % 360
+    def _update_boat_speed(self, sid):
+        if self.raw.has_key(sid):
+            self.data["boat speed"] = float(self.raw[sid]["speed_over_ground_kph"])
+            self.data["boat heading"] = float(self.raw[sid]["course_over_ground_true"]) % 360
     
