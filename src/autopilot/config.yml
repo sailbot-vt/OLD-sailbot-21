@@ -4,3 +4,6 @@
 
 # Rudder gain (dB) [Should be negative since we want to dampen]
 rudder gain: -0.5
+
+# The interval at which to update the helm position (s)
+autohelm interval: 0.25

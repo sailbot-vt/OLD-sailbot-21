@@ -6,7 +6,7 @@ from src.gps_point import GPSPoint
 
 from src.autopilot.route import Route
 from src.autopilot.helmsman import Helmsman
-from src.autopilot.config_reader import read_gain
+from src.autopilot.config_reader import read_gain, read_interval
 
 
 class Autopilot(Thread):
@@ -28,6 +28,7 @@ class Autopilot(Thread):
         self.route = Route()
         self.helmsman = Helmsman(rudder_gain=read_gain())
         self.keep_running = True
+        self.helm_interval = read_interval()
         pub.subscribe(self.add_to_route, "waypoints")
 
     def run(self):
@@ -35,7 +36,7 @@ class Autopilot(Thread):
         while self.keep_running:
             self.update_route()
             self.helmsman.turn_to(self.target_heading, self.boat)
-            sleep(0.5)  # Updates twice per second
+            sleep(self.helm_interval)
 
     def update_route(self):
         """Checks to see if we can remove a waypoint"""
