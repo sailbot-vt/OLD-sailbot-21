@@ -43,10 +43,10 @@ read interval: 50 / 1000  # seconds
 
 # Sentence ID for airmar to read in:
 sentences:
-  - "VTG"
-  - "GGA"
-  - "MWD"
-  - "VWR"
+  - "GPVTG"
+  - "GPGGA"
+  - "WIVWT"
+  - "WIVWR"
 
 
 # Settings to configure for port communication

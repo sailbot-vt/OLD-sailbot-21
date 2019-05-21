@@ -1,5 +1,5 @@
 from src.airmar.airmar_processor import AirmarProcessor
-from src.airmar.nmeaparser.nmeaparser import NmeaParser
+from src.airmar.nmeaparser.nmea_parser import NmeaParser
 
 
 class AirmarReceiver:
@@ -25,20 +25,19 @@ class AirmarReceiver:
         """ Sets up uart pin and open port to start listening. 
         Enables sentences specified by ids field to airmar serial port."""
         self.uart_pin.setup()
-        # Close port before open needed.
+        # Close port before open needed during force quit.
         self.port.close()
         self.port.open()
         # Resumes sentence transmition
-        # TODO encoding variable to field
         self.port.write(
             "{}".format(self.parser.power(resume=1)).encode(self.port.encoding))
         # Disable all sentence transmitions first.
         self.port.write(
             "{}".format(self.parser.toggle(enable=0)).encode(self.port.encoding))
-        for sid in self.ids:
+        toggles = self.parser.toggle(self.ids)
+        for toggle in toggles:
             # Enables sentences specified by config
-            self.port.write(
-                "{}".format(self.parser.toggle(sid)).encode(self.port.encoding))
+            self.port.write("{}".format(toggle).encode(self.port.encoding))
         self.is_running = True
 
     def send_airmar_data(self):
