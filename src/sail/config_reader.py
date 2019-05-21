@@ -1,5 +1,6 @@
-import yaml
 import os
+
+import yaml
 
 from src.hardware.pin import make_pin
 

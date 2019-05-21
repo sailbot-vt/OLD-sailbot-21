@@ -24,8 +24,8 @@ class RCReceiver:
         Keyword arguments:
         inputs – Inputs to be sent. A dictionary with keys 'RUDDER', 'TRIM', and 'MODE'
         """
-        pub.sendMessage("set rudder", deg=self._get_rudder_input())
-        pub.sendMessage("set trim", deg=self._get_trim_input())
+        pub.sendMessage("set rudder", degrees_starboard=self._get_rudder_input())
+        pub.sendMessage("set trim", degrees_in=self._get_trim_input())
         pub.sendMessage("set nav mode", mode=self._get_mode())
 
     def _get_rudder_input(self):
