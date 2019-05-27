@@ -20,6 +20,7 @@ class Boat:
 
     def __init__(self):
         """Builds a new boat"""
+        self.upwind_angle = 0
         self._current_position = GPSPoint(0, 0)
         pub.subscribe(self.read_latitude, "boat latitude")
         pub.subscribe(self.read_longitude, "boat longitude")

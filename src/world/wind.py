@@ -57,3 +57,12 @@ class Wind:
         """Updates the apparent wind speed"""
         self.apparent_wind_speed = speed
         self._apparent_wind = Vec2.build_from(speed, self.apparent_wind_angle)
+
+    def angle_relative_to_wind(self, bearing):
+        """Converts a bearing into a relative wind angle
+
+        Returns:
+        A angle between
+        """
+        angle = self.true_wind_angle - bearing
+        return 360 + angle if angle < -180 else angle
