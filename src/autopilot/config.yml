@@ -1,0 +1,9 @@
+# WARNING: YAML IS WHITESPACE SENSITIVE! PLEASE MATCH INDENTATION STYLE! This
+# means consistently use tabs or spaces, and use the indentation amounts in the
+# language spec available here: https://yaml.org/spec/1.2/spec.html
+
+# Rudder gain (dB) [Should be negative since we want to dampen]
+rudder gain: -0.5
+
+# The interval at which to update the helm position (s)
+autohelm interval: 0.25

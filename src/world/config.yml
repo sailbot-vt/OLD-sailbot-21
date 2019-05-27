@@ -1,0 +1,21 @@
+# WARNING: YAML IS WHITESPACE SENSITIVE! PLEASE MATCH INDENTATION STYLE! This
+# means consistently use either tabs or spaces throughout this document, and use
+# the indentation amounts in the language spec available here:
+#   https://yaml.org/spec/1.2/spec.html
+
+constants:
+  physics:
+    # Acceleration due to gravity (m/s^2)
+    g: 9.80665
+
+  water:
+    # Water density (kg/m^3)
+    rho_w: 1025.9
+
+    # Water kinematic viscosity (m^2/s)
+    ni_w: 0.00000118838
+
+  air:
+    # Air density
+    rho_a: 1.125
+
