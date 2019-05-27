@@ -37,7 +37,10 @@ class AirmarInputThread(Thread):
         while self.keep_reading:
             if not self.receiver.is_running:
                 self.receiver.start()
-            self.receiver.send_airmar_data()
+            try:
+                self.receiver.send_airmar_data()
+            except:
+                continue
             sleep(self.read_interval)
         else:
             self.receiver.stop()
