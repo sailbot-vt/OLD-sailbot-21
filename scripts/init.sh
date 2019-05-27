@@ -10,6 +10,8 @@ alias python=python3
 # Create Python runtime environment, install dependencies
 if [[ $HOSTNAME == beaglebone ]]; then
     # Install production dependencies
+    echo "Building production version"
+    export PYTHONPATH=/usr/local/lib/python3.7/site-packages/
     pip3 install -r requirements.prod.txt
     /bin/bash $DIR/install-packages.sh
 else
@@ -18,10 +20,12 @@ else
 
     if [[ $TRAVIS ]]; then
         # Install test dependencies
+        echo "Building test version"
         . ./p3_7env/bin/activate; \
 	    pip install -r requirements.test.txt
 	else
 	    # Install dev dependencies
+	    echo "Building production version"
 	    . ./p3_7env/bin/activate; \
 	    pip install -r requirements.dev.txt
     fi
@@ -34,5 +38,4 @@ else
     # We don't care
     echo "" > /dev/null
 fi
-
 
