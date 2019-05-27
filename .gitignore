@@ -72,6 +72,8 @@ cmake-build-*/
 # JetBrains IDEs
 .idea/
 
+#camera calibration images
+../src/buoy_detection/camera_capture/
 # CMake
 [C|c][M|m]ake*
 
