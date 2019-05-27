@@ -102,50 +102,13 @@ def testFindBuoyPixels():
             print("No Moments found")
 
 def testDisparityMap():
-    calibration = np.load("/home/wlans4/PycharmProjects/sailbot-19/src/buoy_detection/buoy_detection/stereo_calibration.npz", allow_pickle=False)
-    image_size = tuple(calibration["image_size"])
-    left_xmap = calibration["left_xmap"]
-    left_ymap = calibration["left_ymap"]
-    left_roi = tuple(calibration["left_roi"])
-    right_xmap = calibration["right_xmap"]
-    right_ymap = calibration["right_ymap"]
-    right_roi = tuple(calibration["right_roi"])
-    stereoMatcher = cv2.StereoBM_create()
-    stereoMatcher.setMinDisparity(4)
-    stereoMatcher.setNumDisparities(128)
-    stereoMatcher.setBlockSize(21)
-    stereoMatcher.setROI1(left_roi)
-    stereoMatcher.setROI2(right_roi)
-    stereoMatcher.setSpeckleRange(16)
-    stereoMatcher.setSpeckleWindowSize(45)
-    DEPTH_VISUALIZATION_SCALE = 128
 
-    left = cv2.VideoCapture(0)
-    right = cv2.VideoCapture(1)
+    dc = DistanceCalculator(DRAW_IMAGE= False, camera_numbers=(3,2))
 
     while True:
-        if not left.grab() or not right.grab():
-            print("Frames not grabbed")
-            break
-
-        read, left_frame = left.retrieve()
-        read, right_frame = right.retrieve()
-
-        fixed_left = cv2.remap(left_frame, left_xmap, left_ymap, cv2.INTER_LINEAR)
-        fixed_right = cv2.remap(right_frame, right_xmap, right_ymap, cv2.INTER_LINEAR)
-        cv2.imshow("left", fixed_left)
-        grey_left = cv2.cvtColor(fixed_left, cv2.COLOR_BGR2GRAY)
-        grey_right = cv2.cvtColor(fixed_right, cv2.COLOR_BGR2GRAY)
-        depth = stereoMatcher.compute(grey_left, grey_right)
-        depth = depth.astype(np.uint8)
-
-        cv2.imshow('left', grey_left)
-        cv2.imshow('right', grey_right)
-        cv2.imshow('depth', depth)
-        if cv2.waitKey(33) == 27:
-            break
-
-
+        left, depth_map = dc.depth_map_calculator.calculateDepthMap()
+        cv2.imshow("leftss", left)
+        cv2.imshow("disparity", depth_map)
 
 def getCameraNumbers():
     cams = []
@@ -157,8 +120,4 @@ def getCameraNumbers():
             cams.append(i)
     print(cams)
 
-getCameraNumbers()
-x = DistanceCalculator(DRAW_IMAGE= True, camera_numbers=(0,1))
-while True:
-    x.depth_map_calculator.calculateDepthMap()
-
+testDisparityMap()

@@ -95,7 +95,7 @@ class Depth_Map():
         :return: a remapped frame from the camera
         """
         if not self.right.grab():
-            print("Could not grab left camera image")
+            print("Could not grab right camera image")
             return None
 
         #DON'T REMOVE THIS

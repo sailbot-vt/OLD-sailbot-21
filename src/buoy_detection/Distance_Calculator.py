@@ -42,7 +42,6 @@ class DistanceCalculator():
         mask = mask_open
         mask_close = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel_close)
         mask = mask_close
-
         contours, __ = cv2.findContours(mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         if len(contours) > 0:
             biggest = sorted(contours, key=cv2.contourArea)[-1]
@@ -52,6 +51,7 @@ class DistanceCalculator():
                 cv2.rectangle(left_frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
             moment = cv2.moments(biggest)
             return int(moment['m10'] / moment['m00']), int(moment['m01'] / moment['m00'])
+        raise Exception("No buoy found in image")
         return None
 
     def getDisparityValue(self, disparity_frame, xPixel, yPixel):

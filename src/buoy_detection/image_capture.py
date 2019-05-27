@@ -3,8 +3,8 @@ import glob
 import os
 
 IMAGES_TO_TAKE = 200
-left = cv2.VideoCapture(0)
-right = cv2.VideoCapture(1)
+left = cv2.VideoCapture(2)
+right = cv2.VideoCapture(3)
 DRAW_IMAGE = True
 
 # Create the paths to store images if they do not exist yet
