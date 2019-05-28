@@ -1,6 +1,9 @@
+import math
+
 from pubsub import pub
 
 from src.utils.vec import Vec2
+from src.gps_point import GPSPoint
 
 
 class Wind:
@@ -62,7 +65,16 @@ class Wind:
         """Converts a bearing into a relative wind angle
 
         Returns:
-        A angle between
+        A angle between -179 and 180
         """
         angle = self.true_wind_angle - bearing
-        return 360 + angle if angle < -180 else angle
+        return 360 + angle if angle <= -180 else angle
+
+    def distance_upwind(self, a, b):
+        """Gives the upwind distance from a to b.
+
+        If a is upwind of b, the result if negative."""
+        path_dist = GPSPoint.distance(a, b)
+        path_bearing = b.bearing_from(a)
+        angle_difference = self.angle_relative_to_wind(path_bearing)
+        return path_dist * math.cos(math.radians(angle_difference))
