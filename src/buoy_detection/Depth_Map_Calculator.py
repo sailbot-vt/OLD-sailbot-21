@@ -13,8 +13,8 @@ class Depth_Map():
         try:
             self.calibration = np.load(calibration_directory, allow_pickle=False)
         except:
-            print("\n\nDepth_Map Object could not load calibration data from the following location:")
-            print(path + "\n\n")
+            print("Depth_Map Object could not load calibration data from the following location:")
+            print(path)
         self.camera_numbers = camera_numbers
         self.image_size = tuple(self.calibration["image_size"])
         self.left_xmap = self.calibration["left_xmap"]
@@ -24,7 +24,7 @@ class Depth_Map():
         self.right_ymap = self.calibration["right_ymap"]
         self.right_roi = tuple(self.calibration["right_roi"])
         self.pixel_degrees = 45/sqrt((self.image_size[0]^2 + self.image_size[1]^2))
-        self.FOV_RADS = np.deg2rad(56)
+        self.FOV_RADS = np.deg2rad(FOV)
         self.focal_length = self.calibration["Q_matrix"][0][0]
         self.baseline = baseline
         self.left = cv2.VideoCapture(camera_numbers[0])

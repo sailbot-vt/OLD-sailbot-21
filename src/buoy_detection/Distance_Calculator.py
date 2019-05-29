@@ -6,16 +6,10 @@ import os
 class DistanceCalculator():
     path = os.path.realpath(__file__)[:-len(os.path.basename(__file__))] + "stereo_calibration.npz"
 
-    def __init__(self, calibration_directory = path, camera_numbers = (2,3), DRAW_IMAGE = False):
+    def __init__(self, calibration_directory = path, camera_baseline=.2, camera_numbers=(2,3), DRAW_IMAGE = False):
 
         self.DRAW_IMAGE = DRAW_IMAGE
-        self.RED_ORANGE_LOW = np.array([0, 150, 150])
-        self.RED_ORANGE_HIGH = np.array([15, 255, 255])
-        self.PURPLE_RED_LOW = np.array([160, 100, 100])
-        self.PURPLE_RED_HIGH = np.array([180, 255, 255])
-        self.kernel = np.ones((7, 7), np.uint8)
-        self.depth_map_calculator = Depth_Map(calibration_directory, camera_numbers=camera_numbers, DRAW_IMAGE = DRAW_IMAGE)
-        self.DRAW_IMAGE = DRAW_IMAGE
+        self.depth_map_calculator = Depth_Map(calibration_directory, baseline = camera_baseline, camera_numbers=camera_numbers, DRAW_IMAGE = DRAW_IMAGE)
 
     def findBuoyPixels(self, left_frame):
         """
@@ -32,9 +26,6 @@ class DistanceCalculator():
         frame_copy = left_frame
 
         hsv = cv2.cvtColor(left_frame, cv2.COLOR_BGR2HSV)
-
-        #RED_ORANGE_LOW = np.array([10, 100, 20], np.uint8)
-        #RED_ORANGE_HIGH = np.array([25, 255, 555], np.uint8)
 
         # mask = cv2.inRange(hsv, RED_ORANGE_LOW, RED_ORANGE_HIGH)
         mask = cv2.inRange(hsv, (10, 100, 20), (15, 255, 255))
