@@ -33,3 +33,7 @@ class Route:
         """Adds waypoints (stored in a deque) to the route"""
         while len(waypoints) > 0:
             self.waypoints.append(waypoints.popleft())
+
+    def __len__(self):
+        """Gets the length of the route"""
+        return len(self.waypoints)

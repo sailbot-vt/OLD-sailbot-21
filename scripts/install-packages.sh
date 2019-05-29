@@ -1,6 +1,5 @@
 #!/bin/bash
-# Installs OpenCV and Scipy
+# Installs OpenCV
 
 # Get needed packages
 apt-get install python3-opencv
-apt-get install python3-scipy
