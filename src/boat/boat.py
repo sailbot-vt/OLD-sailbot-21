@@ -35,3 +35,4 @@ class Boat:
     def read_heading(self, heading):
         """Updates the boat's current heading"""
         self._current_heading = heading
+        print("Boat heading: {0}".format(heading))

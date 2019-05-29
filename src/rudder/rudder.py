@@ -47,6 +47,7 @@ class Rudder:
                                              self.full_starboard_angle)
         self.servo.turn_to(self.rudder_angle_to_servo_angle(constrained_rudder_angle))
         self.current_rudder_angle = constrained_rudder_angle
+        print("Setting rudder angle to {0}\n".format(constrained_rudder_angle))
 
     def change_rudder_angle(self, delta_rudder_angle):
         """Method to change the rudder angle by a given delta_rudder_angle.
