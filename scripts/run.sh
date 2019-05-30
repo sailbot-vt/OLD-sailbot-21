@@ -1,8 +1,8 @@
 #!/bin/bash
 
 if [[ $HOSTNAME == beaglebone ]]; then
-	python3.7 main.py
+	python3.5 main.py
 else
-	. ./p3_7env/bin/activate; \
+	. ./p3_5env/bin/activate; \
 	python main.py
 fi

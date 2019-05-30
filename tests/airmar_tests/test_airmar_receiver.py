@@ -68,4 +68,4 @@ class AirmarIntegrationTests(unittest.TestCase):
         self.receiver.send_airmar_data()
         self.receiver.parser.parse.return_value = ["test"] 
         self.receiver.send_airmar_data()
-        self.receiver.processor.update_airmar_data.assert_called_once
+        self.assertEqual(1, self.receiver.processor.update_airmar_data.call_count)
