@@ -1,6 +1,9 @@
+import math
+
 from pubsub import pub
 
 from src.utils.vec import Vec2
+from src.gps_point import GPSPoint
 
 
 class Wind:
@@ -42,11 +45,13 @@ class Wind:
         """Updates the true wind angle"""
         self.true_wind_angle = angle
         self._true_wind = Vec2.build_from(self.true_wind_speed, angle)
+        print("True wind angle: {0}\n".format(angle))
 
     def update_true_wind_speed(self, speed):
         """Updates the true wind speed"""
         self.true_wind_speed = speed
         self._true_wind = Vec2.build_from(speed, self.true_wind_angle)
+        print("True wind speed: {0}\n".format(speed))
 
     def update_apparent_wind_angle(self, angle):
         """Updates the apparent wind angle"""
@@ -57,3 +62,21 @@ class Wind:
         """Updates the apparent wind speed"""
         self.apparent_wind_speed = speed
         self._apparent_wind = Vec2.build_from(speed, self.apparent_wind_angle)
+
+    def angle_relative_to_wind(self, bearing):
+        """Converts a bearing into a relative wind angle
+
+        Returns:
+        A angle between -179 and 180
+        """
+        angle = self.true_wind_angle - bearing
+        return 360 + angle if angle <= -180 else angle
+
+    def distance_upwind(self, a, b):
+        """Gives the upwind distance from a to b.
+
+        If a is upwind of b, the result if negative."""
+        path_dist = GPSPoint.distance(a, b)
+        path_bearing = b.bearing_from(a)
+        angle_difference = self.angle_relative_to_wind(path_bearing)
+        return path_dist * math.cos(math.radians(angle_difference))

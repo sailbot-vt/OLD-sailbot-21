@@ -27,6 +27,7 @@ class RCReceiver:
         pub.sendMessage("set rudder", degrees_starboard=self._get_rudder_input())
         pub.sendMessage("set trim", degrees_in=self._get_trim_input())
         pub.sendMessage("set nav mode", mode=self._get_mode())
+        pub.sendMessage("set waypoint", mode=self._get_set_waypoint())
 
     def _get_rudder_input(self):
         """Scales the rudder values from the raw value to degrees to starboard.
@@ -57,8 +58,7 @@ class RCReceiver:
         degrees_in = sign(unscaled_value) * 20 * (unscaled_value ** 2)  # Between -20 and 20
         return degrees_in
 
-    @staticmethod
-    def _get_mode():
+    def _get_mode(self):
         """Maps an input voltage to a navigation mode.
 
         Keyword arguments:
@@ -67,5 +67,20 @@ class RCReceiver:
         Returns:
         The navigation mode corresponding to the input voltage.
         """
+        state = self.pins["MODE1"].read()
+        if state:
+            return NavigationMode.AUTONOMOUS
         return NavigationMode.MANUAL
+
+    def _get_set_waypoint(self):
+        """Maps an input voltage to a navigation mode.
+
+        Keyword arguments:
+        input_voltage -- The input voltage.
+
+        Returns:
+        The navigation mode corresponding to the input voltage.
+        """
+        return self.pins["MODE2"].read()
+
 
