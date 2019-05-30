@@ -6,10 +6,30 @@ import os
 class DistanceCalculator():
     path = os.path.realpath(__file__)[:-len(os.path.basename(__file__))] + "stereo_calibration.npz"
 
-    def __init__(self, calibration_directory = path, camera_baseline=.2, camera_numbers=(2,3), DRAW_IMAGE = False):
+    def __init__(self, calibration_directory = path, camera_baseline=.4064, camera_numbers=(2,3), DRAW_IMAGE = False):
 
         self.DRAW_IMAGE = DRAW_IMAGE
         self.depth_map_calculator = Depth_Map(calibration_directory, baseline = camera_baseline, camera_numbers=camera_numbers, DRAW_IMAGE = DRAW_IMAGE)
+
+    def isBuoyInImage(self, left_frame):
+        """
+        Returns boolean value of if a large orange contour (buoy) is found in a frame
+        :param left_frame: the frame from the main camera
+        :return: boolean if buoy is found
+        """
+        kernel_close = np.ones((2, 2))
+        kernel_open = np.ones((12, 12))
+
+        hsv = cv2.cvtColor(left_frame, cv2.COLOR_BGR2HSV)
+
+        # mask = cv2.inRange(hsv, RED_ORANGE_LOW, RED_ORANGE_HIGH)
+        mask = cv2.inRange(hsv, (10, 100, 20), (15, 255, 255))
+        mask_open = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel_open)
+        mask = mask_open
+        mask_close = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel_close)
+        mask = mask_close
+        contours, __ = cv2.findContours(mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        return len(contours) > 0
 
     def findBuoyPixels(self, left_frame):
         """
