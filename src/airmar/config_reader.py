@@ -26,7 +26,7 @@ def read_ids(path=None):
     and returns list of ids."""
     if path is None:
         path = os.path.dirname(os.path.abspath(__file__))
-    with open(path + "config.yml", "r") as yml:
+    with open(path + "/config.yml", "r") as yml:
         conf = yaml.load(yml)
         ids = conf["sentences"]
     return ids

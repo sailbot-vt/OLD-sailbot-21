@@ -1,0 +1,6 @@
+# WARNING: YAML IS WHITESPACE SENSITIVE! PLEASE MATCH INDENTATION STYLE! This
+# means consistently use tabs or spaces, and use the indentation amounts in the
+# language spec available here: https://yaml.org/spec/1.2/spec.html
+
+# The interval at which to update the navigation (s)
+nav interval: 5

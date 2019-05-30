@@ -30,6 +30,9 @@ class NmeaParser():
             data fields.
         """
         parsed = parse.parse(self.nmea_format, sentence)
+        if parsed is None:
+            return None
+            
         body = parsed[0]
         checksum = parsed[1]
         if self.checksum(body) == checksum:
