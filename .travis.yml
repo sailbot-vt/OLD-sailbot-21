@@ -1,13 +1,22 @@
 language: python
 python:
-  - "3.7-dev"
+  - "3.5"
 
-install: make init
-script: make test
+services:
+  - docker
 
-after_success:
-  - . ./p3_7env/bin/activate
-  - coveralls
+jobs:
+  include:
+    - stage: "Tests"
+      install: make init
+      script: make test
+      after_success:
+        - . ./p3_5env/bin/activate
+        - coveralls
+    - stage: "Tests in Beaglebone Black Environment"
+      before_install: docker build -t sailbot .
+      script: docker run -d sailbot /bin/sh -c "make test"
+      if: branch = master
 
 notifications:
   slack:

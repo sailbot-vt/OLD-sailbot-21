@@ -1,45 +1,11 @@
 #!/bin/bash
-# Installs OpenCV and Scipy
+# Installs Numpy, OpenCV, and Adafruit_BBIO
 
-# Get needed packages
-apt-get install python-devel cmake gcc gcc-c++ \
-        libdc1394-devel libv4l-devel \
-        ffmpeg-devel gstreamer-plugins-base-devel \
-        eigen3-devel \
-        libblas3 liblapack3 liblapack-dev libblas-dev gfortran
+apt-get install python3-numpy python3-opencv build-essential python3-dev
 
-# Create temporary working directory
-mkdir /tmp/packages-transient
-cd /tmp/packages-transient
-
-# Download OpenCV source
-wget https://github.com/opencv/opencv/archive/4.1.0.tar.gz
-tar xf 4.1.0.tar.gz
-cd opencv-4.1.0
-
-# Build OpenCV
-mkdir build
-cd build
-cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_EIGEN=ON
-make
-make install
-
-# Clean up
-rm -rf /tmp/packages-transient
-
-# Create temporary working directory
-mkdir /tmp/packages-transient
-cd /tmp/packages-transient
-
-# Download SciPy source
-wget https://github.com/scipy/scipy/releases/download/v1.3.0/scipy-1.3.0.tar.xz
-tar xf scipy-1.3.0.tar.xz
-cd scipy-1.3.0
-
-# Build SciPy
-pip3 install .
-
-# Clean up
-rm -rf /tmp/packages-transient
-
-
+wget https://files.pythonhosted.org/packages/53/2b/b0e3dce6113225aae9beb886b2addd4fd5c140ba93c9503d7e4a97021bcc/Adafruit_BBIO-1.1.1.tar.gz
+tar xf Adafruit_BBIO-1.1.1.tar.gz
+cd Adafruit_BBIO-1.1.1
+python3.5 setup.py install
+cd ..
+rm -rf Adafruit_BBIO-1.1.1

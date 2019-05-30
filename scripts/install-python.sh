@@ -1,13 +1,19 @@
 #!/bin/bash
-# Installs Python
+# Installs Python 3.5
 # Works for Debian 9 (Stretch)
 
 
 export PATH=/usr/local/bin:$PATH
 
+if [[ $HOSTNAME == beaglebone ]]; then
+    apt-get install -y python3 \
+                    python3-pip python3-setuptools python3-wheel
+    exit 0
+fi
+
 # If Python already exists, exit
-if hash python3.7 2>/dev/null; then
-    echo "Python 3.7 already installed"
+if hash python3.5 2>/dev/null; then
+    echo "Python 3.5 already installed"
     exit 0
 fi
 
@@ -21,11 +27,11 @@ mkdir /tmp/py-transient
 cd /tmp/py-transient
 
 # Download Python source
-wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tar.xz
-tar xvf Python-3.7.2.tar.xz
-cd Python-3.7.2
+wget https://www.python.org/ftp/python/3.5.7/Python-3.5.7.tar.xz
+tar xf Python-3.5.7.tar.xz
+cd Python-3.5.7
 
-# Build python3.7 executable
+# Build python3.5 executable
 ./configure
 make
 make install

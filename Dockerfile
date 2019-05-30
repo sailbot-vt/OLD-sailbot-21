@@ -1,10 +1,16 @@
-FROM balenalib/beaglebone-black-debian-python:3.7.2-build
+FROM balenalib/beaglebone-black-debian-python
 
 ENV HOSTNAME beaglebone
 
-COPY . /sailbot
+RUN apt-get update && apt-get install make wget
+
+COPY scripts /sailbot/scripts
+COPY Makefile /sailbot/
+COPY requirements.prod.txt /sailbot/
 WORKDIR /sailbot
 
-RUN apt-get update && apt-get install -y make && make init
+RUN make init
 
-ENTRYPOINT make run
+COPY src /sailbot/src
+COPY tests /sailbot/tests
+COPY main.py /sailbot/main.py

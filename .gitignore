@@ -1,5 +1,5 @@
 # Virtual environment (Should be installed separately)
-p3_7env/
+p3_*env/
 
 # Log files
 .log
