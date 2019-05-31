@@ -1,18 +1,15 @@
 from pubsub import pub
 
-from src.hardware.servo import Servo
-from src.sail.config_reader import build_pin_from_config, read_servo_config, \
-    read_mainsheet_config
-from src.sail.mainsheet import Mainsheet
+from src.sail.config_reader import read_pin_config, read_center_stepper_angle
+from src.sail.stepper import StepperTrimmer
 
 
 class SailListener:
     """Thread to maintain sail system state and auto-drive as necessary."""
-    def __init__(self):
+    def __init__(self, boat, world):
         super().__init__()
-        servo = Servo(build_pin_from_config(), read_servo_config())
-        self.mainsheet = Mainsheet(servo, read_mainsheet_config())
-        pub.subscribe(self.received_trim_command, "set trim")
+        self.stepper = StepperTrimmer(read_pin_config(), read_center_stepper_angle(), boat, world)
+        pub.subscribe("set trim", self.received_trim_command)
 
     def received_trim_command(self, degrees_in):
-        self.mainsheet.trim_in_by(degrees_in)
+        self.stepper.trim_in_by(degrees_in)
