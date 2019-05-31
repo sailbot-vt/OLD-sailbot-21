@@ -10,6 +10,10 @@
 #   Serial pins must specify 
 #   port_name: which can be found through
 #       'ls /dev/tty*' or 'ls /dev/serial/by-id'
+#   port_type: Type of port used
+#   frequency: rate that airmar sends data to port in seconds.
+#   encoding: Type of encoding to use to convert byte data.
+#   sentence_id: List of mea0183 sentence types, i.e., $GPGGA -> "GGA"
 #   baudrate: standard - 4800, or 38400 (though most nmea instruments
 #       cannot operate at 38400)
 #   timeout: time rest for port.
@@ -36,18 +40,26 @@
 # How frequently the receiver checks for new inputs
 read interval: 50 / 1000  # seconds
 
-# Settings to configure for port communication
-ports:
-  SERIAL:
-    port_name: "/dev/tty0"
-    port_type: "SERIAL"
-    baudrate: 4800
-    timeout: 0
 
+# Sentence ID for airmar to read in:
+sentences:
+  - "GPVTG"
+  - "GPGGA"
+  - "WIVWT"
+  - "WIVWR"
+
+
+# Settings to configure for port communication
+port:
+  port_name: "/dev/tty01"
+  port_type: "SERIAL"
+  frequency: 1  # seconds
+  baudrate: 4800
+  timeout: 0
+  encoding: "UTF-8"
 
 # The pins connected to channels from the physical receiver
-pins:
-  UART:
-    pin_name: "P9_24"
-    pin_type: "UART"
-    channel: "UART4"
+pin:
+  pin_name: "P9_26" # TXD P9_24
+  pin_type: "UART"
+  channel: "UART1"

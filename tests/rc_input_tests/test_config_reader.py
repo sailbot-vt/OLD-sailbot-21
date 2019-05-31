@@ -1,12 +1,11 @@
+import os
 import unittest
 from unittest.mock import MagicMock
 
-import os
-from tests.mock_bbio import Adafruit_BBIO
-from src.hardware.pin import make_pin
-
-from src.rc_input.config_reader import read_pin_config
 from src.rc_input.config_reader import read_interval
+from src.rc_input.config_reader import read_pin_config
+from tests.mock_bbio import Adafruit_BBIO
+
 
 class RCConfigReaderTests(unittest.TestCase):
     """Tests methods in RC Config Reader"""
@@ -29,7 +28,8 @@ class RCConfigReaderTests(unittest.TestCase):
                 assert pin.io_type == Adafruit_BBIO.GPIO.IN
 
     def test_read_interval(self):
-        assert read_interval(path=self.path) == "50 / 1000"
+        assert read_interval(path=self.path) == 50 / 1000
+
 
 if __name__ == "__main__":
     unittest.main()

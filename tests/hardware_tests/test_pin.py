@@ -1,9 +1,8 @@
 import unittest
 from unittest.mock import MagicMock
 
-from tests.mock_bbio import Adafruit_BBIO
-
 from src.hardware.pin import make_pin, ADCPin
+from tests.mock_bbio import Adafruit_BBIO
 
 
 class PinTests(unittest.TestCase):

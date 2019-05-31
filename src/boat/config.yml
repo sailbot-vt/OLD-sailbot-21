@@ -1,0 +1,190 @@
+# WARNING: YAML IS WHITESPACE SENSITIVE! PLEASE MATCH INDENTATION STYLE! This
+# means consistently use either tabs or spaces throughout this document, and use
+# the indentation amounts in the language spec available here:
+#   https://yaml.org/spec/1.2/spec.html
+
+# Optimal upwind sailing angle (degrees off true wind)
+upwind angle: 35
+
+velocity prediction assumptions:
+  # Minimum boat velocity (m/s)
+  min_v: 0
+
+  # Maximum boat velocity (m/s)
+  max_v: 10
+
+  # Minimum heel angle (deg)
+  min_phi: 0
+
+  # Maximum heel angle (deg)
+  max_phi: 80
+
+  # Minimum crew arm (m)
+  min_b: 0
+
+  # Maximum crew arm (m)
+  max_b: 0
+
+  # Minimum flattening factor
+  min_f: 0
+
+  # Maximum flattening factor
+  max_f: 0
+
+
+hull constants:
+  # Displacement volume canoe body (m^3)
+  divcan: 0
+
+  # Length at waterline (m)
+  lwl: 0
+
+  # Beam at waterline (m)
+  bwl: 0
+
+  # Maximum beam (m)
+  b: 0
+
+  # Average freeboard (m)
+  avgfreb: 0
+
+  # Long ctr buoyancy (m)
+  xfb: 0
+
+  # Long ctf flotation (m)
+  xff: 0
+
+  # Long prismatic coefficient
+  cpl: 0
+
+  # Hull form factor (correction to viscous resistance)
+  hullff: 0
+
+  # Area of water plane (m^2)
+  aw: 0
+
+  # Wet surface area of canoe body (m^2)
+  sc: 0
+
+  # Midship section coefficient
+  cms: 0
+
+  # Draft of hull (m)
+  t: 0
+
+  # Draft of canoe body (m)
+  tcan: 0
+
+  # Total lateral area (m^2)
+  alt: 0
+
+  # Center of gravity above keel (m)
+  kg: 0
+
+  # Transverse metacenter above keel (m)
+  km: 0
+
+
+keel constants:
+  # Displacement volume of keel (m^3)
+  dvk: 0
+
+  # Keel planform area (m^2)
+  apk: 0
+
+  # Area of skeg (m^2)
+  ask: 0
+
+  # Wet surface area of keel (m^2)
+  sk: 0
+
+  # Keel vertical center of buoyancy (m)
+  zcbk: 0
+
+  # Mean chord length of keel (m)
+  chmek: 0
+
+  # Root chord length of keel (m)
+  chrtk: 0
+
+  # Tip chord length of keel (m)
+  chtpk: 0
+
+  # Keel form factor
+  keelff: 0
+
+  # Thickness ratio of keel
+  delttk: 0
+
+  # Draft at aft perp of keel (m)
+  tak: 0
+
+
+rudder constants:
+  # Displacement volume of rudder (m^3)
+  dvr: 0
+
+  # Rudder planform area (m^2)
+  apr: 0
+
+  # Wet surface area of rudder (m^2)
+  sr: 0
+
+  # Mean chord length of rudder (m)
+  chmer: 0
+
+  # Root chord length of rudder (m)
+  chrtr: 0
+
+  # Tip chord length of rudder (m)
+  chtpr: 0
+
+  # Thickness ratio of rudder
+  delttr: 0
+
+  # Rudder form factor
+  ruddff: 0
+
+
+mainsail constants:
+  # Mainsail height (m)
+  p: 0
+
+  # Mainsail base (m)
+  e: 0
+
+  # Correction for mainsail roach
+  mroach: 0
+
+  # Number of full main battens
+  mflb: 0
+
+  # Height of boom above sheer (m)
+  bad: 0
+
+
+foresail constants:
+  # Foretriangle height (m)
+  i: 0
+
+  # Foretriangle base (m)
+  j: 0
+
+  # Length perpendicular of jib (m)
+  lpg: 0
+
+  # Spinnaker leech length (m)
+  sl: 0
+
+
+rigging constants:
+  # Mast height above sheer (m)
+  ehm: 0
+
+  # Average mast diameter (m)
+  emdc: 0
+
+
+other constants:
+  # Mass of moveable crew (kg)
+  mmvblcrw: 0

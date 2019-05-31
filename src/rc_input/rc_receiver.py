@@ -24,8 +24,9 @@ class RCReceiver:
         Keyword arguments:
         inputs – Inputs to be sent. A dictionary with keys 'RUDDER', 'TRIM', and 'MODE'
         """
-        pub.sendMessage("set rudder", deg=self._get_rudder_input())
-        pub.sendMessage("set trim", deg=self._get_trim_input())
+        if self._get_mode() == NavigationMode.MANUAL:
+            pub.sendMessage("set rudder", degrees_starboard=self._get_rudder_input())
+            pub.sendMessage("set trim", degrees_in=self._get_trim_input())
         pub.sendMessage("set nav mode", mode=self._get_mode())
 
     def _get_rudder_input(self):
@@ -57,8 +58,7 @@ class RCReceiver:
         degrees_in = sign(unscaled_value) * 20 * (unscaled_value ** 2)  # Between -20 and 20
         return degrees_in
 
-    @staticmethod
-    def _get_mode():
+    def _get_mode(self):
         """Maps an input voltage to a navigation mode.
 
         Keyword arguments:
@@ -67,5 +67,13 @@ class RCReceiver:
         Returns:
         The navigation mode corresponding to the input voltage.
         """
+        state = self.pins["MODE1"].read()
+        if state:
+            return NavigationMode.AUTONOMOUS
         return NavigationMode.MANUAL
+
+    def _get_set_waypoint(self):
+        """Not mapped."""
+        return self.pins["MODE2"].read()
+
 

@@ -1,9 +1,10 @@
-import unittest
 import os
+import unittest
 
 from src.sail.config_reader import build_pin_from_config
-from src.sail.config_reader import read_servo_config
 from src.sail.config_reader import read_mainsheet_config
+from src.sail.config_reader import read_servo_config
+
 
 class SailConfigReaderTest(unittest.TestCase):
     """Tests methods in Sail Config Reader"""

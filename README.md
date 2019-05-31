@@ -3,7 +3,7 @@
 [![Build status](https://travis-ci.com/vt-sailbot/sailbot-19.svg?branch=master)](https://travis-ci.com/vt-sailbot/sailbot-19)
 [![Coverage Status](https://coveralls.io/repos/github/vt-sailbot/sailbot-19/badge.svg?branch=master)](https://coveralls.io/github/vt-sailbot/sailbot-19?branch=master)
 [![License information](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://github.com/vt-sailbot/sailbot-19/blob/master/LICENSE)
-[![Python version](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/)
+[![Python version](https://img.shields.io/badge/python-3.5-blue.svg)](https://www.python.org/)
 
 > The VT SailBOT team repository for the 2018-2019 school year.
 
@@ -13,7 +13,7 @@ The software design document detailing the system architecture can be found [her
 
 ### Installation Instructions
 
-1. Ensure that you have [Git](https://git-scm.com/downloads) and a version of [Python 3.7](https://www.python.org/downloads/) installed on your computer by running `git --version` and `python3.7 --version`. If either command does not give you a version number, you do not have the respective software.
+1. Ensure that you have [Git](https://git-scm.com/downloads) and a version of [Python 3.5](https://www.python.org/downloads/) installed on your computer by running `git --version` and `python3.5 --version`. If either command does not give you a version number, you do not have the respective software.
 
 2. Move to the directory where you would like to store your local copy of the code, and clone the repository by running `git clone git@github.com:vt-sailbot/sailbot-19.git`.
 
@@ -27,4 +27,4 @@ To run tests locally before pushing, run `make test` on macOS or Linux, or run e
 
 Test coverage should be as complete as is practical – for most classes, it should be 90% to 100%. Recall that robustness is our first design requirement.
 
-To view test coverage, run `coverage report` in the context of the `p3_7env` virtual environment.
+To view test coverage, run `coverage report` in the context of the `p3_5env` virtual environment.

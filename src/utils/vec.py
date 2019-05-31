@@ -1,12 +1,20 @@
 import math
+
 import numpy as np
 
 
-class Vec(object):
+class Vec:
+    """An abstraction of a numpy array to a vector"""
     def __init__(self, data):
+        """Builds a new vector from the given data
+
+        Keyword arguments:
+        data -- A numpy array of data
+        """
         self.data = data
 
     def __add__(self, other):
+        """Defines the add operation on two vectors."""
         if isinstance(other, Vec):
             return Vec(self.data + other.data)
         return Vec(self.data + other)
@@ -15,6 +23,7 @@ class Vec(object):
         return Vec(other + self.data)
 
     def __sub__(self, other):
+        """Defines subtraction on two vectors"""
         if isinstance(other, Vec):
             return Vec(self.data - other.data)
         return Vec(self.data - other)
@@ -23,6 +32,7 @@ class Vec(object):
         return Vec(other - self.data)
 
     def __mul__(self, other):
+        """Defines multiplication on two vectors"""
         if isinstance(other, Vec):
             return Vec(self.data * other.data)
         return Vec(self.data * other)
@@ -31,6 +41,7 @@ class Vec(object):
         return Vec(other * self.data)
 
     def __div__(self, other):
+        """Defines division on two vectors"""
         if isinstance(other, Vec):
             return Vec(self.data / other.data)
         return Vec(self.data / other)
@@ -39,33 +50,42 @@ class Vec(object):
         return Vec(other / self.data)
 
     def __neg__(self):
+        """Defines multiplicative inverse on a vector"""
         return Vec(-self.data)
 
     def __pos__(self):
         return Vec(+self.data)
 
     def __eq__(self, other):
+        """Defines equality on two vectors"""
         return np.array_equal(self.data, other.data)
 
     def __ne__(self, other):
+        """Defines inequality on two vectors"""
         return not self.__eq__(other)
 
     def __lt__(self, other):
+        """Defines ordering on two vectors"""
         return self.square_length() < other.square_length()
 
     def __le__(self, other):
+        """Defines ordering on two vectors"""
         return self.square_length() <= other.square_length()
 
     def __gt__(self, other):
+        """Defines ordering on two vectors"""
         return self.square_length() > other.square_length()
 
     def __ge__(self, other):
+        """Defines ordering on two vectors"""
         return self.square_length() >= other.square_length()
 
     def __repr__(self):
+        """Provides a string representation of a vector"""
         return self.__str__()
 
     def __str__(self):
+        """Provides a string representation of a vector"""
         return np.array_str(self.data)
 
     def ceil(self):
@@ -78,7 +98,7 @@ class Vec(object):
         return self.data
 
     def inverse(self):
-        return Vec(1.0/self.data)
+        return Vec(1.0 / self.data)
 
     def length(self):
         return float(np.linalg.norm(self.data))
@@ -87,7 +107,7 @@ class Vec(object):
         length = self.length()
         if length == 0.0:
             return Vec(np.zeros(self.data.shape()))
-        return Vec(self.data/length)
+        return Vec(self.data / length)
 
     def round(self, decimal=0):
         return Vec(np.round(self.data, decimal))
@@ -101,7 +121,7 @@ class Vec(object):
         return c.length()
 
     @classmethod
-    def dot(self, a, b):
+    def dot(cls, a, b):
         return Vec(np.dot(a.data, b.data))
 
     @classmethod
@@ -122,11 +142,11 @@ class Vec(object):
 
     @classmethod
     def mix(cls, a, b, t):
-        return a*(1-t) + b*t
+        return a * (1 - t) + b * t
 
     @classmethod
     def random(cls, n):
-        return Vec(np.random.rand((n)))
+        return Vec(np.random.rand(n))
 
     @classmethod
     def square_distance(cls, a, b):
@@ -135,13 +155,12 @@ class Vec(object):
 
 
 class Vec2(Vec):
+    """A vector in 2-dimensional Euclidean space (or subspace thereof)"""
+
     def __init__(self, x, y):
         self._x = float(x)
         self._y = float(y)
         super(Vec2, self).__init__(np.array([x, y], dtype=np.float32))
-
-    def __init__(self, data):
-        super(Vec2, self).__init__(data)
 
     @property
     def x(self):
@@ -162,4 +181,18 @@ class Vec2(Vec):
         self.data[1] = self._y
 
     def angle(self):
+        """Gets the Cartesian angle of this vector in radians"""
         return math.atan(self.y / self.x)
+
+    @staticmethod
+    def build_from(magnitude, angle):
+        """Builds a new Vec2 from a magnitude and angle
+
+        Keyword arguments:
+        magnitude -- The real magnitude of the new vector
+        angle -- The Cartesian angle of the new vector in radians
+
+        Returns:
+        A new Vec2 with the given angle and magnitude
+        """
+        return Vec2(magnitude * math.cos(angle), magnitude * math.sin(angle))

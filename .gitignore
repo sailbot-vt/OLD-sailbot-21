@@ -1,5 +1,5 @@
 # Virtual environment (Should be installed separately)
-p3_7env/
+p3_*env/
 
 # Log files
 .log
@@ -72,8 +72,12 @@ cmake-build-*/
 # JetBrains IDEs
 .idea/
 
+#camera calibration images
+../src/buoy_detection/camera_capture/
 # CMake
 [C|c][M|m]ake*
 
 # VSCode
 .vscode/
+
+.DS_Store
