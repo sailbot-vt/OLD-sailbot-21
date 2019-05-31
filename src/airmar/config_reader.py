@@ -12,7 +12,7 @@ def read_pin_config(mock_bbio=None, path=None):
     if path is None:
         path = os.path.dirname(os.path.abspath(__file__))
     with open(path + "/config.yml", "r") as yml:
-        conf = yaml.load(yml)
+        conf = yaml.full_load(yml)
         if mock_bbio is None:
             pin = make_pin(conf["pin"])
         else:
@@ -27,7 +27,7 @@ def read_ids(path=None):
     if path is None:
         path = os.path.dirname(os.path.abspath(__file__))
     with open(path + "/config.yml", "r") as yml:
-        conf = yaml.load(yml)
+        conf = yaml.full_load(yml)
         ids = conf["sentences"]
     return ids
 
@@ -37,7 +37,7 @@ def read_interval(path=None):
     if path is None:
         path = os.path.dirname(os.path.abspath(__file__))
     with open(path + "/config.yml", "r") as yml:
-        conf = yaml.load(yml)
+        conf = yaml.full_load(yml)
         interval = conf["read interval"]
 
     return eval(interval)
@@ -49,7 +49,7 @@ def read_port_config(mock_port=None, path=None):
     if path is None:
         path = os.path.dirname(os.path.abspath(__file__))
     with open(path + "/config.yml", "r") as yml:
-        conf = yaml.load(yml)
+        conf = yaml.full_load(yml)
         if mock_port is None:
             port = make_port(config=conf["port"])
         else:
