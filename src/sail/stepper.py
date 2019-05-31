@@ -1,41 +1,48 @@
-import Adafruit_BBIO.GPIO as GPIO
 import time
 import math
-
-
-def initialize_pins(pins):
-    for pin in pins:
-        GPIO.setup(pin, GPIO.OUT)
+from numpy import sign
 
 
 def set_all_pins_low(pins):
     for pin in pins:
-        GPIO.output(pin, GPIO.LOW)
+        pin.set_state(False)
 
 
 def wavedrive(pins, pin_index):
     for i in range(len(pins)):
         if i == pin_index:
-            GPIO.output(pins[i], GPIO.HIGH)
+            pins[i].set_state(True)
         else:
-            GPIO.output(pins[i], GPIO.LOW)
+            pins[i].set_state(False)
 
 
 def fullstep(pins, pin_index):
     """pin_index is the lead pin"""
-    GPIO.output(pins[pin_index], GPIO.HIGH)
-    GPIO.output(pins[(pin_index + 3) % 4], GPIO.HIGH)
-    GPIO.output(pins[(pin_index + 1) % 4], GPIO.LOW)
-    GPIO.output(pins[(pin_index + 2) % 4], GPIO.LOW)
+    pins[pin_index].set_state(True)
+    pins[(pin_index + 3) % 4].set_state(True)
+    pins[(pin_index + 1) % 4].set_state(False)
+    pins[(pin_index + 2) % 4].set_state(False)
 
 
-class Stepper(object):
-    def __init__(self, steps_per_rev=2048.0,
-                 pins=["P8_13", "P8_14", "P8_15", "P8_16"]):
+class StepperTrimmer:
+    def __init__(self, pins, center_angle, boat, world):
+        self.wind = world.wind
+        self.boat = boat
+        self.stepper = Stepper(pins)
+        self.stepper.rotate(center_angle)
+        self.stepper.zero_angle()
+        self.centerline_angle = center_angle
 
+    def trim_in_by(self, degrees_in):
+        # 1 if on port tack, -1 if on starboard tack
+        current_tack = sign(self.wind.angle_relative_to_wind(self.boat.current_heading))
+        self.stepper.rotate(-current_tack * degrees_in)
+
+
+class Stepper:
+    def __init__(self, pins, steps_per_rev=2048.0):
         self.pins = pins
 
-        initialize_pins(self.pins)
         set_all_pins_low(self.pins)
 
         self.angle = 0
@@ -63,7 +70,7 @@ class Stepper(object):
                 self.drivemode(self.pins, pin_index)
                 time.sleep(wait_time)
                 step += 1
-                self.angle = (self.angle + self.direction / self.steps_per_rev \
+                self.angle = (self.angle + self.direction / self.steps_per_rev
                               * 360.0) % 360.0
 
         if degrees < 0:
@@ -73,12 +80,3 @@ class Stepper(object):
 
     def zero_angle(self):
         self.angle = 0
-
-
-def main():
-    stepper = Stepper()
-    stepper.rotate()
-
-
-if __name__ == "__main__":
-    main()

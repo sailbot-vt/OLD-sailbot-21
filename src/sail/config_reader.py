@@ -35,3 +35,42 @@ def read_mainsheet_config(path=None):
         rudder_config = conf["mainsheet"]
 
     return rudder_config
+
+
+def read_pin_config(mock_bbio=None, path=None):
+    """Reads the pin configuration from config.yml and returns a matching dictionary"""
+    if path is None:
+        path = os.path.dirname(os.path.abspath(__file__))
+    with open(path + "/config.yml", "r") as yml:
+        conf = yaml.load(yml)
+        if mock_bbio is None:
+            pins = [
+                make_pin(conf["pins"]["STEPPER_1"]),
+                make_pin(conf["pins"]["STEPPER_2"]),
+                make_pin(conf["pins"]["STEPPER_3"]),
+                make_pin(conf["pins"]["STEPPER_4"])
+            ]
+        else:
+            pins = [
+                make_pin(conf["pins"]["STEPPER_1"],
+                         mock_lib=mock_bbio.GPIO),
+                make_pin(conf["pins"]["STEPPER_2"],
+                         mock_lib=mock_bbio.GPIO),
+                make_pin(conf["pins"]["STEPPER_3"],
+                         mock_lib=mock_bbio.GPIO),
+                make_pin(conf["pins"]["STEPPER_4"],
+                         mock_lib=mock_bbio.GPIO)
+            ]
+
+    return pins
+
+
+def read_center_stepper_angle(path=None):
+    """Reads the read interval from config.yml."""
+    if path is None:
+        path = os.path.dirname(os.path.abspath(__file__))
+    with open(path + "/config.yml", "r") as yml:
+        conf = yaml.load(yml)
+        interval = conf["center stepper angle"]
+
+    return interval
