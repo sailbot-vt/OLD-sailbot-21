@@ -9,3 +9,4 @@ class World:
         Defaults to large biomes world type. You may spawn in the middle of an ocean. Wave if you see Herobrine.
         """
         self.wind = Wind()
+        print("World ready")

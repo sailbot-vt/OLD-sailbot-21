@@ -6,23 +6,27 @@ from pubsub import pub
 from src.navigation_mode import NavigationMode
 from src.nav.tack_points import place_tacks
 from src.nav.config_reader import read_interval
-from src.nav.course import Course
+from src.nav.course import Course, Path
 from src.autopilot.autopilot import Autopilot
 
 
 class Captain(Thread):
     """Thread to manage autonomous navigation"""
 
-    def __init__(self, boat, world):
+    def __init__(self, boat, world, buoy_detection=False):
         """Builds a new captain thread."""
         super().__init__()
         self.boat = boat
         self.world = world
-        self.is_active = False
+        self.is_active = True
         self.nav_interval = read_interval()
         self.autopilot = Autopilot(boat, world)
-        self.course = Course()
-        pub.subscribe()
+        self.course = None
+        if buoy_detection:
+            self.course = Path()
+        else:
+            self.course = Course()
+        pub.subscribe(self.switch_mode, "set mode")
 
     def run(self):
         """Runs the captain thread"""

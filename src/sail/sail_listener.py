@@ -1,5 +1,3 @@
-from threading import Thread
-
 from pubsub import pub
 
 from src.hardware.servo import Servo
@@ -8,7 +6,7 @@ from src.sail.config_reader import build_pin_from_config, read_servo_config, \
 from src.sail.mainsheet import Mainsheet
 
 
-class SailThread(Thread):
+class SailListener:
     """Thread to maintain sail system state and auto-drive as necessary."""
     def __init__(self):
         super().__init__()

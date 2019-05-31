@@ -45,13 +45,11 @@ class Wind:
         """Updates the true wind angle"""
         self.true_wind_angle = angle
         self._true_wind = Vec2.build_from(self.true_wind_speed, angle)
-        print("True wind angle: {0}\n".format(angle))
 
     def update_true_wind_speed(self, speed):
         """Updates the true wind speed"""
         self.true_wind_speed = speed
         self._true_wind = Vec2.build_from(speed, self.true_wind_angle)
-        print("True wind speed: {0}\n".format(speed))
 
     def update_apparent_wind_angle(self, angle):
         """Updates the apparent wind angle"""
