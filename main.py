@@ -1,7 +1,7 @@
 import src.airmar.airmar_input_thread as airmar
 import src.rc_input.rc_input_thread as rc
-import src.rudder.rudder as rudder
-import src.sail.sail as sail
+import src.rudder.rudder_listener as rudder
+import src.sail.sail_listener as sail
 import src.nav.captain as captain
 
 from src.boat.boat import Boat
@@ -18,8 +18,8 @@ def main():
     # Threads
     airmar_thread = airmar.AirmarInputThread()
     rc_thread = rc.RCInputThread()
-    sail = sail.Sail()
-    rudder = rudder.Rudder()
+    sail = sail.SailListener()
+    rudder = rudder.RudderListener()
     captain_thread = captain.Captain(boat, world)
 
     airmar_thread.start()
