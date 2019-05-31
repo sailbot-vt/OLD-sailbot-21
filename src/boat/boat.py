@@ -1,6 +1,7 @@
 from pubsub import pub
 
 from src.gps_point import GPSPoint
+from src.boat.config_reader import upwind_angle
 
 
 class Boat:
@@ -17,12 +18,13 @@ class Boat:
 
     def __init__(self):
         """Builds a new boat"""
-        self.upwind_angle = 0
+        self.upwind_angle = upwind_angle()
         self._current_heading = 0
         self._current_position = GPSPoint(0, 0)
         pub.subscribe(self.read_latitude, "boat latitude")
         pub.subscribe(self.read_longitude, "boat longitude")
         pub.subscribe(self.read_heading, "boat heading")
+        print("Boat ready\nupwind_angle={0}".format(self.upwind_angle))
 
     def read_latitude(self, latitude):
         """Updates the boat's latitude"""
@@ -35,4 +37,3 @@ class Boat:
     def read_heading(self, heading):
         """Updates the boat's current heading"""
         self._current_heading = heading
-        print("Boat heading: {0}".format(heading))

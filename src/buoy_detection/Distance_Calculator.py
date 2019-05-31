@@ -130,7 +130,7 @@ class DistanceCalculator():
         :param bearing:  the bearing (angle) to the buoy in radians
         :return:
         """
-        earth_radius = 6371000;
+        earth_radius = 6371000
         distance = distance / earth_radius
         # First attempt (might work?)
         # buoy_lat = asin(sin(boat_lat) * cos(distance) + cos(boat_lat) * sin(distance) * cos(bearing))
@@ -140,9 +140,9 @@ class DistanceCalculator():
 
 
         # Here is another version if the previous isn't working well
-        lat2 = asin(sin(boat_lat) * cos(distance) + cos(boat_lat) * sin(distance) * cos(bearing));
-        a = atan2(sin(bearing) * sin(distance) * cos(boat_lat), cos(distance) - sin(boat_lat) * sin(lat2));
-        lon2 = boat_lon + a;
-        lon2 = (lon2 + 3 * pi) % (2 * pi) - pi;
+        lat2 = asin(sin(boat_lat) * cos(distance) + cos(boat_lat) * sin(distance) * cos(bearing))
+        a = atan2(sin(bearing) * sin(distance) * cos(boat_lat), cos(distance) - sin(boat_lat) * sin(lat2))
+        lon2 = boat_lon + a
+        lon2 = (lon2 + 3 * pi) % (2 * pi) - pi
 
         return np.rad2deg(lat2), np.rad2deg(lon2)

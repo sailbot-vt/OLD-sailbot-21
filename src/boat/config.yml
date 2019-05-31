@@ -3,6 +3,8 @@
 # the indentation amounts in the language spec available here:
 #   https://yaml.org/spec/1.2/spec.html
 
+# Optimal upwind sailing angle (degrees off true wind)
+upwind angle: 35
 
 velocity prediction assumptions:
   # Minimum boat velocity (m/s)

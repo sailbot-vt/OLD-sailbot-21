@@ -1,7 +1,7 @@
 import src.airmar.airmar_input_thread as airmar
 import src.rc_input.rc_input_thread as rc
-import src.rudder.rudder_thread as rudder
-import src.sail.sail_thread as sail
+import src.rudder.rudder as rudder
+import src.sail.sail as sail
 import src.nav.captain as captain
 
 from src.boat.boat import Boat
@@ -18,20 +18,25 @@ def main():
     # Threads
     airmar_thread = airmar.AirmarInputThread()
     rc_thread = rc.RCInputThread()
-    sail_thread = sail.SailThread()
-    rudder_thread = rudder.RudderThread()
+    sail = sail.Sail()
+    rudder = rudder.Rudder()
     captain_thread = captain.Captain(boat, world)
 
     airmar_thread.start()
-    rudder_thread.start()
-    sail_thread.start()
+    rudder.start()
+    sail.start()
     rc_thread.start()
     captain_thread.start()
 
     while True:
+        print("Waiting for input:\nw: drop mark\ns: start navigation\ne: end navigation\n^C: exit program")
         cmd = input()
-        if cmd == 'w':
+        if cmd == 'd':
             captain_thread.drop_mark()
+        elif cmd == 's':
+            captain_thread.enable()
+        elif cmd == 'e':
+            captain_thread.disable()
 
 
 if __name__ == "__main__":
