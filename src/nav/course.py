@@ -18,6 +18,9 @@ class Course:
         self.legs.append((next_to_last_mark, last_mark))
         self.legs.append((last_mark, first_mark))
 
+    def clear(self):
+        self.legs = []
+
 
 class Path:
     def __init__(self):
