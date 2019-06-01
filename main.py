@@ -29,7 +29,7 @@ def main():
     captain_thread.start()
 
     while True:
-        print("Waiting for input:\nw: drop mark\ns: start navigation\ne: end navigation\n^C: exit program")
+        print("Waiting for input:\nd: drop mark\ns: start navigation\ne: end navigation\n^C: exit program")
         cmd = input()
         if cmd == 'd':
             captain_thread.drop_mark()

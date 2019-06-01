@@ -59,6 +59,7 @@ class Captain(Thread):
     def disable(self):
         """Disables the autonomous navigation"""
         self.is_active = False
+        self.course.clear()
 
     def enable(self):
         """Enables the autonomous navigation"""
