@@ -23,13 +23,11 @@ def main():
     captain_thread = captain.Captain(boat, world)
 
     airmar_thread.start()
-    rudder.start()
-    sail.start()
     rc_thread.start()
     captain_thread.start()
 
     while True:
-        print("Waiting for input:\nd: drop mark\ns: start navigation\ne: end navigation\n^C: exit program")
+        print("Waiting for input:\nd: drop mark\ns: start navigation\ne: end navigation\nc: clear course\n^C: exit program")
         cmd = input()
         if cmd == 'd':
             captain_thread.drop_mark()
@@ -37,6 +35,8 @@ def main():
             captain_thread.enable()
         elif cmd == 'e':
             captain_thread.disable()
+        elif cmd == 'c':
+            captain_thread.clear_course()
 
 
 if __name__ == "__main__":
