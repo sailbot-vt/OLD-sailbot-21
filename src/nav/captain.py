@@ -1,4 +1,4 @@
-from threading import Thread
+from threading import Thread, Lock
 from time import sleep
 
 from pubsub import pub
@@ -8,6 +8,9 @@ from src.nav.tack_points import place_tacks
 from src.nav.config_reader import read_interval
 from src.nav.course import Course, Path
 from src.autopilot.autopilot import Autopilot
+
+
+mutex = Lock()
 
 
 class Captain(Thread):
@@ -21,21 +24,20 @@ class Captain(Thread):
         self.is_active = True
         self.nav_interval = read_interval()
         self.autopilot = Autopilot(boat, world)
-        self.course = None
         if buoy_detection:
             self.course = Path()
         else:
             self.course = Course()
-        pub.subscribe(self.switch_mode, "set mode")
+        pub.subscribe(self.switch_mode, "set nav mode")
 
     def run(self):
         """Runs the captain thread"""
         print("Started captain thread")
-        course = iter(self.course)
         while True:
             if self.is_active:
-                if course is None:
-                    course = iter(self.course)
+                mutex.acquire()
+                course = iter(self.course)
+                mutex.release()
 
                 leg = course.current_leg()
                 if len(self.autopilot.route) is 0:
@@ -46,7 +48,6 @@ class Captain(Thread):
 
                 sleep(self.nav_interval)
             else:
-                course = None
                 self.autopilot.standby()
 
     def switch_mode(self, mode):
@@ -67,4 +68,11 @@ class Captain(Thread):
 
     def drop_mark(self):
         """Adds a waypoint to the course"""
+        mutex.acquire()
         self.course.add_mark(self.boat.current_position)
+        mutex.release()
+
+    def clear_course(self):
+        mutex.acquire()
+        self.course = Course()
+        mutex.release()

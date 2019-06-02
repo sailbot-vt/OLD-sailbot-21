@@ -1,4 +1,4 @@
-from threading import Thread
+from threading import Thread, Lock
 from time import sleep
 import math
 
@@ -7,6 +7,9 @@ from pubsub import pub
 from src.autopilot.route import Route
 from src.autopilot.helmsman import Helmsman
 from src.autopilot.config_reader import read_gain, read_interval, long_tol, lat_tol
+
+
+mutex = Lock()
 
 
 class Autopilot(Thread):
@@ -40,22 +43,32 @@ class Autopilot(Thread):
             if not self.on_standby:
                 self.update_route()
                 self.helmsman.turn_to(self.target_heading, self.boat)
+
+                # Call to sail.turn_to_angle(...)
+                # Should use self.world.wind.true_wind_angle or .apparent_wind_angle
+
                 sleep(self.helm_interval)
 
     def update_route(self):
         """Checks to see if we can remove a waypoint"""
+        mutex.acquire()
         lat_dist = math.fabs(self.route.current_waypoint.lat - self.boat.current_position.lat)
         long_dist = math.fabs(self.route.current_waypoint.long - self.boat.current_position.long)
         if lat_dist < self.lat_tol and long_dist < self.long_tol:
             self.route.next_waypoint()
+        mutex.release()
 
     def add_to_route(self, waypoints):
         """Adds waypoints to the route"""
+        mutex.acquire()
         self.route.add_waypoints(waypoints)
+        mutex.release()
 
     def new_route(self, waypoints):
         """Replaces waypoints on the route"""
+        mutex.acquire()
         self.route.add_waypoints(waypoints)
+        mutex.release()
 
     def standby(self):
         """Sets the autopilot to standby"""
