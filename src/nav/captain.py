@@ -26,7 +26,7 @@ class Captain(Thread):
             self.course = Path()
         else:
             self.course = Course()
-        pub.subscribe(self.switch_mode, "set mode")
+        pub.subscribe(self.switch_mode, "set nav mode")
 
     def run(self):
         """Runs the captain thread"""
