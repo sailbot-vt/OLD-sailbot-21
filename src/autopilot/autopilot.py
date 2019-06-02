@@ -40,6 +40,9 @@ class Autopilot(Thread):
             if not self.on_standby:
                 self.update_route()
                 self.helmsman.turn_to(self.target_heading, self.boat)
+
+                # Add call to sail here
+
                 sleep(self.helm_interval)
 
     def update_route(self):
