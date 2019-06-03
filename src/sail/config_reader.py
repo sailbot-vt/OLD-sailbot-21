@@ -46,21 +46,15 @@ def read_pin_config(mock_bbio=None, path=None):
         conf = yaml.load(yml)
         if mock_bbio is None:
             pins = [
-                make_pin(conf["pins"]["STEPPER_1"]),
-                make_pin(conf["pins"]["STEPPER_2"]),
-                make_pin(conf["pins"]["STEPPER_3"]),
-                make_pin(conf["pins"]["STEPPER_4"])
+                make_pin(conf["pins"]["Step"]),
+                make_pin(conf["pins"]["Direction"]),
             ]
         else:
             pins = [
-                make_pin(conf["pins"]["STEPPER_1"],
+                make_pin(conf["pins"]["Step"],
                          mock_lib=mock_bbio.GPIO),
-                make_pin(conf["pins"]["STEPPER_2"],
+                make_pin(conf["pins"]["Direction"],
                          mock_lib=mock_bbio.GPIO),
-                make_pin(conf["pins"]["STEPPER_3"],
-                         mock_lib=mock_bbio.GPIO),
-                make_pin(conf["pins"]["STEPPER_4"],
-                         mock_lib=mock_bbio.GPIO)
             ]
 
     return pins

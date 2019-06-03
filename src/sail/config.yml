@@ -20,17 +20,11 @@
 center stepper angle: 0
 
 pins:
-  STEPPER_1:
-    pin_name: ""
+  Step:
+    pin_name: "GPIO_20"
     pin_type: "GPIO"
-  STEPPER_2:
-    pin_name: ""
-    pin_type: "GPIO"
-  STEPPER_3:
-    pin_name: ""
-    pin_type: "GPIO"
-  STEPPER_4:
-    pin_name: ""
+  Direction:
+    pin_name: "GPIO_48"
     pin_type: "GPIO"
 
 servos:
