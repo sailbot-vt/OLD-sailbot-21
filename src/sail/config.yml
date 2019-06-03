@@ -23,9 +23,11 @@ pins:
   Step:
     pin_name: "GPIO_20"
     pin_type: "GPIO"
+    io_type: "OUT"
   Direction:
     pin_name: "GPIO_48"
     pin_type: "GPIO"
+    io_type: "OUT"
 
 servos:
   MAIN:
