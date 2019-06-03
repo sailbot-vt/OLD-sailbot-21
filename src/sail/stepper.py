@@ -17,12 +17,11 @@ def wavedrive(pins, pin_index):
 
 
 def fullstep(pins, direction):
-    """pin_index is the lead pin"""
-    pins[0].set_state(True)
     if direction == -1:
-        pins[1].set_state(HIGH)
+        pins[1].set_state(True)
     else:
-        pins[1].set_state(LOW)
+        pins[1].set_state(False)
+    pins[0].set_state(True)
 
 
 class StepperTrimmer:
@@ -42,7 +41,6 @@ class StepperTrimmer:
 
 
 class Stepper:
-    pins[(pin_index + 2) % 4].set_state(False)
     def __init__(self, pins, steps_per_rev=270.0):
         self.pins = pins
 
@@ -75,9 +73,6 @@ class Stepper:
             step += 1
             self.angle = (self.angle + self.direction / self.steps_per_rev
                               * 360.0) % 360.0
-
-        if degrees < 0:
-            self.pins.reverse()
 
         set_all_pins_low(self.pins)
 
