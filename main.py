@@ -16,13 +16,13 @@ def main():
     world = World()
 
     # Threads
-    airmar_thread = airmar.AirmarInputThread()
+#    airmar_thread = airmar.AirmarInputThread()
     rc_thread = rc.RCInputThread()
-    sail = sail.SailListener(boat, world)
-    rudder = rudder.RudderListener()
+    Sail = sail.SailListener(boat, world)
+    Rudder = rudder.RudderListener()
     captain_thread = captain.Captain(boat, world)
 
-    airmar_thread.start()
+#    airmar_thread.start()
     rc_thread.start()
     captain_thread.start()
 
