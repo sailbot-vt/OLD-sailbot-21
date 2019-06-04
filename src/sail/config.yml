@@ -21,11 +21,11 @@ center stepper angle: 0
 
 pins:
   Step:
-    pin_name: "GPIO_20"
+    pin_name: "P9_41"
     pin_type: "GPIO"
     io_type: "OUT"
   Direction:
-    pin_name: "GPIO_48"
+    pin_name: "P9_15"
     pin_type: "GPIO"
     io_type: "OUT"
 

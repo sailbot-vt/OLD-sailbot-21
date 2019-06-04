@@ -19,7 +19,7 @@
 
 pins:
   RUDDER:
-    pin_name: "EHRPWM2A"
+    pin_name: "P8_19"
     pin_type: "PWM"
     frequency: 50
 
