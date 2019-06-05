@@ -10,4 +10,4 @@ def read_interval(path=None):
         conf = yaml.full_load(yml)
         helm_interval = conf["nav interval"]
 
-    return eval(helm_interval)
+    return eval(str(helm_interval))

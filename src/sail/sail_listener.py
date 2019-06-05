@@ -9,7 +9,7 @@ class SailListener:
     def __init__(self, boat, world):
         super().__init__()
         self.stepper = StepperTrimmer(read_pin_config(), read_center_stepper_angle(), boat, world)
-        pub.subscribe("set trim", self.received_trim_command)
+        pub.subscribe(self.received_trim_command, "set trim")
 
     def received_trim_command(self, degrees_in):
         self.stepper.trim_in_by(degrees_in)

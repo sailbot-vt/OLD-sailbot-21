@@ -34,7 +34,8 @@ class Captain(Thread):
         """Runs the captain thread"""
         print("Started captain thread")
         while True:
-            if self.is_active:
+#            if self.is_active:
+            if 0:
                 mutex.acquire()
                 course = iter(self.course)
                 mutex.release()
