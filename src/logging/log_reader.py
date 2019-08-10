@@ -15,6 +15,7 @@ class logReader():
         infile -- File path to log file to be read
         """ 
         self.infile = infile
+        self.logfile = open(self.infile, 'r');
         self.lineno = 0
         self.read_header()
         self.read_configs()
@@ -23,8 +24,7 @@ class logReader():
         """
         Reads header and stores as dictionary
         """
-        with open(self.infile, 'r') as log_file:
-            self.header = json.loads(log_file.readline())
+        self.header = json.loads(self.logfile.readline())
         self.lineno += 1
 
     def read_configs(self):
@@ -34,8 +34,7 @@ class logReader():
         num_config_files = self.header['num_config_files'] 
         self.config_dict = {}
         for n in range(num_config_files):
-            with open(self.infile, 'r') as log_file:
-                temp_config_dict = json.loads(log_file.readline())
+            temp_config_dict = json.loads(self.logfile.readline())
             self.lineno += 1
             self.config_dict.update(temp_config_dict)
 
@@ -50,15 +49,14 @@ class logReader():
         Returns:
         A log with datetime, pin number, and a message
         """
-        with open(self.infile, 'r') as log_file:
-            for line in log_file.readlines():
-                yield json.loads(line)
-                self.lineno += 1
+        for line in self.logfile.readlines():
+            yield json.loads(line)
+            self.lineno += 1
             
 
 #Brief test
 if __name__ == '__main__':
-    ex_logReader = logReader('logging/dir_log/2019_03_19_1.log')
+    ex_logReader = logReader('logging/dir_log/2019_08_08_1.log')
 
     pp(ex_logReader.header)
     pp(ex_logReader.config_dict)
