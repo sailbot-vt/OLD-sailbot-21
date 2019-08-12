@@ -3,7 +3,7 @@ import json
 import datetime
 import yaml
 import glob
-import pdb
+from pubsub import pub
 
 class Logger():
     """
@@ -18,6 +18,7 @@ class Logger():
             outfile.write('\n')
         self._record_config_files(yml_file_list)        #Write config files to log to track config values for each process
 
+        self.log_dict = dict()
         pub.subscribe(self.write_msg, 'write msg')
 
     def _find_config_files(self):
@@ -62,10 +63,10 @@ class Logger():
 
         datetime_str = self._get_datetime_str()
         
-        log_dict = {'datetime': datetime_str, 'pin_name': pin_name, 'msg': msg, 'r/w' : rw_state} 
+        self.log_dict = {'datetime': datetime_str, 'pin_name': pin_name, 'msg': msg, 'r/w' : rw_state} 
 
         with open(self.outfile_name, 'a') as outfile:
-            json.dump(log_dict, outfile)
+            json.dump(self.log_dict, outfile)
             outfile.write('\n')
 
 
@@ -90,5 +91,5 @@ class Logger():
         temp_name = 'logs/' + current_date + '_%d.log' % n
         while os.path.isfile(temp_name):                                    #Loops until open file name is found
             n += 1
-            temp_name = 'logging/dir_log/' + current_date + '_%d.log' % n
+            temp_name = 'logs/' + current_date + '_%d.log' % n
         return temp_name

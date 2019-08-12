@@ -1,7 +1,7 @@
 import unittest
 try:
     from unittest.mock import patch
-except:
+except ImportError:
     from mock import patch
 
 from src.hardware.pin import make_pin

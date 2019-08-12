@@ -5,7 +5,7 @@ import yaml
 from src.hardware.pin import make_pin
 
 
-def read_pin_config(mock_bbio=None, path=None, logger=None):
+def read_pin_config(mock_bbio=None, path=None):
     """Reads the pin configuration from config.yml and returns a matching dictionary"""
     if path is None:
         path = os.path.dirname(os.path.abspath(__file__))
@@ -13,21 +13,21 @@ def read_pin_config(mock_bbio=None, path=None, logger=None):
         conf = yaml.full_load(yml)
         if mock_bbio is None:
             pins = {
-                "RUDDER": make_pin(conf["pins"]["RUDDER"], logger=logger),
-                "TRIM": make_pin(conf["pins"]["TRIM"], logger=logger),
-                "MODE1": make_pin(conf["pins"]["MODE1"], logger=logger),
-                "MODE2": make_pin(conf["pins"]["MODE2"], logger=logger)
+                "RUDDER": make_pin(conf["pins"]["RUDDER"]),
+                "TRIM": make_pin(conf["pins"]["TRIM"]),
+                "MODE1": make_pin(conf["pins"]["MODE1"]),
+                "MODE2": make_pin(conf["pins"]["MODE2"])
             }
         else:
             pins = {
                 "RUDDER": make_pin(conf["pins"]["RUDDER"],
-                                   mock_lib=mock_bbio.ADC, logger=logger),
+                                   mock_lib=mock_bbio.ADC),
                 "TRIM": make_pin(conf["pins"]["TRIM"],
-                                 mock_lib=mock_bbio.ADC, logger=logger),
+                                 mock_lib=mock_bbio.ADC),
                 "MODE1": make_pin(conf["pins"]["MODE1"],
-                                  mock_lib=mock_bbio.GPIO, logger=logger),
+                                  mock_lib=mock_bbio.GPIO),
                 "MODE2": make_pin(conf["pins"]["MODE2"],
-                                  mock_lib=mock_bbio.GPIO, logger=logger)
+                                  mock_lib=mock_bbio.GPIO)
             }
 
     return pins

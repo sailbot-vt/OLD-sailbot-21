@@ -14,7 +14,7 @@ class RCInputThread(Thread):
         """Builds a new RC input thread."""
         super().__init__()
 
-        self.receiver = RCReceiver(read_pin_config(mock_bbio=mock_bbio, logger=logger))
+        self.receiver = RCReceiver(read_pin_config(mock_bbio=mock_bbio))
 
         self.keep_reading = True
         self.read_interval = read_interval()

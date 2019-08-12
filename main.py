@@ -19,9 +19,9 @@ def main():
     # Threads
 #    airmar_thread = airmar.AirmarInputThread()
     logger = logger.Logger()
-    rc_thread = rc.RCInputThread(logger=logger)
-    Sail = sail.SailListener(boat, world, logger)
-    Rudder = rudder.RudderListener(logger)
+    rc_thread = rc.RCInputThread()
+    Sail = sail.SailListener(boat, world)
+    Rudder = rudder.RudderListener()
     captain_thread = captain.Captain(boat, world)
 
 #    airmar_thread.start()
