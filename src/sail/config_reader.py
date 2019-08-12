@@ -5,7 +5,7 @@ import yaml
 from src.hardware.pin import make_pin
 
 
-def build_pin_from_config(path=None, logger):
+def build_pin_from_config(path=None, logger=None):
     """Reads the pin configuration from config.yml and returns a matching Pin"""
     if path is None:
         path = os.path.dirname(os.path.abspath(__file__))
@@ -46,15 +46,15 @@ def read_pin_config(mock_bbio=None, path=None, logger=None):
         conf = yaml.load(yml)
         if mock_bbio is None:
             pins = [
-                make_pin(conf["pins"]["Step"]), logger,
-                make_pin(conf["pins"]["Direction"], logger),
+                make_pin(conf["pins"]["Step"], logger=logger),
+                make_pin(conf["pins"]["Direction"], logger=logger),
             ]
         else:
             pins = [
                 make_pin(conf["pins"]["Step"],
-                         mock_lib=mock_bbio.GPIO), logger,
+                         mock_lib=mock_bbio.GPIO, logger=logger),
                 make_pin(conf["pins"]["Direction"],
-                         mock_lib=mock_bbio.GPIO, logger),
+                         mock_lib=mock_bbio.GPIO, logger=logger),
             ]
 
     return pins

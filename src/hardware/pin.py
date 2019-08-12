@@ -34,11 +34,13 @@ class TestablePin(Pin):
         self.logger = logger
 
     def read(self):
-        self.logger.write_msg(self.pin_name, self.value, 'r')
+        if self.logger != None:
+            self.logger.write_msg(self.pin_name, self.value, 'r')
         return self.value
 
     def set_state(self, state):
-        self.logger.write_msg(self.pin_name, self.value, 'w')
+        if self.logger != None:
+            self.logger.write_msg(self.pin_name, self.value, 'w')
         self.written_values.append(state)
 
     def start(self, *args):
@@ -86,7 +88,8 @@ class ADCPin(Pin):
             self.pin_name)  # According to the Internet, we have to do this twice
         raw_value = self.adc_lib.read(self.pin_name)
         norm_value = self._normalize_voltage(raw_value)
-        self.logger.write_msg(self.pin_name, norm_value, 'r')
+        if self.logger != None:
+            self.logger.write_msg(self.pin_name, norm_value, 'r')
         return norm_value 
     def read_v(self):
         """Reads the voltage being supplied to the pin.
@@ -142,7 +145,8 @@ class GPIOPin(Pin):
         """
         self.io_type = self.gpio_lib.IN
         value = self.gpio_lib.input(self.pin_name)
-        self.logger.write_msg(self.pin_name, value, 'r')
+        if self.logger != None:
+            self.logger.write_msg(self.pin_name, value, 'r')
         return value 
     def set_state(self, state):
         """Sets the output state of the pin.
@@ -155,8 +159,8 @@ class GPIOPin(Pin):
             self.gpio_lib.output(self.pin_name, self.gpio_lib.HIGH)
         else:
             self.gpio_lib.output(self.pin_name, self.gpio_lib.LOW)
-
-        self.logger.write_msg(self.pin_name, state, 'w')
+        if self.logger != None:
+            self.logger.write_msg(self.pin_name, state, 'w')
 
 class PWMPin(Pin):
     """Provides an interface to a PWM pin"""
@@ -223,7 +227,7 @@ def make_pin(config, mock_lib=None, logger=None):
         if mock_lib is None:
             import Adafruit_BBIO.ADC as ADC
             return ADCPin(config, ADC, logger)
-        return ADCPin(config, mock_lib), logger
+        return ADCPin(config, mock_lib, logger)
     elif pin_type == PinType.GPIO:
         if mock_lib is None:
             import Adafruit_BBIO.GPIO as GPIO
@@ -237,8 +241,8 @@ def make_pin(config, mock_lib=None, logger=None):
     elif pin_type == PinType.UART:
         if mock_lib is None:
             import Adafruit_BBIO.UART as UART
-            return UARTPin(config, UART, logger)
-        return UARTPin(config, mock_lib, logger)
+            return UARTPin(config, UART)
+        return UARTPin(config, mock_lib)
     else:
         return TestablePin(name=config["pin_name"],
                            read_value=config.get("read_value") or 0, logger=logger)

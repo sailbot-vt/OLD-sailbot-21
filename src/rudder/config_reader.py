@@ -5,7 +5,7 @@ import yaml
 from src.hardware.pin import make_pin
 
 
-def build_pin_from_config(path=None, logger=logger):
+def build_pin_from_config(path=None, logger=None):
     """Reads the pin configuration from config.yml and returns a matching Pin"""
     if path is None:
         path = os.path.dirname(os.path.abspath(__file__))
