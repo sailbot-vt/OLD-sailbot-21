@@ -52,15 +52,3 @@ class logReader():
         for line in self.logfile.readlines():
             yield json.loads(line)
             self.lineno += 1
-            
-
-#Brief test
-if __name__ == '__main__':
-    ex_logReader = logReader('logging/dir_log/2019_08_08_1.log')
-
-    pp(ex_logReader.header)
-    pp(ex_logReader.config_dict)
-    msg_generator = ex_logReader.read_log()
-
-    while 1:
-        pp(msg_generator.__next__())

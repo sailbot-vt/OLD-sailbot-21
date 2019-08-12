@@ -29,8 +29,8 @@ class Logger():
         A list of config.yml file paths
         """
         config_file_list = []
-        for directory in os.listdir('./'):
-            for config_file in glob.iglob('./' + directory + '**/*.yml', recursive=True):
+        for directory in os.listdir('src'):
+            for config_file in glob.iglob('src/' + directory + '**/*.yml', recursive=True):
                 config_file_list.append(config_file)
           
         return config_file_list
