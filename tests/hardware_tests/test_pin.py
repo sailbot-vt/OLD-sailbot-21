@@ -1,5 +1,8 @@
 import unittest
-from unittest.mock import MagicMock
+try:
+    from unittest.mock import MagicMock
+except ImportError:
+    from mock import MagicMock
 
 from src.hardware.pin import make_pin, ADCPin
 from tests.mock_bbio import Adafruit_BBIO
