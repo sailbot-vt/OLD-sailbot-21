@@ -26,8 +26,8 @@ class ConfigReaderTests(unittest.TestCase):
         mock_pin = read_pin_config(mock_bbio=Adafruit_BBIO, path=self.path)
         pin = read_pin_config(path=self.path)
         
-        self.assertEquals(pin.pin_name, "P9_26")
-        self.assertEquals(mock_pin.pin_name, "P9_26")
+        self.assertEqual(pin.pin_name, "P9_26")
+        self.assertEqual(mock_pin.pin_name, "P9_26")
 
 
     def test_read_ids(self):
@@ -36,12 +36,12 @@ class ConfigReaderTests(unittest.TestCase):
 
     def test_read_interval(self):
         """ Tests interval read from config.yml """
-        self.assertEquals(read_interval(path=self.path), 50 / 1000)
+        self.assertEqual(read_interval(path=self.path), 50 / 1000)
 
     def test_read_port(self):
         """ Tests port read from config.yml """
         port = read_port_config(path=self.path)
         mock_port = read_port_config(path=self.path, mock_port=serial.Serial)
         
-        self.assertEquals(mock_port.port_name, "/dev/tty01")
-        self.assertEquals(port.port_name, "/dev/tty01")
+        self.assertEqual(mock_port.port_name, "/dev/tty01")
+        self.assertEqual(port.port_name, "/dev/tty01")

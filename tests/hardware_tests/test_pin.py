@@ -66,7 +66,7 @@ class PinTests(unittest.TestCase):
         Adafruit_BBIO.GPIO.setup = MagicMock(name='Adafruit.BBIO.GPIO.setup')
         Adafruit_BBIO.GPIO.IN = MagicMock(name='Adafruit.BBIO.GPIO.IN')
         gpio_pin = make_pin({
-            "pin_name": "Hello",
+            "pin_name": "GPIOread",
             "pin_type": "GPIO",
             "io_type": "IN"
         }, mock_lib=Adafruit_BBIO.GPIO)
@@ -75,7 +75,8 @@ class PinTests(unittest.TestCase):
         Adafruit_BBIO.GPIO.input = MagicMock(name='Adafruit.BBIO.GPIO.input',
                                              return_value=True)
 
-        mock_pub.sendMessage.assert_any_call("write msg", pin_name="Hello", msg=True, rw_state='r')        
+        gpio_pin.read()
+        mock_pub.sendMessage.assert_any_call("write msg", pin_name="GPIOread", msg=True, rw_state='r')        
 
         # Set up pin for output
         Adafruit_BBIO.GPIO.setup = MagicMock(name='Adafruit.BBIO.GPIO.setup')
@@ -85,7 +86,7 @@ class PinTests(unittest.TestCase):
         Adafruit_BBIO.GPIO.IN = MagicMock(name='Adafruit.BBIO.GPIO.IN')
         Adafruit_BBIO.GPIO.OUT = MagicMock(name='Adafruit.BBIO.GPIO.OUT')
         gpio_pin = make_pin({
-            "pin_name": "Hello",
+            "pin_name": "GPIOwrite",
             "pin_type": "GPIO",
             "io_type": "OUT"
         }, mock_lib=Adafruit_BBIO.GPIO)
@@ -93,7 +94,7 @@ class PinTests(unittest.TestCase):
         # Set to HIGH voltage
         gpio_pin.set_state(True)
         
-        mock_pub.sendMessage.assert_any_call("write_msg", pin_name = "Hello", msg=True, rw_state = 'w')
+        mock_pub.sendMessage.assert_any_call("write msg", pin_name = "GPIOwrite", msg=True, rw_state = 'w')
 
     @staticmethod
     def test_adc_read_v():
@@ -147,7 +148,7 @@ class PinTests(unittest.TestCase):
     
     @patch('src.hardware.pin.pub', autospec=True)
     def test_adc_logger(self, mock_pub):
-        """Tests that GPIOPin logs messages"""
+        """Tests that ADCPin logs messages"""
 
         # Set up the pin
         Adafruit_BBIO.ADC.setup = MagicMock(name='Adafruit.BBIO.ADC.read')
