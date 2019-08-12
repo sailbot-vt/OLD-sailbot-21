@@ -27,15 +27,18 @@ class Pin(ABC):
 class TestablePin(Pin):
     """Provides a Pin object to be used for testing."""
 
-    def __init__(self, name, read_value):
+    def __init__(self, name, read_value, logger):
         self.pin_name = name
         self.value = read_value
         self.written_values = []
+        self.logger = logger
 
     def read(self):
+        self.logger.write_msg(self.pin_name, self.value, 'r')
         return self.value
 
     def set_state(self, state):
+        self.logger.write_msg(self.pin_name, self.value, 'w')
         self.written_values.append(state)
 
     def start(self, *args):
@@ -56,7 +59,7 @@ class ADCPin(Pin):
 
     MAX_INPUT_VOLTAGE = 1.8
 
-    def __init__(self, config, adc_lib):
+    def __init__(self, config, adc_lib, logger):
         super().__init__(config)
 
         self.min_v = config.get("min_v")
@@ -64,6 +67,8 @@ class ADCPin(Pin):
         self.max_v = config.get("max_v")
 
         self.adc_lib = adc_lib
+
+        self.logger = logger
 
         try:
             self.adc_lib.setup()
@@ -80,8 +85,9 @@ class ADCPin(Pin):
         self.adc_lib.read(
             self.pin_name)  # According to the Internet, we have to do this twice
         raw_value = self.adc_lib.read(self.pin_name)
-        return self._normalize_voltage(raw_value)
-
+        norm_value = self._normalize_voltage(raw_value)
+        self.logger.write_msg(self.pin_name, norm_value, 'r')
+        return norm_value 
     def read_v(self):
         """Reads the voltage being supplied to the pin.
 
@@ -101,7 +107,7 @@ class ADCPin(Pin):
 class GPIOPin(Pin):
     """Provides an interface to a GPIO pin"""
 
-    def __init__(self, config, gpio_lib):
+    def __init__(self, config, gpio_lib, logger):
         super().__init__(config)
 
         self.gpio_lib = gpio_lib
@@ -112,6 +118,9 @@ class GPIOPin(Pin):
             self.io_type = gpio_lib.OUT
         else:
             self.io_type = gpio_lib.IN
+
+        self.pin_name = config['pin_name']
+        self.logger = logger
 
     @property
     def io_type(self):
@@ -132,8 +141,9 @@ class GPIOPin(Pin):
         True if there is voltage being supplied to the pin, false otherwise.
         """
         self.io_type = self.gpio_lib.IN
-        return self.gpio_lib.input(self.pin_name)
-
+        value = self.gpio_lib.input(self.pin_name)
+        self.logger.write_msg(self.pin_name, value, 'r')
+        return value 
     def set_state(self, state):
         """Sets the output state of the pin.
 
@@ -146,19 +156,25 @@ class GPIOPin(Pin):
         else:
             self.gpio_lib.output(self.pin_name, self.gpio_lib.LOW)
 
+        self.logger.write_msg(self.pin_name, state, 'w')
 
 class PWMPin(Pin):
     """Provides an interface to a PWM pin"""
 
-    def __init__(self, config, pwm_lib):
+    def __init__(self, config, pwm_lib, logger):
         super().__init__(config)
         self.pwm_lib = pwm_lib
+        
+        self.pin_name = config['pin_name']
+        self.logger = logger
 
     def start(self, duty, frequency=60.0):
         self.pwm_lib.start(self.pin_name, duty, frequency)
+        self.logger(self.pin_name, 'PWM_start', 'w')
 
     def stop(self):
         self.pwm_lib.stop(self.pin_name)
+        self.logger(self.pin_name, 'PWM_stop', 'w')
 
     def set_duty_cycle(self, duty_cycle):
         self.pwm_lib.set_duty_cycle(self.pin_name, duty_cycle)
@@ -190,7 +206,7 @@ class UARTPin(Pin):
         pass
 
 
-def make_pin(config, mock_lib=None):
+def make_pin(config, mock_lib=None, logger=None):
     """Method to create a new pin.
 
     Implements the factory design pattern.
@@ -206,23 +222,23 @@ def make_pin(config, mock_lib=None):
     if pin_type == PinType.ADC:
         if mock_lib is None:
             import Adafruit_BBIO.ADC as ADC
-            return ADCPin(config, ADC)
-        return ADCPin(config, mock_lib)
+            return ADCPin(config, ADC, logger)
+        return ADCPin(config, mock_lib), logger
     elif pin_type == PinType.GPIO:
         if mock_lib is None:
             import Adafruit_BBIO.GPIO as GPIO
-            return GPIOPin(config, GPIO)
-        return GPIOPin(config, mock_lib)
+            return GPIOPin(config, GPIO, logger)
+        return GPIOPin(config, mock_lib, logger)
     elif pin_type == PinType.PWM:
         if mock_lib is None:
             import Adafruit_BBIO.PWM as PWM
-            return PWMPin(config, PWM)
-        return PWMPin(config, mock_lib)
+            return PWMPin(config, PWM, logger)
+        return PWMPin(config, mock_lib, logger)
     elif pin_type == PinType.UART:
         if mock_lib is None:
             import Adafruit_BBIO.UART as UART
-            return UARTPin(config, UART)
-        return UARTPin(config, mock_lib)
+            return UARTPin(config, UART, logger)
+        return UARTPin(config, mock_lib, logger)
     else:
         return TestablePin(name=config["pin_name"],
-                           read_value=config.get("read_value") or 0)
+                           read_value=config.get("read_value") or 0, logger=logger)

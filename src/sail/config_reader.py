@@ -5,13 +5,13 @@ import yaml
 from src.hardware.pin import make_pin
 
 
-def build_pin_from_config(path=None):
+def build_pin_from_config(path=None, logger):
     """Reads the pin configuration from config.yml and returns a matching Pin"""
     if path is None:
         path = os.path.dirname(os.path.abspath(__file__))
     with open(path + "/config.yml", "r") as yml:
         conf = yaml.full_load(yml)
-        pin = make_pin(conf["pins"]["MAINSHEET"])
+        pin = make_pin(conf["pins"]["MAINSHEET"], logger)
 
     return pin
 
@@ -38,7 +38,7 @@ def read_mainsheet_config(path=None):
     return rudder_config
 
 
-def read_pin_config(mock_bbio=None, path=None):
+def read_pin_config(mock_bbio=None, path=None, logger=None):
     """Reads the pin configuration from config.yml and returns a matching dictionary"""
     if path is None:
         path = os.path.dirname(os.path.abspath(__file__))
@@ -46,15 +46,15 @@ def read_pin_config(mock_bbio=None, path=None):
         conf = yaml.load(yml)
         if mock_bbio is None:
             pins = [
-                make_pin(conf["pins"]["Step"]),
-                make_pin(conf["pins"]["Direction"]),
+                make_pin(conf["pins"]["Step"]), logger,
+                make_pin(conf["pins"]["Direction"], logger),
             ]
         else:
             pins = [
                 make_pin(conf["pins"]["Step"],
-                         mock_lib=mock_bbio.GPIO),
+                         mock_lib=mock_bbio.GPIO), logger,
                 make_pin(conf["pins"]["Direction"],
-                         mock_lib=mock_bbio.GPIO),
+                         mock_lib=mock_bbio.GPIO, logger),
             ]
 
     return pins

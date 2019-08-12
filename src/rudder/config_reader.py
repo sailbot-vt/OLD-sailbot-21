@@ -5,13 +5,13 @@ import yaml
 from src.hardware.pin import make_pin
 
 
-def build_pin_from_config(path=None):
+def build_pin_from_config(path=None, logger=logger):
     """Reads the pin configuration from config.yml and returns a matching Pin"""
     if path is None:
         path = os.path.dirname(os.path.abspath(__file__))
     with open(path + "/config.yml", "r") as yml:
         conf = yaml.full_load(yml)
-        pin = make_pin(conf["pins"]["RUDDER"])
+        pin = make_pin(conf["pins"]["RUDDER"], logger)
 
     return pin
 

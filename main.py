@@ -7,6 +7,7 @@ import src.nav.captain as captain
 from src.boat.boat import Boat
 from src.world.world import World
 
+from src.logging.logger import Logger
 
 def main():
     """Runs the program."""
@@ -17,9 +18,10 @@ def main():
 
     # Threads
 #    airmar_thread = airmar.AirmarInputThread()
-    rc_thread = rc.RCInputThread()
-    Sail = sail.SailListener(boat, world)
-    Rudder = rudder.RudderListener()
+    logger = logger.Logger()
+    rc_thread = rc.RCInputThread(logger)
+    Sail = sail.SailListener(boat, world, logger)
+    Rudder = rudder.RudderListener(logger)
     captain_thread = captain.Captain(boat, world)
 
 #    airmar_thread.start()

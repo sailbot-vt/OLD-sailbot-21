@@ -48,18 +48,19 @@ class Logger():
                 outfile.write('\n')
 
 
-    def write_msg(self, pin_no, msg):
+    def write_msg(self, pin_name, msg, rw_state):
         """
         Writes a log given data from process
 
         Keyword arguments:
-        pin_no -- Pin number that event occurs at
+        pin_name -- Pin name that event occurs at
         msg -- Message to be recorded (data on pin)
+        rw_state -- Whether pin is reading or writing
         """
 
         datetime_str = self._get_datetime_str()
         
-        log_dict = {'datetime': datetime_str, 'pin_no': pin_no, 'msg': msg} 
+        log_dict = {'datetime': datetime_str, 'pin_name': pin_name, 'msg': msg, 'r/w' : rw_state} 
 
         with open(self.outfile_name, 'a') as outfile:
             json.dump(log_dict, outfile)
