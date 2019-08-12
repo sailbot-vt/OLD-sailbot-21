@@ -18,6 +18,8 @@ class Logger():
             outfile.write('\n')
         self._record_config_files(yml_file_list)        #Write config files to log to track config values for each process
 
+        pub.subscribe(self.write_msg, 'write msg')
+
     def _find_config_files(self):
         """
         Finds all config.yml files in subdirectories
@@ -85,16 +87,8 @@ class Logger():
         """
         current_date = datetime.datetime.now().strftime('%Y_%m_%d')
         n = 1
-        temp_name = 'logging/dir_log/' + current_date + '_%d.log' % n
+        temp_name = 'logs/' + current_date + '_%d.log' % n
         while os.path.isfile(temp_name):                                    #Loops until open file name is found
             n += 1
             temp_name = 'logging/dir_log/' + current_date + '_%d.log' % n
         return temp_name
-    
-
-#Brief test
-if __name__ == '__main__':
- 
-    ex_logger = Logger()
-
-    ex_logger.write_msg(4, 'abcdefg testmsg') 

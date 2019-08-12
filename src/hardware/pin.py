@@ -1,6 +1,7 @@
 from abc import ABC
 from enum import Enum
 
+from pubsub import pub
 
 class PinType(Enum):
     """An enum type to denote the type of pin"""
@@ -27,20 +28,17 @@ class Pin(ABC):
 class TestablePin(Pin):
     """Provides a Pin object to be used for testing."""
 
-    def __init__(self, name, read_value, logger):
+    def __init__(self, name, read_value):
         self.pin_name = name
         self.value = read_value
         self.written_values = []
-        self.logger = logger
 
     def read(self):
-        if self.logger != None:
-            self.logger.write_msg(self.pin_name, self.value, 'r')
+        pub.sendMessage("write_msg", pin_name = self.pin_name, msg = self.value, rw_state = 'r')
         return self.value
 
     def set_state(self, state):
-        if self.logger != None:
-            self.logger.write_msg(self.pin_name, self.value, 'w')
+        pub.sendMessage("write_msg", pin_name = self.pin_name, msg = self.value, rw_state = 'w')
         self.written_values.append(state)
 
     def start(self, *args):
@@ -61,7 +59,7 @@ class ADCPin(Pin):
 
     MAX_INPUT_VOLTAGE = 1.8
 
-    def __init__(self, config, adc_lib, logger):
+    def __init__(self, config, adc_lib):
         super().__init__(config)
 
         self.min_v = config.get("min_v")
@@ -69,8 +67,6 @@ class ADCPin(Pin):
         self.max_v = config.get("max_v")
 
         self.adc_lib = adc_lib
-
-        self.logger = logger
 
         try:
             self.adc_lib.setup()
@@ -88,8 +84,7 @@ class ADCPin(Pin):
             self.pin_name)  # According to the Internet, we have to do this twice
         raw_value = self.adc_lib.read(self.pin_name)
         norm_value = self._normalize_voltage(raw_value)
-        if self.logger != None:
-            self.logger.write_msg(self.pin_name, norm_value, 'r')
+        pub.sendMessage("write_msg", pin_name = self.pin_name, msg = norm_value, rw_state = 'r')
         return norm_value 
     def read_v(self):
         """Reads the voltage being supplied to the pin.
@@ -110,7 +105,7 @@ class ADCPin(Pin):
 class GPIOPin(Pin):
     """Provides an interface to a GPIO pin"""
 
-    def __init__(self, config, gpio_lib, logger):
+    def __init__(self, config, gpio_lib):
         super().__init__(config)
 
         self.gpio_lib = gpio_lib
@@ -123,7 +118,6 @@ class GPIOPin(Pin):
             self.io_type = gpio_lib.IN
 
         self.pin_name = config['pin_name']
-        self.logger = logger
 
     @property
     def io_type(self):
@@ -145,8 +139,7 @@ class GPIOPin(Pin):
         """
         self.io_type = self.gpio_lib.IN
         value = self.gpio_lib.input(self.pin_name)
-        if self.logger != None:
-            self.logger.write_msg(self.pin_name, value, 'r')
+        pub.sendMessage("write_msg", pin_name = self.pin_name, msg = value, rw_state = 'r')
         return value 
     def set_state(self, state):
         """Sets the output state of the pin.
@@ -159,26 +152,24 @@ class GPIOPin(Pin):
             self.gpio_lib.output(self.pin_name, self.gpio_lib.HIGH)
         else:
             self.gpio_lib.output(self.pin_name, self.gpio_lib.LOW)
-        if self.logger != None:
-            self.logger.write_msg(self.pin_name, state, 'w')
+        pub.sendMessage("write_msg", pin_name = self.pin_name, msg = state, rw_state = 'w')
 
 class PWMPin(Pin):
     """Provides an interface to a PWM pin"""
 
-    def __init__(self, config, pwm_lib, logger):
+    def __init__(self, config, pwm_lib):
         super().__init__(config)
         self.pwm_lib = pwm_lib
         
         self.pin_name = config['pin_name']
-        self.logger = logger
 
     def start(self, duty, frequency=60.0):
         self.pwm_lib.start(self.pin_name, duty, frequency)
-        self.logger(self.pin_name, 'PWM_start', 'w')
+        pub.sendMessage("write_msg", pin_name = self.pin_name, msg = 'PWM_start', rw_state = 'w')
 
     def stop(self):
         self.pwm_lib.stop(self.pin_name)
-        self.logger(self.pin_name, 'PWM_stop', 'w')
+        pub.sendMessage("write_msg", pin_name = self.pin_name, msg = 'PWM_stop', rw_state = 'w')
 
     def set_duty_cycle(self, duty_cycle):
         self.pwm_lib.set_duty_cycle(self.pin_name, duty_cycle)
@@ -210,7 +201,7 @@ class UARTPin(Pin):
         pass
 
 
-def make_pin(config, mock_lib=None, logger=None):
+def make_pin(config, mock_lib=None):
     """Method to create a new pin.
 
     Implements the factory design pattern.
@@ -226,18 +217,18 @@ def make_pin(config, mock_lib=None, logger=None):
     if pin_type == PinType.ADC:
         if mock_lib is None:
             import Adafruit_BBIO.ADC as ADC
-            return ADCPin(config, ADC, logger)
-        return ADCPin(config, mock_lib, logger)
+            return ADCPin(config, ADC)
+        return ADCPin(config, mock_lib)
     elif pin_type == PinType.GPIO:
         if mock_lib is None:
             import Adafruit_BBIO.GPIO as GPIO
-            return GPIOPin(config, GPIO, logger)
-        return GPIOPin(config, mock_lib, logger)
+            return GPIOPin(config, GPIO)
+        return GPIOPin(config, mock_lib)
     elif pin_type == PinType.PWM:
         if mock_lib is None:
             import Adafruit_BBIO.PWM as PWM
-            return PWMPin(config, PWM, logger)
-        return PWMPin(config, mock_lib, logger)
+            return PWMPin(config, PWM)
+        return PWMPin(config, mock_lib)
     elif pin_type == PinType.UART:
         if mock_lib is None:
             import Adafruit_BBIO.UART as UART
@@ -245,4 +236,4 @@ def make_pin(config, mock_lib=None, logger=None):
         return UARTPin(config, mock_lib)
     else:
         return TestablePin(name=config["pin_name"],
-                           read_value=config.get("read_value") or 0, logger=logger)
+                           read_value=config.get("read_value") or 0)
