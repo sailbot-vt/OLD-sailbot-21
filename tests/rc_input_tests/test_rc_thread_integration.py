@@ -1,5 +1,8 @@
 import unittest
-from unittest.mock import patch, MagicMock
+try:
+    from unittest.mock import patch, MagicMock
+except ImportError:
+    from mock import patch, MagicMock
 
 from src.navigation_mode import NavigationMode
 from src.rc_input.rc_input_thread import RCInputThread

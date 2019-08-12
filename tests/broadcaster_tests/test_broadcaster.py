@@ -1,5 +1,8 @@
 import unittest
-from unittest.mock import patch
+try:
+    from unittest.mock import patch
+except ImportError:
+    from mock import patch
 
 from src.broadcaster.broadcaster import BroadcasterType, make_broadcaster
 
