@@ -9,7 +9,7 @@ from src.rudder.rudder import Rudder
 class RudderListener:
     """Thread to maintain rudder system state and auto-drive as necessary."""
     def __init__(self):
-        servo = Servo(build_pin_from_config(logger), read_servo_config())
+        servo = Servo(build_pin_from_config(), read_servo_config())
         self.rudder_control = Rudder(servo, read_rudder_config())
         pub.subscribe(self.received_rudder_command, "set rudder")
 

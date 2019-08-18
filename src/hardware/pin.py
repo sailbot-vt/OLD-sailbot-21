@@ -1,7 +1,6 @@
 from abc import ABC
 from enum import Enum
 
-import pdb
 from pubsub import pub
 
 class PinType(Enum):
