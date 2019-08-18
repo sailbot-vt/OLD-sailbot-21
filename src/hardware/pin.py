@@ -1,6 +1,7 @@
 from abc import ABC
 from enum import Enum
 
+from pubsub import pub
 
 class PinType(Enum):
     """An enum type to denote the type of pin"""
@@ -33,9 +34,11 @@ class TestablePin(Pin):
         self.written_values = []
 
     def read(self):
+        pub.sendMessage("write msg", pin_name = self.pin_name, msg = self.value, rw_state = 'r')
         return self.value
 
     def set_state(self, state):
+        pub.sendMessage("write msg", pin_name = self.pin_name, msg = self.value, rw_state = 'w')
         self.written_values.append(state)
 
     def start(self, *args):
@@ -80,8 +83,9 @@ class ADCPin(Pin):
         self.adc_lib.read(
             self.pin_name)  # According to the Internet, we have to do this twice
         raw_value = self.adc_lib.read(self.pin_name)
-        return self._normalize_voltage(raw_value)
-
+        norm_value = self._normalize_voltage(raw_value)
+        pub.sendMessage("write msg", pin_name = self.pin_name, msg = norm_value, rw_state = 'r')
+        return norm_value 
     def read_v(self):
         """Reads the voltage being supplied to the pin.
 
@@ -113,6 +117,8 @@ class GPIOPin(Pin):
         else:
             self.io_type = gpio_lib.IN
 
+        self.pin_name = config['pin_name']
+
     @property
     def io_type(self):
         return self._io_type
@@ -132,8 +138,9 @@ class GPIOPin(Pin):
         True if there is voltage being supplied to the pin, false otherwise.
         """
         self.io_type = self.gpio_lib.IN
-        return self.gpio_lib.input(self.pin_name)
-
+        value = self.gpio_lib.input(self.pin_name)
+        pub.sendMessage("write msg", pin_name = self.pin_name, msg = value, rw_state = 'r')
+        return value 
     def set_state(self, state):
         """Sets the output state of the pin.
 
@@ -145,7 +152,7 @@ class GPIOPin(Pin):
             self.gpio_lib.output(self.pin_name, self.gpio_lib.HIGH)
         else:
             self.gpio_lib.output(self.pin_name, self.gpio_lib.LOW)
-
+        pub.sendMessage("write msg", pin_name = self.pin_name, msg = state, rw_state = 'w')
 
 class PWMPin(Pin):
     """Provides an interface to a PWM pin"""
@@ -153,12 +160,16 @@ class PWMPin(Pin):
     def __init__(self, config, pwm_lib):
         super().__init__(config)
         self.pwm_lib = pwm_lib
+        
+        self.pin_name = config['pin_name']
 
     def start(self, duty, frequency=60.0):
         self.pwm_lib.start(self.pin_name, duty, frequency)
+        pub.sendMessage("write msg", pin_name = self.pin_name, msg = 'PWM_start', rw_state = 'w')
 
     def stop(self):
         self.pwm_lib.stop(self.pin_name)
+        pub.sendMessage("write msg", pin_name = self.pin_name, msg = 'PWM_stop', rw_state = 'w')
 
     def set_duty_cycle(self, duty_cycle):
         self.pwm_lib.set_duty_cycle(self.pin_name, duty_cycle)

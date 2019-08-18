@@ -3,7 +3,7 @@ import json
 import datetime
 import yaml
 import glob
-import pdb
+from pubsub import pub
 
 class Logger():
     """
@@ -18,6 +18,9 @@ class Logger():
             outfile.write('\n')
         self._record_config_files(yml_file_list)        #Write config files to log to track config values for each process
 
+        self.log_dict = dict()
+        pub.subscribe(self.write_msg, 'write msg')
+
     def _find_config_files(self):
         """
         Finds all config.yml files in subdirectories
@@ -26,8 +29,8 @@ class Logger():
         A list of config.yml file paths
         """
         config_file_list = []
-        for directory in os.listdir('./'):
-            for config_file in glob.iglob('./' + directory + '**/*.yml', recursive=True):
+        for directory in os.listdir('src'):
+            for config_file in glob.iglob('src/' + directory + '**/*.yml', recursive=True):
                 config_file_list.append(config_file)
           
         return config_file_list
@@ -48,21 +51,22 @@ class Logger():
                 outfile.write('\n')
 
 
-    def write_msg(self, pin_no, msg):
+    def write_msg(self, pin_name, msg, rw_state):
         """
         Writes a log given data from process
 
         Keyword arguments:
-        pin_no -- Pin number that event occurs at
+        pin_name -- Pin name that event occurs at
         msg -- Message to be recorded (data on pin)
+        rw_state -- Whether pin is reading or writing
         """
 
         datetime_str = self._get_datetime_str()
         
-        log_dict = {'datetime': datetime_str, 'pin_no': pin_no, 'msg': msg} 
+        self.log_dict = {'datetime': datetime_str, 'pin_name': pin_name, 'msg': msg, 'r/w' : rw_state} 
 
         with open(self.outfile_name, 'a') as outfile:
-            json.dump(log_dict, outfile)
+            json.dump(self.log_dict, outfile)
             outfile.write('\n')
 
 
@@ -84,16 +88,8 @@ class Logger():
         """
         current_date = datetime.datetime.now().strftime('%Y_%m_%d')
         n = 1
-        temp_name = 'logging/dir_log/' + current_date + '_%d.log' % n
+        temp_name = 'logs/' + current_date + '_%d.log' % n
         while os.path.isfile(temp_name):                                    #Loops until open file name is found
             n += 1
-            temp_name = 'logging/dir_log/' + current_date + '_%d.log' % n
+            temp_name = 'logs/' + current_date + '_%d.log' % n
         return temp_name
-    
-
-#Brief test
-if __name__ == '__main__':
- 
-    ex_logger = Logger()
-
-    ex_logger.write_msg(4, 'abcdefg testmsg') 
