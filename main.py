@@ -12,6 +12,9 @@ from src.logging.logger import Logger
 def main():
     """Runs the program."""
 
+    print("Virginia Tech SailBOT\n\n    \"I wish to have no connection with "
+          "any ship that does not sail fast\"\n            - John Paul Jones\n\n\n")
+
     # State objects
     boat = Boat()
     world = World()
