@@ -1,11 +1,11 @@
-# sailbot-19
+# sailbot-20
 
-[![Build status](https://travis-ci.com/vt-sailbot/sailbot-19.svg?branch=master)](https://travis-ci.com/vt-sailbot/sailbot-19)
-[![Coverage Status](https://coveralls.io/repos/github/vt-sailbot/sailbot-19/badge.svg?branch=master)](https://coveralls.io/github/vt-sailbot/sailbot-19?branch=master)
-[![License information](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://github.com/vt-sailbot/sailbot-19/blob/master/LICENSE)
+[![Build status](https://travis-ci.com/vt-sailbot/sailbot-20.svg?branch=master)](https://travis-ci.com/vt-sailbot/sailbot-20)
+[![Coverage Status](https://coveralls.io/repos/github/vt-sailbot/sailbot-20/badge.svg?branch=master)](https://coveralls.io/github/vt-sailbot/sailbot-20?branch=master)
+[![License information](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://github.com/vt-sailbot/sailbot-20/blob/master/LICENSE)
 [![Python version](https://img.shields.io/badge/python-3.5-blue.svg)](https://www.python.org/)
 
-> The VT SailBOT team repository for the 2018-2019 school year.
+> The VT SailBOT team repository for the 2019-2020 school year.
 
 ### Architecture
 
