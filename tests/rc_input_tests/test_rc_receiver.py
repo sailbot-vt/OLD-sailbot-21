@@ -8,6 +8,7 @@ from src.hardware.pin import make_pin
 from src.navigation_mode import NavigationMode
 from src.rc_input.rc_receiver import RCReceiver
 
+import pdb
 
 class RCReceiverTests(unittest.TestCase):
     """Tests methods in RCReceiver"""
@@ -34,30 +35,38 @@ class RCReceiverTests(unittest.TestCase):
     @patch('src.rc_input.rc_receiver.pub', autospec=True)
     def test_get_rudder(self, mock_pub):
         """Tests that the receiver reads and scales rudder input correctly"""
-        test_inputs = [-1, -0.5, 0, 0.5, 1]
+        test_inputs = [0, 0.675, 0.9, 1.125, 1.8]
         scaled_outputs = [-80, -20, 0, 20, 80]  # 80 * x^2
 
+        ii = 0 
         for test_input, scaled_output in zip(test_inputs, scaled_outputs):
             # Set the return value
             self.r.pins["RUDDER"].value = test_input
 
             self.r.send_inputs()
 
-            mock_pub.sendMessage.assert_any_call("set rudder", degrees_starboard=scaled_output)
+#            mock_pub.sendMessage.assert_any_call("set rudder", degrees_starboard=scaled_output)
+            self.assertAlmostEqual(scaled_output, mock_pub.method_calls[3*ii][2]["degrees_starboard"], 2)
+
+            ii += 1
 
     @patch('src.rc_input.rc_receiver.pub', autospec=True)
     def test_scale_trim(self, mock_pub):
         """Tests that the receiver reads and scales trim input correctly"""
-        test_inputs = [-1, -0.5, 0, 0.5, 1]
+        test_inputs = [0, 0.675, 0.9, 1.125, 1.8]
         scaled_outputs = [-20, -5, 0, 5, 20]  # 20 * x^2
 
+        ii = 0
         for test_input, scaled_output in zip(test_inputs, scaled_outputs):
             # Set the return value
             self.r.pins["TRIM"].value = test_input
 
             self.r.send_inputs()
 
-            mock_pub.sendMessage.assert_any_call("set trim", degrees_in=scaled_output)
+#            mock_pub.sendMessage.assert_any_call("set trim", degrees_in=scaled_output)
+            self.assertAlmostEqual(scaled_output, mock_pub.method_calls[(3*ii) + 1][2]["degrees_in"], 2)
+
+            ii += 1
 
     @patch('src.rc_input.rc_receiver.pub', autospec=True)
     def test_detect_mode(self, mock_pub):

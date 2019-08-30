@@ -8,7 +8,6 @@ from src.navigation_mode import NavigationMode
 from src.rc_input.rc_input_thread import RCInputThread
 from tests.mock_bbio import Adafruit_BBIO
 
-
 class RCThreadTests(unittest.TestCase):
     """Integration tests for RCInputThread"""
     def setUp(self):
@@ -23,7 +22,7 @@ class RCThreadTests(unittest.TestCase):
         Adafruit_BBIO.GPIO.input = MagicMock(name='Adafruit.BBIO.GPIO.input',
                                              return_value=False)
         Adafruit_BBIO.ADC.read = MagicMock(name='Adafruit.BBIO.ADC.read',
-                                           return_value=0.1)
+                                           return_value=0.0)
 
         self.rc_input_thread.receiver.send_inputs()
 
@@ -36,7 +35,7 @@ class RCThreadTests(unittest.TestCase):
         Adafruit_BBIO.GPIO.input = MagicMock(name='Adafruit.BBIO.GPIO.input',
                                              return_value=False)
         Adafruit_BBIO.ADC.read = MagicMock(name='Adafruit.BBIO.ADC.read',
-                                           return_value=0.1472222222)
+                                           return_value=0.9)
 
         self.rc_input_thread.receiver.send_inputs()
 
@@ -49,7 +48,7 @@ class RCThreadTests(unittest.TestCase):
         Adafruit_BBIO.GPIO.input = MagicMock(name='Adafruit.BBIO.GPIO.input',
                                              return_value=False)
         Adafruit_BBIO.ADC.read = MagicMock(name='Adafruit.BBIO.ADC.read',
-                                           return_value=0.1944444444)
+                                           return_value=1.8)
 
         self.rc_input_thread.receiver.send_inputs()
 
