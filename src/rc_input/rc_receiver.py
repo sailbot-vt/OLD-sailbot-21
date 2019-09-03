@@ -3,8 +3,6 @@ from pubsub import pub
 
 from src.navigation_mode import NavigationMode
 
-import pdb
-
 class RCReceiver:
     """Defines an RC receiver that sends data to a broadcaster."""
 
