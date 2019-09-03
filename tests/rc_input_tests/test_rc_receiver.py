@@ -43,7 +43,6 @@ class RCReceiverTests(unittest.TestCase):
 
             self.r.send_inputs()
 
-#            mock_pub.sendMessage.assert_any_call("set rudder", degrees_starboard=scaled_output)
             self.assertAlmostEqual(scaled_output, mock_pub.method_calls[3*ii][2]["degrees_starboard"], 2)
 
             ii += 1
@@ -61,7 +60,6 @@ class RCReceiverTests(unittest.TestCase):
 
             self.r.send_inputs()
 
-#            mock_pub.sendMessage.assert_any_call("set trim", degrees_in=scaled_output)
             self.assertAlmostEqual(scaled_output, mock_pub.method_calls[(3*ii) + 1][2]["degrees_in"], 2)
 
             ii += 1
