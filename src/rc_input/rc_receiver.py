@@ -3,7 +3,6 @@ from pubsub import pub
 
 from src.navigation_mode import NavigationMode
 
-
 class RCReceiver:
     """Defines an RC receiver that sends data to a broadcaster."""
 
@@ -24,6 +23,7 @@ class RCReceiver:
         Keyword arguments:
         inputs – Inputs to be sent. A dictionary with keys 'RUDDER', 'TRIM', and 'MODE'
         """
+
         if self._get_mode() == NavigationMode.MANUAL:
             pub.sendMessage("set rudder", degrees_starboard=self._get_rudder_input())
             pub.sendMessage("set trim", degrees_in=self._get_trim_input())
@@ -42,7 +42,7 @@ class RCReceiver:
         The rudder input in degrees to starboard.
         """
         unscaled_value = self.pins["RUDDER"].read()  # Between -1 and 1
-        degrees_starboard = sign(unscaled_value) * 80 * (unscaled_value ** 2)  # Between -80 and 80
+        degrees_starboard = unscaled_value  * 80.0  # Between -80 and 80
         return degrees_starboard
 
     def _get_trim_input(self):
@@ -55,7 +55,7 @@ class RCReceiver:
         The trim input in degrees trimming in.
         """
         unscaled_value = self.pins["TRIM"].read()  # Between -1 and 1
-        degrees_in = sign(unscaled_value) * 20 * (unscaled_value ** 2)  # Between -20 and 20
+        degrees_in = unscaled_value * 20.0  # Between -20 and 20
         return degrees_in
 
     def _get_mode(self):

@@ -100,13 +100,13 @@ class PinTests(unittest.TestCase):
     def test_adc_read_v():
         # Set up the pin
         Adafruit_BBIO.ADC.setup = MagicMock(name='Adafruit.BBIO.GPIO.setup')
-        Adafruit_BBIO.ADC.read = MagicMock(name='Adafruit.BBIO.GPIO.setup', return_value=0.5)
+        Adafruit_BBIO.ADC.read = MagicMock(name='Adafruit.BBIO.GPIO.setup', return_value=0.9)
         adc_pin = make_pin({
             "pin_name": "Hello",
             "pin_type": "ADC",
             "min_v": 0,
-            "default_v": 0.5,
-            "max_v": 1
+            "default_v": 0.9,
+            "max_v": 1.8
         }, mock_lib=Adafruit_BBIO.ADC)
 
         # Tests the method
@@ -117,13 +117,13 @@ class PinTests(unittest.TestCase):
         # Set up the pin
         Adafruit_BBIO.ADC.setup = MagicMock(name='Adafruit.BBIO.ADC.read')
         Adafruit_BBIO.ADC.read = MagicMock(name='Adafruit.BBIO.ADC.read',
-                                           return_value=(1 / ADCPin.MAX_INPUT_VOLTAGE))
+                                           return_value=(ADCPin.MAX_INPUT_VOLTAGE))
         adc_pin = make_pin({
             "pin_name": "Hello",
             "pin_type": "ADC",
             "min_v": 0,
-            "default_v": 0.5,
-            "max_v": 1
+            "default_v": 0.9,
+            "max_v": 1.8
         }, mock_lib=Adafruit_BBIO.ADC)
 
         # Tests the method
@@ -132,7 +132,7 @@ class PinTests(unittest.TestCase):
         assert err < 0.01
 
         Adafruit_BBIO.ADC.read = MagicMock(name='Adafruit.BBIO.ADC.read',
-                                           return_value=(0.5 / ADCPin.MAX_INPUT_VOLTAGE))
+                                           return_value=(0.5 * ADCPin.MAX_INPUT_VOLTAGE))
 
         val = adc_pin.read()
         err = abs(val - 0)
@@ -153,13 +153,13 @@ class PinTests(unittest.TestCase):
         # Set up the pin
         Adafruit_BBIO.ADC.setup = MagicMock(name='Adafruit.BBIO.ADC.read')
         Adafruit_BBIO.ADC.read = MagicMock(name='Adafruit.BBIO.ADC.read',
-                                           return_value=(1 / ADCPin.MAX_INPUT_VOLTAGE))
+                                           return_value=(ADCPin.MAX_INPUT_VOLTAGE))
         adc_pin = make_pin({
             "pin_name": "Hello",
             "pin_type": "ADC",
             "min_v": 0,
-            "default_v": 0.5,
-            "max_v": 1
+            "default_v": 0.9,
+            "max_v": 1.8
         }, mock_lib=Adafruit_BBIO.ADC)
 
         # Tests the method

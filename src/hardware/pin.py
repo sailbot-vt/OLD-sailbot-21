@@ -93,11 +93,11 @@ class ADCPin(Pin):
         The voltage currently being read by the pin.
         """
         self.adc_lib.read(self.pin_name)
-        return ADCPin.MAX_INPUT_VOLTAGE * self.adc_lib.read(self.pin_name)
+        return self.adc_lib.read(self.pin_name)
 
     def _normalize_voltage(self, read_value):
         v_range = self.max_v - self.min_v
-        read_v = ADCPin.MAX_INPUT_VOLTAGE * read_value
+        read_v = read_value
         shift_factor = self.min_v
         return 2 * (((read_v - shift_factor) / v_range) - 0.5) # Between -1 and 1
 

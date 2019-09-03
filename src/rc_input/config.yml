@@ -31,15 +31,15 @@ pins:
   RUDDER:
     pin_name: "P9_39"
     pin_type: "ADC"
-    min_v: .18
-    default_v: .26
-    max_v: .35
+    min_v: 0
+    default_v: .90
+    max_v: 1.8
   TRIM:
     pin_name: "P9_37"
     pin_type: "ADC"
-    min_v: .18
-    default_v: .26
-    max_v: .35
+    min_v: 0
+    default_v: .90
+    max_v: 1.8
   MODE1:
     pin_name: "P9_27"
     pin_type: "GPIO"
