@@ -8,8 +8,6 @@ from src.hardware.pin import make_pin
 from src.navigation_mode import NavigationMode
 from src.rc_input.rc_receiver import RCReceiver
 
-import pdb
-
 class RCReceiverTests(unittest.TestCase):
     """Tests methods in RCReceiver"""
 
