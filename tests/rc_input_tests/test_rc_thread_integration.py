@@ -8,8 +8,6 @@ from src.navigation_mode import NavigationMode
 from src.rc_input.rc_input_thread import RCInputThread
 from tests.mock_bbio import Adafruit_BBIO
 
-import pdb
-
 class RCThreadTests(unittest.TestCase):
     """Integration tests for RCInputThread"""
     def setUp(self):
