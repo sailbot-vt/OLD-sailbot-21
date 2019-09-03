@@ -3,6 +3,8 @@ from pubsub import pub
 
 from src.navigation_mode import NavigationMode
 
+import pdb
+
 class RCReceiver:
     """Defines an RC receiver that sends data to a broadcaster."""
 
@@ -41,9 +43,8 @@ class RCReceiver:
         Returns:
         The rudder input in degrees to starboard.
         """
-        
-        unscaled_value = self.pins["RUDDER"].read()  # Between 0 and 1.8
-        degrees_starboard = (unscaled_value - 0.9) * (80.0/0.9)  # Between -80 and 80
+        unscaled_value = self.pins["RUDDER"].read()  # Between -1 and 1
+        degrees_starboard = unscaled_value  * 80.0  # Between -80 and 80
         return degrees_starboard
 
     def _get_trim_input(self):
@@ -55,8 +56,8 @@ class RCReceiver:
         Returns:
         The trim input in degrees trimming in.
         """
-        unscaled_value = self.pins["TRIM"].read()  # Between 0 and 1.8
-        degrees_in = (unscaled_value - 0.9) * (20.0/0.9)  # Between -20 and 20
+        unscaled_value = self.pins["TRIM"].read()  # Between -1 and 1
+        degrees_in = unscaled_value * 20.0  # Between -20 and 20
         return degrees_in
 
     def _get_mode(self):

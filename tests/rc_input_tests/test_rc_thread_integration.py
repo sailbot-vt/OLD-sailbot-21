@@ -8,6 +8,8 @@ from src.navigation_mode import NavigationMode
 from src.rc_input.rc_input_thread import RCInputThread
 from tests.mock_bbio import Adafruit_BBIO
 
+import pdb
+
 class RCThreadTests(unittest.TestCase):
     """Integration tests for RCInputThread"""
     def setUp(self):
@@ -26,6 +28,7 @@ class RCThreadTests(unittest.TestCase):
 
         self.rc_input_thread.receiver.send_inputs()
 
+
         self.assertAlmostEqual(-80, mock_pub.method_calls[0][2]["degrees_starboard"], 2)
         self.assertAlmostEqual(-20, mock_pub.method_calls[1][2]["degrees_in"], 2)
         mock_pub.sendMessage.assert_any_call("set nav mode", mode=NavigationMode.MANUAL)
@@ -38,6 +41,7 @@ class RCThreadTests(unittest.TestCase):
                                            return_value=0.9)
 
         self.rc_input_thread.receiver.send_inputs()
+        
 
         self.assertAlmostEqual(0, mock_pub.method_calls[0][2]["degrees_starboard"], 2)
         self.assertAlmostEqual(0, mock_pub.method_calls[1][2]["degrees_in"], 2)

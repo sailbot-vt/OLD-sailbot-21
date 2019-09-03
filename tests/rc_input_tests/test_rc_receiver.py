@@ -35,7 +35,7 @@ class RCReceiverTests(unittest.TestCase):
     @patch('src.rc_input.rc_receiver.pub', autospec=True)
     def test_get_rudder(self, mock_pub):
         """Tests that the receiver reads and scales rudder input correctly"""
-        test_inputs = [0, 0.675, 0.9, 1.125, 1.8]
+        test_inputs = [-1, -0.25, 0, 0.25, 1]
         scaled_outputs = [-80, -20, 0, 20, 80]  # 80 * x^2
 
         ii = 0 
@@ -53,7 +53,7 @@ class RCReceiverTests(unittest.TestCase):
     @patch('src.rc_input.rc_receiver.pub', autospec=True)
     def test_scale_trim(self, mock_pub):
         """Tests that the receiver reads and scales trim input correctly"""
-        test_inputs = [0, 0.675, 0.9, 1.125, 1.8]
+        test_inputs = [-1, -0.25, 0, 0.25, 1]
         scaled_outputs = [-20, -5, 0, 5, 20]  # 20 * x^2
 
         ii = 0
