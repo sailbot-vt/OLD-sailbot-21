@@ -4,3 +4,4 @@ numpy
 parse
 pyserial
 flask-socketio
+eventlet

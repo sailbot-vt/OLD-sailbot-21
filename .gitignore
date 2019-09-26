@@ -56,9 +56,10 @@ coverage.xml
 *.mo
 *.pot
 
-# Flask stuff:
+# Flask/eventlet stuff:
 instance/
 .webassets-cache
+logs/
 
 # PyBuilder
 target/
