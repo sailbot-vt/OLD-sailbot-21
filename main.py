@@ -9,6 +9,8 @@ from src.world.world import World
 
 from src.logging.logger import Logger
 
+from flask_app import create_app, create_socket
+
 def main():
     """Runs the program."""
 
@@ -30,6 +32,12 @@ def main():
 #    airmar_thread.start()
     rc_thread.start()
     captain_thread.start()
+
+    # Start flask-socketio
+    application = create_app()
+    socketio = create_socket(application)
+
+    socketio.run
 
     while True:
         print("Waiting for input:\nd: drop mark\ns: start navigation\ne: end navigation\nc: clear course\n^C: exit program")

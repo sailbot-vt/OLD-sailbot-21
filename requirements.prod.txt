@@ -1,6 +1,6 @@
 pypubsub
 pyyaml
 numpy
-pynmea2
 parse
 pyserial
+flask-socketio

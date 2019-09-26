@@ -7,3 +7,4 @@ parse
 pyserial
 opencv-python
 scipy
+flask-socketio
