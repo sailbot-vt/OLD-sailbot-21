@@ -41,6 +41,9 @@ class TestablePin(Pin):
         pub.sendMessage("write msg", pin_name = self.pin_name, msg = self.value, rw_state = 'w')
         self.written_values.append(state)
 
+    def setup(self):
+        pass
+
     def start(self, *args):
         pass
 

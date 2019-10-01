@@ -1,7 +1,7 @@
 from threading import Thread
 from time import sleep
 
-from src.rc_input.config_reader import read_pin_config, read_interval
+from src.rc_input.config_reader import read_pin_config, read_port_config, read_interval
 from src.rc_input.rc_receiver import RCReceiver
 
 
@@ -10,11 +10,11 @@ class RCInputThread(Thread):
 
     Should accept multiple boat configurations, and should be general enough to allow for easy extension.
     """
-    def __init__(self, mock_bbio=None):
+    def __init__(self, mock_bbio=None, mock_port=None):
         """Builds a new RC input thread."""
         super().__init__()
 
-        self.receiver = RCReceiver(read_pin_config(mock_bbio=mock_bbio))
+        self.receiver = RCReceiver(read_pin_config(mock_bbio=mock_bbio), read_port_config(mock_port=mock_port))
 
         self.keep_reading = True
         self.read_interval = read_interval()

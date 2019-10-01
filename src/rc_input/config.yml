@@ -48,3 +48,20 @@ pins:
     pin_name: "P9_25"
     pin_type: "GPIO"
     io_type: IN
+  UART_RX:
+    pin_name: "P9_22"
+    pin_type: "UART"
+    channel: "UART2"
+  UART_TX:
+    pin_name: "P9_21"
+    pin_type: "UART"
+    channel: "UART2"
+
+# Settings to configure for port communication with the Arduino
+port:
+  port_name: "/dev/tty02"
+  port_type: "SERIAL"
+  frequency: 1 #seconds
+  baudrate: 4800
+  timeout: 0
+  encoding: "UTF-8"

@@ -7,6 +7,7 @@ except ImportError:
 
 from src.rc_input.config_reader import read_interval
 from src.rc_input.config_reader import read_pin_config
+from src.hardware.pin import ADCPin, GPIOPin
 from tests.mock_bbio import Adafruit_BBIO
 
 
@@ -23,11 +24,11 @@ class RCConfigReaderTests(unittest.TestCase):
 
         pins = read_pin_config(mock_bbio=Adafruit_BBIO, path=self.path)
         for pin in pins.values():
-            if pin.pin_name == "ADC_PIN":
-                assert pin.min_v == .18
-                assert pin.default_v == .26
-                assert pin.max_v == .35
-            elif pin.pin_name == "GPIO_PIN":
+            if isinstance(pin, ADCPin):
+                assert pin.min_v == 0
+                assert pin.default_v == 0.90
+                assert pin.max_v == 1.80
+            elif isinstance(pin, GPIOPin):
                 assert pin.io_type == Adafruit_BBIO.GPIO.IN
 
     def test_read_interval(self):

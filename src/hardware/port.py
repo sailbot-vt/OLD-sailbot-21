@@ -74,6 +74,11 @@ class TestablePort(Port):
         return msg
 
     def read_line(self, terminator='\n'):
+        if not isinstance(self.value, str):
+            try:
+                self.value = str(self.value)
+            except:
+                pass
         return self.value + terminator
 
     def read(self):
