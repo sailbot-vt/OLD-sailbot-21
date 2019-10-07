@@ -44,11 +44,7 @@ class RCReceiver:
         self.ports['UART'].close()
 
     def send_inputs(self):
-        """Sends inputs to the broadcaster to be published.
-
-        Keyword arguments:
-        inputs – Inputs to be sent. A dictionary with keys 'RUDDER', 'TRIM', and 'MODE'
-        """
+        """Sends inputs to the broadcaster to be published."""
 
         self._get_inputs()
 
@@ -62,7 +58,15 @@ class RCReceiver:
 
         self.data = self._decode_input(self.ports['UART'].read_line())
 
-    def _decode_input(self, line):
+    def _decode_input(self, line=''):
+        """ Decodes RC data from arduino
+        
+        Keyword Arguments:
+        line -- String containing serial data sent from Arudino
+
+        Returns:
+        data -- Dictionary containing RC data
+        """
 
         rline = line[0:(line.rfind('\\'))]
         ldata = rline.split(',')
