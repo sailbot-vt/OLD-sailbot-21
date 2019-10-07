@@ -64,13 +64,14 @@ class RCReceiver:
 
     def _decode_input(self, line):
 
-        line = line[0:(line.rfind('\\'))]
-        data = line.split(',')
+        rline = line[0:(line.rfind('\\'))]
+        ldata = rline.split(',')
 
-        data["RUDDER"] = float(data[0])
-        data["TRIM"] = float(data[1])
-        data["MODE1"] = float(data[2])
-        data["MODE2"] = float(data[3])
+        data = {}
+        data["RUDDER"] = float(ldata[0])
+        data["TRIM"] = float(ldata[1])
+        data["MODE1"] = float(ldata[2])
+        data["MODE2"] = float(ldata[3])
 
         return data
 
