@@ -36,8 +36,7 @@ def main():
     # Start flask-socketio
     application = create_app()
     socketio = create_socket(application)
-
-    socketio.run
+    socketio.run(application)
 
     while True:
         print("Waiting for input:\nd: drop mark\ns: start navigation\ne: end navigation\nc: clear course\n^C: exit program")
