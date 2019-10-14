@@ -2,6 +2,7 @@ from flask import Flask, render_template
 from flask_socketio import SocketIO
 
 from flask_app.routes import apply_routes
+from flask_app.sockets import apply_sockets
 
 def create_app(test_config=None):
     """" Builds the Flask app.
@@ -22,7 +23,7 @@ def create_app(test_config=None):
         app.config.from_mapping(test_config)
 
     apply_routes(app)
-
+    apply_sockets(app)
     return app
 
 def create_socket(app):

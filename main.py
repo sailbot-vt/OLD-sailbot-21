@@ -36,7 +36,6 @@ def main():
     # Start flask-socketio
     application = create_app()
     socketio = create_socket(application)
-
     socketio.run(application)
 
     while True:
