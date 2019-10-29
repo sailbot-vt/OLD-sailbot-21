@@ -1,7 +1,8 @@
 # Virtual environment (Should be installed separately)
 p3_*env/
 
-# Log files
+# Log files and dir
+log/
 .log
 
 # Byte-compiled / optimized / DLL files
