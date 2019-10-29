@@ -1,9 +1,10 @@
 import json
 
+from flask_socketio import Namespace, emit
 from pubsub import pub
 
 
-class AirmarSocket:
+class AirmarSocket(Namespace):
     """ Process airmar data from pubsub """
     @property
     def serialized_data(self):
@@ -23,7 +24,8 @@ class AirmarSocket:
                 "boat_speed": self.boat_speed
             })
 
-    def __init__(self):
+    def __init__(self, Namespace=None):
+        super().__init__(Namespace)
         self.true_wind_speed = 0
         self.true_wind_angle = 0
         self.apparent_wind_speed = 0
