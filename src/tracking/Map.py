@@ -35,16 +35,7 @@ class Map(Thread):
     def run(self):
         """ Continuously updates objects in object list using Kalman filter prediction"""
         while True:
-            position = boat.current_position()
-            mutex.acquire()
-            for object in self.objectList:
-                x,y = self.polar_to_cartesian(object.bearing, object.range)
-                boat_x_moved, boat_y_moved = (position.y - old_position.y), (position.x - old_position.x)
-                x -= boat_x_moved
-                y -= boat_y_moved
-                object.range, object.bearing = self.cartesian_to_polar(x, y)
-            mutex.release()
-            old_position = position
+            self.updateMap()
             sleep(self.update_interval)
 
     def add_object(self, bearing, range, objectType=ObjecttType.NONE, rangeRate=0, bearingRate=0):
@@ -113,13 +104,18 @@ class Map(Thread):
         y = range*math.sin(bearing)
         return (x,y)
 
-    def updateMap(self, boatDistanceMoved, boatBearing):
+    def updateMap(self):
+    """ Updates map using boat state data"""
+        position = boat.current_position()
+        mutex.acquire()
         for object in self.objectList:
             x,y = self.polar_to_cartesian(object.bearing, object.range)
-            boat_x_moved, boat_y_moved = self.polar_to_cartesian(boatBearing, boatDistanceMoved)
+            boat_x_moved, boat_y_moved = (position.y - old_position.y), (position.x - old_position.x)
             x -= boat_x_moved
             y -= boat_y_moved
             object.range, object.bearing = self.cartesian_to_polar(x, y)
+        mutex.release()
+        old_position = position
 
 class Object():
 
