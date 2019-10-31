@@ -9,11 +9,12 @@ from src.buoy_detection.Depth_Map_Calculator import Depth_Map
 from src.tracking.KalmanFilter import KalmanFilter
 from src.track.classification_types import ObjectType
 import numpy as np
+import math
 
 
 class Map(Thread):
     """
-    Map is used to create a model of where objects around the boat currently exist. Everything is currently relative to where 
+    Map is used to create a model of where objects around the boat currently exist. Everything is currently relative to where
     our boat is, so each calculation should never have an absolute position in mind.
     """
 
@@ -34,12 +35,16 @@ class Map(Thread):
     def run(self):
         """ Continuously updates objects in object list using Kalman filter prediction"""
         while True:
+            position = boat.current_position()
             mutex.acquire()
             for object in self.objectList:
-                pass
-                # object.KalmanFilter.update()
-                # Find kalman filter predictions for all of our detected objects and update the one closest to our new update
+                x,y = self.polar_to_cartesian(object.bearing, object.range)
+                boat_x_moved, boat_y_moved = (position.y - old_position.y), (position.x - old_position.x)
+                x -= boat_x_moved
+                y -= boat_y_moved
+                object.range, object.bearing = self.cartesian_to_polar(x, y)
             mutex.release()
+            old_position = position
             sleep(self.update_interval)
 
     def add_object(self, bearing, range, objectType=ObjecttType.NONE, rangeRate=0, bearingRate=0):
@@ -62,11 +67,17 @@ class Map(Thread):
             mutex.release()
 
 
-    def planar_to_radial(self):
-        pass
+    def cartesian_to_polar(self, x, y):
+        r = math.sqrt(x^2 + y^2)
+        theta = math.atan(x/y)
 
-    def radial_to_planar(self, bearing, range):
-        pass
+        # If in 2nd or 3rd quadrant
+        if x < 0:
+            theta += 180
+        # If in 4th quadrant
+        elif x > 0 and y < 0:
+            theta += 360
+        return (theta, r)
 
     def return_objects(self, bearingRange=[-30,30], timeRange=[0,5000]):
         """ Returns objects passing within given bearing range of boat in given time range
@@ -96,6 +107,19 @@ class Map(Thread):
         mutex.release()
 
         return objectArray[0:ii]
+
+    def polar_to_cartesian(self, bearing, range):
+        x = range*math.cos(bearing)
+        y = range*math.sin(bearing)
+        return (x,y)
+
+    def updateMap(self, boatDistanceMoved, boatBearing):
+        for object in self.objectList:
+            x,y = self.polar_to_cartesian(object.bearing, object.range)
+            boat_x_moved, boat_y_moved = self.polar_to_cartesian(boatBearing, boatDistanceMoved)
+            x -= boat_x_moved
+            y -= boat_y_moved
+            object.range, object.bearing = self.cartesian_to_polar(x, y)
 
 class Object():
 
