@@ -17,7 +17,7 @@ class Boat:
         return self._current_heading
 
     @property
-    def curretn_speed(self):
+    def current_speed(self):
         return self._current_speed
 
     def __init__(self):
