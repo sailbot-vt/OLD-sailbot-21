@@ -16,6 +16,10 @@ class Boat:
     def current_heading(self):
         return self._current_heading
 
+    @property
+    def curretn_speed(self):
+        return self._current_speed
+
     def __init__(self):
         """Builds a new boat"""
         self.upwind_angle = upwind_angle()
@@ -24,6 +28,7 @@ class Boat:
         pub.subscribe(self.read_latitude, "boat latitude")
         pub.subscribe(self.read_longitude, "boat longitude")
         pub.subscribe(self.read_heading, "boat heading")
+        pub.subscribe(self.read_speed, "boat speed")
         print("Boat ready\nupwind_angle={0}".format(self.upwind_angle))
 
     def read_latitude(self, latitude):
@@ -37,3 +42,7 @@ class Boat:
     def read_heading(self, heading):
         """Updates the boat's current heading"""
         self._current_heading = heading
+
+    def read_speed(self, speed):
+        """Updates the boat's current speed"""
+        self._current_speed = speed
