@@ -3,11 +3,12 @@ from src.tracking.ExtendedKalmanFilter import EKF
 from src.buoy_detection.Depth_Map_Calculator import Depth_Map
 from src.tracking.KalmanFilter import KalmanFilter
 import numpy as np
+import math
 
 
 class Map:
     """
-    Map is used to create a model of where objects around the boat currently exist. Everything is currently relative to where 
+    Map is used to create a model of where objects around the boat currently exist. Everything is currently relative to where
     our boat is, so each calculation should never have an absolute position in mind.
     """
 
@@ -39,12 +40,32 @@ class Map:
             # object.KalmanFilter.update()
             # Find kalman filter predictions for all of our detected objects and update the one closest to our new update
 
-    def planar_to_radial(self):
-        pass
 
-    def radial_to_planar(self, bearing, range):
-        pass
+    def cartesian_to_polar(self, x, y):
+        r = math.sqrt(x^2 + y^2)
+        theta = math.atan(x/y)
 
+        # If in 2nd or 3rd quadrant
+        if x < 0:
+            theta += 180
+        # If in 4th quadrant
+        elif x > 0 and y < 0:
+            theta += 360
+
+        return (theta, r)
+
+    def polar_to_cartesian(self, bearing, range):
+        x = range*math.cos(bearing)
+        y = range*math.sin(bearing)
+        return (x,y)
+
+    def updateMap(self, boatDistanceMoved, boatBearing):
+        for object in self.objectList:
+            x,y = self.polar_to_cartesian(object.bearing, object.range)
+            boat_x_moved, boat_y_moved = self.polar_to_cartesian(boatBearing, boatDistanceMoved)
+            x -= boat_x_moved
+            y -= boat_y_moved
+            object.range, object.bearing = self.cartesian_to_polar(x, y)
 
 class Object():
 
