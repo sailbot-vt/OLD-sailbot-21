@@ -49,6 +49,7 @@ class Logger():
             with open(self.outfile_name, 'a') as outfile:
                 json.dump(out_dict, outfile)
                 outfile.write('\n')
+                pub.sendMessage("config dict", config_dict=out_dict)
 
 
     def write_msg(self, pin_name, msg, rw_state):
