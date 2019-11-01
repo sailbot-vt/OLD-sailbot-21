@@ -83,7 +83,7 @@ class Map(Thread):
         # Create output array
         _max_objs = 10              # Maximum number of objects to output (arbitrary choice)
         _num_fields = 3             # Range, bearing, classification (using classification enum)
-        objectArray = np.zeros(10, 3)
+        objectArray = np.zeros(_max_objs, _num_fields)
         # Convert time range to range range
         current_speed = boat.current_speed()
         rngRange = [(current_speed * time_val) for time_val in timeRange]
@@ -99,13 +99,32 @@ class Map(Thread):
 
         return objectArray[0:ii]
 
+    def get_buoys(self):
+        """Returns buoys that are tracked in the map
+
+        Returns:
+            objectArray -- array made up of bearing, range, and classification data for each object in range inputted
+        """
+    
+        # Create output array
+        _max_objs = 5               # Maximum number of objects to output (arbitrary choice)
+        _num_fields = 3             # Range, bearing, classification (using classification enum)
+        objectArray = np.zeros(_max_objs, _num_fields)
+        mutex.acquire()
+        for obj in objectList:
+            if obj.objectType == ObjectType.BUOY:
+                objectArray[ii] = np.array(obj.range, obj.bearing, obj.objectType)
+        mutex.release()
+
+        return objectArray
+
     def polar_to_cartesian(self, bearing, range):
         x = range*math.cos(bearing)
         y = range*math.sin(bearing)
         return (x,y)
 
     def updateMap(self):
-    """ Updates map using boat state data"""
+        """ Updates map using boat state data"""
         position = boat.current_position()
         mutex.acquire()
         for object in self.objectList:
