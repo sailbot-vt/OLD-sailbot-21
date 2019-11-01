@@ -117,6 +117,7 @@ class Map(Thread):
         mutex.release()
         old_position = position
 
+
 class Object():
 
     def __init__(self, bearing, range, lastSeen, objectType=ObjectType.NONE, rangeRate, bearingRate):
