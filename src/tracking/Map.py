@@ -18,7 +18,7 @@ class Map(Thread):
     our boat is, so each calculation should never have an absolute position in mind.
     """
 
-    def __init__(self, boat):
+    def __init__(self, boat, update_map):
         """ Initializes Map (done on startup) """
         super().__init__()
         self.is_active = True
@@ -29,14 +29,25 @@ class Map(Thread):
 
         self.objectList = []
         self.depthCalc = Depth_Map()
-        self.update_interval = 50
 
+        self.update_interval = 50
+        self.update_map = update_map
+        self.old_position = self.boat.current_position()
 
     def run(self):
         """ Continuously updates objects in object list using Kalman filter prediction"""
         while True:
-            self.updateMap()
+            if update_map:
+                self.updateMap()
             sleep(self.update_interval)
+
+    def enable_update(self):
+        """Enables object updating using kalman filter"""
+        self.update_map = True
+
+    def disable_update(self):
+        """Disables object updating using kalman filter"""
+        self.update_map = False
 
     def add_object(self, delta_x, delta_y, objectType=ObjectType.NONE, rangeRate=0, bearingRate=0):
         """ Creates object for detection that is made to be added to map
@@ -101,7 +112,7 @@ class Map(Thread):
 
     def updateMap(self):
         """ Updates map using boat state data"""
-        position = boat.current_position()
+        position = self.boat.current_position()
         mutex.acquire()
         for object in self.objectList:
             x,y = self.polar_to_cartesian(object.bearing, object.range)
@@ -110,7 +121,7 @@ class Map(Thread):
             y -= boat_y_moved
             object.range, object.bearing = self.cartesian_to_polar(x, y)
         mutex.release()
-        old_position = position
+        self.old_position = position
 
     def clear_objects(self, timeSinceLastSeen=0):
         """ Clears object from objects with greater than <timeSinceLastSeen> time since last seen
