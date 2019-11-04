@@ -4,3 +4,5 @@ numpy
 pynmea2
 parse
 pyserial
+filterpy
+sympy
