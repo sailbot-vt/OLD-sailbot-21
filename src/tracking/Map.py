@@ -63,7 +63,6 @@ class Map(Thread):
         if 0:  # if object fits prior track that is made, add object to track
             pass
         else:
-            theta, r = self.cartesian_to_polar
             newObject = Object(delta_x, delta_y, datetime.datetime.now(), rangeRate, bearingRate, objectType)
             mutex.acquire()
             self.objectList.append(newObject)
