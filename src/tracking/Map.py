@@ -116,12 +116,12 @@ class Map(Thread):
         _num_fields = 3             # Range, bearing, classification (using classification enum)
         objectArray = np.zeros(_max_objs, _num_fields)
         mutex.acquire()
-        for obj in objectList:
+        for ii, obj in enumerate(objectList):
             if obj.objectType == ObjectType.BUOY:
                 objectArray[ii] = np.array(obj.range, obj.bearing, obj.objectType)
         mutex.release()
 
-        return objectArray
+        return objectArray[0:ii]
 
     def polar_to_cartesian(self, bearing, range):
         x = range*math.cos(bearing)
