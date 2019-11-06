@@ -75,12 +75,13 @@ class Map(Thread):
 
         return (theta, r)
 
-    def return_objects(self, bearingRange=[-30,30], timeRange=[0,5000]):
+    def return_objects(self, bearingRange=[-30,30], timeRange=[0,5000], rngRange=None):
         """ Returns objects passing within given bearing range of boat in given time range
 
         Inputs:
             bearingRange -- Angle (in degrees) from bow to search within
             timeRange -- Time (in ms) to search within using current boat velocity
+            rngRange -- Range (in m) to search within
         
         Returns:
             objectArray -- array made up of bearing, range, and classification data for each object in range inputted
@@ -89,9 +90,10 @@ class Map(Thread):
         _max_objs = 10              # Maximum number of objects to output (arbitrary choice)
         _num_fields = 3             # Range, bearing, classification (using classification enum)
         objectArray = np.zeros(_max_objs, _num_fields)
-        # Convert time range to range range
-        current_speed = boat.current_speed()
-        rngRange = [(current_speed * time_val) for time_val in timeRange]
+        if rngRange == None:
+            # Convert time range to range range
+            current_speed = boat.current_speed()
+            rngRange = [(current_speed * time_val) for time_val in timeRange]
         ii = 0
         mutex.acquire()
         for obj in self.objectList:
@@ -116,9 +118,11 @@ class Map(Thread):
         _num_fields = 3             # Range, bearing, classification (using classification enum)
         objectArray = np.zeros(_max_objs, _num_fields)
         mutex.acquire()
-        for ii, obj in enumerate(objectList):
+        ii = 0
+        for obj in self.objectList:
             if obj.objectType == ObjectType.BUOY:
                 objectArray[ii] = np.array(obj.range, obj.bearing, obj.objectType)
+                ii += 1
         mutex.release()
 
         return objectArray[0:ii]
