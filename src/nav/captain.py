@@ -67,10 +67,10 @@ class Captain(Thread):
         """Enables the autonomous navigation"""
         self.is_active = True
 
-    def drop_mark(self):
+    def drop_mark(self, waypoint):
         """Adds a waypoint to the course"""
         mutex.acquire()
-        self.course.add_mark(self.boat.current_position)
+        self.course.add_mark(waypoint)
         mutex.release()
 
     def clear_course(self):
