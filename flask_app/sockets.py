@@ -3,7 +3,8 @@ from flask_socketio import Namespace, emit
 from flask_app.boat.boat_socket import BoatSocket
 from flask_app.logger.logger_socket import LoggerSocket
 from flask_app.captain.captain_socket import CaptainSocket
-        
+from flask_app.sys_monitor.sys_monitor_socket import SysMonitorSocket
+
 
 def apply_sockets(app, **kwargs):
     """ Applies multiplexed socket to the flask app.
@@ -26,3 +27,5 @@ def apply_sockets(app, **kwargs):
     if 'rc_thread' in kwargs:
         # RC Socket
         pass
+
+    app.on_namespace(SysMonitorSocket(Namespace='/sys_monitor'))
