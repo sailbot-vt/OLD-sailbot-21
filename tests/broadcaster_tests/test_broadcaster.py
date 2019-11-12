@@ -49,9 +49,9 @@ class BroadcasterTests(unittest.TestCase):
         self.assertEqual(self.messenger.update_key(), None)
         self.assertEqual(self.filewriter.update_key(), None)
 
-        self.testable.update_key(self.data)
-        self.messenger.update_key(self.data)
-        self.filewriter.update_key(self.data)
+        self.testable.update_dictionary(self.data)
+        self.messenger.update_dictionary(self.data)
+        self.filewriter.update_dictionary(self.data)
 
         self.assertEqual(self.testable.update_key(), None)
         self.assertEqual(self.messenger.update_key(), None)

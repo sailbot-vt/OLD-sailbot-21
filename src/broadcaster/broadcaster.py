@@ -41,6 +41,8 @@ class TestableBroadcaster(Broadcaster):
     def update_dictionary(self, data=None):
         if data is not None:
             self.data = data
+            for key in self.data.keys():
+                self.update_key(key=key)
 
     def update_key(self, key=None):
         if self.data is None or key is None or not key in self.data or self.data[key] is None:
@@ -58,9 +60,8 @@ class Messenger(Broadcaster):
     def update_dictionary(self, data=None):
         if data is not None:
             self.data = data
-
-        for key in self.data.keys():
-            self.update_key(key=key)
+            for key in self.data.keys():
+                self.update_key(key=key)
 
     def update_key(self, key=None):
         """ Publishes data to pubsub. 
@@ -91,9 +92,8 @@ class FileWriter(Broadcaster):
     def update_dictionary(self, data=None):
         if data is not None:
             self.data = data
-
-        for key in self.data.keys():
-            self.update_key(key=key)
+            for key in self.data.keys():
+                self.update_key(key=key)
     
     def update_key(self, key=None):
         # Appends to end of file.
