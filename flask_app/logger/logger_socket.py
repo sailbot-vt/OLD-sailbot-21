@@ -8,7 +8,7 @@ from pubsub import pub
 class LoggerSocket(Namespace):
     """ Process airmar data from pubsub """
 
-    def __init__(self, Namespace=None):
+    def __init__(self, logger, Namespace=None):
         super().__init__(Namespace)
         pub.subscribe(self.update_write_msg, "write msg")
         pub.subscribe(self.update_config_dict, "config dict")

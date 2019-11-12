@@ -1,7 +1,4 @@
-import json
-
 from flask_socketio import Namespace, emit
-from pubsub import pub
 
 
 class BoatSocket(Namespace):
