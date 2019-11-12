@@ -9,3 +9,5 @@ opencv-python
 scipy
 flask-socketio
 eventlet
+filterpy
+sympy

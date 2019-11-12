@@ -8,3 +8,5 @@ scipy
 opencv-python
 flask-socketio
 eventlet
+filterpy
+sympy
