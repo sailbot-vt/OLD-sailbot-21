@@ -22,7 +22,7 @@ def create_app(test_config=None):
 
     return app
 
-def create_socket(app):
+def create_socket(app, **kwargs):
     """ Builds the SocketIO from flask app.
 
     Keyword Arguments:
@@ -32,10 +32,6 @@ def create_socket(app):
     The socketio wrapper
     """
     socketio = SocketIO(app)
-    apply_sockets(socketio)
+    apply_sockets(socketio, **kwargs)
 
     return socketio
-
-
-app = create_app()
-socketio = create_socket(app)
