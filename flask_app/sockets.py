@@ -1,6 +1,7 @@
 from flask_socketio import Namespace, emit
 
-from flask_app.airmar.airmar_socket import AirmarSocket
+from flask_app.boat.boat_socket import BoatSocket
+from flask_app.logger.logger_socket import LoggerSocket
 
 
 def apply_sockets(app):
@@ -9,4 +10,5 @@ def apply_sockets(app):
     Keyword arguments:
     app - The Flask-socketio app to apply the sockets.
     """
-    app.on_namespace(AirmarSocket('/airmar'))
+    app.on_namespace(BoatSocket('/boat'))
+    app.on_namespace(LoggerSocket('/logger'))

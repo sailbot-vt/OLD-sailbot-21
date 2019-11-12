@@ -9,7 +9,7 @@ from src.world.world import World
 
 from src.logging.logger import Logger
 
-from flask_app import create_app, create_socket
+from flask_app import app, socketio
 
 def main():
     """Runs the program."""
@@ -22,21 +22,19 @@ def main():
     world = World()
 
     # Threads
-#    airmar_thread = airmar.AirmarInputThread()
+    airmar_thread = airmar.AirmarInputThread()
     logger = Logger()
     rc_thread = rc.RCInputThread()
     Sail = sail.SailListener(boat, world)
     Rudder = rudder.RudderListener()
     captain_thread = captain.Captain(boat, world)
 
-#    airmar_thread.start()
+    airmar_thread.start()
     rc_thread.start()
     captain_thread.start()
 
     # Start flask-socketio
-    application = create_app()
-    socketio = create_socket(application)
-    socketio.run(application)
+    socketio.run(app)
 
     while True:
         print("Waiting for input:\nd: drop mark\ns: start navigation\ne: end navigation\nc: clear course\n^C: exit program")

@@ -30,9 +30,8 @@ class AirmarProcessor:
         elif sid in ["GPVTG"]:
             self._update_boat_speed(sid)
 
-        self.broadcaster.update_data(data=self.data)
-        for key in self.data.keys():
-            self.broadcaster.read_data(key=key)
+        self.broadcaster.update_dictionary(data=self.data)
+
 
     def _update_wind(self, sid):
         speed_key = "wind speed apparent"
@@ -56,8 +55,8 @@ class AirmarProcessor:
 
     def _scale_avg_polar_coords(self, old_magnitude, old_angle, new_magnitude, new_angle):
         # Convert to radians
-        new_angle = math.radian(new_angle)
-        old_angle = math.radian(old_angle)
+        new_angle = math.radians(new_angle)
+        old_angle = math.radians(old_angle)
 
         # Calculate components
         old_x = old_magnitude * math.sin(old_angle)
@@ -73,12 +72,12 @@ class AirmarProcessor:
         return math.sqrt(x*x + y*y), math.degrees(math.atan2(x, y)) % 360
 
     def _update_boat_gps(self, sid):
-        if self.raw.has_key(sid):
+        if sid in self.raw:
             self.data["boat latitude"] = float(self.raw[sid]["latitude"])
             self.data["boat longitude"] = float(self.raw[sid]["longitude"])
 
     def _update_boat_speed(self, sid):
-        if self.raw.has_key(sid):
+        if sid in self.raw:
             self.data["boat speed"] = float(self.raw[sid]["speed_over_ground_kph"])
             self.data["boat heading"] = float(self.raw[sid]["course_over_ground_true"]) % 360
     

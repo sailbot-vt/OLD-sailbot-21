@@ -13,17 +13,13 @@ def create_app(test_config=None):
     Returns:
     the flask application
     """
+
     app = Flask(__name__)
     # TODO Hide secret.
     app.config['SECRET_KEY'] = 'secret!'
 
-    if test_config is None:
-        app.config.from_pyfile('config.py', silent=True)
-    else:
-        app.config.from_mapping(test_config)
-
     apply_routes(app)
-    apply_sockets(app)
+
     return app
 
 def create_socket(app):
@@ -33,11 +29,13 @@ def create_socket(app):
     app - The Flask app
 
     Returns:
-    the socketio
+    The socketio wrapper
     """
-    return SocketIO(app)
-
-if __name__ == "__main__":
-    app = create_app()
     socketio = SocketIO(app)
-    socketio.run()
+    apply_sockets(socketio)
+
+    return socketio
+
+
+app = create_app()
+socketio = create_socket(app)
