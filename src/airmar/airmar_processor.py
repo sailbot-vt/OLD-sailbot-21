@@ -1,6 +1,10 @@
 import math
 from src.airmar.nmeaparser.nmea_sentence import get_sentence_interface
 
+from threading import Lock
+
+mutex = Lock()
+
 class AirmarProcessor:
     def __init__(self, broadcaster):
         self.broadcaster = broadcaster
@@ -29,9 +33,10 @@ class AirmarProcessor:
             self._update_boat_gps(sid)
         elif sid in ["GPVTG"]:
             self._update_boat_speed(sid)
-
+        
+        mutex.acquire()
         self.broadcaster.update_dictionary(data=self.data)
-
+        mutex.release()
 
     def _update_wind(self, sid):
         speed_key = "wind speed apparent"
