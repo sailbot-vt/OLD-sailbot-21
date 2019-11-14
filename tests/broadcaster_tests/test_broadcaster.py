@@ -25,17 +25,17 @@ class BroadcasterTests(unittest.TestCase):
 
     def test_update_data(self):
         """ Tests update data for broadcasters """
-        self.testable.update_data()
-        self.messenger.update_data()
-        self.filewriter.update_data()
+        self.testable.update_dictionary()
+        self.messenger.update_dictionary()
+        self.filewriter.update_dictionary()
 
         self.assertEqual(self.testable.data, None)
         self.assertEqual(self.messenger.data, None)
         self.assertEqual(self.filewriter.data, None)
 
-        self.testable.update_data(self.data)
-        self.messenger.update_data(self.data)
-        self.filewriter.update_data(self.data)
+        self.testable.update_dictionary(self.data)
+        self.messenger.update_dictionary(self.data)
+        self.filewriter.update_dictionary(self.data)
 
         self.assertEqual(self.testable.data, self.data)
         self.assertEqual(self.messenger.data, self.data)
@@ -45,22 +45,22 @@ class BroadcasterTests(unittest.TestCase):
     @patch('src.broadcaster.broadcaster.pub')
     def test_read_data(self, mock_open, mock_pub):
         """ Tests read data """
-        self.assertEqual(self.testable.read_data(), None)
-        self.assertEqual(self.messenger.read_data(), None)
-        self.assertEqual(self.filewriter.read_data(), None)
+        self.assertEqual(self.testable.update_key(), None)
+        self.assertEqual(self.messenger.update_key(), None)
+        self.assertEqual(self.filewriter.update_key(), None)
 
-        self.testable.update_data(self.data)
-        self.messenger.update_data(self.data)
-        self.filewriter.update_data(self.data)
+        self.testable.update_dictionary(self.data)
+        self.messenger.update_dictionary(self.data)
+        self.filewriter.update_dictionary(self.data)
 
-        self.assertEqual(self.testable.read_data(), None)
-        self.assertEqual(self.messenger.read_data(), None)
-        self.assertEqual(self.filewriter.read_data(), None)
+        self.assertEqual(self.testable.update_key(), None)
+        self.assertEqual(self.messenger.update_key(), None)
+        self.assertEqual(self.filewriter.update_key(), None)
 
-        self.assertEqual(self.testable.read_data(key="inval"), None)
-        self.assertEqual(self.messenger.read_data(key="inval"), None)
-        self.assertEqual(self.filewriter.read_data(key="inval"), None)
+        self.assertEqual(self.testable.update_key(key="inval"), None)
+        self.assertEqual(self.messenger.update_key(key="inval"), None)
+        self.assertEqual(self.filewriter.update_key(key="inval"), None)
 
-        self.assertEqual(self.testable.read_data(key=1), "test")
-        self.assertEqual(self.messenger.read_data(key=2), "test2")
-        self.assertEqual(self.filewriter.read_data(key=3), "test3")
+        self.assertEqual(self.testable.update_key(key=1), "test")
+        self.assertEqual(self.messenger.update_key(key=2), "test2")
+        self.assertEqual(self.filewriter.update_key(key=3), "test3")
