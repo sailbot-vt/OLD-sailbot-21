@@ -169,5 +169,19 @@ class PinTests(unittest.TestCase):
 
         mock_pub.sendMessage.assert_any_call("write msg", pin_name="Hello", msg=val, rw_state='r')        
 
+    @staticmethod
+    def test_uart_setup():
+        Adafruit_BBIO.UART.setup = MagicMock(name='Adafruit.BBIO.UART.setup')
+
+        uart_pin = make_pin({
+            "pin_name": "uart-test",
+            "pin_type": "UART",
+            "channel": "test-channel"
+        }, mock_lib=Adafruit_BBIO.UART)
+
+        # Tests the method
+        uart_pin.setup()
+        Adafruit_BBIO.UART.setup.assert_called_with("test-channel")
+
 if __name__ == "__main__":
     unittest.main()
