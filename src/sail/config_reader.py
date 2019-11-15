@@ -33,9 +33,9 @@ def read_mainsheet_config(path=None):
         path = os.path.dirname(os.path.abspath(__file__))
     with open(path + "/config.yml", "r") as yml:
         conf = yaml.full_load(yml)
-        rudder_config = conf["mainsheet"]
+        mainsheet_config = conf["mainsheet"]
 
-    return rudder_config
+    return mainsheet_config
 
 
 def read_pin_config(mock_bbio=None, path=None):
