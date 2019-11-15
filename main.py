@@ -3,6 +3,7 @@ import src.rc_input.rc_input_thread as rc
 import src.rudder.rudder_listener as rudder
 import src.sail.sail_listener as sail
 import src.nav.captain as captain
+import src.hardware.arduino.Arduino as Arduino
 
 from src.boat.boat import Boat
 from src.world.world import World
@@ -20,16 +21,18 @@ def main():
     world = World()
 
     # Threads
-#    airmar_thread = airmar.AirmarInputThread()
+    airmar_thread = airmar.AirmarInputThread()
     logger = Logger()
     rc_thread = rc.RCInputThread()
     Sail = sail.SailListener(boat, world)
     Rudder = rudder.RudderListener()
+    arduino_thread = Arduino()
     captain_thread = captain.Captain(boat, world)
 
-#    airmar_thread.start()
+    airmar_thread.start()
     rc_thread.start()
     captain_thread.start()
+    arduino_thread.start()
 
     while True:
         print("Waiting for input:\nd: drop mark\ns: start navigation\ne: end navigation\nc: clear course\n^C: exit program")
