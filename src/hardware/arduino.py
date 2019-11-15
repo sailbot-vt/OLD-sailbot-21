@@ -9,13 +9,13 @@ class Arduino(Thread):
 
     def __init__(self):
         """
-        Set up UART pin
+        Initializes arduino thread, subscribes update methods to their respective channels
         """
         super().__init__()
         self.is_active = True
-        """
-        set up UART pin, get baud rate from config
-        """
+
+        # TODO: set up UART pin, get baud rate from config
+
         self.update_interval = 0.01            # hard coded for now, set based on baud rate
         # initialize data to send
         self.data = {"rudder_ang": 0,
