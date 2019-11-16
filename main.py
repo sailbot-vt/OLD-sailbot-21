@@ -3,7 +3,7 @@ import src.rc_input.rc_input_thread as rc
 import src.rudder.rudder_listener as rudder
 import src.sail.sail_listener as sail
 import src.nav.captain as captain
-import src.hardware.arduino.Arduino as Arduino
+import src.arduino.arduino.Arduino as Arduino
 
 from src.boat.boat import Boat
 from src.world.world import World

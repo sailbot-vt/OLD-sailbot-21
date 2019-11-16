@@ -1,0 +1,52 @@
+# Ports must have their function in all caps.
+# All ports must include
+#   port_name -- The path of the port
+#   port_type -- The method of communication, e.g. SERIAL, USB
+#
+# Port types in this module:
+#   - SERIAL
+#
+# SERIAL:
+#   Serial pins must specify 
+#   port_name: which can be found through
+#       'ls /dev/tty*' or 'ls /dev/serial/by-id'
+#   port_type: Type of port used
+#   frequency: rate that airmar sends data to port in seconds.
+#   encoding: Type of encoding to use to convert byte data.
+#   sentence_id: List of mea0183 sentence types, i.e., $GPGGA -> "GGA"
+#   baudrate: standard - 4800, or 38400 (though most nmea instruments
+#       cannot operate at 38400)
+#   timeout: time rest for port.
+# 
+# Pins must have their function in all caps.
+# All pins must include
+#   pin_name -- The BBB name of the pin, e.g. "P0_0"
+#   pin_type -- The method for reading input from the pin, e.g. ADC
+#
+# Pin types in this module:
+#   - UART
+#
+# UART:
+#  UART pins must specify channel. One of "UART1", "UART2", "UART4" OR "UART5"
+#
+#
+# WARNING: YAML IS WHITESPACE SENSITIVE! PLEASE MATCH INDENTATION STYLE! This
+# means consistently use tabs or spaces, and use the indentation amounts in the
+# language spec available here: https://yaml.org/spec/1.2/spec.html
+
+
+pin:
+  pin_name: "Test"
+  pin_type: "UART"
+  channel: "UART2"
+
+port:
+  port_name: "/dev/tty2"
+  port_type: "SERIAL"
+  frequency: 1    # seconds
+  baudrate: 4800
+  timeout: 0
+  encoding: "UTF-8"
+
+arduino:
+  update_interval: 5          # ms

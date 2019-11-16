@@ -6,7 +6,7 @@ except ImportError:
 
 from pubsub import pub
 
-from src.hardware.arduino import Arduino
+from src.arduino.arduino import Arduino
 
 class ArduinoTests(unittest.TestCase):
     """ Tests the methods in rudder"""

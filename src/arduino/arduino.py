@@ -4,6 +4,10 @@ from pubsub import pub
 from threading import Thread, Lock
 import time
 
+from src.arduino.config_reader import read_arduino_config
+from src.arduino.config_reader import read_port_config
+from src.arduino.config_reader import read_pin_config
+
 class Arduino(Thread):
     """ Provides an interface to arudino connected over UART """
 
@@ -13,10 +17,10 @@ class Arduino(Thread):
         """
         super().__init__()
         self.is_active = True
-
-        # TODO: set up UART pin, get baud rate from config
-
-        self.update_interval = 0.01            # hard coded for now, set based on baud rate
+        self.config = read_arduino_config()
+        self.update_interval = self.config['update_interval']
+        self.uart_pin = read_pin_config()
+        self.port = read_port_config()
         # initialize data to send
         self.data = {"rudder_ang": 0,
                      "sail_ang": 0,
