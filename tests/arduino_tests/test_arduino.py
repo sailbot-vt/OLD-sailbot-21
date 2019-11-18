@@ -6,13 +6,16 @@ except ImportError:
 
 from pubsub import pub
 
-from src.hardware.arduino import Arduino
+from src.arduino.arduino import Arduino
+
+from tests.mock_bbio import Adafruit_BBIO
+from tests.mock_port import serial
 
 class ArduinoTests(unittest.TestCase):
     """ Tests the methods in rudder"""
     def setUp(self):
         """ Create Arduino objecti """ 
-        self.arduino = Arduino()
+        self.arduino = Arduino(mock_bbio=Adafruit_BBIO, mock_port=serial)
         self.arduino.disable_controls()
 
     def test_update_rudder_ang(self):
