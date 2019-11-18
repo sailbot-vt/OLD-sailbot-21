@@ -41,8 +41,8 @@ pin:
   channel: "UART2"
 
 port:
-  port_name: "/dev/tty2"
-  port_type: "SERIAL"
+  port_name: "/dev/tty02"
+  port_type: "TESTABLE"
   frequency: 1    # seconds
   baudrate: 4800
   timeout: 0

@@ -11,7 +11,7 @@ from src.arduino.config_reader import read_pin_config
 class Arduino(Thread):
     """ Provides an interface to arudino connected over UART """
 
-    def __init__(self):
+    def __init__(self, mock_bbio=None, mock_port=None):
         """
         Initializes arduino thread, subscribes update methods to their respective channels
         """
@@ -19,8 +19,8 @@ class Arduino(Thread):
         self.is_active = True
         self.config = read_arduino_config()
         self.update_interval = self.config['update_interval']
-        self.uart_pin = read_pin_config()
-        self.port = read_port_config()
+        self.uart_pin = read_pin_config(mock_bbio=mock_bbio)
+        self.port = read_port_config(mock_port=mock_port)
         # initialize data to send
         self.data = {"rudder_ang": 0,
                      "sail_ang": 0,

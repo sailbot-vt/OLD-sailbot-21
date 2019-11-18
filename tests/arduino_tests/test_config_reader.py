@@ -30,5 +30,5 @@ class ArduinoConfigReaderTests(unittest.TestCase):
         port = read_port_config(path=self.path)
         mock_port = read_port_config(path=self.path, mock_port=serial.Serial)
     
-        self.assertEqual(mock_port.port_name, "/dev/tty2")
-        self.assertEqual(port.port_name, "/dev/tty2")
+        self.assertEqual(mock_port.port_name, "/dev/tty02")
+        self.assertEqual(port.port_name, "/dev/tty02")
