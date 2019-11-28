@@ -26,28 +26,13 @@ class AirmarIntegrationTests(unittest.TestCase):
         serial.Serial.write = MagicMock(name='serial.Serial.write')
         Adafruit_BBIO.UART.setup = MagicMock(name='Adafruit_BBIO.UART.setup')
 
-        pin = make_pin(config={
-            "pin_name": "P0_0",
-            "pin_type": "UART",
-            "channel": "UART1"
-        }, mock_lib=Adafruit_BBIO.UART)
-
-        port = make_port(config={
-            "port_name": "/dev/tty0",
-            "port_type": "SERIAL",
-            "baudrate": "4800",
-            "encoding": "UTF-8",
-            "timeout": 0 
-        }, mock_port=serial.Serial)
-
-        ids = ["VTG", "MWD", "GGA"]
-
         broadcaster = make_broadcaster(
             broadcaster_type=BroadcasterType.Testable)
 
         self.receiver = AirmarReceiver(
             broadcaster=broadcaster,
-            ids=ids, pin=pin, port=port)
+            mock_bbio=Adafruit_BBIO,
+            mock_port=serial.Serial)
 
     def test_start_stop(self):
         """ 
