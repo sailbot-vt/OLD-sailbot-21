@@ -53,10 +53,10 @@ class AirmarProcessor:
         # Note, at start old values = 0, might skew values
         # TODO Test above if values are skewed.
         self.data[speed_key], self.data[angle_key] = self._scale_avg_polar_coords(
-            old_magnitude=self.data[speed_key],
-            old_angle=self.data[angle_key],
-            new_magnitude=float(self.raw[sid]["wind_speed_mps"]),
-            new_angle=float(self.raw[sid]["wind_angle_degree"]) % 360
+            o_magn=self.data[speed_key],
+            o_angle=self.data[angle_key],
+            n_magn=float(self.raw[sid]["wind_speed_mps"]),
+            n_angle=float(self.raw[sid]["wind_angle_degree"]) % 360
         )
 
     def _update_boat_gps(self, sid):
@@ -71,11 +71,11 @@ class AirmarProcessor:
 
 
 # -------------------- AIRMAR SPECIFIC CALCULATIONS --------------------
-    def _scale_avg_polar_coords(self, old_magnitude, old_angle, new_magnitude, new_angle):
-        old = Vec2.build_from(magnitude=old_magnitude, angle=old_angle)
-        new = Vec2.build_from(magnitude=new_magnitude, angle=new_angle)
+    def _scale_avg_polar_coords(self, o_magn, o_angle, n_magn, n_angle):
+        old = Vec2.build_from(magnitude=o_magn, angle=o_angle)
+        new = Vec2.build_from(magnitude=n_magn, angle=n_angle)
         
-        # Weighted values
+        # Weighted average
         weight = 0.3
         x = old.x * (1 - weight) + new.x * weight
         y = old.y * (1 - weight) + new.y * weight
