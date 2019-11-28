@@ -5,14 +5,17 @@ from src.airmar.airmar_input_thread import AirmarInputThread
 
 from src.broadcaster.broadcaster import BroadcasterType
 
-airmar = AirmarInputThread(broadcaster_type=BroadcasterType.Testable)
 
+""" Quick data test to view airmar data from console.
+    Run using 'python airmar_example.py' on beaglebone
+"""
+
+airmar = AirmarInputThread(broadcaster_type=BroadcasterType.Testable)
 output = airmar.broadcaster
 
 def clear_screen():
     os.system('clear')
     os.system('cls')
-
 
 airmar.run()
 
