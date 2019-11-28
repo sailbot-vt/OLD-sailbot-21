@@ -2,7 +2,6 @@ import math
 
 from threading import Lock
 
-mutex = Lock()
 
 class AirmarProcessor:
     def __init__(self, broadcaster, parser):
@@ -34,10 +33,8 @@ class AirmarProcessor:
         elif sid in ["GPVTG"]:
             self._update_boat_speed(sid)
         
-        mutex.acquire()
         # Broadcasts processed data via broadcaster
         self.broadcaster.update_dictionary(data=self.data)
-        mutex.release()
 
     def _update_wind(self, sid):
         speed_key = "wind speed apparent"

@@ -2,7 +2,7 @@ from threading import Thread
 from time import sleep
 
 from src.airmar.airmar_receiver import AirmarReceiver
-from src.airmar.config_reader import read_pin_config, read_interval, read_port_config, read_ids
+from src.airmar.config_reader import read_interval
 from src.broadcaster.broadcaster import make_broadcaster, BroadcasterType
 
 
@@ -13,16 +13,18 @@ class AirmarInputThread(Thread):
         """Builds a new airmar input thread."""
         super().__init__()
 
+        # Make broadcaster
         if broadcaster_type is None:
+            # pubsub by default
             broadcaster_type = BroadcasterType.Messenger
-        self.broadcaster = make_broadcaster(broadcaster_type=broadcaster_type, filename=filename)
 
-        pin = read_pin_config(mock_bbio=mock_bbio)
-        port = read_port_config(mock_port=mock_port)
-        ids = read_ids()
-
+        # broadcaster as public attribute
+        self.broadcaster = make_broadcaster(
+            broadcaster_type=broadcaster_type, filename=filename)
+        
+        # make receiver
         self.receiver = AirmarReceiver(
-                broadcaster=self.broadcaster, ids=ids, pin=pin, port=port)
+                broadcaster=self.broadcaster, mock_bbio=mock_bbio, mock_port=mock_port)
 
         self.keep_reading = True
         self.read_interval = read_interval()
