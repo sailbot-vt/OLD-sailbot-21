@@ -180,6 +180,10 @@ class Vec2(Vec):
         self._y = float(new_y)
         self.data[1] = self._y
 
+    def magnitude(self):
+        """Gets the Magnitude of this vector"""
+        return math.sqrt(self.x*self.x + self.y*self.y)
+
     def angle(self):
         """Gets the Cartesian angle of this vector in radians"""
         return math.atan(self.y / self.x)
