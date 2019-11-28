@@ -10,6 +10,7 @@ class Depth_Map():
 
     def __init__(self, calibration_directory = path, FOV = 56, baseline = .2, camera_numbers = (2,3), DRAW_IMAGE = False):
         self.calibration = None
+
         try:
             self.calibration = np.load(calibration_directory, allow_pickle=False)
         except:

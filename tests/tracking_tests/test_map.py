@@ -9,8 +9,9 @@ from src.tracking.Map import Object
 from src.tracking.classification_types import ObjectType
 
 from src.gps_point import GPSPoint
-
+from pubsub import pub
 from datetime import datetime as dt
+import time
 
 class MapTests(unittest.TestCase):
     """Tests the methods in Map"""
@@ -28,8 +29,8 @@ class MapTests(unittest.TestCase):
 
         for ((x, y), (rOut, thetaOut)) in list(zip(in_values, out_values)):
             r, theta = self.Map.cartesian_to_polar(x, y)
-            assertAlmostEqual(rOut, r, 4)
-            assertAlmostEqual(thetaOut, theta, 4)
+            unittest.TestCase.assertAlmostEqual(self, first=rOut, second=r, delta = 4)
+            unittest.TestCase.assertAlmostEqual(self, first =thetaOut, second = theta, delta=.2)
 
     def test_polar_to_cartesian(self):
         """Test to check correctness of polar to cartesian conversion"""
@@ -37,9 +38,9 @@ class MapTests(unittest.TestCase):
         out_values = [(0,0), (5, 5), (5, 0), (-5, 0), (0, 8), (-10,-10), (6.23, -41)]
 
         for ((r, theta), (xOut, yOut)) in list(zip(in_values, out_values)):
-            x, y = self.Map.polar_to_caresian(theta, r)
-            assertAlmostEqual(xOut, x, 4)
-            assertAlmostEqual(yOut, y, 4)
+            x, y = self.Map.polar_to_cartesian(theta, r)
+            unittest.TestCase.assertAlmostEqual(self, first = xOut, second = x, delta = .2)
+            unittest.TestCase.assertAlmostEqual(self, first = yOut, second = y, delta = .2)
 
     def test_clear_objects(self):
         """Tests clear objects method of map"""
@@ -47,31 +48,39 @@ class MapTests(unittest.TestCase):
         delta_y_list = [-22, 81.5]
         type_list = [ObjectType.BUOY, ObjectType.BOAT]
         start_time = dt.now()
-        for ii, x, y, obj_type in enumerate(zip(delta_x_list, delta_y_list, type_list)):
-            while ((dt.now() - start_time) < 500):     # while less than 0.5s since last object
-                pass
-            r, theta = self.Map.cartesian_to_polar(x, y)
+        ii = 0
+        for x, y, obj_type in zip(delta_x_list, delta_y_list, type_list):
+            #while (abs((dt.now() - start_time).total_seconds()) < .5):     # while less than 0.5s since last object
+             #   pass
+            #time.sleep(0.5)
+
             pub.sendMessage("buoy detected", delta_x = x, delta_y = y, objectType=obj_type)
             start_time = dt.now()
-
+            ii += 1
         
         assert(len(self.Map.objectList) == 2)                 # assert that length of list is two 
-        while ((dt.now() - start_time) < 500):     # while less than 0.5s since last object
-            pass
-        self.Map.clear_objects(timeSinceLastSeen=750)       # should only clear 2nd object
-        assert(len(self.map.objectlist) == 1)                 # assert that length of list is only one
+        #while (abs((dt.now() - start_time).total_seconds()) < .5):     # while less than 0.5s since last object
+        #    pass
+        time.sleep(0.5)
+        self.Map.clear_objects(timeSinceLastSeen=.75)       # should only clear 2nd object
+        assert(len(self.Map.objectList) == 1)                 # assert that length of list is only one
         self.Map.clear_objects(timeSinceLastSeen=0)         # should only clear all objects
-        assert(len(self.map.objectlist) == 0)                 # assert that length of list is zero
+        assert(len(self.Map.objectList) == 0)                 # assert that length of list is zero
 
     def test_add_object(self):
         """Tests add object method of map"""
         delta_x_list = [12.512, 44]
         delta_y_list = [-22, 81.5]
         type_list = [ObjectType.BUOY, ObjectType.BOAT]
-        for ii, x, y, obj_type in enumerate(zip(delta_x_list, delta_y_list, type_list)):
+        ii = 0
+        for x, y, obj_type in zip(delta_x_list, delta_y_list, type_list):
+
             pub.sendMessage("buoy detected", delta_x = x, delta_y = y, objectType=obj_type)
-            correctObject = Object(x, y, objectType=obj_type)
-            assertEquals(correctObject, self.Map.objectList[ii])
+            bearing, dist = self.Map.cartesian_to_polar(x, y)
+            correctObject = Object(bearing, dist, None, None, None, objectType=obj_type)
+            unittest.TestCase.assertAlmostEquals(self, first = correctObject.bearing, second = self.Map.objectList[ii].bearing, delta =.1)
+            unittest.TestCase.assertEqual(self, first=correctObject, second=self.Map.objectList[ii])
+            ii += 1
 
     def test_return_objects(self):
         """Tests return objects method of map"""
@@ -91,17 +100,18 @@ class MapTests(unittest.TestCase):
             d_x, d_y = self.Map.polar_to_cartesian(bearing, rng)
             delta_x_list[n] = d_x
             delta_y_list[n] = d_y
-            if (rng < rngRange[1]) and (abs(bearing) < bearingRange(1)):
+            if (rng < rngRange[1]) and (abs(bearing) < bearingRange[1]):
                 num_correct_objects += 1
 
         type_list = [ObjectType.BUOY, ObjectType.BOAT]
         correct_object_list = [0] * num_correct_objects
-
-        for ii, x, y, obj_type in enumerate(zip(delta_x_list, delta_y_list, type_list)):
-            pub.sendMessage("buoy detected", delta_x = x, delta_y = y, objectType=obj_type)        
-            correctObject = Object(x, y, objectType=obj_type)
+        ii = 0
+        for x, y, obj_type in zip(delta_x_list, delta_y_list, type_list):
+            pub.sendMessage("buoy detected", delta_x = x, delta_y = y, objectType=obj_type)
+            bearing, dist = self.Map.cartesian_to_polar(x, y)
+            correctObject = Object(bearing, dist, None, None, None, objectType=obj_type)
             correct_object_list[ii] = correctObject
-
+            ii += 1
         returned_objects = self.Map.return_objects()
         for ii, correct_obj in enumerate(correct_object_list):
             assert([correct_obj.range, correct_obj.bearing, correct_obj.objectType] == returned_objects[ii])
@@ -113,18 +123,21 @@ class MapTests(unittest.TestCase):
         delta_y_list = [-22, 81.5]
         type_list = [ObjectType.BUOY, ObjectType.BOAT]
         correct_object_list = [0] * 2
-        for ii, x, y, obj_type in enumerate(zip(delta_x_list, delta_y_list, type_list)):
+        ii = 0
+        for  x, y, obj_type in zip(delta_x_list, delta_y_list, type_list):
             pub.sendMessage("buoy detected", delta_x = x, delta_y = y, objectType=obj_type)
-            correctObject = Object(x, y, objectType=obj_type)
+            bearing, dist = self.Map.cartesian_to_polar(x, y)
+            correctObject = Object(bearing, dist, None, None, None, objectType=obj_type)
             correct_object_list[ii] = correctObject
+            ii += 1
 
         # set boat's current position and old position
-        cur_pos = GPSPoint()
+        cur_pos = GPSPoint(0, 0)
         delta_x = 5
         delta_y = 5
         self.Map.old_position = GPSPoint(0,0)
-        cur_pos.x += delta_x
-        cur_pos.y += delta_y
+        cur_pos.lat += delta_x
+        cur_pos.long += delta_y
         self.boat.current_position = MagicMock("self.boat.current_position", returns=cur_pos)
         
         # update map

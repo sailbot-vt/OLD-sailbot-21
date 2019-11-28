@@ -9,9 +9,10 @@ from src.buoy_detection.Depth_Map_Calculator import Depth_Map
 from src.tracking.KalmanFilter import KalmanFilter
 from src.tracking.classification_types import ObjectType
 import numpy as np
+from datetime import datetime as dt
 import math
 
-
+mutex = Lock()
 class Map(Thread):
     """
     Map is used to create a model of where objects around the boat currently exist. Everything is currently relative to where
@@ -26,15 +27,15 @@ class Map(Thread):
         pub.subscribe(self.add_object, "buoy detected")
 
         self.boat = boat
-
         self.objectList = []
         self.depthCalc = Depth_Map()
 
         self.update_interval = 50
         self.update_map = update_map
         self.old_position = self.boat.current_position()
+        mutex = Lock()
 
-    def run(self):
+    def run(self, update_map):
         """ Continuously updates objects in object list using Kalman filter prediction"""
         while True:
             if update_map:
@@ -64,16 +65,38 @@ class Map(Thread):
             pass
         else:
             newObject = Object(delta_x, delta_y, datetime.datetime.now(), rangeRate, bearingRate, objectType)
-            mutex.acquire()
+            #This acquire is causing the tests to seize up?
+            # TODO
+            #mutex.acquire()
             self.objectList.append(newObject)
-            mutex.release()
+            #mutex.release()
 
 
     def cartesian_to_polar(self, x, y):
-        r = math.sqrt(x^2 + y^2)
-        theta = np.atan2(x/y) * (180/np.pi)
 
-        return (theta, r)
+        r = math.sqrt(x**2 + y**2)
+
+        if x != 0:
+            theta = math.atan(y/x)
+        else:
+            if y >= 0:
+                theta = 0
+            else:
+                theta = -180
+        if y >= 0:
+           if x >= 0:
+               return (r,theta)
+
+           elif x <= 0:
+               return (r, theta + 180)
+
+
+        elif y < 0:
+            if x >= 0:
+                return (r, theta + 360)
+            elif x < 0:
+                return (r, theta + 180)
+        return(r, theta)
 
     def return_objects(self, bearingRange=[-30,30], timeRange=[0,5000], rngRange=None):
         """ Returns objects passing within given bearing range of boat in given time range
@@ -89,10 +112,10 @@ class Map(Thread):
         # Create output array
         _max_objs = 10              # Maximum number of objects to output (arbitrary choice)
         _num_fields = 3             # Range, bearing, classification (using classification enum)
-        objectArray = np.zeros(_max_objs, _num_fields)
+        objectArray = np.zeros((_max_objs, _num_fields))
         if rngRange == None:
             # Convert time range to range range
-            current_speed = boat.current_speed()
+            current_speed = self.boat.current_speed()
             rngRange = [(current_speed * time_val) for time_val in timeRange]
         ii = 0
         mutex.acquire()
@@ -112,7 +135,7 @@ class Map(Thread):
         Returns:
             objectArray -- array made up of bearing, range, and classification data for each object in range inputted
         """
-    
+
         # Create output array
         _max_objs = 5               # Maximum number of objects to output (arbitrary choice)
         _num_fields = 3             # Range, bearing, classification (using classification enum)
@@ -138,7 +161,7 @@ class Map(Thread):
         mutex.acquire()
         for object in self.objectList:
             x,y = self.polar_to_cartesian(object.bearing, object.range)
-            boat_x_moved, boat_y_moved = (position.y - old_position.y), (position.x - old_position.x)
+            boat_x_moved, boat_y_moved = (position.y - self.old_position.y), (position.x - self.old_position.x)
             x -= boat_x_moved
             y -= boat_y_moved
             object.range, object.bearing = self.cartesian_to_polar(x, y)
@@ -156,7 +179,7 @@ class Map(Thread):
         del_list = []
         mutex.acquire()
         for ii, obj in enumerate(self.objectList):
-            if (cur_time - obj.lastSeen) > timeSinceLastSeen:
+            if (dt.now() - obj.lastSeen).total_seconds() > timeSinceLastSeen:
                 del_list.append(ii)
         for index in sorted(del_list, reverse=True):
             del self.objectList[index]
