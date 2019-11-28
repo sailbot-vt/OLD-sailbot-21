@@ -1,4 +1,5 @@
 import parse
+from src.airmar.nmeaparser.nmea_sentence import get_sentence_interface
 
 class NmeaParser():
     """ Defines nmea parser that can read, write, and parse nmea0183 sentences 
@@ -38,6 +39,26 @@ class NmeaParser():
         if self.checksum(body) == checksum:
             return [None if field == '' else field for field in body.split(separator)]
         return None
+
+    def update_data(self, data, fields):
+        """ Packages NmeaSentence fields into a map, if sentence id is supported.
+
+        Keyword arguments:
+        data -- A map of raw data such that ["nmea_id"] : nmea_fields
+            nmea_fields --   A list of data fields, where nmea sentence 
+                        id is the first element.
+
+        Returns:
+        A formatted map such that key="nmea_id", value=data dict with value
+            = formated data as string
+
+        Note:
+            Refer to 300WX User Technical Manual_0183 for detailed descriptions of
+            data fields.
+        """
+        interface = get_sentence_interface(fields[0])
+        interface.update_data(nmea_map=data, fields=fields)
+        return data
 
     def toggle(self, sentence_ids=["ALL"], frequency=1, enable=1):
         """ Creates a sentence to toggle sentence(s) to be read in.
