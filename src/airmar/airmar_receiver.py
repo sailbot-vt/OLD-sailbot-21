@@ -51,12 +51,17 @@ class AirmarReceiver:
 
     def send_airmar_data(self):
         """ Sends nmea sentence from serial port to processor to broadcast data """
-        
-        data = self.parser.parse(self.port.read_line(terminator='\r\n'))
+        sentence = self.port.read_line(terminator='\r\n')
+        data = self.parser.parse(sentence)
 
         if data is not None:
             mutex.acquire()
-            self.processor.update_airmar_data(nmea=data)
+            try:
+                self.processor.update_airmar_data(nmea=data)
+            except:
+                # Error handling: sentence was not parsable
+                # print(sentence)
+                pass
             mutex.release()
 
     def stop(self):
