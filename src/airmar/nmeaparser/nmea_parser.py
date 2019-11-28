@@ -1,4 +1,5 @@
 import parse
+
 from src.airmar.nmeaparser.nmea_sentence import get_sentence_interface
 
 class NmeaParser():
