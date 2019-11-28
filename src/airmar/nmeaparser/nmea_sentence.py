@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod
 import sys
 
-class NmeaSentence(ABC):
+class NmeaSentence():
     """ Interface for interpretting all transmitted NMEA 0183 Sentences 
     
     Refer to 300 WX User Technical Manual_0183 for descriptions of fields
     """
     @abstractmethod
-    def update_data(nmea_map, fields):
+    def update_data(self, nmea_map, fields):
         """ Adds/updates this sentence Key-Value pair to nmea_map 
         
         Note: 
@@ -23,7 +23,7 @@ class NmeaSentence(ABC):
         pass
 
 class GPDTM(NmeaSentence):
-    def update_data(nmea_map, fields):
+    def update_data(self, nmea_map, fields):
         nmea_map[fields[0]] = {
             # 3 letter alphabetical code for local datum
             "local_datum_code" : fields[1],
@@ -45,7 +45,7 @@ class GPDTM(NmeaSentence):
 
 
 class GPGGA(NmeaSentence):
-    def update_data(nmea_map, fields):
+    def update_data(self, nmea_map, fields):
         nmea_map[fields[0]] = { 
             # UTC of position, in the form hhmmss
             "utc_position" : fields[1],
@@ -64,36 +64,42 @@ class GPGGA(NmeaSentence):
             # Horizontal dilution of precision (hdop)
             "hdop" : fields[8],
             # Altitude relative to mean-sea-level (geoid), to the nearest meter
-            "geoid" : fields[9]
+            "geoid" : fields[9],
+            # Geoidol separation, meters. Contains separation data
+            "geiodal_separation" : fields[11],
+            # For WX series, appears as null field
+            "age_of_differential_gps_data" : fields[13],
+            # For WX series, appears as null field
+            "differential_reference_station_id" : fields[14]
         }
 
 
 class GPGLL(NmeaSentence):
-    def update_data(nmea_map, fields):
+    def update_data(self, nmea_map, fields):
         pass
 
 class GPGSA(NmeaSentence):
-    def update_data(nmea_map, fields):
+    def update_data(self, nmea_map, fields):
         pass
 
 class GPGSV(NmeaSentence):
-    def update_data(nmea_map, fields):
+    def update_data(self, nmea_map, fields):
         pass
 
 class HCHDG(NmeaSentence):
-    def update_data(nmea_map, fields):
+    def update_data(self, nmea_map, fields):
         pass
 
 class HCHDT(NmeaSentence):
-    def update_data(nmea_map, fields):
+    def update_data(self, nmea_map, fields):
         pass
 
 class WIMDA(NmeaSentence):
-    def update_data(nmea_map, fields):
+    def update_data(self, nmea_map, fields):
         pass
 
 class WIMWD(NmeaSentence):
-    def update_data(nmea_map, fields):
+    def update_data(self, nmea_map, fields):
         nmea_map[fields[0]] = {
             # Wind direction True 0-359.9 degrees
             "wind_direction_true" : fields[1],
@@ -107,23 +113,23 @@ class WIMWD(NmeaSentence):
 
 
 class WIMWV(NmeaSentence):
-    def update_data(nmea_map, fields):
+    def update_data(self, nmea_map, fields):
         pass
 
 class GPRMC(NmeaSentence):
-    def update_data(nmea_map, fields):
+    def update_data(self, nmea_map, fields):
         pass
 
 class TIROT(NmeaSentence):
-    def update_data(nmea_map, fields):
+    def update_data(self, nmea_map, fields):
         pass
 
 class HCTHS(NmeaSentence):
-    def update_data(nmea_map, fields):
+    def update_data(self, nmea_map, fields):
         pass
 
 class GPVTG(NmeaSentence):
-    def update_data(nmea_map, fields):
+    def update_data(self, nmea_map, fields):
         nmea_map[fields[0]] = {
             # Course over ground, degrees True, to the nearest 0.1 degree
             "course_over_ground_true" : fields[1],
@@ -139,7 +145,7 @@ class GPVTG(NmeaSentence):
 
 
 class WIVWR(NmeaSentence):
-    def update_data(nmea_map, fields):
+    def update_data(self, nmea_map, fields):
         nmea_map[fields[0]] = {
             # (Apparent) Wind angle relative to the vessel, 0-180 degree
             "wind_angle_degree" : fields[1],
@@ -156,7 +162,7 @@ class WIVWR(NmeaSentence):
 
         
 class WIVWT(NmeaSentence):
-    def update_data(nmea_map, fields):
+    def update_data(self, nmea_map, fields):
         nmea_map[fields[0]] = {
             # True wind angle, 0-180, to the nearest degree
             "wind_angle_degree" : fields[1],
@@ -171,13 +177,13 @@ class WIVWT(NmeaSentence):
         
 
 class YXXDR(NmeaSentence):
-    def update_data(nmea_map, fields):
+    def update_data(self, nmea_map, fields):
         pass
 
 class GPZDA(NmeaSentence):
-    def update_data(nmea_map, fields):
+    def update_data(self, nmea_map, fields):
         pass
 
 def get_sentence_interface(sentence_id):
     """ Returns the class interface for sentence id"""
-    return getattr(sys.modules[__name__], sentence_id)
+    return getattr(sys.modules[__name__], sentence_id)()
