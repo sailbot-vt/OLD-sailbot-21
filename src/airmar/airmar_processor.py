@@ -1,12 +1,12 @@
 import math
-from src.airmar.nmeaparser.nmea_sentence import get_sentence_interface
 
 from threading import Lock
 
 mutex = Lock()
 
 class AirmarProcessor:
-    def __init__(self, broadcaster):
+    def __init__(self, broadcaster, parser):
+        self.parser = parser
         self.broadcaster = broadcaster
         self.data = {
             "wind speed apparent" : None,
@@ -18,13 +18,13 @@ class AirmarProcessor:
             "boat heading" : None,
             "boat speed": None
         }
-        self.raw = dict()
+        self.raw = {}
 
     def update_airmar_data(self, nmea):
         sid = nmea[0]
         if sid is None:
             return
-        get_sentence_interface(sid).update_data(self.raw, nmea)
+        self.parser.update_data(data=self.raw, fields=nmea)
 
         # TODO Update list with more interfaces
         if sid in ["WIVWT", "WIVWR"]:
@@ -35,6 +35,7 @@ class AirmarProcessor:
             self._update_boat_speed(sid)
         
         mutex.acquire()
+        # Broadcasts processed data via broadcaster
         self.broadcaster.update_dictionary(data=self.data)
         mutex.release()
 
