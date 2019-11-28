@@ -2,6 +2,8 @@ import math
 
 from threading import Lock
 
+from src.utils.vec import Vec2
+
 
 class AirmarProcessor:
     def __init__(self, broadcaster, parser):
@@ -70,20 +72,15 @@ class AirmarProcessor:
 
 # -------------------- AIRMAR SPECIFIC CALCULATIONS --------------------
     def _scale_avg_polar_coords(self, old_magnitude, old_angle, new_magnitude, new_angle):
-        # Convert to radians
-        new_angle = math.radians(new_angle)
-        old_angle = math.radians(old_angle)
-
-        # Calculate components
-        old_x = old_magnitude * math.sin(old_angle)
-        old_y = old_magnitude * math.cos(old_angle)
-        new_x = new_magnitude * math.sin(new_angle)
-        new_y = new_magnitude * math.cos(new_angle)
+        old = Vec2.build_from(magnitude=old_magnitude, angle=old_angle)
+        new = Vec2.build_from(magnitude=new_magnitude, angle=new_angle)
         
         # Weighted values
         weight = 0.3
-        x = old_x * (1 - weight) + new_x * weight
-        y = old_y * (1 - weight) + new_y * weight
+        x = old.x * (1 - weight) + new.x * weight
+        y = old.y * (1 - weight) + new.y * weight
+
+        v = Vec2(x, y)
 
         # Convert to degrees, returns tuple (speed, angle)
-        return math.sqrt(x*x + y*y), math.degrees(math.atan2(x, y)) % 360
+        return math.sqrt(x*x + y*y), math.degrees(v.angle) % 360
