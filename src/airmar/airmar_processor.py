@@ -83,4 +83,4 @@ class AirmarProcessor:
         v = Vec2(x, y)
 
         # Convert to degrees, returns tuple (speed, angle)
-        return math.sqrt(x*x + y*y), math.degrees(v.angle) % 360
+        return v.magnitude, math.degrees(v.angle) % 360
