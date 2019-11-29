@@ -10,29 +10,21 @@ class AirmarProcessor:
         self.parser = parser
         self.broadcaster = broadcaster
 
-        self.data = {
-            "wind speed apparent" : 0,
-            "wind angle apparent" : 0,
-            "wind speed true": 0,
-            "wind angle true": 0,
-            "boat latitude": 0,
-            "boat longitude": 0,
-            "boat heading" : 0,
-            "boat speed": 0
-        }
+        self.data = {}
         self.raw = {}
 
     def update_airmar_data(self, nmea):
+        self.raw = {} # New raw data.
         sid = nmea[0]
         if sid is None:
             return
         self.parser.update_data(data=self.raw, fields=nmea)
-
+        #print(self.raw)
         if sid == "WIVWR":
             self._update_wind(sid=sid, 
                 speed_key="wind speed apparent",
                 angle_key="wind angle apparent")
-        if sid == "WIVWT":
+        elif sid == "WIVWT":
             self._update_wind(sid=sid, 
                 speed_key="wind speed true",
                 angle_key="wind angle true")
@@ -49,14 +41,24 @@ class AirmarProcessor:
 
 # --------------------  PROCESSED DATA ENTRY --------------------
     def _update_wind(self, sid, speed_key, angle_key):
-        # update speed and angle for given sid
-        # Note, at start old values = 0, might skew values
-        # TODO Test above if values are skewed.
+        # Left is negative, Right is positive
+        if (self.raw[sid]["wind_angle_direction"]) == "L":
+            # (counter clockwise)
+            # i.e -1 degree = 359 degree.
+            self.raw[sid]["wind_angle_degree"] = (360 - float(self.raw[sid]["wind_angle_degree"])) % 360
+        
+        # Initialize new speed to data
+        if speed_key not in self.data:
+            self.data[speed_key] = float(self.raw[sid]["wind_speed_mps"])
+        if angle_key not in self.data:
+            self.data[angle_key] = float(self.raw[sid]["wind_angle_degree"])
+
+        # Calculated weighted magn and angle from old and new data.
         self.data[speed_key], self.data[angle_key] = self._scale_avg_polar_coords(
             o_magn=self.data[speed_key],
             o_angle=self.data[angle_key],
             n_magn=float(self.raw[sid]["wind_speed_mps"]),
-            n_angle=float(self.raw[sid]["wind_angle_degree"]) % 360
+            n_angle=float(self.raw[sid]["wind_angle_degree"])
         )
 
     def _update_boat_gps(self, sid):
@@ -67,7 +69,8 @@ class AirmarProcessor:
     def _update_boat_speed(self, sid):
         # Update boat speed and heading
         self.data["boat speed"] = float(self.raw[sid]["speed_over_ground_kph"])
-        self.data["boat heading"] = float(self.raw[sid]["course_over_ground_true"]) % 360
+        self.data["boat heading"] = float(self.raw[sid]["course_over_ground_true"])
+
 
 
 # -------------------- AIRMAR SPECIFIC CALCULATIONS --------------------
@@ -77,10 +80,13 @@ class AirmarProcessor:
         
         # Weighted average
         weight = 0.3
-        x = old.x * (1 - weight) + new.x * weight
-        y = old.y * (1 - weight) + new.y * weight
-
+        x = (old.x * (1 - weight)) + (new.x * weight)
+        y = (old.y * (1 - weight)) + (new.y * weight)
         v = Vec2(x, y)
 
         # Convert to degrees, returns tuple (speed, angle)
-        return v.square_length(), math.degrees(v.angle()) % 360
+        v_angle = math.degrees(v.angle())
+
+        # Assume counter clockwise. More details in documentation.
+        degrees = v_angle if v_angle >=0 else 360 + v_angle
+        return v.length(), degrees
