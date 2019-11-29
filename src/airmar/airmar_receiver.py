@@ -48,12 +48,10 @@ class AirmarReceiver:
         
         self.is_running = True
 
-
     def send_airmar_data(self):
         """ Sends nmea sentence from serial port to processor to broadcast data """
         sentence = self.port.read_line(terminator='\r\n')
         data = self.parser.parse(sentence)
-
         if data is not None:
             mutex.acquire()
             try:
