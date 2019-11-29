@@ -64,14 +64,14 @@ class NmeaTests(unittest.TestCase):
         fields = self.parser.parse(sentence=sentence)
         self.parser.update_data(data=data, fields=fields)
 
-        self.assertEquals(data["GPDTM"]["local_datum_code"], "W84")
-        self.assertEquals(data["GPDTM"]["subdivision_datum_code"], None)
-        self.assertEquals(data["GPDTM"]["latitude_offset"], "100.001")
-        self.assertEquals(data["GPDTM"]["latitiude_cardinality"], "N")
-        self.assertEquals(data["GPDTM"]["longitude_offset"], "200.001")
-        self.assertEquals(data["GPDTM"]["longitude_cardinality"], "E")
-        self.assertEquals(data["GPDTM"]["altitude_offset"], "10")
-        self.assertEquals(data["GPDTM"]["reference_datum_code"], "W84")
+        self.assertEqual(data["GPDTM"]["local_datum_code"], "W84")
+        self.assertEqual(data["GPDTM"]["subdivision_datum_code"], None)
+        self.assertEqual(data["GPDTM"]["latitude_offset"], "100.001")
+        self.assertEqual(data["GPDTM"]["latitiude_cardinality"], "N")
+        self.assertEqual(data["GPDTM"]["longitude_offset"], "200.001")
+        self.assertEqual(data["GPDTM"]["longitude_cardinality"], "E")
+        self.assertEqual(data["GPDTM"]["altitude_offset"], "10")
+        self.assertEqual(data["GPDTM"]["reference_datum_code"], "W84")
 
     def test_update_sentence_gpgga(self):
         # Test GPGGA sentences
@@ -81,18 +81,18 @@ class NmeaTests(unittest.TestCase):
         fields = self.parser.parse(sentence=sentence)
         self.parser.update_data(data=data, fields=fields)
 
-        self.assertEquals(data["GPGGA"]["utc_position"], "123519")
-        self.assertEquals(data["GPGGA"]["latitude"], "4807.038")
-        self.assertEquals(data["GPGGA"]["latitude_cardinality"], "N")
-        self.assertEquals(data["GPGGA"]["longitude"], "01131.000")
-        self.assertEquals(data["GPGGA"]["longitude_cardinality"], "E")
-        self.assertEquals(data["GPGGA"]["gps_quality_indicator"], "1")
-        self.assertEquals(data["GPGGA"]["number_satelites"], "08")
-        self.assertEquals(data["GPGGA"]["hdop"], "0.9")
-        self.assertEquals(data["GPGGA"]["geoid"], "545.4")
-        self.assertEquals(data["GPGGA"]["geiodal_separation"], "46.9")
-        self.assertEquals(data["GPGGA"]["age_of_differential_gps_data"], None)
-        self.assertEquals(data["GPGGA"]["differential_reference_station_id"], None)
+        self.assertEqual(data["GPGGA"]["utc_position"], "123519")
+        self.assertEqual(data["GPGGA"]["latitude"], "4807.038")
+        self.assertEqual(data["GPGGA"]["latitude_cardinality"], "N")
+        self.assertEqual(data["GPGGA"]["longitude"], "01131.000")
+        self.assertEqual(data["GPGGA"]["longitude_cardinality"], "E")
+        self.assertEqual(data["GPGGA"]["gps_quality_indicator"], "1")
+        self.assertEqual(data["GPGGA"]["number_satelites"], "08")
+        self.assertEqual(data["GPGGA"]["hdop"], "0.9")
+        self.assertEqual(data["GPGGA"]["geoid"], "545.4")
+        self.assertEqual(data["GPGGA"]["geiodal_separation"], "46.9")
+        self.assertEqual(data["GPGGA"]["age_of_differential_gps_data"], None)
+        self.assertEqual(data["GPGGA"]["differential_reference_station_id"], None)
 
     def test_update_sentence_wimwd(self):
         data = {}
@@ -102,10 +102,10 @@ class NmeaTests(unittest.TestCase):
         fields = self.parser.parse(sentence=sentence)
         self.parser.update_data(data=data, fields=fields)
 
-        self.assertEquals(data["WIMWD"]["wind_direction_true"], "359.9")
-        self.assertEquals(data["WIMWD"]["wind_direction_magnetic"], "359.9")
-        self.assertEquals(data["WIMWD"]["wind_speed_knots"], "10.1")
-        self.assertEquals(data["WIMWD"]["wind_speed_mps"], "19.1")
+        self.assertEqual(data["WIMWD"]["wind_direction_true"], "359.9")
+        self.assertEqual(data["WIMWD"]["wind_direction_magnetic"], "359.9")
+        self.assertEqual(data["WIMWD"]["wind_speed_knots"], "10.1")
+        self.assertEqual(data["WIMWD"]["wind_speed_mps"], "19.1")
 
     def test_update_sentence_gpvtg(self):
         data = {}
@@ -115,11 +115,11 @@ class NmeaTests(unittest.TestCase):
         fields = self.parser.parse(sentence=sentence)
         self.parser.update_data(data=data, fields=fields)
 
-        self.assertEquals(data["GPVTG"]["course_over_ground_true"], "054.7")
-        self.assertEquals(data["GPVTG"]["course_over_ground_magnetic"], "034.4")
-        self.assertEquals(data["GPVTG"]["speed_over_ground_knots"], "005.5")
-        self.assertEquals(data["GPVTG"]["speed_over_ground_kph"], "010.2")
-        self.assertEquals(data["GPVTG"]["mode_indicator"], "A")
+        self.assertEqual(data["GPVTG"]["course_over_ground_true"], "054.7")
+        self.assertEqual(data["GPVTG"]["course_over_ground_magnetic"], "034.4")
+        self.assertEqual(data["GPVTG"]["speed_over_ground_knots"], "005.5")
+        self.assertEqual(data["GPVTG"]["speed_over_ground_kph"], "010.2")
+        self.assertEqual(data["GPVTG"]["mode_indicator"], "A")
 
     def test_update_sentence_wivwr(self):
         data = {}
@@ -129,11 +129,11 @@ class NmeaTests(unittest.TestCase):
         fields = self.parser.parse(sentence=sentence)
         self.parser.update_data(data=data, fields=fields)
 
-        self.assertEquals(data["WIVWR"]["wind_angle_degree"], "010.1")
-        self.assertEquals(data["WIVWR"]["wind_angle_direction"], "L")
-        self.assertEquals(data["WIVWR"]["wind_speed_knots"], "020.2")
-        self.assertEquals(data["WIVWR"]["wind_speed_mps"], "10.1")
-        self.assertEquals(data["WIVWR"]["wind_speed_kph"], "10.2")
+        self.assertEqual(data["WIVWR"]["wind_angle_degree"], "010.1")
+        self.assertEqual(data["WIVWR"]["wind_angle_direction"], "L")
+        self.assertEqual(data["WIVWR"]["wind_speed_knots"], "020.2")
+        self.assertEqual(data["WIVWR"]["wind_speed_mps"], "10.1")
+        self.assertEqual(data["WIVWR"]["wind_speed_kph"], "10.2")
 
     def test_update_sentence_wivwt(self):
         data = {}
@@ -143,8 +143,8 @@ class NmeaTests(unittest.TestCase):
         fields = self.parser.parse(sentence=sentence)
         self.parser.update_data(data=data, fields=fields)
 
-        self.assertEquals(data["WIVWT"]["wind_angle_degree"], "0")
-        self.assertEquals(data["WIVWT"]["wind_angle_direction"], "L")
-        self.assertEquals(data["WIVWT"]["wind_speed_knots"], "1")
-        self.assertEquals(data["WIVWT"]["wind_speed_mps"], "2")
-        self.assertEquals(data["WIVWT"]["wind_speed_kph"], "3")
+        self.assertEqual(data["WIVWT"]["wind_angle_degree"], "0")
+        self.assertEqual(data["WIVWT"]["wind_angle_direction"], "L")
+        self.assertEqual(data["WIVWT"]["wind_speed_knots"], "1")
+        self.assertEqual(data["WIVWT"]["wind_speed_mps"], "2")
+        self.assertEqual(data["WIVWT"]["wind_speed_kph"], "3")
