@@ -102,6 +102,7 @@ class FileWriter(Broadcaster):
             return None
         value = self.data[key]
         f.write(self.line_format.format(datetime.now().__str__(), key, value))
+        f.close()
         return value
 
 

@@ -28,7 +28,6 @@ class AirmarInputThread(Thread):
 
         self.keep_reading = True
         self.read_interval = read_interval()
-        print("Airmar ready\n")
 
     def run(self):
         """Starts a regular read interval.
