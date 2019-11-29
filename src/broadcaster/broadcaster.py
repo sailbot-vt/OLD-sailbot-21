@@ -39,12 +39,14 @@ class TestableBroadcaster(Broadcaster):
         self.data = None
 
     def update_dictionary(self, data=None):
+        """ Stores dictionary into data, updating keys """
         if data is not None:
             self.data = data
             for key in self.data.keys():
                 self.update_key(key=key)
 
     def update_key(self, key=None):
+        """ Updates key, returns data[key] """
         if self.data is None or key is None or not key in self.data or self.data[key] is None:
             return None
         return self.data[key]
@@ -58,6 +60,12 @@ class Messenger(Broadcaster):
         self.data = None
 
     def update_dictionary(self, data=None):
+        """ Publishes all the key and values to pubsub.
+
+        Keyword Arguments:
+        data -- The dictionary containing key value pairs
+            Default: None
+        """
         if data is not None:
             self.data = data
             for key in self.data.keys():
@@ -90,13 +98,14 @@ class FileWriter(Broadcaster):
         self.line_format = "[{0:20s}]\t\t[Requested: {1} -- Data: {2}]\n"
 
     def update_dictionary(self, data=None):
+        """ Publishes all key value pairs in data"""
         if data is not None:
             self.data = data
             for key in self.data.keys():
                 self.update_key(key=key)
     
     def update_key(self, key=None):
-        # Appends to end of file.
+        """ Publishes key value pair by appending to file. """
         f = open(self.filename, "a")
         if self.data is None or key is None or not key in self.data or self.data[key] is None:
             return None

@@ -54,12 +54,7 @@ class AirmarReceiver:
         data = self.parser.parse(sentence)
         if data is not None:
             mutex.acquire()
-            try:
-                self.processor.update_airmar_data(nmea=data)
-            except:
-                # Error handling: sentence was not parsable
-                # print(sentence)
-                pass
+            self.processor.update_airmar_data(nmea=data)
             mutex.release()
 
     def stop(self):

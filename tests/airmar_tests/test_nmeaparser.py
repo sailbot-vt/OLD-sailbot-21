@@ -148,3 +148,36 @@ class NmeaTests(unittest.TestCase):
         self.assertEqual(data["WIVWT"]["wind_speed_knots"], "1")
         self.assertEqual(data["WIVWT"]["wind_speed_mps"], "2")
         self.assertEqual(data["WIVWT"]["wind_speed_kph"], "3")
+
+    def test_update_sentence_gpgll(self):
+        self.parser.update_data(fields=["GPGLL"], data=None)
+
+    def test_update_sentence_gpgsa(self):
+        self.parser.update_data(fields=["GPGSA"], data=None)
+
+    def test_update_sentence_gpgsv(self):
+        self.parser.update_data(fields=["GPGSV"], data=None)
+
+    def test_update_sentence_hchdt(self):
+        self.parser.update_data(fields=["HCHDT"], data=None)
+
+    def test_update_sentence_wimda(self):
+        self.parser.update_data(fields=["WIMDA"], data=None)
+
+    def test_update_sentence_wimwv(self):
+        self.parser.update_data(fields=["WIMWV"], data=None)
+
+    def test_update_sentence_gprmc(self):
+        self.parser.update_data(fields=["GPRMC"], data=None)
+
+    def test_update_sentence_tirot(self):
+        self.parser.update_data(fields=["TIROT"], data=None)
+
+    def test_update_sentence_hchts(self):
+        self.parser.update_data(fields=["HCTHS"], data=None)
+
+    def test_update_sentence_yxxdr(self):
+        self.parser.update_data(fields=["YXXDR"], data=None)
+
+    def test_update_sentence_gpzda(self):
+        self.parser.update_data(fields=["GPZDA"], data=None)
