@@ -119,14 +119,6 @@ class AirmarIntegrationTests(unittest.TestCase):
         sentence = self._make_nmea_sentence(sentence=sentence)
         test_inputs.append(str.encode(sentence, encoding="UTF-8"))
 
-        sentence = "GPGGA,,2,N,3,E,,,,,,,,,"
-        sentence = self._make_nmea_sentence(sentence=sentence)
-        test_inputs.append(str.encode(sentence, encoding="UTF-8"))
-
-        sentence = "GPGGA,,4,N,5,E,,,,,,,,,"
-        sentence = self._make_nmea_sentence(sentence=sentence)
-        test_inputs.append(str.encode(sentence, encoding="UTF-8"))
-
         serial.Serial.inWaiting = MagicMock(name="serial.Serial.inWaiting",
             return_value=len(b''.join(test_inputs)))
         serial.Serial.read = MagicMock(name="serial.Serial.read")
@@ -137,14 +129,6 @@ class AirmarIntegrationTests(unittest.TestCase):
         self.thread.receiver.send_airmar_data()
         self.assertAlmostEqual(1, self.broadcaster.data["boat latitude"], 2)
         self.assertAlmostEqual(2, self.broadcaster.data["boat longitude"], 2)
-
-        self.thread.receiver.send_airmar_data()
-        self.assertAlmostEqual(2, self.broadcaster.data["boat latitude"], 2)
-        self.assertAlmostEqual(3, self.broadcaster.data["boat longitude"], 2)
-
-        self.thread.receiver.send_airmar_data()
-        self.assertAlmostEqual(4, self.broadcaster.data["boat latitude"], 2)
-        self.assertAlmostEqual(5, self.broadcaster.data["boat longitude"], 2)
 
     def test_update_boat_speed(self):
         # GPVTG
