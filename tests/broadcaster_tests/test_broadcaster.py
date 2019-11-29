@@ -1,3 +1,4 @@
+import os
 import unittest
 try:
     from unittest.mock import patch
@@ -12,11 +13,17 @@ class BroadcasterTests(unittest.TestCase):
 
     def setUp(self):
         """ Create testing fields """
+        self.path = os.path.dirname(os.path.abspath(__file__))
+        try:
+            os.remove(self.path + "/broadcast_test.log")
+        except:
+            pass
         self.testable = make_broadcaster()
         self.messenger = make_broadcaster(
             broadcaster_type=BroadcasterType.Messenger)
         self.filewriter = make_broadcaster(
-            broadcaster_type=BroadcasterType.FileWriter, filename="test.txt")
+            broadcaster_type=BroadcasterType.FileWriter, 
+            filename=self.path + "/broadcast_test.log")
         self.data = {
             1 : "test",
             2 : "test2",
