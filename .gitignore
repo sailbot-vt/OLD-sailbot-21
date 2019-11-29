@@ -2,8 +2,7 @@
 p3_*env/
 
 # Log files and dir
-log/
-logs/
+logs\
 *.log
 
 
