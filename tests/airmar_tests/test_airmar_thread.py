@@ -75,8 +75,8 @@ class AirmarIntegrationTests(unittest.TestCase):
         self.assertAlmostEqual(0, self.broadcaster.data["wind angle true"], 2)
 
         self.thread.receiver.send_airmar_data()
-        self.assertAlmostEqual(6.365, self.broadcaster.data["wind speed true"], 2)
-        self.assertAlmostEqual(25.374, self.broadcaster.data["wind angle true"], 2)
+        self.assertAlmostEqual(9.998, self.broadcaster.data["wind speed true"], 2)
+        self.assertAlmostEqual(0.599, self.broadcaster.data["wind angle true"], 2)
 
     def test_update_rel_wind(self):
         # WIVWR
@@ -109,8 +109,8 @@ class AirmarIntegrationTests(unittest.TestCase):
         self.assertAlmostEqual(0, self.broadcaster.data["wind angle apparent"], 2)
 
         self.thread.receiver.send_airmar_data()
-        self.assertAlmostEqual(6.365, self.broadcaster.data["wind speed apparent"], 2)
-        self.assertAlmostEqual(25.374, self.broadcaster.data["wind angle apparent"], 2)
+        self.assertAlmostEqual(9.998, self.broadcaster.data["wind speed apparent"], 2)
+        self.assertAlmostEqual(0.599, self.broadcaster.data["wind angle apparent"], 2)
 
     def test_update_boat_gps(self):
         # GPGGA
