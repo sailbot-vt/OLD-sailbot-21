@@ -75,13 +75,14 @@ class AirmarProcessor:
 
 # -------------------- AIRMAR SPECIFIC CALCULATIONS --------------------
     def _scale_avg_polar_coords(self, o_magn, o_angle, n_magn, n_angle):
-        old = Vec2.build_from(magnitude=o_magn, angle=o_angle)
-        new = Vec2.build_from(magnitude=n_magn, angle=n_angle)
+        old = Vec2.build_from(magnitude=o_magn, angle=math.radians(o_angle))
+        new = Vec2.build_from(magnitude=n_magn, angle=math.radians(n_angle))
         
         # Weighted average
         weight = 0.3
         x = (old.x * (1 - weight)) + (new.x * weight)
         y = (old.y * (1 - weight)) + (new.y * weight)
+        
         v = Vec2(x, y)
 
         # Convert to degrees, returns tuple (speed, angle)
