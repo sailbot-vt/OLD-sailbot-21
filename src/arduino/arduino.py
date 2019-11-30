@@ -41,7 +41,9 @@ class Arduino(Thread):
         print("Started arduino thread")
         while self.is_active:
             for val in self.data.values():
-                pass            # send over UART
+                self.port.write(str(val))
+                self.port.write('|')            # send over UART
+            self.port.write('b')                # delimiter
             print(time.time())
             time.sleep(self.update_interval)
 
