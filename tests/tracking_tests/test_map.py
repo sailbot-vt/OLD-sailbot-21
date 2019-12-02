@@ -40,8 +40,8 @@ class MapTests(unittest.TestCase):
 
         for ((r, theta), (xOut, yOut)) in list(zip(in_values, out_values)):
             x, y = self.Map.polar_to_cartesian(theta, r)
-            unittest.TestCase.assertAlmostEqual(self, first = xOut, second = x, delta = .2)
-            unittest.TestCase.assertAlmostEqual(self, first = yOut, second = y, delta = .2)
+            self.assertAlmostEqual(xOut, x, delta = .2)
+            self.assertAlmostEqual(yOut, y, delta = .2)
 
     def test_clear_objects(self):
         """Tests clear objects method of map"""
@@ -51,18 +51,17 @@ class MapTests(unittest.TestCase):
         start_time = dt.now()
         ii = 0
         for x, y, obj_type in zip(delta_x_list, delta_y_list, type_list):
-            #while (abs((dt.now() - start_time).total_seconds()) < .5):     # while less than 0.5s since last object
-             #   pass
-            #time.sleep(0.5)
+            while (abs((dt.now() - start_time).total_seconds()) < .5):     # while less than 0.5s since last object
+                pass
 
             pub.sendMessage("buoy detected", delta_x = x, delta_y = y, objectType=obj_type)
             start_time = dt.now()
             ii += 1
         
         self.assertTrue(len(self.Map.objectList) == 2)                 # assert that length of list is two 
-        while ((dt.now() - start_time) < 500):     # while less than 0.5s since last object
+        while (abs(dt.now() - start_time).total_seconds() < .5):     # while less than 0.5s since last object
             pass
-        self.Map.clear_objects(timeSinceLastSeen=750)       # should only clear 2nd object
+        self.Map.clear_objects(timeSinceLastSeen=0.75)       # should only clear 2nd object
         self.assertTrue(len(self.map.objectlist) == 1)                 # assert that length of list is only one
         self.Map.clear_objects(timeSinceLastSeen=0)         # should only clear all objects
         self.assertTrue(len(self.map.objectlist) == 0)                 # assert that length of list is zero

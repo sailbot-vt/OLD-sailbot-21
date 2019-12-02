@@ -100,12 +100,13 @@ class Map(Thread):
                 return (r, theta + 180)
         return(r, theta)
 
-    def return_objects(self, bearingRange=[-30,30], timeRange=[0,5000]):
+    def return_objects(self, bearingRange=[-30,30], timeRange=[0,5000], rngRange=None):
         """ Returns objects passing within given bearing range of boat in given time range
 
         Inputs:
             bearingRange -- Angle (in degrees) from bow to search within
             timeRange -- Time (in ms) to search within using current boat velocity
+            rngRange -- Range (in m) from bow to search within 
         
         Returns:
             objectArray -- array made up of bearing, range, and classification data for each object in range inputted
@@ -142,10 +143,9 @@ class Map(Thread):
         _num_fields = 2             # Range and bearing
         objectList = [[0 for i in range(_num_fields)] for j in range(_max_objs)]
         mutex.acquire()
-        for ii, obj in enumerate(objectList):
+        for ii, obj in enumerate(self.objectList):
             if obj.objectType == ObjectType.BUOY:
                 objectList[ii] = [obj.range, obj.bearing]
-                ii += 1
         mutex.release()
 
         return np.array(objectList[0:ii], buoy_array_dtype)
@@ -164,7 +164,7 @@ class Map(Thread):
             boat_x_moved, boat_y_moved = (position.y - self.old_position.y), (position.x - self.old_position.x)
             x -= boat_x_moved
             y -= boat_y_moved
-            object.range, object.bearing = self.cartesian_to_polar(x, y)
+            object.bearing, object.range = self.cartesian_to_polar(x, y)
         mutex.release()
         self.old_position = position
 
@@ -172,7 +172,7 @@ class Map(Thread):
         """ Clears object from objects with greater than <timeSinceLastSeen> time since last seen
 
         Inputs:
-            timeSinceLastSeen -- time (in ms) since to exclude objects last seen time
+            timeSinceLastSeen -- time since to exclude objects last seen time
         """
 
         cur_time = datetime.datetime.now()
