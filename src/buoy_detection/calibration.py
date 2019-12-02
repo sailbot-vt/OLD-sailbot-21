@@ -8,7 +8,7 @@ from time import sleep
 #Solve PnP function
 # This is the real size of the single squares (print with laser)
 # psi camera
-CHESSBOARD_SQUARE_SIZE = .0265 #Length of square of checkerboard in meters
+CHESSBOARD_SQUARE_SIZE = .024 #Length of square of checkerboard in meters
 #Frame rate over resolution
 CHESSBOARD_CALIBRATION_SIZE = (6,9)
 CHESSBOARD_OPTIONS = (cv2.CALIB_CB_NORMALIZE_IMAGE | cv2.CALIB_CB_FAST_CHECK | cv2.CALIB_CB_ADAPTIVE_THRESH)
