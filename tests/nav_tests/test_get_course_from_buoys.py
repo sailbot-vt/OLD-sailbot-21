@@ -23,5 +23,9 @@ class BuoySortTests(unittest.TestCase):
         test_arr_2 = np.array([(20, 165), (20, 15), (60, 90)], dtype=buoy_array_dtype)     # tests standard, 3 buoys, CCW navigation w/ boat outside of bounding box -- example of fleet race
         return_arr_2 = np.array([(20, 15), (60, 90), (20, 165)], dtype=buoy_array_dtype)
 
+        test_arr_3 = np.array([(80, 60), (50, 357), (100, 135), (60, 183)], dtype=buoy_array_dtype)     # tests standard, 4 buoys, CCW navigation w/ boat INSIDE of bounding box -- example of endurance race if we screw up our path
+        return_arr_3 = np.array([(50, 357), (80, 60), (100, 135), (60, 183)], dtype=buoy_array_dtype)
+        
         self.assertTrue(np.array_equal(return_arr_1, get_course_from_buoys(test_arr_1, "CCW")))
         self.assertTrue(np.array_equal(return_arr_2, get_course_from_buoys(test_arr_2, "CCW")))
+        self.assertTrue(np.array_equal(return_arr_3, get_course_from_buoys(test_arr_3, "CCW")))
