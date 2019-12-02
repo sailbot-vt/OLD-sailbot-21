@@ -7,6 +7,7 @@ except ImportError:
 from src.tracking.Map import Map
 from src.tracking.Map import Object
 from src.tracking.classification_types import ObjectType
+from src.tracking.object_dtypes import buoy_array_dtype, object_array_dtype
 
 from src.gps_point import GPSPoint
 
@@ -55,13 +56,13 @@ class MapTests(unittest.TestCase):
             start_time = dt.now()
 
         
-        assert(len(self.Map.objectList) == 2)                 # assert that length of list is two 
+        self.assertTrue(len(self.Map.objectList) == 2)                 # assert that length of list is two 
         while ((dt.now() - start_time) < 500):     # while less than 0.5s since last object
             pass
         self.Map.clear_objects(timeSinceLastSeen=750)       # should only clear 2nd object
-        assert(len(self.map.objectlist) == 1)                 # assert that length of list is only one
+        self.assertTrue(len(self.map.objectlist) == 1)                 # assert that length of list is only one
         self.Map.clear_objects(timeSinceLastSeen=0)         # should only clear all objects
-        assert(len(self.map.objectlist) == 0)                 # assert that length of list is zero
+        self.assertTrue(len(self.map.objectlist) == 0)                 # assert that length of list is zero
 
     def test_add_object(self):
         """Tests add object method of map"""
@@ -104,7 +105,7 @@ class MapTests(unittest.TestCase):
 
         returned_objects = self.Map.return_objects()
         for ii, correct_obj in enumerate(correct_object_list):
-            assert([correct_obj.range, correct_obj.bearing, correct_obj.objectType] == returned_objects[ii])
+            self.assertTrue([correct_obj.range, correct_obj.bearing, correct_obj.objectType] == returned_objects[ii])
 
     def test_update_map(self):
         """Tests update map method"""
@@ -131,8 +132,22 @@ class MapTests(unittest.TestCase):
         self.Map.updateMap()
         for ii, obj in enumerate(self.Map.objectList):
             obj_x, obj_y = self.polar_to_cartesian(obj.bearing, obj.range)
-            assert(delta_x_list[ii] - obj_x == delta_x)
-            assert(delta_y_list[ii] - obj_y == delta_y)
+            self.assertTrue(delta_x_list[ii] - obj_x == delta_x)
+            self.assertTrue(delta_y_list[ii] - obj_y == delta_y)
+
+    def test_get_buoys(self):
+        """Tests get buoys method"""
+        delta_x_list = [12.512, 44, 60]
+        delta_y_list = [-22, 81.5, 60]
+        type_list = [ObjectType.BUOY, ObjectType.BOAT, ObjectType.BUOY]
+        correct_object_list = []
+        for x, y, obj_type in zip(delta_x_list, delta_y_list, type_list):
+            pub.sendMessage("buoy detected", delta_x = x, delta_y = y, objectType=obj_type)
+            bearing, rng = self.cartesian_to_polar(x, y)
+            if obj_type == ObjectType.BUOY:
+                correct_object_list = correct_object_list.append(Object(bearing=bearing, range=rng, objectType=obj_type))
+        for obj in self.Map.objectList:
+            self.assertTrue(obj in correct_obj_list)
 
 if __name__ == "__main__":
         unittest.main()

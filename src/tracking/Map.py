@@ -8,6 +8,8 @@ from src.tracking.ExtendedKalmanFilter import EKF
 from src.buoy_detection.Depth_Map_Calculator import Depth_Map
 from src.tracking.KalmanFilter import KalmanFilter
 from src.tracking.classification_types import ObjectType
+from src.tracking.object_dtypes import buoy_array_dtype, object_array_dtype
+
 import numpy as np
 import math
 
@@ -86,10 +88,10 @@ class Map(Thread):
         Returns:
             objectArray -- array made up of bearing, range, and classification data for each object in range inputted
         """
-        # Create output array
-        _max_objs = 10              # Maximum number of objects to output (arbitrary choice)
-        _num_fields = 3             # Range, bearing, classification (using classification enum)
-        objectArray = np.zeros(_max_objs, _num_fields)
+        _max_objs = 10               # Maximum number of objects to output (arbitrary choice)
+        _num_fields = 3              # Range, bearing, classification (using classification enum)
+        objectList = [[0 for i in range(_num_fields)] for j in range(_max_objs)]
+
         if rngRange == None:
             # Convert time range to range range
             current_speed = boat.current_speed()
@@ -104,7 +106,7 @@ class Map(Thread):
                 ii += 1
         mutex.release()
 
-        return objectArray[0:ii]
+        return np.array(objectList[0:ii], object_array_dtype)
 
     def get_buoys(self):
         """Returns buoys that are tracked in the map
@@ -116,16 +118,16 @@ class Map(Thread):
         # Create output array
         _max_objs = 5               # Maximum number of objects to output (arbitrary choice)
         _num_fields = 2             # Range and bearing
-        objectArray = np.zeros(_max_objs, _num_fields)
+        objectList = [[0 for i in range(_num_fields)] for j in range(_max_objs)]
         mutex.acquire()
         ii = 0
         for obj in self.objectList:
             if obj.objectType == ObjectType.BUOY:
-                objectArray[ii] = np.array(obj.range, obj.bearing)
+                objectList[ii] = [obj.range, obj.bearing]
                 ii += 1
         mutex.release()
 
-        return objectArray[0:ii]
+        return np.array(objectList[0:ii], buoy_array_dtype)
 
     def polar_to_cartesian(self, bearing, range):
         x = range*math.cos(bearing)
