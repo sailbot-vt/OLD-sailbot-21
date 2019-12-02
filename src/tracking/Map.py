@@ -115,13 +115,13 @@ class Map(Thread):
     
         # Create output array
         _max_objs = 5               # Maximum number of objects to output (arbitrary choice)
-        _num_fields = 3             # Range, bearing, classification (using classification enum)
+        _num_fields = 2             # Range and bearing
         objectArray = np.zeros(_max_objs, _num_fields)
         mutex.acquire()
         ii = 0
         for obj in self.objectList:
             if obj.objectType == ObjectType.BUOY:
-                objectArray[ii] = np.array(obj.range, obj.bearing, obj.objectType)
+                objectArray[ii] = np.array(obj.range, obj.bearing)
                 ii += 1
         mutex.release()
 
