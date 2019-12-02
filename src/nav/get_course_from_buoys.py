@@ -1,21 +1,20 @@
 import numpy as np
 
-
 def get_course_from_buoys(buoy_array, direction):
     """Returns a sorted array of buoys
 
      Inputs:
-            buoy_array -- array made up of bearing, range, and classification data for each object in range inputted
+            buoy_array -- array made up of bearing and range data for each object in range inputted
             direction -- String to determine in what direction the array should be sorted in
 
         Returns:
-            buoy_array -- array made up of bearing, range, and classification data for each object in range inputted
+            buoy_array -- array made up of bearing and range data for each object in range inputted
         """
 
     # Sorts the buoy array by bearing value
-    np.sort(buoy_array)
+    sorted_array = np.sort(buoy_array, order="bearing")
 
     if direction == "CCW":
-        return buoy_array
+        return sorted_array
     else:
-        return np.flipud(buoy_array)
+        return np.flipud(sorted_array)
