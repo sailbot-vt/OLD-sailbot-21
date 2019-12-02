@@ -33,7 +33,7 @@ class DistanceCalculator():
 
     def findBuoyPixels(self, left_frame):
         """
-        Determine if the left camera has an image of the of buoy in it using color and shape. The calibration setup
+        Determine if the left camera has an image of the of buoy in it using color. The calibration setup
         has the left camera as the primary camera, so the disparity map pixels are equivalent to the ones in the disparity map.
 
         :return:
@@ -103,17 +103,20 @@ class DistanceCalculator():
         return self.baseline*self.depth_map_calculator.focal_length/disparity_value
 
 
-    def getBearingFromxPixel(self, xPixel, real_bearing):
+
+    def getBearingFromxPixel(self, xPixel, real_bearing, cameras_rotation=0):
         """
 
-        :param xPixel: the pixel in the x direction in qhich we see the buoy
+        :param xPixel: the pixel in the x direction in which we see the buoy
         :param real_bearing: the real bearing of the boat as read by the airmar
+        :param cameras_rotation: the rotation of the two cameras around the central axis (this is currently not implemented, so defaults to 0)
         :return: the predicted bearing of the buoy taking into consideration the real bearing of the boat
         """
         distance_from_center = xPixel - self.depth_map_calculator.image_size[0]/2
         relative_bearing = distance_from_center*self.depth_map_calculator.pixel_degrees
 
-        new_bearing = real_bearing + relative_bearing
+        camera_bearing = real_bearing + cameras_rotation
+        new_bearing = camera_bearing + relative_bearing
         return ((new_bearing % 360) + 360) % 360
 
 

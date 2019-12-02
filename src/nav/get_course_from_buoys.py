@@ -13,7 +13,7 @@ def get_course_from_buoys(buoy_array, direction):
         """
 
     # Sorts the buoy array by bearing value
-    np.sort(buoy_array, order=buoy_array.bearing)
+    np.sort(buoy_array)
 
     if direction == "CCW":
         return buoy_array
