@@ -1,5 +1,6 @@
 import parse
 
+from src.airmar.airmar_exceptions import UnsupportedIDException, InvalidSentenceException
 from src.airmar.nmeaparser.nmea_sentence import get_sentence_interface
 
 class NmeaParser():
@@ -33,13 +34,13 @@ class NmeaParser():
         """
         parsed = parse.parse(self.nmea_format, sentence)
         if parsed is None:
-            return None
+            raise InvalidSentenceException()
             
         body = parsed[0]
         checksum = parsed[1]
         if self.checksum(body) == checksum:
             return [None if field == '' else field for field in body.split(separator)]
-        return None
+        raise InvalidSentenceException() # Chksum did not match
 
     def update_data(self, data, fields):
         """ Packages NmeaSentence fields into a map, if sentence id is supported.
@@ -52,12 +53,15 @@ class NmeaParser():
         Returns:
         A formatted map such that key="nmea_id", value=data dict with value
             = formated data as string
+        None if field contains invalid sentence id.
 
         Note:
             Refer to 300WX User Technical Manual_0183 for detailed descriptions of
             data fields.
         """
         interface = get_sentence_interface(fields[0])
+        if interface is None:
+            raise UnsupportedIDException()
         interface.update_data(nmea_map=data, fields=fields)
         return data
 
