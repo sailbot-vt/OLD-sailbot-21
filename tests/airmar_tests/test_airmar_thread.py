@@ -5,6 +5,7 @@ try:
 except ImportError:
     from mock import MagicMock
 
+from src.logging.logger import Logger
 from src.airmar.airmar_input_thread import AirmarInputThread
 from src.airmar.nmeaparser.nmea_parser import NmeaParser
 from src.broadcaster.broadcaster import BroadcasterType
@@ -17,6 +18,7 @@ class AirmarIntegrationTests(unittest.TestCase):
     def setUp(self):
         """ Initialize testing objects """
         self.thread = AirmarInputThread(
+            logger=Logger(),
             mock_bbio=Adafruit_BBIO, 
             mock_port=serial.Serial,
             broadcaster_type=BroadcasterType.Testable)

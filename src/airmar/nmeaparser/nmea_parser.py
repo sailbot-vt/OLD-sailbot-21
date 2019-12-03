@@ -28,6 +28,10 @@ class NmeaParser():
         Returns:
         A list of data fields, where sentence id is first element.
         
+        Raises:
+        InvalidSentenceException when sentence does not match nmea format
+        or checksum did not match.
+        
         Note: Empty data fields == None.
             Refer to 300WX User Technical Manual_0183 for detailed descriptions of
             data fields.
