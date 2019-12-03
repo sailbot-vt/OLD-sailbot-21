@@ -12,17 +12,24 @@ class BroadcasterType(Enum):
 
 
 class Broadcaster(ABC):
-    """An abstract class to hide the interface required to notify the rest of the system of airmar input events.
-    Messages are async to prevent them from blocking eachother, since RC input may need a high priority."""
+    """ An abstract class for interfaces required to notify the 
+    rest of the system of input events. """
+
+    def __init__(self):
+        self.data = None
+
+    def publish_dictionary(self, data):
+        """ Updates data dictionary with new dictionary. 
+
+        Keyword Arguments:
+        data -- A dictionary containing key and value. 
+        """
+        self.data = data
+        for key in self.data:
+            self.publish_key(key=key)
 
     @abstractmethod
-    def update_dictionary(self, data=None):
-        """ Updates data dictionary with new dictionary. Data must be packaged into dictionary such that
-        key represents data type, value represents data. """
-        pass
-
-    @abstractmethod
-    def update_key(self, key=None):
+    def publish_key(self, key):
         """ Reads the data currently stored in data dictionary.
         
         Keyword Arguments:
@@ -36,56 +43,40 @@ class TestableBroadcaster(Broadcaster):
     """ A broadcaster built to test methods that need to broadcast."""
 
     def __init__(self):
-        self.data = None
+        """ Dictionary implementation of broadcaster."""
+        super().__init__()
 
-    def update_dictionary(self, data=None):
-        """ Stores dictionary into data, updating keys """
-        if data is not None:
-            self.data = data
-            for key in self.data.keys():
-                self.update_key(key=key)
+    def publish_key(self, key):
+        """ Retrieves stored data. 
+        
+        Keyword Arguments:
+        key -- The id that matches key in dictionary
 
-    def update_key(self, key=None):
-        """ Updates key, returns data[key] """
-        if self.data is None or key is None or not key in self.data or self.data[key] is None:
-            return None
+        Returns:
+        The data[key] value
+        """
         return self.data[key]
         
 
-
 class Messenger(Broadcaster):
-    """Implements an interface with the pub/sub messaging system to broadcast data."""
+    """Implements an interface with the pub/sub 
+    messaging system to broadcast data."""
 
     def __init__(self):
-        self.data = None
+        """ Messenger pubsub implementation of broadcaster."""
+        super().__init__()
 
-    def update_dictionary(self, data=None):
-        """ Publishes all the key and values to pubsub.
-
-        Keyword Arguments:
-        data -- The dictionary containing key value pairs
-            Default: None
-        """
-        if data is not None:
-            self.data = data
-            for key in self.data.keys():
-                self.update_key(key=key)
-
-    def update_key(self, key=None):
+    def publish_key(self, key):
         """ Publishes data to pubsub. 
         
         Keyword Arguments:
         key -- The id that matches key in dictionary
-            Default: None
 
         Returns:
-        None if no key is provided/invalid, data/data[key] not initialized
-        data from map if successfully published
+        The msgData published to pubsub
         """
-        if self.data is None or key is None or not key in self.data or self.data[key] is None:
-            return None
         value = self.data[key]
-        pub.sendMessage(topicName="set {}".format(key), msgData=value)
+        pub.sendMessage(topicName="{}".format(key), msgData=value)
         return value
 
 
@@ -93,22 +84,23 @@ class FileWriter(Broadcaster):
     """Implements an interface to write data to file. """
 
     def __init__(self, filename):
-        self.filename = filename
-        self.data = None
-        self.line_format = "[{0:20s}]\t\t[Requested: {1} -- Data: {2}]\n"
+        """ FileWriter implementation of broadcaster.
 
-    def update_dictionary(self, data=None):
-        """ Publishes all key value pairs in data"""
-        if data is not None:
-            self.data = data
-            for key in self.data.keys():
-                self.update_key(key=key)
+        Keyword Arguments:
+        filename -- the name of the file to read/write to.
+        """
+        super().__init__()
+        self.filename = filename
+        self.line_format = "[{0:20s}]\t\t[Requested: {1} -- Data: {2}]\n"
     
-    def update_key(self, key=None):
-        """ Publishes key value pair by appending to file. """
+    def publish_key(self, key):
+        """ Publishes key value pair by appending to file. 
+        
+        Keyword Arguments:
+        key -- The id that matches key in dictionary
+        """
         f = open(self.filename, "a")
-        if self.data is None or key is None or not key in self.data or self.data[key] is None:
-            return None
+
         value = self.data[key]
         f.write(self.line_format.format(datetime.now().__str__(), key, value))
         f.close()
