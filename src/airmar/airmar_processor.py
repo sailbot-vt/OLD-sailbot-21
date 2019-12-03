@@ -5,71 +5,83 @@ from threading import Lock
 from src.utils.vec import Vec2
 
 
+class NullDataException(Exception):
+    pass
+
+
+class InvalidIDException(Exception):
+    pass
+
+
 class AirmarProcessor:
     def __init__(self, broadcaster, parser):
         self.parser = parser
         self.broadcaster = broadcaster
 
         self.data = {}
-        self.raw = {}
 
     def update_airmar_data(self, nmea):
-        self.raw = {} # New raw data.
+        if nmea is None:
+            raise NullDataException()
+
+        if nmea[0] is None:
+            raise InvalidIDException()
+        
+        raw = {}
         sid = nmea[0]
-        if sid is None:
-            return
-        self.parser.update_data(data=self.raw, fields=nmea)
-        #print(self.raw)
+
+        self.parser.update_data(data=raw, fields=nmea)
+
         if sid == "WIVWR":
-            self._update_wind(sid=sid, 
+            self._update_wind(raw=raw, sid=sid, 
                 speed_key="wind speed apparent",
                 angle_key="wind angle apparent")
         elif sid == "WIVWT":
-            self._update_wind(sid=sid, 
+            self._update_wind(raw=raw, sid=sid, 
                 speed_key="wind speed true",
                 angle_key="wind angle true")
         elif sid == "GPGGA":
-            self._update_boat_gps(sid)
+            self._update_boat_gps(raw=raw, sid=sid)
         elif sid == "GPVTG":
-            self._update_boat_speed(sid)
+            self._update_boat_speed(raw=raw, sid=sid)
         # Other updated processed data goes below
 
         # Broadcasts processed data via broadcaster
-        self.broadcaster.update_dictionary(data=self.data)
+        self.broadcaster.publish_dictionary(data=self.data)
 
 
 
 # --------------------  PROCESSED DATA ENTRY --------------------
-    def _update_wind(self, sid, speed_key, angle_key):
+    def _update_wind(self, raw, sid, speed_key, angle_key):
         # Left is negative, Right is positive
-        if (self.raw[sid]["wind_angle_direction"]) == "L":
+        if (raw[sid]["wind_angle_direction"]) == "L":
             # (counter clockwise)
             # i.e -1 degree = 359 degree.
-            self.raw[sid]["wind_angle_degree"] = (360 - float(self.raw[sid]["wind_angle_degree"])) % 360
+            raw[sid]["wind_angle_degree"] = (360 - float(raw[sid]["wind_angle_degree"])) % 360
         
         # Initialize new speed to data
         if speed_key not in self.data:
-            self.data[speed_key] = float(self.raw[sid]["wind_speed_mps"])
+            self.data[speed_key] = float(raw[sid]["wind_speed_mps"])
         if angle_key not in self.data:
-            self.data[angle_key] = float(self.raw[sid]["wind_angle_degree"])
+            self.data[angle_key] = float(raw[sid]["wind_angle_degree"])
 
         # Calculated weighted magn and angle from old and new data.
         self.data[speed_key], self.data[angle_key] = self._scale_avg_polar_coords(
             o_magn=self.data[speed_key],
             o_angle=self.data[angle_key],
-            n_magn=float(self.raw[sid]["wind_speed_mps"]),
-            n_angle=float(self.raw[sid]["wind_angle_degree"])
+            n_magn=float(raw[sid]["wind_speed_mps"]),
+            n_angle=float(raw[sid]["wind_angle_degree"])
         )
 
-    def _update_boat_gps(self, sid):
+    def _update_boat_gps(self, raw, sid):
         # Update boat latitude and longitude
-        self.data["boat latitude"] = float(self.raw[sid]["latitude"])
-        self.data["boat longitude"] = float(self.raw[sid]["longitude"])
+        self.data["boat latitude"] = float(raw[sid]["latitude"])
+        self.data["boat longitude"] = float(raw[sid]["longitude"])
 
-    def _update_boat_speed(self, sid):
+    def _update_boat_speed(self, raw,  sid):
         # Update boat speed and heading
-        self.data["boat speed"] = float(self.raw[sid]["speed_over_ground_kph"])
-        self.data["boat heading"] = float(self.raw[sid]["course_over_ground_true"])
+        self.data["boat speed"] = float(raw[sid]["speed_over_ground_kph"])
+        self.data["boat heading"] = float(raw[sid]["course_over_ground_true"])
 
 
 
