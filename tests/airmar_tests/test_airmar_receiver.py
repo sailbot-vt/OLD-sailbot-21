@@ -7,6 +7,7 @@ except ImportError:
 from src.airmar.airmar_receiver import AirmarReceiver
 from src.broadcaster.broadcaster import BroadcasterType
 from src.broadcaster.broadcaster import make_broadcaster
+from src.logging.logger import Logger
 
 from tests.mock_bbio import Adafruit_BBIO
 from tests.mock_port import serial
@@ -29,6 +30,7 @@ class AirmarReceiverTests(unittest.TestCase):
             broadcaster_type=BroadcasterType.Testable)
 
         self.receiver = AirmarReceiver(
+            logger=Logger(),
             broadcaster=broadcaster,
             mock_bbio=Adafruit_BBIO,
             mock_port=serial.Serial)
@@ -55,4 +57,4 @@ class AirmarReceiverTests(unittest.TestCase):
         self.receiver.send_airmar_data()
         self.receiver.parser.parse.return_value = ["test"] 
         self.receiver.send_airmar_data()
-        self.assertEqual(1, self.receiver.processor.update_airmar_data.call_count)
+        self.assertEqual(2, self.receiver.processor.update_airmar_data.call_count)

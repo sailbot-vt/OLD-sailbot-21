@@ -1,5 +1,6 @@
 import unittest
 
+from src.airmar.airmar_exceptions import InvalidSentenceException
 from src.airmar.nmeaparser.nmea_parser import NmeaParser
 
 
@@ -12,7 +13,15 @@ class NmeaTests(unittest.TestCase):
     
     def test_parse(self):
         """ Tests nmea sentence parser """
-        self.assertEqual(self.parser.parse("$test*14\r\n"), None)
+        try:
+            self.parser.parse("$test*14\r\n")
+        except InvalidSentenceException:
+            pass
+        except Exception:
+            self.fail('unexpected exception raised')
+        else:
+            self.fail('InvalidSentenceException not raised')
+            
         self.assertEqual(self.parser.parse("$test*16\r\n")[0], "test")
         
         expected = ["test", "1", "2", "3", None, "4"]
