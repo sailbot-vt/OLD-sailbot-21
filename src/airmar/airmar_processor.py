@@ -7,13 +7,38 @@ from src.utils.vec import Vec2
 
 
 class AirmarProcessor:
+    """ Processes raw data from airmar and publishes to the specified
+    broadcaster """
+
     def __init__(self, broadcaster, parser):
+        """ Builds an airmar processor to process raw airmar data.
+
+        Keyword Arguments:
+        broadcaster -- data broadcast type
+        parser -- nmea parser to map raw data.
+
+        Returns:
+        A new airmar processor
+        """
         self.parser = parser
         self.broadcaster = broadcaster
 
         self.data = {}
 
     def update_airmar_data(self, nmea):
+        """ Updates airmar data from given nmea fields. 
+        
+        Keyword Arguments:
+        nmea -- A list of fields parsed from an nmea sentence
+
+        Side effects:
+        Broadcasts updated processed data.
+
+        Raises:
+        InvalidIDException for invalid sentence ids.
+        UnsupportedIDException when program does not implement
+        interface to parse given nmea fields.
+        """
         raw = {}
         sid = nmea[0]
 
@@ -44,6 +69,15 @@ class AirmarProcessor:
 
 # --------------------  PROCESSED DATA ENTRY --------------------
     def _update_wind(self, raw, sid, speed_key, angle_key):
+        """ Updates scaled average wind speed and heading direction. 
+        
+        Keyword Arguments:
+        raw -- The dictionary containing the raw WIVWR or WIVWT data.
+            representing relative or true wind data respectively.
+        sid -- nmea sentence id representing true or relative wind data.
+        speed_key -- The key in broadcaster containing the speed data in mps
+        angle_key -- The key in broadcaster containing the angle data in degrees
+        """
         # Left is negative, Right is positive
         if (raw[sid]["wind_angle_direction"]) == "L":
             # (counter clockwise)
@@ -65,12 +99,22 @@ class AirmarProcessor:
         )
 
     def _update_boat_gps(self, raw, sid):
-        # Update boat latitude and longitude
+        """ Updates the boat's latitude and longitude position in minutes.
+        
+        Keyword Arguments:
+        raw -- The dictionary containing raw gps data.
+        sid -- gps nmea sentence id.
+        """
         self.data["boat latitude"] = float(raw[sid]["latitude"])
         self.data["boat longitude"] = float(raw[sid]["longitude"])
 
-    def _update_boat_speed(self, raw,  sid):
-        # Update boat speed and heading
+    def _update_boat_speed(self, raw, sid):
+        """ Updates the boat's speed and heading direction in kph and minutes.
+
+        Keyword Arguments:
+        raw -- The dictionary containig the raw speed and course data
+        sid -- speed/heading nmea sentence id.
+        """
         self.data["boat speed"] = float(raw[sid]["speed_over_ground_kph"])
         self.data["boat heading"] = float(raw[sid]["course_over_ground_true"])
 
@@ -78,6 +122,20 @@ class AirmarProcessor:
 
 # -------------------- AIRMAR SPECIFIC CALCULATIONS --------------------
     def _scale_avg_polar_coords(self, o_magn, o_angle, n_magn, n_angle):
+        """ Calculates the scaled average polar coordinates given the original
+        polar coordinates and new polar coordinates. Note, the scaled weight
+        will be 70% of the original + 30% new vectors.
+
+        Keyword Arguments:
+        o_magn -- The magnitude of the original vector.
+        o_angle -- The angle of the original vector in degrees.
+        n_magn -- The magnitude of the new vector.
+        n_angle -- the angle of the new vector in degrees.
+
+        Returns:
+        (magnitude, angle) as a tuple, such that the magnitude and angle in 
+        degrees of the vector is the scaled average of the original and new vector.
+        """
         old = Vec2.build_from(magnitude=o_magn, angle=math.radians(o_angle))
         new = Vec2.build_from(magnitude=n_magn, angle=math.radians(n_angle))
         
