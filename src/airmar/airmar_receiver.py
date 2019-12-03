@@ -16,7 +16,10 @@ class AirmarReceiver:
         """Initializes a new airmar receiver.
 
         Keyword arguments:
-        pin -- The UART pin object
+        broadcaster -- The broadcaster object to publish data.
+        logger -- logs warnings and errors from receiver.
+        mock_bbio -- testable bbio library.
+        mock_pot -- testable port library.
 
         Returns:
         A new Airmar Receiver
@@ -53,7 +56,11 @@ class AirmarReceiver:
         self.is_running = True
 
     def send_airmar_data(self):
-        """ Sends nmea sentence from serial port to processor to broadcast data """
+        """ Sends nmea sentence from serial port to processor to broadcast data 
+        
+        Side effects:
+        Updates logger with warnings and errors
+        """
         sentence = self.port.read_line(terminator='\r\n')
 
         mutex.acquire()
