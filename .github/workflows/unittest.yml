@@ -1,0 +1,27 @@
+name: CI Unit Testing
+
+on: push
+
+jobs:
+  build:
+    
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+      
+    - name: Cache dependencies
+      uses: actions/cache@v1
+      with:
+        path: p3_*env
+        key: ${{ runner.OS }}-build-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.OS }}-build-${{ env.cache-name }}-
+          ${{ runner.OS }}-build-
+          ${{ runner.OS }}-
+        
+    - name: Build dependencies
+      run: make init
+      
+    - name: Run unit tests
+      run: make test
