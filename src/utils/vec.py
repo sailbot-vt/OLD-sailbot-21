@@ -182,7 +182,7 @@ class Vec2(Vec):
 
     def angle(self):
         """Gets the Cartesian angle of this vector in radians"""
-        return math.atan(self.y / self.x) if self.x != 0 else 0
+        return math.atan(self.y / self.x)
 
     @staticmethod
     def build_from(magnitude, angle):

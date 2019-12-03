@@ -147,7 +147,10 @@ class AirmarProcessor:
         v = Vec2(x, y)
 
         # Convert to degrees, returns tuple (speed, angle)
-        v_angle = math.degrees(v.angle())
+        try:
+            v_angle = math.degrees(v.angle())
+        except ZeroDivisionError:
+            v_angle = 0
 
         # Assume counter clockwise. More details in documentation.
         degrees = v_angle if v_angle >=0 else 360 + v_angle
