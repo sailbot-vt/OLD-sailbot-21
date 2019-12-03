@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import sys
 
-class NmeaSentence():
+class NmeaSentence(ABC):
     """ Interface for interpretting all transmitted NMEA 0183 Sentences 
     
     Refer to 300 WX User Technical Manual_0183 for descriptions of fields
@@ -186,4 +186,11 @@ class GPZDA(NmeaSentence):
 
 def get_sentence_interface(sentence_id):
     """ Returns the class interface for sentence id"""
-    return getattr(sys.modules[__name__], sentence_id)()
+    try:
+        return getattr(sys.modules[__name__], sentence_id)()
+    except AttributeError:
+        # Invalid sid provided
+        return None
+    except TypeError:
+        # sid is not string
+        return None

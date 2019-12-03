@@ -2,15 +2,8 @@ import math
 
 from threading import Lock
 
+from src.airmar.airmar_exceptions import InvalidIDException, UnsupportedIDException
 from src.utils.vec import Vec2
-
-
-class NullDataException(Exception):
-    pass
-
-
-class InvalidIDException(Exception):
-    pass
 
 
 class AirmarProcessor:
@@ -21,17 +14,15 @@ class AirmarProcessor:
         self.data = {}
 
     def update_airmar_data(self, nmea):
-        if nmea is None:
-            raise NullDataException()
-
-        if nmea[0] is None:
-            raise InvalidIDException()
-        
         raw = {}
         sid = nmea[0]
 
-        self.parser.update_data(data=raw, fields=nmea)
+        if self.parser.update_data(data=raw, fields=nmea) is None:
+            raise InvalidIDException()
 
+        if len(raw) == 0: # Empty data
+            raise UnsupportedIDException()
+        
         if sid == "WIVWR":
             self._update_wind(raw=raw, sid=sid, 
                 speed_key="wind speed apparent",

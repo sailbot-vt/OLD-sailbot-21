@@ -9,8 +9,9 @@ from src.broadcaster.broadcaster import make_broadcaster, BroadcasterType
 class AirmarInputThread(Thread):
     """A separate thread to manage reading the airmar inputs."""
 
-    def __init__(self, mock_bbio=None, mock_port=None, 
-        broadcaster_type=BroadcasterType.Messenger, filename=None):
+    def __init__(self, logger, mock_bbio=None, mock_port=None, 
+        broadcaster_type=BroadcasterType.Messenger,
+        filename=None):
         """Builds a new airmar input thread."""
         super().__init__()
 
@@ -19,7 +20,7 @@ class AirmarInputThread(Thread):
             broadcaster_type=broadcaster_type, filename=filename)
         
         # make receiver
-        self.receiver = AirmarReceiver(
+        self.receiver = AirmarReceiver(logger=logger,
                 broadcaster=self.broadcaster, 
                 mock_bbio=mock_bbio, mock_port=mock_port)
 
@@ -30,10 +31,7 @@ class AirmarInputThread(Thread):
         while self.is_alive():
             if not self.receiver.is_running:
                 self.receiver.start()
-            try:
                 self.receiver.send_airmar_data()
-            except:
-                continue
             sleep(self.read_interval)
         else:
             # cleanup on thread exit.

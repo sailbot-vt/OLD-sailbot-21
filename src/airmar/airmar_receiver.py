@@ -1,4 +1,6 @@
 from src.airmar.airmar_processor import AirmarProcessor
+from src.airmar.airmar_exceptions import InvalidIDException, UnsupportedIDException
+from src.airmar.airmar_exceptions import InvalidSentenceException
 from src.airmar.config_reader import read_pin_config, read_port_config, read_ids
 from src.airmar.nmeaparser.nmea_parser import NmeaParser
 
@@ -9,7 +11,8 @@ mutex = Lock()
 class AirmarReceiver:
     """Defines an Airmar receiver that sends data to a processor."""
 
-    def __init__(self, broadcaster, mock_bbio=None, mock_port=None):
+    def __init__(self, broadcaster, logger, 
+        mock_bbio=None, mock_port=None):
         """Initializes a new airmar receiver.
 
         Keyword arguments:
@@ -23,6 +26,7 @@ class AirmarReceiver:
         self.is_running = False
         self.uart_pin = read_pin_config(mock_bbio=mock_bbio)
         self.port = read_port_config(mock_port=mock_port)
+        self.logger = logger
         self.processor = AirmarProcessor(
             broadcaster=broadcaster, parser=self.parser)
 
@@ -51,11 +55,30 @@ class AirmarReceiver:
     def send_airmar_data(self):
         """ Sends nmea sentence from serial port to processor to broadcast data """
         sentence = self.port.read_line(terminator='\r\n')
-        data = self.parser.parse(sentence)
-        if data is not None:
-            mutex.acquire()
+
+        mutex.acquire()
+        try:
+            data = self.parser.parse(sentence)
             self.processor.update_airmar_data(nmea=data)
-            mutex.release()
+
+        except InvalidIDException:
+            self.logger.write_msg(pin_name=self.uart_pin.pin_name,
+            msg=r"WARNING Invalid SID: \"{}\"".format(sentence), 
+            rw_state="r")
+        except InvalidSentenceException:
+            self.logger.write_msg(pin_name=self.uart_pin.pin_name,
+            msg=r"WARNING Unable to parse \"{}\"".format(sentence), 
+            rw_state="r")
+        except UnsupportedIDException:
+            self.logger.write_msg(pin_name=self.uart_pin.pin_name,
+            msg=r"WARNING Unsupported ID: \"{}\"".format(sentence), 
+            rw_state="r")
+        except Exception as e:
+            self.logger.write_msg(pin_name=self.uart_pin.pin_name,
+            msg=r"ERROR Unhandled Exception\"{}\": \"{}\"".format(e, sentence), 
+            rw_state="r")
+
+        mutex.release()
 
     def stop(self):
         """ Stops the pin and port """
