@@ -13,6 +13,12 @@ class LoggerSocket(Namespace):
         pub.subscribe(self.update_write_msg, "write msg")
         pub.subscribe(self.update_config_dict, "config dict")
 
+    def on_connect(self):
+        pass
+
+    def on_disconnect(self):
+        pass
+
     def update_write_msg(self, pin_name, msg, rw_state):
         """ Polls for last write message from logger from
         pubsub

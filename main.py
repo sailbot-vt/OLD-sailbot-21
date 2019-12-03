@@ -22,15 +22,15 @@ def main():
     world = World()
 
     # Threads
-    airmar_thread = airmar.AirmarInputThread()
+    # airmar_thread = airmar.AirmarInputThread()
     logger = Logger()
-    rc_thread = rc.RCInputThread()
-    Sail = sail.SailListener(boat, world)
-    Rudder = rudder.RudderListener()
+    # rc_thread = rc.RCInputThread()
+    # Sail = sail.SailListener(boat, world)
+    # Rudder = rudder.RudderListener()
     captain_thread = captain.Captain(boat, world)
 
-    airmar_thread.start()
-    rc_thread.start()
+    # airmar_thread.start()
+    # rc_thread.start()
     captain_thread.start()
 
     # Start flask-socketio
@@ -38,8 +38,7 @@ def main():
     socketio = create_socket(app, 
         boat=boat, 
         world=world, 
-        logger=logger,
-        rc_thread=rc_thread
+        logger=logger
     )
     socketio.run(app)
 
