@@ -3,7 +3,7 @@ p3_*env/
 
 # Log files and dir
 log/
-.log
+*.log
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
