@@ -1,7 +1,7 @@
 import numpy as np
 import filterpy.kalman as kalman
 
-from datetime import datetime as dt
+from src.utils.time_in_millis import time_in_millis
 
 class KalmanFilter():
     def __init__(self, pos, vel, pos_sigma=None, vel_sigma=None):
@@ -20,7 +20,7 @@ class KalmanFilter():
             vel_sigma = np.array([50, 50])     # arbitrary choice -- needs tuning
         self.covar = np.diag(np.append(pos_sigma, vel_sigma))   # create covariance matrix (matrix of certainties of measurements)
 
-        self.last_time_changed = dt.now()
+        self.last_time_changed = time_in_millis()
         self.delta_t = 0
 
         # create state transition matrix
@@ -58,15 +58,16 @@ class KalmanFilter():
 
         self.state, self.covar = kalman.update(x=self.state, P=self.covar, z=measurement, R=measurement_covar, H=self.measurement_trans)
         
-
     def _update_trans_matrix(self):
         """Updates transition matrix for time delta since last prediction
         Side Effects:
             self.state_trans -- updates velocity coefficients in position equations
             self.last_time_changed -- updates last time changed to reflect that state has changed
         """
-        self.delta_t = dt.now() - self.last_time_changed
+        self.delta_t = time_in_millis() - self.last_time_changed
+
         # update delta_t in state transition matrix
-        self.state_trans[0, 3] = self.delta_t
-        self.state_trans[1, 4] = self.delta_t
-        self.last_time_changed = dt.now()
+        self.state_trans[0, 2] = self.delta_t
+        self.state_trans[1, 3] = self.delta_t
+
+        self.last_time_changed = time_in_millis()
