@@ -65,7 +65,7 @@ class KalmanFilter():
             self.last_time_changed -- updates last time changed to reflect that state has changed
             self.delta_t -- updates delta between current time and last time changed (used for predict)
         """
-        self.delta_t = time_in_millis() - self.last_time_changed
+        self.delta_t = (time_in_millis() - self.last_time_changed) / 1000.
 
         # update delta_t in state transition matrix
         self.state_trans[0, 2] = self.delta_t
