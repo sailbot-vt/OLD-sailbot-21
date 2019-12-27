@@ -7,7 +7,6 @@ except ImportError:
 from src.tracking.kalman_filter import KalmanFilter
 
 import numpy as np
-from pubsub import pub
 from datetime import datetime as dt
 import time
 
@@ -47,3 +46,9 @@ class KalmanFilterTests(unittest.TestCase):
             self.kalman._update_trans_matrix()
 
             np.testing.assert_allclose(self.kalman.state_trans, truth_state_trans)
+
+    def test_update(self):
+        """Tests update method of kalman filter"""
+
+    def test_predict(self):
+        """Tests predict method of kalman filter"""

@@ -5,7 +5,7 @@ except ImportError:
     from mock import MagicMock, patch
 
 from src.tracking.map import Map
-from src.tracking.map import Object
+from src.tracking.object import Object
 from src.tracking.classification_types import ObjectType
 
 from src.utils.coord_conv import polar_to_cartesian, cartesian_to_polar
@@ -48,7 +48,7 @@ class MapTests(unittest.TestCase):
         while (abs(dt.now() - start_time).total_seconds() < .5):     # while less than 0.5s since last object
             pass
 
-        self.map.clear_objects(timeSinceLastSeen=0.75)       # should only clear 2nd object
+        self.map.clear_objects(timeSinceLastSeen=750)       # should only clear 2nd object
         self.assertTrue(len(self.map.object_list) == 1)                 # assert that length of list is only one
         self.map.clear_objects(timeSinceLastSeen=0)         # should only clear all objects
         self.assertTrue(len(self.map.object_list) == 0)                 # assert that length of list is zero

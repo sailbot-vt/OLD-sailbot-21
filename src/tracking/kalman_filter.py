@@ -15,9 +15,9 @@ class KalmanFilter():
 
         self.state = np.append(pos, vel)       # create state vector (elements are x, y, v_x, v_y)
         if pos_sigma is None:
-            pos_sigma = np.array([20, 20])     # arbitrary choice -- needs tuning
+            pos_sigma = np.array([5, 5])     # arbitrary choice -- needs tuning
         if vel_sigma is None:
-            vel_sigma = np.array([50, 50])     # arbitrary choice -- needs tuning
+            vel_sigma = np.array([10, 10])     # arbitrary choice -- needs tuning
         self.covar = np.diag(np.append(pos_sigma, vel_sigma))   # create covariance matrix (matrix of certainties of measurements)
 
         self.last_time_changed = time_in_millis()
@@ -63,6 +63,7 @@ class KalmanFilter():
         Side Effects:
             self.state_trans -- updates velocity coefficients in position equations
             self.last_time_changed -- updates last time changed to reflect that state has changed
+            self.delta_t -- updates delta between current time and last time changed (used for predict)
         """
         self.delta_t = time_in_millis() - self.last_time_changed
 
