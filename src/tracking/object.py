@@ -40,9 +40,9 @@ class Object():
         """
 
         if (rngRate is None) and (bearingRate is None):
-            self.kalman.update(*polar_to_cartesian(rng, bearing), *self._get_cart_velocity())
+            self.kalman.update(rng, bearing, self.rngRate, self.bearingRate)
         else:
-            self.kalman.update(*polar_to_cartesian(rng, bearing), *polar_to_cartesian(rngRate, bearingRate))
+            self.kalman.update(rng, bearing, rngRate, bearingRate)
         self._set_object_state()
 
         # update range and bearing rate for object
@@ -72,8 +72,8 @@ class Object():
             self.rngRate -- Updated using kalman filter
             self.bearingRate -- Updated using kalman filter
         """
-        self.rng, self.bearing = cartesian_to_polar(self.kalman.state[0], self.kalman.state[1])
-        self.rngRate, self.bearingRate = cartesian_to_polar(self.kalman.state[2], self.kalman.state[3])
+        self.rng, self.bearing = (self.kalman.state[0], self.kalman.state[1])
+        self.rngRate, self.bearingRate = (self.kalman.state[2], self.kalman.state[3])
 
     def _find_object_rngRate(self):
         """
@@ -91,18 +91,3 @@ class Object():
         """
         self.bearingRate = 1000 * (self.bearing - self.prevBearing) / (time_in_millis() - self.lastSeen)
 
-    def _get_cart_position(self):
-        """Returns cartesian vector of object position
-        Returns:
-            cart_position -- cartesian vector of object position
-        """
-
-        return polar_to_cartesian(self.rng, self.bearing)
-
-    def _get_cart_velocity(self):
-        """Returns cartesian vector of object velocity
-        Returns:
-            cart_velocity -- cartesian vector of object velocity
-        """
-
-        return polar_to_cartesian(self.rngRate, self.bearingRate)

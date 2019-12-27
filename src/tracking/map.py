@@ -11,6 +11,9 @@ from src.utils.time_in_millis import time_in_millis
 
 import numpy as np
 
+#TODO REMOVE
+import pdb
+
 #TODO: add thread control back in
 mutex = Lock()
 class Map(Thread):
@@ -55,11 +58,11 @@ class Map(Thread):
             lastSeen -- Time object was last seen (in ms)
             objectType -- Classification of object (None for unclassified object)
         """
-        # TODO: CHECK IF OBJECT FITS PRIOR TRACK (within threshold of object on list)
-        if 0:  # if object fits prior track that is made, add object to track
-            pass
+        rng, bearing = cartesian_to_polar(delta_x, delta_y)
+        obj_index = self._find_object_in_map(rng, bearing, objectType)
+        if (obj_index != None):                     # if object fits prior track that is made, add object to track
+            self.object_list[obj_index].update(rng, bearing)
         else:
-            rng, bearing = cartesian_to_polar(delta_x, delta_y)
             new_object = Object(bearing, rng, time_in_millis(), objectType=objectType)
             self.object_list.append(new_object)
 
@@ -135,3 +138,36 @@ class Map(Thread):
         for index in sorted(del_list, reverse=True):
             del self.object_list[index]
 
+    def _find_object_in_map(self, rng, bearing, obj_type):
+        """Finds if object exists in map and returns object index if true, otherwise returns None
+        Inputs:
+            rng -- range of object detected
+            bearing -- bearing of object detected
+            obj_type -- type of object detected
+        Returns:
+            object_index -- index of object that matches track, none if no object matches
+        """
+
+        # init x and y ranges
+        rng_range = [0] * 2
+        bearing_range = [0] * 2
+
+        # search through objects in object list
+        for ii, obj in enumerate(self.object_list):
+            # get newest prediction for object
+            obj.predict()
+            
+            # find range around objects position
+            rng_range[0] = obj.kalman.state[0] - obj.kalman.covar[0,0]
+            rng_range[1] = obj.kalman.state[0] + obj.kalman.covar[0,0]
+
+            bearing_range[0] = obj.kalman.state[1] - obj.kalman.covar[1,1]
+            bearing_range[1] = obj.kalman.state[1] + obj.kalman.covar[1,1]
+
+            # if detection is in uncertainty range of object and is same type (or unknown type)
+            if (rng_range[0] <= rng <= rng_range[1]) and (bearing_range[0] <= bearing <= bearing_range[1]) and \
+                                                   ((obj_type == obj.objectType) or (obj_type == ObjectType.NONE)):
+
+                return ii
+
+        return None

@@ -15,9 +15,9 @@ class KalmanFilter():
 
         self.state = np.append(pos, vel)       # create state vector (elements are x, y, v_x, v_y)
         if pos_sigma is None:
-            pos_sigma = np.array([5, 5])     # arbitrary choice -- needs tuning
+            pos_sigma = np.array([1, 1])     # arbitrary choice -- needs tuning
         if vel_sigma is None:
-            vel_sigma = np.array([10, 10])     # arbitrary choice -- needs tuning
+            vel_sigma = np.array([2, 2])     # arbitrary choice -- needs tuning
         self.covar = np.diag(np.append(pos_sigma, vel_sigma))   # create covariance matrix (matrix of certainties of measurements)
 
         self.last_time_changed = time_in_millis()
@@ -51,9 +51,9 @@ class KalmanFilter():
         """
         measurement = np.append(pos, vel)
         if pos_sigma is None:
-            pos_sigma = np.array([20, 20])     # arbitrary choice -- needs tuning
+            pos_sigma = np.array([1, 1])     # arbitrary choice -- needs tuning
         if vel_sigma is None:
-            vel_sigma = np.array([50, 50])     # arbitrary choice -- needs tuning
+            vel_sigma = np.array([2, 2])     # arbitrary choice -- needs tuning
         measurement_covar = np.diag(np.append(pos_sigma, vel_sigma))
 
         self.state, self.covar = kalman.update(x=self.state, P=self.covar, z=measurement, R=measurement_covar, H=self.measurement_trans)

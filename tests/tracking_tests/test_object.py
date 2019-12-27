@@ -23,16 +23,16 @@ class ObjectTests(unittest.TestCase):
     def test_set_object_state(self):
         """Tests set object state method of Object"""
         # set kalman state to arbitrary choice of numbers
-        xy = [2, 2]
-        xy_prime = [5, 5]
-        self.object.kalman.state = np.array(xy + xy_prime)
+        rb = [2, 45]
+        rb_prime = [5, 5]
+        self.object.kalman.state = np.array(rb + rb_prime)
 
         # call set object state method
         self.object._set_object_state()
 
         # ensure that object state is set correctly
-        rng, bearing = cartesian_to_polar(xy[0], xy[1])
-        rngRate, bearingRate = cartesian_to_polar(xy_prime[0], xy_prime[1])
+        rng, bearing = rb
+        rngRate, bearingRate = rb_prime
 
         self.assertAlmostEqual(self.object.rng, rng)
         self.assertAlmostEqual(self.object.bearing, bearing)
@@ -77,65 +77,29 @@ class ObjectTests(unittest.TestCase):
 
         self.assertAlmostEqual(bearingRate, self.object.bearingRate)
 
-    @patch('src.tracking.object.polar_to_cartesian')
-    def test_get_cart_position(self, mock_polar_to_cart):
-        """Tests get cartesian position method of Object"""
-        # set rng and bearing to arbitrary numbers
-        rng = 5
-        self.object.rng = rng
-        bearing = 6
-        self.object.bearing = bearing
-
-        # call _get_cart_position
-        self.object._get_cart_position()
-
-        # check if polar_to_cartesian is called with correct values
-        mock_polar_to_cart.assert_called_with(rng, bearing)
-
-    @patch('src.tracking.object.polar_to_cartesian')
-    def test_get_cart_velocity(self, mock_polar_to_cart):
-        """Tests get cartesian position method of Object"""
-        # set rng and bearing to arbitrary numbers
-        rngRate = 5
-        self.object.rngRate = rngRate
-        bearingRate = 6
-        self.object.bearingRate = bearingRate
-
-        # call _get_cart_position
-        self.object._get_cart_velocity()
-
-        # check if polar_to_cartesian is called with correct values
-        mock_polar_to_cart.assert_called_with(rngRate, bearingRate)
-
-    @patch('src.tracking.object.polar_to_cartesian')
     @patch('src.tracking.object.time_in_millis')
     @patch('src.tracking.object.Object._find_object_bearingRate')
     @patch('src.tracking.object.Object._find_object_rngRate')
     @patch('src.tracking.object.Object._set_object_state')
-    @patch('src.tracking.object.Object._get_cart_velocity')
     @patch('src.tracking.object.KalmanFilter.update')
-    def test_update(self, mock_kalman_update, mock_get_cart_vel, mock_set_obj_state, mock_find_rngRate,
-                          mock_find_bearingRate, mock_time_in_millis, mock_polar_to_cart):
-        """Tests update moethod of Object"""
+    def test_update(self, mock_kalman_update, mock_set_obj_state, mock_find_rngRate,
+                          mock_find_bearingRate, mock_time_in_millis):
+        """Tests update method of Object"""
         # set mocks and states to arbitrary values for testing
-        update_cart_vel = polar_to_cartesian(5, 90)
-        mock_get_cart_vel.return_value = update_cart_vel
-
         rng, bearing = 2, 3
-        kalman_state = np.array([rng, bearing, 0, 5])
+        rngRate, bearingRate = 0, 0
+        self.object.rngRate, self.object.bearingRate = rngRate, bearingRate
+        kalman_state = np.array([rng, bearing, 0, 0])
         self.object.kalman.state = kalman_state         # used by _set_object_state
         
         time_in_millis_val = 5
         mock_time_in_millis.return_value = time_in_millis_val
 
-        polar_to_cart_val = (2,2)
-        mock_polar_to_cart.return_value = polar_to_cart_val
-
         # call update
-        self.object.update(4, 45)    # arguments do not impact values (since we are mocking everything)
+        self.object.update(rng, bearing)
 
         # ensure proper behavior
-        mock_kalman_update.assert_called_with(*polar_to_cart_val, *update_cart_vel)
+        mock_kalman_update.assert_called_with(rng, bearing, rngRate, bearingRate)
 
         mock_set_obj_state.assert_called_once_with()
         mock_find_rngRate.assert_called_once_with()
@@ -147,29 +111,25 @@ class ObjectTests(unittest.TestCase):
 
         # reset all mocks
         mock_kalman_update.reset_mock()
-        mock_get_cart_vel.reset_mock()
         mock_set_obj_state.reset_mock()
         mock_find_rngRate.reset_mock()
         mock_find_bearingRate.reset_mock()
         mock_time_in_millis.reset_mock()
-        mock_polar_to_cart.reset_mock()
 
         # set mocks and states to arbitrary values for testing
         rng, bearing = 2, 3
-        kalman_state = np.array([rng, bearing, 0, 5])
+        rngRate, bearingRate = 5, 90
+        kalman_state = np.array([rng, bearing, rngRate, bearingRate])
         self.object.kalman.state = kalman_state         # used by _set_object_state
         
         time_in_millis_val = 5
         mock_time_in_millis.return_value = time_in_millis_val
 
-        polar_to_cart_val = (2,2)
-        mock_polar_to_cart.return_value = polar_to_cart_val
-
         # call update
-        self.object.update(4, 45, 4, 45)    # arguments do not impact values (since we are mocking everything)
+        self.object.update(rng, bearing, rngRate, bearingRate)
 
         # ensure proper behavior
-        mock_kalman_update.assert_called_with(*polar_to_cart_val, *polar_to_cart_val)
+        mock_kalman_update.assert_called_with(rng, bearing, rngRate, bearingRate)
 
         mock_set_obj_state.assert_called_once_with()
         mock_find_rngRate.assert_called_once_with()
