@@ -3,19 +3,13 @@ from time import sleep
 
 from pubsub import pub
 
-import datetime
-from src.buoy_detection.Depth_Map_Calculator import Depth_Map
-from src.tracking.kalman_filter import KalmanFilter
+from src.tracking.object import Object
 from src.tracking.classification_types import ObjectType
 
 from src.utils.coord_conv import cartesian_to_polar, polar_to_cartesian
+from src.utils.time_in_millis import time_in_millis
 
 import numpy as np
-from datetime import datetime as dt
-import math
-
-#TODO REMOVE
-import pdb
 
 #TODO: add thread control back in
 mutex = Lock()
@@ -66,7 +60,7 @@ class Map(Thread):
             pass
         else:
             rng, bearing = cartesian_to_polar(delta_x, delta_y)
-            new_object = Object(bearing, rng, dt.now(), objectType=objectType)
+            new_object = Object(bearing, rng, time_in_millis(), objectType=objectType)
             self.object_list.append(new_object)
 
     def return_objects(self, bearingRange=[-30,30], timeRange=[0,5000], rngRange=None):
@@ -130,108 +124,14 @@ class Map(Thread):
         """ Clears object from objects with greater than <timeSinceLastSeen> time since last seen
 
         Inputs:
-            timeSinceLastSeen -- time since to exclude objects last seen time
+            timeSinceLastSeen -- time since to exclude objects last seen time (in milliseconds)
         """
 
-        cur_time = dt.now()
+        cur_time = time_in_millis()
         del_list = []
         for ii, obj in enumerate(self.object_list):
-            if (dt.now() - obj.lastSeen).total_seconds() > timeSinceLastSeen:
+            if (time_in_millis() - obj.lastSeen) > timeSinceLastSeen:
                 del_list.append(ii)
         for index in sorted(del_list, reverse=True):
             del self.object_list[index]
 
-class Object():
-
-    def __init__(self, bearing, rng, lastSeen=dt.now(), rngRate=0, bearingRate=0, objectType=ObjectType.NONE):
-        """ Initalizes object that tracks a detection in map
-
-        bearing -- Relative angle of object (in deg)
-        rng -- Range of object from boat (in m)
-        lastSeen -- Time object was last seen (in ms)
-        objectType -- Classification of object (None for unclassified object)
-        rangeRate -- Velocity of object in radial direction (in m/s, + for object moving outwards)
-        bearingRate -- Velocity of object in angular direction (in deg/s, + for object moving CCW)
-        """
-        self.bearing = bearing
-        self.rng = rng
-        self.lastSeen = lastSeen
-        self.objectType = objectType
-        self.rngRate = rngRate
-        self.bearingRate = bearingRate
-
-        self.prevRng = 0
-        self.prevBearing = 0
-
-        self.kalman = KalmanFilter(np.array([self.rng, self.bearing]), np.array([self.rngRate, self.bearingRate]))
-
-    def update(self, rng, bearing, rngRate=0, bearingRate=0):
-        """Updates object position and model based on new reading
-        Inputs:
-            rng -- range measured by sensors
-            bearing -- bearing measured by sensorss
-            rngRate -- rate of change of range
-            bearingRate -- rate of change of bearing
-        """
-
-        self.kalman.update(_get_cart_position(), _get_cart_velocity())
-        self._set_object_state()
-
-        # update range and bearing rate for object
-        self._find_object_rngRate()
-        self._find_object_bearingRate()
-        self.lastSeen = dt.now()
-
-    def predict(self):
-        """
-        Predicts object position based on model
-        Side Effects:
-            Updates self.rng with predicted range
-            Updates self.bearing with predicted bearing
-        """
-        self.kalman.predict()
-        self._set_object_state()
-        
-    def _set_object_state(self):
-        """
-        Sets object state using kalman filter state (to be called after predict or update)
-        Side Effects:
-            self.rng -- Updated using kalman filter
-            self.bearing -- Updated using kalman filter
-            self.rngRate -- Updated using kalman filter
-            self.bearingRate -- Updated using kalman filter
-        """
-        self.rng, self.bearing = cartesian_to_polar(self.kalman.state[0], self.kalman.state[1])
-        self.rngRate, self.bearingRate = cartesian_to_polar(self.kalman.state[2], self.kalman.state[3])
-
-    def _find_object_rngRate(self):
-        """
-        Finds and sets object range rate
-        Side Effects:
-            self.rngRate -- Updates range rate using new measurement
-        """
-        self.rngRate = (self.rng - self.prevRng) / (dt.now() - self.lastSeen)
-
-    def _find_object_bearingRate(self):
-        """
-        Finds and sets object bearing rate
-        Side Effects:
-            self.bearingRate -- Updates bearing rate using new measurement
-        """
-        self.bearingRate = (self.bearing - self.prevBearing) / (dt.now() - self.lastSeen)
-
-    def _get_cart_position(self):
-        """Returns cartesian vector of object position
-        Returns:
-            cart_position -- cartesian vector of object position
-        """
-
-        return polar_to_cartesian(self.rng, self.bearing)
-
-    def _get_cart_velocity(self):
-        """Returns cartesian vector of object velocity
-        Returns:
-            cart_velocity -- cartesian vector of object velocity
-        """
-
-        return polar_to_cartesian(self.rngRate, self.bearingRate)
