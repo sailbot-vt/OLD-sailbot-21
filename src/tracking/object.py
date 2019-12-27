@@ -30,7 +30,7 @@ class Object():
 
         self.kalman = KalmanFilter(np.array([self.rng, self.bearing]), np.array([self.rngRate, self.bearingRate]))
 
-    def update(self, rng, bearing, rngRate=0, bearingRate=0):
+    def update(self, rng, bearing, rngRate=None, bearingRate=None):
         """Updates object position and model based on new reading
         Inputs:
             rng -- range measured by sensors
@@ -39,7 +39,10 @@ class Object():
             bearingRate -- rate of change of bearing
         """
 
-        self.kalman.update(_get_cart_position(), _get_cart_velocity())
+        if (rngRate is None) and (bearingRate is None):
+            self.kalman.update(*polar_to_cartesian(rng, bearing), *self._get_cart_velocity())
+        else:
+            self.kalman.update(*polar_to_cartesian(rng, bearing), *polar_to_cartesian(rngRate, bearingRate))
         self._set_object_state()
 
         # update range and bearing rate for object
