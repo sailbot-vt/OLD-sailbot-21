@@ -99,7 +99,7 @@ class ObjectTests(unittest.TestCase):
         rngRate = 5
         self.object.rngRate = rngRate
         bearingRate = 6
-        self.object.bearing = bearingRate
+        self.object.bearingRate = bearingRate
 
         # call _get_cart_position
         self.object._get_cart_velocity()
