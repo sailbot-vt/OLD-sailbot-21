@@ -49,7 +49,4 @@ def sort_inside_polygon(coord_array):
     # sort array by bearing
     sorted_indexed_array = np.sort(indexed_array, order='bearing')
 
-    print("\n")
-    print(coord_array[sorted_indexed_array['index']])
-
     return coord_array[sorted_indexed_array['index']]
