@@ -11,11 +11,6 @@ from src.utils.time_in_millis import time_in_millis
 
 import numpy as np
 
-#TODO REMOVE
-import pdb
-
-#TODO: add thread control back in
-mutex = Lock()
 class Map(Thread):
     """
     Map is used to create a model of where objects around the boat currently exist. Everything is currently relative to where

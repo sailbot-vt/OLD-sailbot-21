@@ -10,9 +10,6 @@ import numpy as np
 from datetime import datetime as dt
 import time
 
-#TODO REMOVE
-import pdb
-
 class KalmanFilterTests(unittest.TestCase):
     """Tests the methods in KalmanFilter"""
     def setUp(self):

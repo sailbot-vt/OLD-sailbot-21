@@ -11,9 +11,6 @@ from src.utils.coord_conv import cartesian_to_polar, polar_to_cartesian
 import numpy as np
 import time
 
-#TODO REMOVE
-import pdb
-
 class ObjectTests(unittest.TestCase):
     """Tests the methods in Object"""
     def setUp(self):

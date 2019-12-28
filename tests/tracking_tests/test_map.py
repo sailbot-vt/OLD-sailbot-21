@@ -16,9 +16,6 @@ from pubsub import pub
 from datetime import datetime as dt
 import time
 
-#TODO REMOVE
-import pdb
-
 class MapTests(unittest.TestCase):
     """Tests the methods in Map"""
     def setUp(self):
