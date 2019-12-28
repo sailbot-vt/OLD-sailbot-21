@@ -36,10 +36,10 @@ class MapTests(unittest.TestCase):
         delta_y_list = [-22, 81.5]
         type_list = [ObjectType.BUOY, ObjectType.BOAT]
 
-        # add objects to object list 0.5s apart
+        # add objects to object list 0.05s apart
         start_time = dt.now()
         for ii, (x, y, obj_type) in enumerate(zip(delta_x_list, delta_y_list, type_list)):
-            while (abs((dt.now() - start_time).total_seconds()) < .5):     # while less than 0.5s since last object
+            while (abs((dt.now() - start_time).total_seconds()) < .05):     # while less than 0.05s since last object
                 pass
 
             pub.sendMessage("object detected", delta_x = x, delta_y = y, objectType=obj_type)
@@ -47,10 +47,10 @@ class MapTests(unittest.TestCase):
         
         self.assertTrue(len(self.map.object_list) == 2)                 # assert that length of list is two 
 
-        while (abs(dt.now() - start_time).total_seconds() < .5):     # while less than 0.5s since last object
+        while (abs(dt.now() - start_time).total_seconds() < .05):     # while less than 0.05s since last object
             pass
 
-        self.map.clear_objects(timeSinceLastSeen=750)       # should only clear 2nd object
+        self.map.clear_objects(timeSinceLastSeen=75)       # should only clear 2nd object
         self.assertTrue(len(self.map.object_list) == 1)                 # assert that length of list is only one
         self.map.clear_objects(timeSinceLastSeen=0)         # should only clear all objects
         self.assertTrue(len(self.map.object_list) == 0)                 # assert that length of list is zero

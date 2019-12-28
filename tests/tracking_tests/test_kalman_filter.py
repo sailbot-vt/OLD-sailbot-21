@@ -52,6 +52,60 @@ class KalmanFilterTests(unittest.TestCase):
         # Testing methodology:
         #   check if correct function calls are made with correct argument
         #   check if kalman filter results correctly
+        # check if correct functions calls are made with correct arguments
+        with patch('src.tracking.kalman_filter.kalman.update') as mock_update:
+
+            # mock return values for update
+            state = self.kalman.state
+            covar = self.kalman.covar
+            mock_update.return_value = (state, covar)
+
+            # generate measurement values (arbitrary)
+            pos, vel = np.array([4, 45]), np.array([1, 90])
+            pos_sigma, vel_sigma = np.array([1, 1]), np.array([2, 2])
+
+            measurement = np.append(pos, vel)
+            measurement_covar = np.diag(np.append(pos_sigma, vel_sigma))
+            
+            # call update
+            self.kalman.update(pos, vel, pos_sigma, vel_sigma)
+
+            # check for proper behavior
+            self.assertEqual(1, mock_update.call_count)
+            call_args = mock_update.call_args
+            np.testing.assert_allclose(self.kalman.state, call_args[1]['x'])
+            np.testing.assert_allclose(self.kalman.covar, call_args[1]['P'])
+            np.testing.assert_allclose(measurement, call_args[1]['z'])
+            np.testing.assert_allclose(measurement_covar, call_args[1]['R'])
+            np.testing.assert_allclose(self.kalman.measurement_trans, call_args[1]['H'])
+
+        # check if kalman filter results correctly
+
+        # set up measurement values, expected results
+        measurements = np.array([[0, 0, 5, -5],
+                                 [1, 1, -2.5, 2.5],
+                                 [2.5, 0, 0, 3],
+                                 [-1.5, -4.75, 2, 2]])
+
+        updated_states = np.array([[0, 0, 2.5, -2.5],
+                                 [0.5, 0.5, 0, 0],
+                                 [1.5, 0.25, 0, 1.5],
+                                 [0, -2.25, 1, 1.75]])
+
+        
+        # loop thru different values for state
+        for ii in range(np.size(measurements, 0)):
+
+            # reset covariance matrix
+            pos_sigma, vel_sigma = np.array([1, 1]), np.array([2, 2])
+            self.kalman.covar = np.diag(np.append(pos_sigma, vel_sigma))
+
+            # call update
+            self.kalman.update(measurements[ii, 0:2], measurements[ii, 2:4])
+        
+            # check if updated state is close to expected
+            updated_state = updated_states[ii]
+            np.testing.assert_allclose(updated_state, self.kalman.state)
 
     @patch('src.tracking.kalman_filter.KalmanFilter._update_trans_matrix')
     def test_predict(self, mock_update_trans):
@@ -73,7 +127,12 @@ class KalmanFilterTests(unittest.TestCase):
 
             # check for proper behavior
             mock_update_trans.assert_called_once_with()
-            mock_predict.assert_called_once_with(x=self.kalman.state, P=self.kalman.covar, F=self.kalman.state_trans, Q=0)
+            self.assertEqual(1, mock_predict.call_count)
+            call_args = mock_predict.call_args
+            np.testing.assert_allclose(self.kalman.state, call_args[1]['x'])
+            np.testing.assert_allclose(self.kalman.covar, call_args[1]['P'])
+            np.testing.assert_allclose(self.kalman.state_trans, call_args[1]['F'])
+            self.assertEqual(0, call_args[1]['Q'])
 
         # check if kalman filter results  correctly
 
@@ -92,9 +151,6 @@ class KalmanFilterTests(unittest.TestCase):
                                      [-2, 3, 0, 3],
                                      [-1, -3, 2, 2]])
 
-        # get covar matrix
-        covar = self.kalman.covar
-        
         # loop thru different values for state
         for ii in range(np.size(states, 0)):
             # set kalman state
