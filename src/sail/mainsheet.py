@@ -1,15 +1,15 @@
 from src.utils.data import constrain
+from pubsub import pub
 
 
 class Mainsheet:
     """Controls the mainsheet."""
 
-    def __init__(self, servo, config):
+    def __init__(self, config):
         """
         Initializes the Mainsheet object
 
         Keyword arguments:
-        servo -- The winch servo controlling the mainsheet
         config -- The mainsheet configuration
 
         Side effects:
@@ -17,22 +17,20 @@ class Mainsheet:
         - Sends the boom to 0 boom_angle
         """
 
-        self.servo = servo
-
         self.max_boom_angle = config["max_boom_angle"]
         self.sheeting_adv = config["sheeting_adv"]
 
         self.current_boom_angle = 0
         self.trim_boom_to(0)
 
-    def boom_angle_to_servo_angle(self, boom_angle):
-        """Method to return the servo angle for a given sail angle.
+    def boom_angle_to_motor_angle(self, boom_angle):
+        """Method to return the motor angle for a given sail angle.
 
         Keyword arguments:
         boom_angle -- The desired angle of the boom
 
         Returns:
-        The angle of the servo that corresponds to the sail angle
+        The angle of the motor that corresponds to the sail angle
         """
 
         # TODO: Figure out trig for boom movement vs. sheet movement
@@ -41,20 +39,20 @@ class Mainsheet:
     def trim_boom_to(self, boom_angle):
         """Sends the boom to a given angle.
 
-        Uses sail_angle_to_servo_angle to get the servo angle and sends that to
-        the servo's turn_to method.
+        Uses sail_angle_to_motor_angle to get the motor angle and sends that to
+        the motor's turn_to method.
 
         Keyword arguments:
         sail_angle -- The desired boom angle
 
         Returns:
-        The constrained boom angle that the servo was set to
+        The constrained boom angle that the motor was set to
 
         Side effects:
-        Calls the turn_to method of the servo class
+        Calls the turn_to method of the motor class
         """
         constrained_boom_angle = constrain(boom_angle, 0, self.max_boom_angle)
-        self.servo.turn_to(self.boom_angle_to_servo_angle(constrained_boom_angle))
+        pub.sendMessage("turn sail to", sail_ang=self.boom_angle_to_motor_angle(constrained_boom_angle))
         self.current_boom_angle = constrained_boom_angle
         return constrained_boom_angle
 
