@@ -20,7 +20,7 @@ def main():
     boat = Boat()
     world = World()
 
-    # Threads
+    # Init threads
     airmar_thread = airmar.AirmarInputThread()
     logger = Logger()
     rc_thread = rc.RCInputThread()
@@ -29,22 +29,41 @@ def main():
     arduino_thread = Arduino()
     captain_thread = captain.Captain(boat, world)
 
+    # Start threads
     airmar_thread.start()
     rc_thread.start()
     captain_thread.start()
     arduino_thread.start()
 
-    while True:
-        print("Waiting for input:\nd: drop mark\ns: start navigation\ne: end navigation\nc: clear course\n^C: exit program")
-        cmd = input()
-        if cmd == 'd':
-            captain_thread.drop_mark()
-        elif cmd == 's':
-            captain_thread.enable()
-        elif cmd == 'e':
-            captain_thread.disable()
-        elif cmd == 'c':
-            captain_thread.clear_course()
+    # Prompt for event
+    print("Select event:\n"
+          "0 -- Fleet Race\n"
+          "1 -- Endurance Race\n"
+          "2 -- Payload Event\n"
+          "3 -- Precision Navigation\n"
+          "4 -- Station Keeping\n"
+          "5 -- Collision Avoidance\n"
+          "6 -- Search\n"
+          "7 -- RC Mode\n")
+
+    cmd = input()
+
+    if cmd == 0:
+        pass        # run fleet race
+    elif cmd == 1:
+        pass        # run endurance race
+    elif cmd == 2:
+        pass        # run payload event
+    elif cmd == 3:
+        pass        # run precision navigation 
+    elif cmd == 4:
+        pass        # run station keeping
+    elif cmd == 5:
+        pass        # run collision avoidance
+    elif cmd == 6:
+        pass        # run search
+    elif cmd == 7:
+        pass        # run RC mode
 
 
 if __name__ == "__main__":
