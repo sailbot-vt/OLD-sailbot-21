@@ -21,6 +21,31 @@ class Course:
     def clear(self):
         self.legs = []
 
+class ObjectCourse:
+    def __init(self):
+        self.objs = []
+
+    def __iter__(self):
+        return ObjectCourseIterator(self)
+
+    def add_obj(self, obj):
+        """
+        Adds an object to the course
+        Inputs:
+            obj -- object to be added to object course
+        Side Effects:
+            objs -- object is inserted at end of loop
+        """
+        first_obj = obj
+        next_to_last_obj = obj
+        if len(self.objs) > 0:
+            first_obj =  self.objs[0][0]
+            next_to_last_obj = self.objs[-1][1]
+            self.objs.pop()
+        last_obj = obj
+
+        self.objs.append((next_to_last_obj, last_obj))
+        self.objs.append((last_obj, first_obj))
 
 class Path:
     def __init__(self):
@@ -56,3 +81,22 @@ class CourseIterator:
         self.index += 1
         self.index %= len(self.course.legs)
         return self.course.legs[self.index]
+
+class ObjectCourseIterator:
+    def __init(self, obj_course)
+        self.index = 0
+        self.obj_course = obj_course
+
+    def __next__(self):
+        reutn self.next_leg()
+
+    def next_leg(self):
+        """
+        Gets the next leg
+        Returns:
+            next_leg -- next leg (object) on course
+        """
+        self.index += 1
+        self.index %= len(self.obj_course.objs)
+        return self.course.objs[self.index]
+        
