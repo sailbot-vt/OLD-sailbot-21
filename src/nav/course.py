@@ -34,18 +34,14 @@ class ObjectCourse:
         Inputs:
             obj -- object to be added to object course
         Side Effects:
-            objs -- object is inserted at end of loop
+            objs -- object is inserted at end of loop (before it loops back to first object)
         """
-        first_obj = obj
-        next_to_last_obj = obj
-        if len(self.objs) > 0:
-            first_obj =  self.objs[0][0]
-            next_to_last_obj = self.objs[-1][1]
-            self.objs.pop()
-        last_obj = obj
 
-        self.objs.append((next_to_last_obj, last_obj))
-        self.objs.append((last_obj, first_obj))
+        if len(self.objs > 0):
+            self.objs.insert(-1, obj)
+        else:
+            self.objs.append(obj)
+            self.objs.append(obj)
 
     def clear(self):
         """
