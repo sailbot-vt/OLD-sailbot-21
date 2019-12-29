@@ -59,3 +59,16 @@ class ObjectCourseTests(unittest.TestCase):
         self.assertEqual(obj_list[2], self.obj_course.objs[2])
         self.assertEqual(obj_list[3], self.obj_course.objs[3])
         self.assertEqual(obj_list[0], self.obj_course.objs[4])
+
+    def test_clear(self):
+        """Tests clear method of Object Course"""
+
+        # add elements to objs in Object Course
+        self.obj_course.objs = [x for x in range(5)]
+
+        self.assertEqual(5, len(self.obj_course.objs))      # list length should be five 
+
+        # clear list
+        self.obj_course.clear()
+
+        self.assertEqual(0, len(self.obj_course.objs))      # list length should be zero 
