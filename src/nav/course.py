@@ -47,6 +47,14 @@ class ObjectCourse:
         self.objs.append((next_to_last_obj, last_obj))
         self.objs.append((last_obj, first_obj))
 
+    def clear(self)
+        """
+        Empties objs
+        Side Effects:
+            objs -- clears objs
+        """
+        self.objs = []
+
 class Path:
     def __init__(self):
         self.legs = []
