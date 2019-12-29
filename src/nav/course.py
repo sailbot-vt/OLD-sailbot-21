@@ -22,7 +22,7 @@ class Course:
         self.legs = []
 
 class ObjectCourse:
-    def __init(self):
+    def __init__(self):
         self.objs = []
 
     def __iter__(self):
@@ -47,7 +47,7 @@ class ObjectCourse:
         self.objs.append((next_to_last_obj, last_obj))
         self.objs.append((last_obj, first_obj))
 
-    def clear(self)
+    def clear(self):
         """
         Empties objs
         Side Effects:
@@ -91,12 +91,12 @@ class CourseIterator:
         return self.course.legs[self.index]
 
 class ObjectCourseIterator:
-    def __init(self, obj_course)
+    def __init__(self, obj_course):
         self.index = 0
         self.obj_course = obj_course
 
     def __next__(self):
-        reutn self.next_leg()
+        return self.next_leg()
 
     def next_leg(self):
         """
