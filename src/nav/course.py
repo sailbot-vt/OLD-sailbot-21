@@ -37,7 +37,7 @@ class ObjectCourse:
             objs -- object is inserted at end of loop (before it loops back to first object)
         """
 
-        if len(self.objs > 0):
+        if len(self.objs) > 0:
             self.objs.insert(-1, obj)
         else:
             self.objs.append(obj)
