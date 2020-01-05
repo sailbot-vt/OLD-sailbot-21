@@ -1,0 +1,24 @@
+# WARNING: YAML IS WHITESPACE SENSITIVE! PLEASE MATCH INDENTATION STYLE! This
+# means consistently use tabs or spaces, and use the indentation amounts in the
+# language spec available here: https://yaml.org/spec/1.2/spec.html
+
+fleet_race:
+  nav interval: 5  # interval at which to update the navigation (s)
+
+endurance_race:
+  nav interval: 5  # interval at which to update the navigation (s)
+
+collision_avoidance:
+  nav interval: 5  # interval at which to update the navigation (s)
+
+payload_event:
+  nav interval: 5  # interval at which to update the navigation (s)
+
+precision_navigation:
+  nav interval: 5  # interval at which to update the navigation (s)
+
+search_event:
+  nav interval: 5  # interval at which to update the navigation (s)
+
+station_keeping:
+  nav interval: 5  # interval at which to update the navigation (s)

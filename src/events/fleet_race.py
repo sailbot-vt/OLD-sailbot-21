@@ -1,6 +1,6 @@
 from src.events.base_event import Event
 
-from src.events.config_reader import config_reader
+from src.events.config_reader import read_interval
 
 class FleetRace(Event):
     """Fleet race event"""
@@ -10,7 +10,7 @@ class FleetRace(Event):
         Side Effects:
             update_interval -- sets attribute update_interval using config
         """
-        self.update_interval = config_reader('fleet_race')
+        self.update_interval = read_interval('fleet_race')
 
     def run(self):
         """
