@@ -10,7 +10,7 @@ class FleetRace(Event):
         Side Effects:
             update_interval -- sets attribute update_interval using config
         """
-        self.update_interval('fleet_race']
+        self.update_interval = config_reader('fleet_race')
 
     def run(self):
         """
