@@ -60,8 +60,9 @@ class Map(Thread):
         # loop through objects in object_list
         for obj in self.object_list:
             gate = _generate_obj_gate(obj)      # generates gate for each object
-            update, detections_used_for_obj = pdaf(obj, gate, epoch_frame)   # generate weighted update observation for object, list of detections used in calculation
-            obj.update(update.rng, update.bearing)
+            update, detections_used_for_obj = pdaf((obj.rng, obj.bearing, obj.objectType), gate, epoch_frame)   # generate weighted update observation for object, list of detections used in calculation
+            if not update is None:
+                obj.update(update.rng, update.bearing)
             detections_used = [sum(uses) for uses in zip(detections_used, detections_used_for_obj)]     # update detections_used
 
         # use all detections NOT used to update objects to create new objects
