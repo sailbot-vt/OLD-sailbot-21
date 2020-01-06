@@ -20,7 +20,7 @@ class Map(Thread):
     def __init__(self, boat, toggle_update):
         """ Initializes Map (done on startup) """
         super().__init__()
-        pub.subscribe(self.add_object, "object detected")
+        pub.subscribe(self.update_frame, "object(s) detected")
 
         self.boat = boat
         self.object_list = []
@@ -44,22 +44,31 @@ class Map(Thread):
         """Disables object updating using kalman filter"""
         self.toggle_update = False
 
-    def add_object(self, delta_x, delta_y, objectType=ObjectType.NONE):
-        """ Creates object for detection that is made to be added to map
+    def update_frame(self, epoch_frame):
+        """
+        Updates map using objects from object list input
 
         Inputs:
-            delta_x -- Relative x position of object from boat (in m)
-            delta_y= -- Relative y position of object from boat (in m)
-            lastSeen -- Time object was last seen (in ms)
-            objectType -- Classification of object (None for unclassified object)
+            epoch_frame -- list containing rng, bearing, and object type for each detection in epoch
+
+        Side Effects:
+            object_list -- Updates object list using data from frame (updates or creates new objects)
         """
-        rng, bearing = cartesian_to_polar(delta_x, delta_y)
-        obj_index = self._find_object_in_map(rng, bearing, objectType)
-        if (obj_index != None):                     # if object fits prior track that is made, add object to track
-            self.object_list[obj_index].update(rng, bearing)
-        else:
-            new_object = Object(bearing, rng, time_in_millis(), objectType=objectType)
-            self.object_list.append(new_object)
+        # initialize array of detections used (contains information about whether detections were used in data association by any object
+        detections_used = [0] * epoch_frame.size
+
+        # loop through objects in object_list
+        for obj in self.object_list:
+            gate = _generate_obj_gate(obj)      # generates gate for each object
+            update, detections_used_for_obj = pdaf(obj, gate, epoch_frame)   # generate weighted update observation for object, list of detections used in calculation
+            obj.update(update.rng, update.bearing)
+            detections_used = [sum(uses) for uses in zip(detections_used, detections_used_for_obj)]     # update detections_used
+
+        # use all detections NOT used to update objects to create new objects
+        for ii, det in enumerate(eopch_frame):
+            if detections_used[ii] == 0:
+                new_obj = Object(det(1), det(0), time_in_millis(), objectType = det(2))     # create object using detection
+                self.object_list.append(new_obj)        # add to object_list
 
     def return_objects(self, bearingRange=[-30,30], timeRange=[0,5000], rngRange=None):
         """ Returns objects passing within given bearing range of boat in given time range
@@ -133,36 +142,12 @@ class Map(Thread):
         for index in sorted(del_list, reverse=True):
             del self.object_list[index]
 
-    def _find_object_in_map(self, rng, bearing, obj_type):
-        """Finds if object exists in map and returns object index if true, otherwise returns None
-        Inputs:
-            rng -- range of object detected
-            bearing -- bearing of object detected
-            obj_type -- type of object detected
-        Returns:
-            object_index -- index of object that matches track, none if no object matches
+    def _generate_obj_gate(self, obj):
         """
-
-        # init x and y ranges
-        rng_range = [0] * 2
-        bearing_range = [0] * 2
-
-        # search through objects in object list
-        for ii, obj in enumerate(self.object_list):
-            # get newest prediction for object
-            obj.predict()
-            
-            # find range around objects position
-            rng_range[0] = obj.kalman.state[0] - obj.kalman.covar[0,0]
-            rng_range[1] = obj.kalman.state[0] + obj.kalman.covar[0,0]
-
-            bearing_range[0] = obj.kalman.state[1] - obj.kalman.covar[1,1]
-            bearing_range[1] = obj.kalman.state[1] + obj.kalman.covar[1,1]
-
-            # if detection is in uncertainty range of object and is same type (or unknown type)
-            if (rng_range[0] <= rng <= rng_range[1]) and (bearing_range[0] <= bearing <= bearing_range[1]) and \
-                                                   ((obj_type == obj.objectType) or (obj_type == ObjectType.NONE)):
-
-                return ii
-
-        return None
+        Generates tuple containing gate around object
+        Inputs:
+            obj -- object to create gate around
+        
+        Returns:
+            gate -- tuple containing range range, bearing range, and allowable object types
+        """
