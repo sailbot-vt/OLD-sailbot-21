@@ -148,7 +148,11 @@ class Map(Thread):
         Generates tuple containing gate around object
         Inputs:
             obj -- object to create gate around
-        
         Returns:
             gate -- tuple containing range range, bearing range, and allowable object types
         """
+        rng_gate = (obj.rng - obj.kalman.covar(0,0), obj.rng + obj.kalman.covar(0, 0))
+        bearing_gate = (obj.bearing - obj.kalman.covar(1,1), obj.bearing + obj.kalman.covar(1, 1))
+        type_gate = (ObjectType.NONE, obj.objectType)
+
+        return (rng_gate, bearing_gate, type_gate)
