@@ -25,7 +25,11 @@ def pdaf(obj, gate, epoch_frame):
     update = (sum(rng * weight for (rng, _), weight in zip(trimmed_epoch_frame, norm_dists)), \
               sum(bearing * weight for (_, bearing), weight in zip(trimmed_epoch_frame, norm_dists)))
 
-    return update, detections_used
+    # if any detections within object gate
+    if len(update) != 0:
+        return update, detections_used
+    else:
+        return (None, None), detections_used
 
 def gate_detections(gate, epoch_frame):
     """
@@ -79,6 +83,11 @@ def normalize_distances(distances):
         norm_distances -- normalized array of distances
     """
 
-    max_dist = max(distances)
-    total_dist = sum(distances)
-    return [(max_dist - dist) / total_dist for dist in distances]
+    # if detections exist within gate
+    if len(distances) != 0:
+        max_dist = max(distances)
+        total_dist = sum(distances)
+        return [(max_dist - dist) / total_dist for dist in distances]
+    # else...
+    else:
+        return [] 

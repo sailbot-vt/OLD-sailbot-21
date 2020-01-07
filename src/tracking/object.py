@@ -47,6 +47,8 @@ class Object():
             self.updateHist[0] = 0                  # not updated
             return                                  # exit function
 
+        self.updateHist[0] = 1                      # updated
+
         if (rngRate is None) and (bearingRate is None):
             self.kalman.update(rng, bearing, self.rngRate, self.bearingRate)
         else:

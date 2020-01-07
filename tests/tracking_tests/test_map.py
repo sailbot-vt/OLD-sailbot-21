@@ -128,6 +128,7 @@ class MapTests(unittest.TestCase):
         dets_used = [1, 1, 0]
 
         epoch_frame = [0] * num_detects
+        frame_bounds = ([0, 150], [-85, 85])        # excludes last object in object list from being included in update
 
         for ii, (rng, bearing, obj_type) in enumerate(zip(rng_list, bearing_list, type_list)):
             epoch_frame[ii] = [rng, bearing, obj_type]
@@ -138,17 +139,16 @@ class MapTests(unittest.TestCase):
              patch('src.tracking.map.Object.__init__', return_value = None) as mock_obj_init, \
              patch('src.tracking.map.time_in_millis', return_value = 1):
             # call smooth_frame
-            self.map.smooth_frame(epoch_frame)
+            self.map.smooth_frame(epoch_frame, frame_bounds)
 
-            # check that update is called 3 times
+            # check that update is called correct amount of times
             self.assertEqual(num_detects, mock_update.call_count)
 
             # check that new object is created for final detection
             new_obj_idx = 2
             self.assertEqual((bearing_list[new_obj_idx], rng_list[new_obj_idx], 1), mock_obj_init.call_args[0])
             self.assertEqual({'objectType': type_list[new_obj_idx]}, mock_obj_init.call_args[1])
-        
-    
+
     def test_generate_obj_gate(self):
         """Tests generate obj gate method"""
         # generate test object parameters 

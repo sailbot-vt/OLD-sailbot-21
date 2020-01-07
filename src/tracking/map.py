@@ -26,7 +26,7 @@ class Map(Thread):
         self.boat = boat
         self.object_list = []
 
-        self.update_interval = 1
+        self.update_interval = 0.5
         self.toggle_update = toggle_update
         self.old_position = self.boat.current_position()
 
@@ -35,7 +35,7 @@ class Map(Thread):
         while True:
             if toggle_update:
                 self.update_map()
-                # self.track_maintenace()
+                self.track_maintenace()
                 sleep(self.update_interval)
 
     def enable_update(self):
@@ -46,25 +46,30 @@ class Map(Thread):
         """Disables object updating using kalman filter"""
         self.toggle_update = False
 
-    def smooth_frame(self, epoch_frame):
+    def smooth_frame(self, epoch_frame, frame_bounds):
         """
         Updates map using observations from object list input
 
         Inputs:
-            epoch_frame -- list containing rng, bearing, and object type for each detection in epoch
+            epoch_frame  -- list containing rng, bearing, and object type for each detection in epoch
+            frame_bounds -- tuple of lists containing range and bearing bounds
 
         Side Effects:
             object_list -- Updates object list using data from frame (updates or creates new objects)
         """
+        # trim object list to only include tracks with frame bounds
+        trimmed_object_list = self.return_objects(bearingRange = frame_bounds[1], rngRange = frame_bounds[0])
+
         # initialize array of detections used (contains information about whether detections were used in data association by any object
         detections_used = [0] * len(epoch_frame)
 
-        # loop through objects in object_list
-        for obj in self.object_list:
+        # loop through objects in trimmed_object_list
+        for obj in trimmed_object_list:
             gate = self._generate_obj_gate(obj)      # generates gate for each object
             update, detections_used_for_obj = pdaf((obj.rng, obj.bearing, obj.objectType), gate, epoch_frame)   # generate weighted update observation for object, list of detections used in calculation
-            if not update is None:
-                obj.update(update[0], update[1])
+
+            # update objects
+            obj.update(update[0], update[1])
             detections_used = [sum(uses) for uses in zip(detections_used, detections_used_for_obj)]     # update detections_used
 
         # use all detections NOT used to update objects to create new objects
@@ -72,6 +77,12 @@ class Map(Thread):
             if detections_used[ii] == 0:
                 new_obj = Object(det[1], det[0], time_in_millis(), objectType = det[2])     # create object using detection
                 self.object_list.append(new_obj)        # add to object_list
+
+    def track_maintenance(self):
+        """
+        Prunes tracks in object list
+        """
+        pass
 
     def return_objects(self, bearingRange=[-30,30], timeRange=[0,5000], rngRange=None):
         """ Returns objects passing within given bearing range of boat in given time range

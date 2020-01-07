@@ -103,6 +103,9 @@ class ObjectTests(unittest.TestCase):
         mock_find_bearingRate.assert_called_once_with()
 
         self.assertEqual(time_in_millis_val, self.object.lastSeen)
+        
+        # check update history behavior
+        self.assertEqual([1, None, None, None, None, None], self.object.updateHist)
 
         # repeat test with non-None rngRate and bearingRate
 
@@ -133,6 +136,31 @@ class ObjectTests(unittest.TestCase):
         mock_find_bearingRate.assert_called_once_with()
 
         self.assertEqual(time_in_millis_val, self.object.lastSeen)
+
+        # check update history behavior
+        self.assertEqual([1, 1, None, None, None, None], self.object.updateHist)
+
+        # repeat test with None for rng and bearing (object not seen case)
+
+        # reset all mocks
+        mock_kalman_update.reset_mock()
+        mock_set_obj_state.reset_mock()
+        mock_find_rngRate.reset_mock()
+        mock_find_bearingRate.reset_mock()
+        mock_time_in_millis.reset_mock()
+
+        # call update
+        self.object.update(None, None)
+
+        # ensure proper behavior
+        mock_kalman_update.assert_not_called()
+
+        mock_set_obj_state.assert_not_called()
+        mock_find_rngRate.assert_not_called()
+        mock_find_bearingRate.assert_not_called()
+
+        # check update history behavior
+        self.assertEqual([0, 1, 1, None, None, None], self.object.updateHist)
 
     @patch('src.tracking.object.Object._set_object_state')
     @patch('src.tracking.object.KalmanFilter.predict')

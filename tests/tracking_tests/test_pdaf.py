@@ -27,6 +27,14 @@ class PDAFTests(unittest.TestCase):
         for truth_dist, dist in zip(truth_norm_dists, norm_dists):
             self.assertAlmostEqual(truth_dist, dist)
 
+        # create empty list of distances
+        dists = []
+
+        # check that empty list is returned
+        truth_norm_dists = []
+
+        self.assertEqual(truth_norm_dists, normalize_distances(dists))
+
     def test_mahalanobis(self):
         """Tests mahalanobis method"""
         # generate test object
@@ -81,13 +89,13 @@ class PDAFTests(unittest.TestCase):
         num_cases = 2
 
         # mock gate_detections trimmed_epoch_frame return value
-        trimmed_epoch_frames = [[(5, 5), (10, 8)], [(6.2, -98), (6, -95)]]
+        trimmed_epoch_frames = [[(5, 5), (10, 8)], [(6.2, -98), (6, -95)], []]
 
         # mock normalize_distances return values
-        weights = [[0.7, 0.3], [0.55, 0.45]]
+        weights = [[0.7, 0.3], [0.55, 0.45], []]
 
         # generate truthed update
-        truthed_updates = [(6.5, 5.9), (6.110000000000001, -96.65)]
+        truthed_updates = [(6.5, 5.9), (6.110000000000001, -96.65), (None, None)]
 
         # loop over cases
         for ii in range(num_cases):
