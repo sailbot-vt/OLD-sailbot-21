@@ -22,8 +22,8 @@ def pdaf(obj, gate, epoch_frame):
     norm_dists = normalize_distances(dist_list)
 
     # calculate update measurement
-    update = (sum(rng * weight for rng, _, weight in zip(trimmed_epoch_frame, norm_dists)), \
-              sum(bearing * weight for _, bearing, weight in zip(trimmed_epoch_frame, norm_dists)))
+    update = (sum(rng * weight for (rng, _), weight in zip(trimmed_epoch_frame, norm_dists)), \
+              sum(bearing * weight for (_, bearing), weight in zip(trimmed_epoch_frame, norm_dists)))
 
     return update, detections_used
 

@@ -71,3 +71,32 @@ class PDAFTests(unittest.TestCase):
         # check for correct behavior
         self.assertEqual(truth_trimmed_epoch_frame, trimmed_frame)
         self.assertEqual(truth_detections_used, dets_used)
+
+    @patch('src.tracking.pdaf.gate_detections')
+    @patch('src.tracking.pdaf.mahalanobis', return_value = None)
+    @patch('src.tracking.pdaf.normalize_distances')
+    def test_pdaf(self, mock_norm_dists, mock_mahal, mock_gate):
+        """Tests pdaf method"""
+        # number of test cases
+        num_cases = 2
+
+        # mock gate_detections trimmed_epoch_frame return value
+        trimmed_epoch_frames = [[(5, 5), (10, 8)], [(6.2, -98), (6, -95)]]
+
+        # mock normalize_distances return values
+        weights = [[0.7, 0.3], [0.55, 0.45]]
+
+        # generate truthed update
+        truthed_updates = [(6.5, 5.9), (6.110000000000001, -96.65)]
+
+        # loop over cases
+        for ii in range(num_cases):
+            # set mock function return values
+            mock_gate.return_value = trimmed_epoch_frames[ii], None
+            mock_norm_dists.return_value = weights[ii]
+
+            # call pdaf
+            update, _ = pdaf(None, None, None)
+
+            # check for correct behavior
+            self.assertEqual(truthed_updates[ii], update)
