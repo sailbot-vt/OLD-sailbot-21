@@ -12,11 +12,38 @@ def pdaf(obj, gate, epoch_frame):
         update -- update observation based on detections within object gate (None if no detections inside gate)
         detections_used -- list of detections used in creation of observation for this object
     """
-    # initialize detections_used
-    detections_used = [0] * epoch_frame.size
-
     # gate detections in epoch frame
-    trimmed_epoch_frame = [0] * epoch_frame.size
+    trimmed_epoch_frame, detections_used = gate_detections(gate, epoch_frame)
+
+    # generate mahalanobis distance for each detection
+    dist_list = [mahalanobis(obj, det) for det in trimmed_epoch_frame]
+
+    # normalize mahalanobis distances
+    norm_dists = normalize_distances(dist_list)
+
+    # calculate update measurement
+    update = (sum(rng * weight for rng, _, weight in zip(trimmed_epoch_frame, norm_dists)), \
+              sum(bearing * weight for _, bearing, weight in zip(trimmed_epoch_frame, norm_dists)))
+
+    return update, detections_used
+
+def gate_detections(gate, epoch_frame):
+    """
+    Gates detections and returns trimmed list of detections for epoch frame
+    Inputs:
+        gate -- list of tuples containing allowed rng ranges, bearing ranges, and object types
+        epoch_frame -- list of detections
+    Returns:
+        trimmed_epoch_frame -- gated list of detections
+        detections_used -- list of detections used in creation of observation for this object
+    """
+    # initialize trimmed epoch frame
+    trimmed_epoch_frame = [0] * len(epoch_frame)
+
+    # initialize detections used
+    detections_used = [0] * len(epoch_frame)
+
+    # loop through detections and gate
     num_gated_dets = 0
     for ii, det in enumerate(epoch_frame):
         if (gate[0][0] < det[0] < gate[0][1]) and (gate[1][0] < det[1] < gate[1][1]) and (det[2] in gate[2]):
@@ -27,17 +54,7 @@ def pdaf(obj, gate, epoch_frame):
             # update detections used
             detections_used[ii] = 1
 
-    # generate mahalanobis distance for each detection
-    dist_list = [mahalanobis(obj, det) for det in trimmed_epoch_frame]
-
-    # normalize mahalanobis distances
-    norm_dists = normalize_distances(dist_list)
-
-    # calculate update measurement
-    update = (sum(rng * weight for rng, _, weight in zip(trimmed_epoch_frame, norm_dists)), \
-              sum(bearing* weight for _, bearing, weight in zip(trimmed_epoch_frame, norm_dists)))
-
-    return update, detections_used
+    return trimmed_epoch_frame[0:num_gated_dets], detections_used
 
 def mahalanobis(obj, detection):
     """
@@ -48,14 +65,14 @@ def mahalanobis(obj, detection):
     Returns:
         dist -- mahalanobis distance between obj and detection
     """
-    covar_inv = [[1, 0], [0, 1]]        # no covariance between range and bearing
+    covar_inv = [[1, 0], [0, 1]]        # Assumption: no covariance between range and bearing
     
     return sp_mahalanobis([obj[0], detection[0]], [obj[1], detection[1]], covar_inv)
     
 
 def normalize_distances(distances):
     """
-    Normalizes (to 1) the mahalanobis distances in distance array
+    Normalizes (to 1) the mahalanobis distances in distance array and turns association scores into costs
     Inputs:
         distances -- array of distances
     Returns:
