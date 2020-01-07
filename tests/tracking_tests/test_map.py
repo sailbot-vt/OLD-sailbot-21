@@ -108,6 +108,36 @@ class MapTests(unittest.TestCase):
         # check if predict was called for all objects in object_list
         self.assertEqual(mock_predict.call_count, num_objects)
 
+    def test_smooth_frame(self):
+        """Tests smooth frame method"""
+        pass
+    
+    def test_generate_obj_gate(self):
+        """Tests generate obj gate method"""
+        # generate test object parameters 
+        num_objects = 3
+        rng_list, bearing_list, obj_type_list = [5, 12, 40], [45, 0, -20], [ObjectType.BOAT, ObjectType.NONE, ObjectType.BUOY]
+        obj_list = [0] * num_objects
+
+        # initialize truthed gates
+        truth_rng_gates = [0] * num_objects
+        truth_bearing_gates = [0] * num_objects
+        truth_type_gates = [0] * num_objects
+
+        # create objects and set up truth gates
+        for ii in range(num_objects):
+            obj_list[ii] = Object(bearing_list[ii], rng_list[ii], time_in_millis(), objectType=obj_type_list[ii])
+            obj_list[ii].kalman.covar = np.eye(4)
+            truth_rng_gates[ii] = (rng_list[ii] - 1, rng_list[ii] + 1)
+            truth_bearing_gates[ii] = (bearing_list[ii] - 1, bearing_list[ii] + 1)
+            truth_type_gates[ii] = (ObjectType.NONE, obj_type_list[ii])
+
+        # compare truth gates to generated gates
+        truth_gates = [*zip(truth_rng_gates, truth_bearing_gates, truth_type_gates)]
+        for jj, obj in enumerate(obj_list):
+            gate = self.map._generate_obj_gate(obj)
+            self.assertEqual(truth_gates[jj], gate)
+
     def test_get_buoys(self):
         """Tests get buoys method"""
         # create objects to add to map

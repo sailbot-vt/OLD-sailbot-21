@@ -20,7 +20,7 @@ class Map(Thread):
     def __init__(self, boat, toggle_update):
         """ Initializes Map (done on startup) """
         super().__init__()
-        pub.subscribe(self.update_frame, "object(s) detected")
+        pub.subscribe(self.smooth_frame, "object(s) detected")
 
         self.boat = boat
         self.object_list = []
@@ -44,9 +44,9 @@ class Map(Thread):
         """Disables object updating using kalman filter"""
         self.toggle_update = False
 
-    def update_frame(self, epoch_frame):
+    def smooth_frame(self, epoch_frame):
         """
-        Updates map using objects from object list input
+        Updates map using observations from object list input
 
         Inputs:
             epoch_frame -- list containing rng, bearing, and object type for each detection in epoch
@@ -151,8 +151,8 @@ class Map(Thread):
         Returns:
             gate -- tuple containing range range, bearing range, and allowable object types
         """
-        rng_gate = (obj.rng - obj.kalman.covar(0,0), obj.rng + obj.kalman.covar(0, 0))
-        bearing_gate = (obj.bearing - obj.kalman.covar(1,1), obj.bearing + obj.kalman.covar(1, 1))
+        rng_gate = (obj.rng - obj.kalman.covar[0,0], obj.rng + obj.kalman.covar[0, 0])
+        bearing_gate = (obj.bearing - obj.kalman.covar[1,1], obj.bearing + obj.kalman.covar[1, 1])
         type_gate = (ObjectType.NONE, obj.objectType)
 
         return (rng_gate, bearing_gate, type_gate)
