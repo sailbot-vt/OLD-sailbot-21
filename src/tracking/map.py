@@ -5,6 +5,7 @@ from pubsub import pub
 
 from src.tracking.object import Object
 from src.tracking.classification_types import ObjectType
+from src.tracking.pdaf import pdaf
 
 from src.utils.coord_conv import cartesian_to_polar, polar_to_cartesian
 from src.utils.time_in_millis import time_in_millis
@@ -34,6 +35,7 @@ class Map(Thread):
         while True:
             if toggle_update:
                 self.update_map()
+                # self.track_maintenace()
                 sleep(self.update_interval)
 
     def enable_update(self):
@@ -55,20 +57,20 @@ class Map(Thread):
             object_list -- Updates object list using data from frame (updates or creates new objects)
         """
         # initialize array of detections used (contains information about whether detections were used in data association by any object
-        detections_used = [0] * epoch_frame.size
+        detections_used = [0] * len(epoch_frame)
 
         # loop through objects in object_list
         for obj in self.object_list:
-            gate = _generate_obj_gate(obj)      # generates gate for each object
+            gate = self._generate_obj_gate(obj)      # generates gate for each object
             update, detections_used_for_obj = pdaf((obj.rng, obj.bearing, obj.objectType), gate, epoch_frame)   # generate weighted update observation for object, list of detections used in calculation
             if not update is None:
-                obj.update(update.rng, update.bearing)
+                obj.update(update[0], update[1])
             detections_used = [sum(uses) for uses in zip(detections_used, detections_used_for_obj)]     # update detections_used
 
         # use all detections NOT used to update objects to create new objects
-        for ii, det in enumerate(eopch_frame):
+        for ii, det in enumerate(epoch_frame):
             if detections_used[ii] == 0:
-                new_obj = Object(det(1), det(0), time_in_millis(), objectType = det(2))     # create object using detection
+                new_obj = Object(det[1], det[0], time_in_millis(), objectType = det[2])     # create object using detection
                 self.object_list.append(new_obj)        # add to object_list
 
     def return_objects(self, bearingRange=[-30,30], timeRange=[0,5000], rngRange=None):
