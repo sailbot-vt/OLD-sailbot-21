@@ -9,12 +9,12 @@ from src.tracking.object import Object
 from src.tracking.classification_types import ObjectType
 
 from src.utils.time_in_millis import time_in_millis
-from src.gps_point import GPSPoint
 
 import numpy as np
-from pubsub import pub
 from datetime import datetime as dt
-import time
+from time import sleep
+
+import pdb
 
 class MapTests(unittest.TestCase):
     """Tests the methods in Map"""
@@ -78,6 +78,8 @@ class MapTests(unittest.TestCase):
         
             # add object to map
             obj = Object(bearing, rng, time_in_millis(), objectType = type_list[n])
+
+        # kill map thread
             self.map.object_list.append(obj)
 
         # get list of objects meeting conditions
@@ -149,6 +151,35 @@ class MapTests(unittest.TestCase):
             self.assertEqual((bearing_list[new_obj_idx], rng_list[new_obj_idx], 1), mock_obj_init.call_args[0])
             self.assertEqual({'objectType': type_list[new_obj_idx]}, mock_obj_init.call_args[1])
 
+    def test_prune_objects(self):
+        """Tests prune objects method"""
+        # create objects to add to map
+        rng_list = [12.512, 44, 50]
+        bearing_list = [-22, 81.5, 2]
+        type_list = [ObjectType.BUOY, ObjectType.BOAT, ObjectType.BUOY]
+
+        update_hist_list = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1], \
+                            [1, 0, 1, 0, 1, 0, 1, 0, 1, 1], \
+                            [1, 0, 0, 1, 0, 0, 0, 0, 1, 0]]
+
+        # loop through objects and add to map
+        for ii, (rng, bearing, obj_type) in enumerate(zip(rng_list, bearing_list, type_list)):
+            obj = Object(bearing, rng, time_in_millis(), objectType = obj_type)
+            obj.updateHist = update_hist_list[ii]
+            self.map.object_list.append(obj)
+
+        # create local copy of original object list
+        orig_object_list = self.map.object_list
+
+        # call prune objects
+        self.map.prune_objects()
+
+        # create truth object list
+        truth_obj_list = orig_object_list[0:2]
+
+        # ensure that only the first two objects remain in the object list
+        self.assertEqual(truth_obj_list, self.map.object_list)
+
     def test_generate_obj_gate(self):
         """Tests generate obj gate method"""
         # generate test object parameters 
@@ -204,3 +235,58 @@ class MapTests(unittest.TestCase):
             self.assertAlmostEqual(obj[0], returned_objects[jj].rng)
             self.assertAlmostEqual(obj[1], returned_objects[jj].bearing)
             self.assertEqual(obj[2], returned_objects[jj].objectType)
+
+    def test_enable_update(self):
+        """Tests enable update method"""
+        self.map.enable_update()
+
+        self.assertEqual(True, self.map.toggle_update)
+
+    def test_disable_update(self):
+        """Tests disable update method"""
+        self.map.disable_update()
+
+        self.assertEqual(False, self.map.toggle_update)
+
+    @patch('src.tracking.map.Map.update_map')
+    @patch('src.tracking.map.Map.prune_objects')
+    @patch('src.tracking.map.sleep')
+    def test_run(self, mock_sleep, mock_prune_objects, mock_update):
+        """Tests run method"""
+        # disable update
+        self.map.toggle_update = False
+
+        # start map thread
+        self.map.start()
+
+        # wait 0.01 s
+        sleep(0.01)
+
+        # ensure that update, prune, and sleep methods in run were not called
+        mock_update.assert_not_called()
+        mock_prune_objects.assert_not_called()
+        mock_sleep.assert_not_called()
+
+        # reset mocks
+        mock_update.reset_mock()
+        mock_prune_objects.reset_mock()
+        mock_sleep.reset_mock()
+
+        # reset map thread, this time w/ toggle update enabled
+        self.map = Map(self.boat, True)
+
+        # start map thread
+        self.map.start()
+
+        # wait 0.01 s
+        sleep(0.01)
+
+        # quit map thread
+        self.map.toggle_update = False
+
+        # ensure that update and prune methods in run were called
+        self.assertEqual(True, mock_update.called)
+        self.assertEqual(True, mock_prune_objects.called)
+
+        # ensure that sleep was called
+        self.assertEqual(True, mock_sleep.called)

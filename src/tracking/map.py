@@ -32,11 +32,10 @@ class Map(Thread):
 
     def run(self):
         """ Continuously updates objects in object list using Kalman filter prediction"""
-        while True:
-            if toggle_update:
-                self.update_map()
-                self.track_maintenace()
-                sleep(self.update_interval)
+        while self.toggle_update:
+            self.update_map()
+            self.prune_objects()
+            sleep(self.update_interval)
 
     def enable_update(self):
         """Enables object updating using kalman filter"""
@@ -78,11 +77,18 @@ class Map(Thread):
                 new_obj = Object(det[1], det[0], time_in_millis(), objectType = det[2])     # create object using detection
                 self.object_list.append(new_obj)        # add to object_list
 
-    def track_maintenance(self):
+    def prune_objects(self):
         """
-        Prunes tracks in object list
+        Prunes objects in object list
         """
-        pass
+        # iterate through objects in track
+        for ii, obj in enumerate(self.object_list):
+            num_updates = sum(filter(None, obj.updateHist))
+
+            # prune tracks w/ updates in <= 0.4 * expected updates
+            if num_updates <= (0.4 * obj.histLength):
+                del self.object_list[ii]
+
 
     def return_objects(self, bearingRange=[-30,30], timeRange=[0,5000], rngRange=None):
         """ Returns objects passing within given bearing range of boat in given time range

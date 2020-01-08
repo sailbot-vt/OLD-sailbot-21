@@ -24,7 +24,7 @@ class Object():
         self.objectType = objectType
         self.rngRate = rngRate
         self.bearingRate = bearingRate
-        self.histLength = 6
+        self.histLength = 10
         self.updateHist = [None] * self.histLength        # list to store if track updates for past <histLength> update cycles
 
         self.prevRng = 0

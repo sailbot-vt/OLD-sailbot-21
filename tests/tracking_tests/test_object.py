@@ -105,7 +105,9 @@ class ObjectTests(unittest.TestCase):
         self.assertEqual(time_in_millis_val, self.object.lastSeen)
         
         # check update history behavior
-        self.assertEqual([1, None, None, None, None, None], self.object.updateHist)
+        truth_history = [None] * self.object.histLength
+        truth_history[0] = 1
+        self.assertEqual(truth_history, self.object.updateHist)
 
         # repeat test with non-None rngRate and bearingRate
 
@@ -138,7 +140,8 @@ class ObjectTests(unittest.TestCase):
         self.assertEqual(time_in_millis_val, self.object.lastSeen)
 
         # check update history behavior
-        self.assertEqual([1, 1, None, None, None, None], self.object.updateHist)
+        truth_history[1] = 1
+        self.assertEqual(truth_history, self.object.updateHist)
 
         # repeat test with None for rng and bearing (object not seen case)
 
@@ -160,7 +163,8 @@ class ObjectTests(unittest.TestCase):
         mock_find_bearingRate.assert_not_called()
 
         # check update history behavior
-        self.assertEqual([0, 1, 1, None, None, None], self.object.updateHist)
+        truth_history[0:3] = [0, 1, 1]
+        self.assertEqual(truth_history, self.object.updateHist)
 
     @patch('src.tracking.object.Object._set_object_state')
     @patch('src.tracking.object.KalmanFilter.predict')
