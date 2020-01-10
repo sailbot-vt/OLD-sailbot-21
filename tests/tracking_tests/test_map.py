@@ -14,8 +14,6 @@ import numpy as np
 from datetime import datetime as dt
 from time import sleep
 
-import pdb
-
 class MapTests(unittest.TestCase):
     """Tests the methods in Map"""
     def setUp(self):
@@ -122,34 +120,35 @@ class MapTests(unittest.TestCase):
             obj = Object(bearing, rng, time_in_millis(), objectType = obj_type)
             self.map.object_list.append(obj)
 
-        # create detections/observations to add to epoch frame
+        # create epoch frame
         num_detects = 3
-        rng_list = [12, 44, 25]
-        bearing_list = [-21.5, 81.5, 5]
-        type_list = [ObjectType.BUOY, ObjectType.NONE, ObjectType.BUOY]
-        dets_used = [1, 1, 0]
+        epoch_frame = [(12, -21, ObjectType.BUOY), (44, 80, ObjectType.BOAT), (100, 100, ObjectType.BUOY)]
 
-        epoch_frame = [0] * num_detects
-        frame_bounds = ([0, 150], [-85, 85])        # excludes last object in object list from being included in update
+        # create joint_pdaf return vals
+        truth_update_vals = [(12, -21), (44, 80), None]
+        truth_dets_used = [1, 1, 0]
 
-        for ii, (rng, bearing, obj_type) in enumerate(zip(rng_list, bearing_list, type_list)):
-            epoch_frame[ii] = [rng, bearing, obj_type]
-
-        with patch('src.tracking.map.pdaf', return_value = ((0, 0), dets_used)) as mock_pdaf, \
+        with patch('src.tracking.map.joint_pdaf') as mock_pdaf, \
              patch('src.tracking.map.Object.update') as mock_update, \
              patch('src.tracking.map.Map._generate_obj_gate', return_value = 0), \
              patch('src.tracking.map.Object.__init__', return_value = None) as mock_obj_init, \
+             patch('src.tracking.map.Map.return_objects', return_value = self.map.object_list), \
              patch('src.tracking.map.time_in_millis', return_value = 1):
-            # call smooth_frame
-            self.map.smooth_frame(epoch_frame, frame_bounds)
 
-            # check that update is called correct amount of times
-            self.assertEqual(num_detects, mock_update.call_count)
+            # set mock joint pdaf return value
+            mock_pdaf.return_value = truth_update_vals, truth_dets_used 
+            
+            # call smooth_frame
+            self.map.smooth_frame(epoch_frame, [0, 0])
+
+            # check that first two objects are correctly updated
+            for update_vals in filter(None, truth_update_vals):
+                mock_update.assert_any_call(*update_vals)
 
             # check that new object is created for final detection
             new_obj_idx = 2
-            self.assertEqual((bearing_list[new_obj_idx], rng_list[new_obj_idx], 1), mock_obj_init.call_args[0])
-            self.assertEqual({'objectType': type_list[new_obj_idx]}, mock_obj_init.call_args[1])
+            self.assertEqual((epoch_frame[new_obj_idx][1], epoch_frame[new_obj_idx][0], 1), mock_obj_init.call_args[0])
+            self.assertEqual({'objectType': epoch_frame[new_obj_idx][2]}, mock_obj_init.call_args[1])
 
     def test_prune_objects(self):
         """Tests prune objects method"""

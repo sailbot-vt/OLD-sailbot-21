@@ -5,7 +5,7 @@ from pubsub import pub
 
 from src.tracking.object import Object
 from src.tracking.classification_types import ObjectType
-from src.tracking.pdaf import pdaf
+from src.tracking.pdaf import joint_pdaf
 
 from src.utils.coord_conv import cartesian_to_polar, polar_to_cartesian
 from src.utils.time_in_millis import time_in_millis
@@ -59,17 +59,16 @@ class Map(Thread):
         # trim object list to only include tracks with frame bounds
         trimmed_object_list = self.return_objects(bearingRange = frame_bounds[1], rngRange = frame_bounds[0])
 
-        # initialize array of detections used (contains information about whether detections were used in data association by any object
-        detections_used = [0] * len(epoch_frame)
+        # generate gate list
+        gate_list = [self._generate_obj_gate(obj) for obj in trimmed_object_list]
 
-        # loop through objects in trimmed_object_list
-        for obj in trimmed_object_list:
-            gate = self._generate_obj_gate(obj)      # generates gate for each object
-            update, detections_used_for_obj = pdaf((obj.rng, obj.bearing, obj.objectType), gate, epoch_frame)   # generate weighted update observation for object, list of detections used in calculation
+        # get update list from joint pdaf
+        update_list, detections_used = joint_pdaf(trimmed_object_list, gate_list, epoch_frame)
 
+        for obj, update in zip(trimmed_object_list, update_list):
             # update objects
-            obj.update(update[0], update[1])
-            detections_used = [sum(uses) for uses in zip(detections_used, detections_used_for_obj)]     # update detections_used
+            if update is not None:
+                obj.update(update[0], update[1])
 
         # use all detections NOT used to update objects to create new objects
         for ii, det in enumerate(epoch_frame):

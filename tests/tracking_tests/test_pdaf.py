@@ -4,11 +4,12 @@ try:
 except ImportError:
     from mock import patch, MagicMock
 
-from src.tracking.pdaf import pdaf, gate_detections, mahalanobis, normalize_distances
+from src.tracking.pdaf import joint_pdaf, pdaf, gate_detections, mahalanobis, normalize_distances
 from src.tracking.classification_types import ObjectType
 
 import numpy as np
 import time
+
 
 class PDAFTests(unittest.TestCase):
     """Tests the methods in PDAF"""
@@ -18,7 +19,7 @@ class PDAFTests(unittest.TestCase):
         dists = [1, 5, 10, 15]
 
         # create truthed normalized list
-        truth_norm_dists = [14/31., 10/31., 5/31., 0]
+        truth_norm_dists = [1/31., 5/31., 10/31., 15/31]
 
         # call normalize_distances
         norm_dists = normalize_distances(dists)
@@ -38,7 +39,7 @@ class PDAFTests(unittest.TestCase):
     def test_mahalanobis(self):
         """Tests mahalanobis method"""
         # generate test object
-        test_obj = (5, 5)
+        test_obj = MagicMock(rng=5, bearing=5)
 
         # generate test detections
         num_detects = 3
@@ -69,7 +70,8 @@ class PDAFTests(unittest.TestCase):
 
         # created truth trimmed epoch frame and detections_used
         gated_idx = 0
-        truth_trimmed_epoch_frame = [test_detects[gated_idx]]
+        truth_trimmed_epoch_frame = [0] * len(test_detects)
+        truth_trimmed_epoch_frame[gated_idx] = test_detects[gated_idx]
         truth_detections_used = [0] * num_detects
         truth_detections_used[gated_idx] = 1
 
@@ -86,25 +88,92 @@ class PDAFTests(unittest.TestCase):
     def test_pdaf(self, mock_norm_dists, mock_mahal, mock_gate):
         """Tests pdaf method"""
         # number of test cases
-        num_cases = 2
-
-        # mock gate_detections trimmed_epoch_frame return value
-        trimmed_epoch_frames = [[(5, 5), (10, 8)], [(6.2, -98), (6, -95)], []]
+        num_cases = 4
 
         # mock normalize_distances return values
-        weights = [[0.7, 0.3], [0.55, 0.45], []]
+        truth_weights = [[0.7, 0.3], [0.55, 0.45], [], [1, 0]]
 
-        # generate truthed update
-        truthed_updates = [(6.5, 5.9), (6.110000000000001, -96.65), (None, None)]
+        # mock detections used return value from gate_detections
+        truth_dets_used = [[1, 1], [1, 1], [0, 0], [1, 0]]
 
-        # loop over cases
+        # loop through test cases
         for ii in range(num_cases):
-            # set mock function return values
-            mock_gate.return_value = trimmed_epoch_frames[ii], None
-            mock_norm_dists.return_value = weights[ii]
+            # set normalize_distances and gate_detections return values
+            mock_norm_dists.return_value = truth_weights[ii]
+            mock_gate.return_value = [], truth_dets_used[ii]
 
             # call pdaf
-            update, _ = pdaf(None, None, None)
+            norm_dists, dets_used = pdaf(None, None, None)        # args do not matter
 
             # check for correct behavior
-            self.assertEqual(truthed_updates[ii], update)
+            self.assertEqual(truth_weights[ii], norm_dists)
+            self.assertEqual(truth_dets_used[ii], dets_used)
+
+    @patch('src.tracking.pdaf.pdaf')
+    def test_joint_pdaf(self, mock_pdaf):
+        """Tests joint pdaf method"""
+        # number of test cases
+        num_cases = 3
+
+        # initialize obj_list_list
+        obj_list_list = [0] * num_cases
+
+        # initalize gate_list_list
+        gate_list_list = [0] * num_cases
+
+        # initialize epoch_frame_list
+        epoch_frame_list = [0] * num_cases
+
+        # initialize norm_dists_lists
+        norm_dists_lists = [0] * num_cases
+
+        # initialize truth_update_list 
+        truth_update_list = [0] * num_cases
+
+        # initialize dets_used_list
+        dets_used_list = [0] * num_cases
+
+        # initialize truth_detsdets_used
+        truth_dets_used = [0] * num_cases
+
+        # test 1 -- one object, multiple detections
+        obj_list_list[0]     = [MagicMock(rng = 5, bearing = 5, objectType=ObjectType.BUOY)]
+        gate_list_list[0]    = ((0, 10), (2.5, 7.5), (ObjectType.BUOY, ObjectType.NONE))
+        epoch_frame_list[0]  = [(4, 4, ObjectType.BUOY), (8, 6, ObjectType.NONE)]
+        norm_dists_lists[0]  = [[0.75, 0.25]]
+        truth_update_list[0] = [(5, 4.5)]
+        dets_used_list[0]    = [[1, 1]]
+        truth_dets_used[0]   = [1, 1]
+        # test 2 -- two objects, multiple detections for each (no overlapping detections)
+        obj_list_list[1]     = obj_list_list[0] + [MagicMock(rng = 15, bearing = 30, objectType = ObjectType.BUOY)]
+        gate_list_list[1]    = gate_list_list[0] + ((12, 18), (20, 40), (ObjectType.BUOY, ObjectType.NONE))
+        epoch_frame_list[1]  = epoch_frame_list[0] + [(13, 25, ObjectType.NONE), (16, 28, ObjectType.NONE)]
+        norm_dists_lists[1]  = [[0.75, 0.25, 0, 0], [0, 0, 0.45, 0.55]]
+        truth_update_list[1] = truth_update_list[0] + [(14.65, 26.65)]
+        dets_used_list[1]    = [[1, 1, 0, 0], [0, 0, 1, 1]]
+        truth_dets_used[1]   = [1, 1, 1, 1]
+        # test 3 -- two objects, multiple detections for each w/ ONE overlapping detection
+        obj_list_list[2]     = obj_list_list[1]
+        gate_list_list[2]    = (((0, 15), (0, 20), (ObjectType.BUOY, ObjectType.NONE)), ((8, 22), (16, 44), (ObjectType.NONE)))
+        epoch_frame_list[2]  = epoch_frame_list[1] + [(10, 18, ObjectType.NONE)]
+        norm_dists_lists[2]  = [[0.55, 0.25, 0, 0, 0.2], [0, 0, 0.4, 0.5, 0.1]]
+        truth_update_list[2] = [(6.2, 7.3), (14.66666666, 26.666666666)]
+        dets_used_list[2]    = [[1, 1, 0, 0, 1], [0, 0, 1, 1, 0]]
+        truth_dets_used[2]   = [1, 1, 1, 1, 1]
+
+        # loop through test cases
+        for obj_list, gate_list, epoch_frame, norm_dists_list, dets_used, \
+            truth_update, truth_dets_used in zip(obj_list_list, gate_list_list, epoch_frame_list, \
+                                                 norm_dists_lists, dets_used_list, truth_update_list, truth_dets_used):
+            # set up PDAF mock return value
+            mock_pdaf.side_effect = zip(norm_dists_list, dets_used)
+
+            # call joint pdaf
+            update, dets_used = joint_pdaf(obj_list, gate_list, epoch_frame)
+
+            # check for correct behavior
+            for truth_update_val, update_val in zip(truth_update, update):
+                for truth_val, val in zip(truth_update_val, update_val):
+                    self.assertAlmostEqual(truth_val, val)
+
+            self.assertEqual(truth_dets_used, dets_used)
