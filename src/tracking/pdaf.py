@@ -12,33 +12,33 @@ def joint_pdaf(object_list, gate_list, epoch_frame):
         update_list -- list of update observations based on detections within object gate
         detections_used -- list of detections used
     """
-    # initialize normalized_dists array
-    norm_dists_arr = np.zeros((len(object_list), len(epoch_frame)))
+    # initialize dists array
+    dists_arr = np.zeros((len(object_list), len(epoch_frame)))
 
     # initialize detections used
     detections_used = [0] * len(epoch_frame)
 
     # get mahalanbois distances for each track - detection pair
     for ii, (obj, gate) in enumerate(zip(object_list, gate_list)):
-        norm_dists, detections_used_for_obj = pdaf(obj, gate, epoch_frame)
+        dists, detections_used_for_obj = pdaf(obj, gate, epoch_frame)
 
-        norm_dists_arr[ii] = np.array(norm_dists)
+        dists_arr[ii] = np.array(dists)
 
         detections_used = [sum(uses) for uses in zip(detections_used, detections_used_for_obj)]
 
     # for detections shared by multiple objects, make association score 0 for all but highest associated obejct
-    norm_dists_arr = np.where(norm_dists_arr < np.amax(norm_dists_arr, 0), 0, norm_dists_arr)
+    dists_arr = np.where(dists_arr < np.amax(dists_arr, 0), 0, dists_arr)
 
-    # renormalize rows
-    for jj in range(norm_dists_arr.shape[0]):
-        norm_dists_arr[jj] = np.array(normalize_distances(norm_dists_arr[jj].tolist()))
+    # normalize rows
+    for jj in range(dists_arr.shape[0]):
+        dists_arr[jj] = np.array(normalize_distances(dists_arr[jj].tolist()))
 
     # initialize update list
     update_list = [0] * len(object_list)
 
     # calculate update measurement
     for kk in range(len(update_list)):
-        norm_dists = norm_dists_arr[kk].tolist()
+        norm_dists = dists_arr[kk].tolist()
         # if no detections associated with object
         if sum(norm_dists) == 0:
             update_list[kk] = None
@@ -57,19 +57,16 @@ def pdaf(obj, gate, epoch_frame):
         gate -- list of tuples containing allowed rng ranges, bearing ranges, and object types
         epoch_frame -- list of detections
     Returns:
-        norm_dists -- normalized array of distances for track-detection pairs
+        dists -- UNnormalized array of distances for track-detection pairs
         detections_used -- list of detections used in creation of observation for this object
     """
     # gate detections in epoch frame
     gated_epoch_frame, detections_used = gate_detections(gate, epoch_frame)
 
     # generate mahalanobis distance for each detection
-    dist_list = [mahalanobis(obj, det) for det in gated_epoch_frame]
+    dists = [mahalanobis(obj, det) for det in gated_epoch_frame]
 
-    # normalize mahalanobis distances
-    norm_dists = normalize_distances(dist_list)
-
-    return norm_dists, detections_used
+    return dists, detections_used
 
 def gate_detections(gate, epoch_frame):
     """

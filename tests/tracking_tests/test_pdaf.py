@@ -10,6 +10,7 @@ from src.tracking.classification_types import ObjectType
 import numpy as np
 import time
 
+import pdb
 
 class PDAFTests(unittest.TestCase):
     """Tests the methods in PDAF"""
@@ -83,9 +84,8 @@ class PDAFTests(unittest.TestCase):
         self.assertEqual(truth_detections_used, dets_used)
 
     @patch('src.tracking.pdaf.gate_detections')
-    @patch('src.tracking.pdaf.mahalanobis', return_value = None)
-    @patch('src.tracking.pdaf.normalize_distances')
-    def test_pdaf(self, mock_norm_dists, mock_mahal, mock_gate):
+    @patch('src.tracking.pdaf.mahalanobis')
+    def test_pdaf(self, mock_mahal, mock_gate):
         """Tests pdaf method"""
         # number of test cases
         num_cases = 4
@@ -99,15 +99,17 @@ class PDAFTests(unittest.TestCase):
         # loop through test cases
         for ii in range(num_cases):
             # set normalize_distances and gate_detections return values
-            mock_norm_dists.return_value = truth_weights[ii]
-            mock_gate.return_value = [], truth_dets_used[ii]
+            mock_mahal.side_effect = truth_weights[ii]
+            mock_gate.return_value = [0] * len(truth_weights[ii]), truth_dets_used[ii]
 
             # call pdaf
-            norm_dists, dets_used = pdaf(None, None, None)        # args do not matter
+            dists, dets_used = pdaf(None, None, None)        # args do not matter
 
             # check for correct behavior
-            self.assertEqual(truth_weights[ii], norm_dists)
+            self.assertEqual(truth_weights[ii], dists)
             self.assertEqual(truth_dets_used[ii], dets_used)
+
+            mock_mahal.reset_mock()
 
     @patch('src.tracking.pdaf.pdaf')
     def test_joint_pdaf(self, mock_pdaf):
