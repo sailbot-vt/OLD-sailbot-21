@@ -34,14 +34,20 @@ class DepthMap:
         self.right_ymap = self.calibration["right_ymap"]
         self.right_roi = tuple(self.calibration["right_roi"])
 
+        # TODO: Explain what this is
         self.pixel_degrees = 45 / sqrt((self.image_size[0] ^ 2 + self.image_size[1] ^ 2))
         self.FOV_RADS = np.deg2rad(fov)
         self.focal_length = self.calibration["Q_matrix"][0][0]
         self.baseline = baseline
+
+        # The left and right camera objects, respectively.
         self.left = cv2.VideoCapture(camera_numbers[0])
         self.right = cv2.VideoCapture(camera_numbers[1])
+
+        # TODO: Explain what things are drawn
         self.DRAW_IMAGE = draw_image
 
+        #
         self.bm = cv2.StereoBM_create()
         self.bm.setMinDisparity(0)
         self.bm.setNumDisparities(160)

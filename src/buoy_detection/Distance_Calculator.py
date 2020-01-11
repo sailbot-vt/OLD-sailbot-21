@@ -63,7 +63,7 @@ def get_obj_gps_location(boat_lat, boat_lon, distance, bearing):
 
     :param boat_lat:  the current latitude of the boat in radians
     :param boat_lon:  the current longitude of the boat in radians
-    :param ang_distance:  the predicted distance to the object in meters
+    :param distance:  the predicted distance to the object in meters
     :param bearing:  the bearing (angle) to the object in radians
     :return: A 2-tuple containing the boat's latitude and longitude, in degrees.
     """
