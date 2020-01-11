@@ -3,7 +3,7 @@ import numpy as np
 import os
 import glob
 import time
-from src.buoy_detection.Depth_Map_Calculator import Depth_Map
+from src.buoy_detection.Depth_Map_Calculator import DepthMap
 from src.buoy_detection.Distance_Calculator import DistanceCalculator
 
 CHESSBOARD_CALIBRATION_SIZE = (6, 8)
@@ -101,7 +101,7 @@ def testFindBuoyPixels():
             print("No Moments found")
 
 def testDisparityMap():
-    dc = DistanceCalculator(DRAW_IMAGE= False, camera_numbers=(3,2))
+    dc = DistanceCalculator(draw_image= False, camera_numbers=(3, 2))
 
     while True:
         left, depth_map = dc.depth_map_calculator.calculateDepthMap()
