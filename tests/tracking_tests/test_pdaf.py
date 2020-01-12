@@ -10,8 +10,6 @@ from src.tracking.classification_types import ObjectType
 import numpy as np
 import time
 
-import pdb
-
 class PDAFTests(unittest.TestCase):
     """Tests the methods in PDAF"""
     def test_normalize_distances(self):
