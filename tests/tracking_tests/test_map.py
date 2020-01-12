@@ -76,8 +76,6 @@ class MapTests(unittest.TestCase):
         
             # add object to map
             obj = Object(bearing, rng, time_in_millis(), objectType = type_list[n])
-
-        # kill map thread
             self.map.object_list.append(obj)
 
         # get list of objects meeting conditions
