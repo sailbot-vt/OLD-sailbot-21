@@ -59,7 +59,7 @@ class MapTests(unittest.TestCase):
         type_list = [ObjectType.BUOY, ObjectType.BOAT, ObjectType.BUOY, 
                      ObjectType.BUOY, ObjectType.BOAT, ObjectType.BUOY, ObjectType.NONE]    # object types
 
-        # set up object
+        # set up objects
         num_objects = 7
         correct_object_list = [0] * num_objects     # create empty object list 
         num_correct_objects = 0             # counter for correct objects
