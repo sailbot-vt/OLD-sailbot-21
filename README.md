@@ -15,7 +15,7 @@ The software design document detailing the system architecture can be found [her
 
 1. Ensure that you have [Git](https://git-scm.com/downloads) and a version of [Python 3.5](https://www.python.org/downloads/) installed on your computer by running `git --version` and `python3.5 --version`. If either command does not give you a version number, you do not have the respective software.
 
-2. Move to the directory where you would like to store your local copy of the code, and clone the repository by running `git clone git@github.com:vt-sailbot/sailbot-19.git`.
+2. Move to the directory where you would like to store your local copy of the code, and clone the repository by running `git clone git@github.com:vt-sailbot/sailbot-20.git`.
 
 3. On macOS or Linux, run `make init`. On Windows, open `Makefile` and run each command under `init` separately. To compile with `clang` instead of `gcc` (for Mac users), run `make init CC=clang`.
 

@@ -27,6 +27,7 @@ class Object():
         self.histLength = 10
         self.updateHist = [None] * self.histLength        # list to store if track updates for past <histLength> update cycles
 
+
         self.prevRng = 0
         self.prevBearing = 0
 
