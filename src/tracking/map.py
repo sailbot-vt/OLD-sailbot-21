@@ -7,6 +7,7 @@ from src.tracking.object import Object
 from src.tracking.classification_types import ObjectType
 from src.tracking.pdaf import joint_pdaf
 
+
 from src.utils.coord_conv import cartesian_to_polar, polar_to_cartesian
 from src.utils.time_in_millis import time_in_millis
 
@@ -87,7 +88,6 @@ class Map(Thread):
             # prune tracks w/ updates in <= 0.4 * expected updates
             if num_updates <= (0.4 * obj.histLength):
                 del self.object_list[ii]
-
 
     def return_objects(self, bearingRange=[-30,30], timeRange=[0,5000], rngRange=None):
         """ Returns objects passing within given bearing range of boat in given time range

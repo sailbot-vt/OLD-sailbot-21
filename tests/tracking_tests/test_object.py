@@ -109,6 +109,7 @@ class ObjectTests(unittest.TestCase):
         truth_history[0] = 1
         self.assertEqual(truth_history, self.object.updateHist)
 
+
         # repeat test with non-None rngRate and bearingRate
 
         # reset all mocks
