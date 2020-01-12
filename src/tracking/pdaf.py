@@ -12,52 +12,52 @@ def joint_pdaf(object_list, gate_list, epoch_frame):
         update_list -- list of update observations based on detections within object gate
         detections_used -- list of detections used
     """
-    # initialize dists array
-    dists_arr = np.zeros((len(object_list), len(epoch_frame)))
+    # initialize assocs array
+    assocs_arr = np.zeros((len(object_list), len(epoch_frame)))
 
     # initialize detections used
     detections_used = [0] * len(epoch_frame)
 
-    # get mahalanbois distances for each track - detection pair
+    # get association scores for each track - detection pair
     for ii, (obj, gate) in enumerate(zip(object_list, gate_list)):
-        dists, detections_used_for_obj = pdaf(obj, gate, epoch_frame)
+        assoc_scores, detections_used_for_obj = pdaf(obj, gate, epoch_frame)
 
-        dists_arr[ii] = np.array(dists)
+        assocs_arr[ii] = np.array(assocs)
 
         detections_used = [sum(uses) for uses in zip(detections_used, detections_used_for_obj)]
 
     # for detections shared by multiple objects, make association score 0 for all but highest associated obejct
-    dists_arr = np.where(dists_arr < np.amax(dists_arr, 0), 0, dists_arr)
+    assocs_arr = np.where(assocs_arr < np.amax(assocs_arr, 0), 0, assocs_arr)
 
     # normalize rows
-    for jj in range(dists_arr.shape[0]):
-        dists_arr[jj] = np.array(normalize_distances(dists_arr[jj].tolist()))
+    for jj in range(assocs_arr.shape[0]):
+        assocs_arr[jj] = np.array(normalize_distances(assocs_arr[jj].tolist()))
 
     # initialize update list
     update_list = [0] * len(object_list)
 
     # calculate update measurement
     for kk in range(len(update_list)):
-        norm_dists = dists_arr[kk].tolist()
+        norm_assocs = assocs_arr[kk].tolist()
         # if no detections associated with object
         if sum(norm_dists) == 0:
             update_list[kk] = None
         else:
-            update_list[kk] = (sum(rng * weight for (rng, _, _), weight in zip(epoch_frame, norm_dists)), \
-                           sum(bearing * weight for (_, bearing, _), weight in zip(epoch_frame, norm_dists)))
+            update_list[kk] = (sum(rng * weight for (rng, _, _), weight in zip(epoch_frame, norm_assocs)), \
+                           sum(bearing * weight for (_, bearing, _), weight in zip(epoch_frame, norm_assocs)))
 
     return update_list, detections_used
 
 
 def pdaf(obj, gate, epoch_frame):
     """
-    Generates a weighted update observation using detections in epoch frame and gate for object
+    Generates a list of association scores using detections in epoch frame and gate for object
     Inputs:
         obj -- tuple containing range, bearing, and type data for object
         gate -- list of tuples containing allowed rng ranges, bearing ranges, and object types
         epoch_frame -- list of detections
     Returns:
-        dists -- UNnormalized array of distances for track-detection pairs
+        assoc_scores -- UNnormalized array of assoc_scores for track-detection pairs
         detections_used -- list of detections used in creation of observation for this object
     """
     # gate detections in epoch frame
@@ -66,7 +66,11 @@ def pdaf(obj, gate, epoch_frame):
     # generate mahalanobis distance for each detection
     dists = [mahalanobis(obj, det) for det in gated_epoch_frame]
 
-    return dists, detections_used
+    # generate scores from distances
+    max_dist = max(dists)
+    assoc_scores = [max_dist - dist for dist in dists]
+
+    return assoc_scores, detections_used
 
 def gate_detections(gate, epoch_frame):
     """
