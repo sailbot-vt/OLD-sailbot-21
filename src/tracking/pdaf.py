@@ -123,4 +123,7 @@ def normalize_distances(distances):
     """
 
     total_dist = sum(distances)
-    return [dist / total_dist for dist in distances]
+    if total_dist != 0:
+        return [dist / total_dist for dist in distances]
+    else:
+        return distances
