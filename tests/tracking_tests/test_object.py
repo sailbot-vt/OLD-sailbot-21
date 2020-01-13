@@ -96,7 +96,7 @@ class ObjectTests(unittest.TestCase):
         self.object.update(rng, bearing)
 
         # ensure proper behavior
-        mock_kalman_update.assert_called_with(rng, bearing, rngRate, bearingRate)
+        mock_kalman_update.assert_called_with([rng, bearing], [rngRate, bearingRate])
 
         mock_set_obj_state.assert_called_once_with()
         mock_find_rngRate.assert_called_once_with()
@@ -132,7 +132,7 @@ class ObjectTests(unittest.TestCase):
         self.object.update(rng, bearing, rngRate, bearingRate)
 
         # ensure proper behavior
-        mock_kalman_update.assert_called_with(rng, bearing, rngRate, bearingRate)
+        mock_kalman_update.assert_called_with([rng, bearing], [rngRate, bearingRate])
 
         mock_set_obj_state.assert_called_once_with()
         mock_find_rngRate.assert_called_once_with()

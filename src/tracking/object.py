@@ -51,9 +51,9 @@ class Object():
         self.updateHist[0] = 1                      # updated
 
         if (rngRate is None) and (bearingRate is None):
-            self.kalman.update(rng, bearing, self.rngRate, self.bearingRate)
+            self.kalman.update([rng, bearing], [self.rngRate, self.bearingRate])
         else:
-            self.kalman.update(rng, bearing, rngRate, bearingRate)
+            self.kalman.update([rng, bearing], [rngRate, bearingRate])
         self._set_object_state()
 
         # update range and bearing rate for object
