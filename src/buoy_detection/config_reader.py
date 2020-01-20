@@ -4,14 +4,12 @@ files to more easily use.
 """
 import yaml
 
-DEFAULT_PATH = "config.yaml"
 
-
-def get_config(path=DEFAULT_PATH):
+def get_config(path):
     with open(path, "r") as handle:
         return yaml.full_load(handle)
 
 
-def get_calibration_config(path=DEFAULT_PATH):
+def get_calibration_config(path):
     config = get_config(path)
     return config["calibration"]
