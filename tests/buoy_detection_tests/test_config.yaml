@@ -1,0 +1,50 @@
+# buoy_detection config.yaml file
+
+calibration:
+
+  chessboard_specs:
+    # The real size of each chessboard square, in meters.
+    square_size: .024
+
+    # The shape of the grid of internal chessboard squares as a 2-tuple of the form (x_size, y_size)
+    grid_shape: !!python/tuple (6, 9)
+
+
+  finding_corners:
+    # Affects how OpenCV2 locates internal chessboard corners.
+    corner_flags: "cv2.CALIB_CB_NORMALIZE_IMAGE | cv2.CALIB_CB_FAST_CHECK | cv2.CALIB_CB_ADAPTIVE_THRESH"
+
+    # Corner Sub-Pixel (CSP) Refinement Parameters
+    csp_window_size: !!python/tuple (11, 11)
+    csp_zero_zone: !!python/tuple (-1, -1)
+
+
+  # Controls the stopping behavior of various iterative OpenCV2 processes, such as corner sub-pixel
+  # refinement.
+  term_criteria:
+    term_flags: "cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER"
+    max_iterations: 30
+    min_accuracy: 0.001
+
+
+  # Scaling parameter for image rectification.
+  # https://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html
+  # See stereoRectify(), "alpha" parameter.
+  rectification_alpha: 0.25
+
+  # Draw images with chessboard overlay as we analyze them? Can cause performance slowdowns.
+  draw_image: True
+
+  # Delete pairs of images that contain an invalid image?
+  # "Invalid images" are any images that OpenCV2 cannot find a (complete) set of chessboard corners for.
+  delete_unreadable_images: False
+
+  # Must contain LEFT and RIGHT subdirectories, each with corresponding images.
+  base_path: "/home/evanallen/calibration_images"
+
+  # The name of the stereo calibration matrix output file.
+  calibration_export_filename: "stereo_calibration.npz"
+
+  # The name of the projection / rectification matrix output file.
+  projection_export_filename: "projection_matrices.npz"
+
