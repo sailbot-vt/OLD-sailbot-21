@@ -7,4 +7,7 @@ test:
 run:
 	bash ./scripts/run.sh
 
-.PHONY: init test run
+test_tracker:
+	bash ./scripts/test_tracker.sh
+
+.PHONY: init test run test_tracker
