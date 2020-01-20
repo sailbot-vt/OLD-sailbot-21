@@ -15,10 +15,13 @@ class KalmanFilter():
 
         self.state = np.append(pos, vel)       # create state vector (elements are x, y, v_x, v_y)
         if pos_sigma is None:
-            pos_sigma = np.array([1, 1])     # arbitrary choice -- needs tuning
+            pos_sigma = np.array([3, 3])     # arbitrary choice -- needs tuning
         if vel_sigma is None:
-            vel_sigma = np.array([2, 2])     # arbitrary choice -- needs tuning
+            vel_sigma = np.array([5, 5])     # arbitrary choice -- needs tuning
         self.covar = np.diag(np.append(pos_sigma, vel_sigma))   # create covariance matrix (matrix of certainties of measurements)
+        self.measurement_covar = self.covar
+
+        self.process_noise = np.eye(self.state.shape[0])        # initalize process noise
 
         self.last_time_changed = time_in_millis()
         self.delta_t = 0
@@ -39,24 +42,20 @@ class KalmanFilter():
             self.covar -- updates uncertainty matrix through kalman predict
         """
         self._update_trans_matrix()  # update state transition matrix with update delta_t
-        self.state, self.covar = kalman.predict(x=self.state, P=self.covar, F=self.state_trans, Q=0)
+        self._update_process_noise() # update process noise
+        self.state, self.covar = kalman.predict(x=self.state, P=self.covar, F=self.state_trans, Q=self.process_noise)
 
-    def update(self, pos, vel, pos_sigma=None, vel_sigma=None):
+    def update(self, pos, vel, hist_score):
         """Update object position and filter
         Inputs:
             pos -- position of obejct (cartesian)
             vel -- veloicty of obejct (cartesian)
-            pos_sigma -- uncretainty of position of obejct (cartesian)
-            vel_sigma -- uncertainty of veloicty of obejct (cartesian)
+            hist_score -- certainty score based on object history (used as scale factor for measurement covariance) (range 1-2)
         """
         measurement = np.append(pos, vel)
-        if pos_sigma is None:
-            pos_sigma = np.array([1, 1])     # arbitrary choice -- needs tuning
-        if vel_sigma is None:
-            vel_sigma = np.array([2, 2])     # arbitrary choice -- needs tuning
-        measurement_covar = np.diag(np.append(pos_sigma, vel_sigma))
+        self.measurement_covar *= hist_score
 
-        self.state, self.covar = kalman.update(x=self.state, P=self.covar, z=measurement, R=measurement_covar, H=self.measurement_trans)
+        self.state, self.covar = kalman.update(x=self.state, P=self.covar, z=measurement, R=self.measurement_covar, H=self.measurement_trans)
         
     def _update_trans_matrix(self):
         """Updates transition matrix for time delta since last prediction
@@ -72,3 +71,13 @@ class KalmanFilter():
         self.state_trans[1, 3] = self.delta_t
 
         self.last_time_changed = time_in_millis()
+
+    def _update_process_noise(self):
+        """
+        Updates process noise using distance from origin of object
+        Side Effects:
+            self.process_noise -- updates using range
+        """
+        # bearing noise increases as distance from origin DECREASES (small changes in position result in large bearing changes)
+        bearing_scale_fac = 15. / self.state[0]         # arbitrary choice for numerator
+        self.process_noise[0::2, :] *= bearing_scale_fac

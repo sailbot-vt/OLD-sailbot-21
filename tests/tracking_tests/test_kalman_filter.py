@@ -62,10 +62,17 @@ class KalmanFilterTests(unittest.TestCase):
             pos_sigma, vel_sigma = np.array([1, 1]), np.array([2, 2])
 
             measurement = np.append(pos, vel)
-            measurement_covar = np.diag(np.append(pos_sigma, vel_sigma))
-            
+
+            # set prev measurement covar
+            prev_measurement_covar = np.diag(np.append(pos_sigma, vel_sigma))
+            self.kalman.measurement_covar = prev_measurement_covar
+
+            # generate new measurement covar
+            hist_score = 3
+            measurement_covar = prev_measurement_covar * hist_score
+
             # call update
-            self.kalman.update(pos, vel, pos_sigma, vel_sigma)
+            self.kalman.update(pos, vel, hist_score)
 
             # check for proper behavior
             self.assertEqual(1, mock_update.call_count)
@@ -96,16 +103,19 @@ class KalmanFilterTests(unittest.TestCase):
             # reset covariance matrix
             pos_sigma, vel_sigma = np.array([1, 1]), np.array([2, 2])
             self.kalman.covar = np.diag(np.append(pos_sigma, vel_sigma))
+            self.kalman.measurement_covar = self.kalman.covar
 
             # call update
-            self.kalman.update(measurements[ii, 0:2], measurements[ii, 2:4])
+            hist_score = 1
+            self.kalman.update(measurements[ii, 0:2], measurements[ii, 2:4], hist_score)
         
             # check if updated state is close to expected
             updated_state = updated_states[ii]
             np.testing.assert_allclose(updated_state, self.kalman.state)
 
     @patch('src.tracking.kalman_filter.KalmanFilter._update_trans_matrix')
-    def test_predict(self, mock_update_trans):
+    @patch('src.tracking.kalman_filter.KalmanFilter._update_process_noise')
+    def test_predict(self, mock_update_noise, mock_update_trans):
         """Tests predict method of kalman filter"""
         # Testing methodology:
         #   check if correct function calls are made with correct arguments
@@ -129,7 +139,7 @@ class KalmanFilterTests(unittest.TestCase):
             np.testing.assert_allclose(self.kalman.state, call_args[1]['x'])
             np.testing.assert_allclose(self.kalman.covar, call_args[1]['P'])
             np.testing.assert_allclose(self.kalman.state_trans, call_args[1]['F'])
-            self.assertEqual(0, call_args[1]['Q'])
+            np.testing.assert_allclose(np.eye(self.kalman.covar.shape[0]), call_args[1]['Q'])        # since calc process noise is mocked 
 
         # check if kalman filter results  correctly
 

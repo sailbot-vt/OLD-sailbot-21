@@ -7,11 +7,12 @@ from src.tracking.object import Object
 from src.tracking.classification_types import ObjectType
 from src.tracking.pdaf import joint_pdaf
 
-
 from src.utils.coord_conv import cartesian_to_polar, polar_to_cartesian
 from src.utils.time_in_millis import time_in_millis
 
 import numpy as np
+
+import pdb
 
 class Map(Thread):
     """
@@ -29,7 +30,6 @@ class Map(Thread):
 
         self.update_interval = 0.5
         self.toggle_update = toggle_update
-        self.old_position = self.boat.current_position()
 
     def run(self):
         """ Continuously updates objects in object list using Kalman filter prediction"""
@@ -60,16 +60,19 @@ class Map(Thread):
         # trim object list to only include tracks with frame bounds
         trimmed_object_list = self.return_objects(bearingRange = frame_bounds[1], rngRange = frame_bounds[0])
 
-        # generate gate list
-        gate_list = [self._generate_obj_gate(obj) for obj in trimmed_object_list]
+        if len(trimmed_object_list) != 0:
+            # generate gate list
+            gate_list = [self._generate_obj_gate(obj) for obj in trimmed_object_list]
 
-        # get update list from joint pdaf
-        update_list, detections_used = joint_pdaf(trimmed_object_list, gate_list, epoch_frame)
+            # get update list from joint pdaf
+            update_list, detections_used = joint_pdaf(trimmed_object_list, gate_list, epoch_frame)
 
-        for obj, update in zip(trimmed_object_list, update_list):
-            # update objects
-            if update is not None:
-                obj.update(update[0], update[1])
+            for obj, update in zip(trimmed_object_list, update_list):
+                # update objects
+                if update is not None:
+                    obj.update(update[0], update[1])
+        else:
+            detections_used = [0] * len(epoch_frame)
 
         # use all detections NOT used to update objects to create new objects
         for ii, det in enumerate(epoch_frame):

@@ -27,7 +27,6 @@ class Object():
         self.histLength = 10
         self.updateHist = [None] * self.histLength        # list to store if track updates for past <histLength> update cycles
 
-
         self.prevRng = 0
         self.prevBearing = 0
 
@@ -50,10 +49,12 @@ class Object():
 
         self.updateHist[0] = 1                      # updated
 
+        hist_score = self._calc_hist_score()
+
         if (rngRate is None) and (bearingRate is None):
-            self.kalman.update([rng, bearing], [self.rngRate, self.bearingRate])
+            self.kalman.update([rng, bearing], [self.rngRate, self.bearingRate], hist_score)
         else:
-            self.kalman.update([rng, bearing], [rngRate, bearingRate])
+            self.kalman.update([rng, bearing], [rngRate, bearingRate], hist_score)
         self._set_object_state()
 
         # update range and bearing rate for object
@@ -102,3 +103,10 @@ class Object():
         """
         self.bearingRate = 1000 * (self.bearing - self.prevBearing) / (time_in_millis() - self.lastSeen)
 
+    def _calc_hist_score(self):
+        """
+        Calculates history score (/ obj certainty) for use by kalman filter update
+        Returns:
+            hist_score -- object certainty score (scaled from 1 - 2)
+        """
+        return (2 - sum(filter(None, self.updateHist)) / 10.)

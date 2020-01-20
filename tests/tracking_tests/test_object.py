@@ -95,8 +95,11 @@ class ObjectTests(unittest.TestCase):
         # call update
         self.object.update(rng, bearing)
 
+        # hist score (with one detection in hist)
+        hist_score = 1.9
+
         # ensure proper behavior
-        mock_kalman_update.assert_called_with([rng, bearing], [rngRate, bearingRate])
+        mock_kalman_update.assert_called_with([rng, bearing], [rngRate, bearingRate], hist_score)
 
         mock_set_obj_state.assert_called_once_with()
         mock_find_rngRate.assert_called_once_with()
@@ -108,7 +111,6 @@ class ObjectTests(unittest.TestCase):
         truth_history = [None] * self.object.histLength
         truth_history[0] = 1
         self.assertEqual(truth_history, self.object.updateHist)
-
 
         # repeat test with non-None rngRate and bearingRate
 
@@ -131,8 +133,11 @@ class ObjectTests(unittest.TestCase):
         # call update
         self.object.update(rng, bearing, rngRate, bearingRate)
 
+        # hist score (with two detections in hist)
+        hist_score = 1.8
+
         # ensure proper behavior
-        mock_kalman_update.assert_called_with([rng, bearing], [rngRate, bearingRate])
+        mock_kalman_update.assert_called_with([rng, bearing], [rngRate, bearingRate], hist_score)
 
         mock_set_obj_state.assert_called_once_with()
         mock_find_rngRate.assert_called_once_with()
@@ -177,3 +182,17 @@ class ObjectTests(unittest.TestCase):
         # ensure proper calls are made
         mock_predict.assert_called_once_with()
         mock_set_obj_state.assert_called_once_with()
+
+    def test_calc_hist_score(self):
+        """Tests calc history score method of object"""
+        # set up hist vals and scores
+        update_hist_vals = [[1, None, None, None, None, None, None, None, None, None, None],
+                            [0, 0, 0, 1, 1, 1, 0, 1, 0, 1],
+                            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
+
+        hist_scores = [1.9, 1.5, 1]
+
+        # check for correct behavior
+        for hist_vals, hist_score in zip(update_hist_vals, hist_scores):
+            self.object.updateHist = hist_vals
+            self.assertEqual(hist_score, self.object._calc_hist_score())
