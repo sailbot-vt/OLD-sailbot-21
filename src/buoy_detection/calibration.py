@@ -13,6 +13,7 @@ import cv2
 from time import sleep
 import logging
 import src.buoy_detection.config_reader as config_reader
+import sys
 
 
 class Calibrator:
@@ -300,12 +301,27 @@ class Calibrator:
         print("Done")
 
 
-if __name__ == "__main__":
-    CONFIG = config_reader.get_calibration_config()
+def load_config_and_run(config_path):
+    """Loads the calibration configuration from `config_path` and then runs calibration on it.
 
-    calibrator = Calibrator(CONFIG)
+    Inputs:
+        config_path -- The path to the YAML configuration file.
 
-    calibration_export_filename = CONFIG["calibration_export_filename"]
-    projection_export_filename = CONFIG["projection_export_filename"]
+    Side Effects:
+        Runs the calibration routine as specified by the configuration file.
+    """
+
+    config = config_reader.get_calibration_config(config_path)
+
+    calibrator = Calibrator(config)
+
+    calibration_export_filename = config["calibration_export_filename"]
+    projection_export_filename = config["projection_export_filename"]
 
     calibrator.run_calibration(calibration_export_filename, projection_export_filename)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        raise TypeError("Wrong number of arguments! Format: " + sys.argv[0] + " <config_path>")
+    load_config_and_run(sys.argv[1])

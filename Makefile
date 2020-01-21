@@ -8,6 +8,6 @@ run:
 	bash ./scripts/run.sh
 
 calibrate:
-	python3 ./src/buoy_detection/calibration.py
+	python3 ./src/buoy_detection/calibration.py ./src/buoy_detection/config.yaml
 
 .PHONY: init test run
