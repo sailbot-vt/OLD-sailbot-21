@@ -12,7 +12,7 @@ class CalibrationTests(unittest.TestCase):
     """Tests the methods in buoy_detection/calibration.py."""
 
     def setUp(self):
-        self.config_filename = "test_config.yaml"
+        self.config_filename = "./tests/buoy_detection_tests/test_config.yaml"
         self.calibration_config = config_reader.get_calibration_config(self.config_filename)
 
     @patch("src.buoy_detection.calibration.Calibrator")
