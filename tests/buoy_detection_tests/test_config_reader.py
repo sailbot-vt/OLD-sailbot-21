@@ -12,7 +12,7 @@ class ConfigReaderTests(unittest.TestCase):
     """Tests the functions in buoy_detection/config_reader.py"""
 
     def setUp(self):
-        self.config_filename = "test_config.yaml"
+        self.config_filename = "./tests/buoy_detection_tests/test_config.yaml"
         self.config = \
             {"calibration": {
                 "chessboard_specs": {
