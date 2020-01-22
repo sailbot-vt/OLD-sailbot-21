@@ -12,10 +12,10 @@ def get_course_from_buoys(buoy_array, direction):
         """
 
     # Sorts the buoy array by bearing value
-    if (buoy_array['bearing'] >= 180).any():        # if boat is inside of bounding polygon made by buoys
-        sorted_array = sort_inside_polygon(buoy_array)
+    if (buoy_array[1] >= 180).any():        # if boat is inside of bounding polygon made by buoys
+        sorted_array = sort_inside_polygon(buoy_array.view(np.float))
     else:                                          # if boat is outside of bounding polygon
-        sorted_array = np.sort(buoy_array, order="bearing")
+        sorted_array = np.sort(buoy_array.view('f8, f8'), order='f1', axis=0).view(np.float)    # sort along bearing column
 
     if direction == "CCW":
         return sorted_array
@@ -33,20 +33,14 @@ def sort_inside_polygon(coord_array):
     """
 
     # include original indices in sorted array
-    inc_index_dtype = np.dtype(coord_array.dtype.descr + [('index', int)])
-    indexed_array = np.zeros(coord_array.shape, dtype=inc_index_dtype)
-    indexed_array['range'] = coord_array['range']
-    indexed_array['bearing'] = coord_array['bearing']
-    indexed_array['index'] = np.array([range(coord_array.size)])
+    adj_bearing_array = np.copy(coord_array[:, 1])
 
     # shift radially
-    for ii in range(indexed_array.size):
-        if indexed_array[ii]['bearing'] < 270:
-            indexed_array[ii]['bearing'] += 90
+    for ii in range(adj_bearing_array.shape[0]):
+        if adj_bearing_array[ii] < 270:
+            adj_bearing_array[ii] += 90
         else:
-            indexed_array[ii]['bearing'] = -1 * (indexed_array[ii]['bearing'] - 360)
-    
-    # sort array by bearing
-    sorted_indexed_array = np.sort(indexed_array, order='bearing')
+            adj_bearing_array[ii] = -1 * (adj_bearing_array[ii] - 360)
 
-    return coord_array[sorted_indexed_array['index']]
+    # sort array by adjusted bearing
+    return coord_array[adj_bearing_array.argsort()]
