@@ -12,8 +12,7 @@ from src.utils.time_in_millis import time_in_millis
 
 import numpy as np
 
-import pdb
-
+mutex = Lock()
 class Map(Thread):
     """
     Map is used to create a model of where objects around the boat currently exist. Everything is currently relative to where
@@ -70,7 +69,14 @@ class Map(Thread):
             for obj, update in zip(trimmed_object_list, update_list):
                 # update objects
                 if update is not None:
+                    mutex.acquire()
                     obj.update(update[0], update[1])
+                    mutex.release()
+                else:
+                    mutex.acquire()
+                    obj.update(None, None)
+                    mutex.release()
+                    
         else:
             detections_used = [0] * len(epoch_frame)
 
@@ -78,19 +84,26 @@ class Map(Thread):
         for ii, det in enumerate(epoch_frame):
             if detections_used[ii] == 0:
                 new_obj = Object(det[1], det[0], time_in_millis(), objectType = det[2])     # create object using detection
+                mutex.acquire()
                 self.object_list.append(new_obj)        # add to object_list
+                mutex.release()
 
     def prune_objects(self):
         """
         Prunes objects in object list
         """
         # iterate through objects in track
+        mutex.acquire()
         for ii, obj in enumerate(self.object_list):
             num_updates = sum(filter(None, obj.updateHist))
+            expected_updates = sum((x is not None for x in obj.updateHist))
 
             # prune tracks w/ updates in <= 0.4 * expected updates
-            if num_updates <= (0.4 * obj.histLength):
+            if num_updates <= (0.4 * expected_updates) and expected_updates >= 4:
+                print("Deleting object {}".format(ii))
                 del self.object_list[ii]
+
+        mutex.release()
 
     def return_objects(self, bearingRange=[-30,30], timeRange=[0,5000], rngRange=None):
         """ Returns objects passing within given bearing range of boat in given time range
@@ -112,12 +125,15 @@ class Map(Thread):
             rngRange = [(current_speed * (time_val/1000.)) for time_val in timeRange]
 
         ii = 0
+        mutex.acquire()
         for obj in self.object_list:
             if ii >= 10:
                 break
             if (rngRange[0] <= obj.rng <= rngRange[1] and (bearingRange[0] <= obj.bearing <= bearingRange[1])):
                 return_list[ii] = obj
                 ii += 1
+
+        mutex.release()
 
         return return_list[0:ii]
 
@@ -133,6 +149,7 @@ class Map(Thread):
         return_list = [0] * _max_objs
 
         num_buoys = 0
+        mutex.acquire()
         for ii, obj in enumerate(self.object_list):
             if num_buoys >= 5:
                 break
@@ -140,14 +157,15 @@ class Map(Thread):
                 return_list[num_buoys] = obj
                 num_buoys += 1
 
+        mutex.release()
         return return_list[0:num_buoys]
 
     def update_map(self):
         """ Updates map using boat state data"""
-        position = self.boat.current_position()
+        mutex.acquire()
         for object in self.object_list:
             object.predict()
-        self.old_position = position
+        mutex.release()
 
     def clear_objects(self, timeSinceLastSeen=0):
         """ Clears object from objects with greater than <timeSinceLastSeen> time since last seen
@@ -158,11 +176,13 @@ class Map(Thread):
 
         cur_time = time_in_millis()
         del_list = []
+        mutex.acquire()
         for ii, obj in enumerate(self.object_list):
             if (time_in_millis() - obj.lastSeen) > timeSinceLastSeen:
                 del_list.append(ii)
         for index in sorted(del_list, reverse=True):
             del self.object_list[index]
+        mutex.release()
 
     def _generate_obj_gate(self, obj):
         """

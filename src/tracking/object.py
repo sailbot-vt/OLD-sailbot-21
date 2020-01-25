@@ -41,7 +41,7 @@ class Object():
             bearingRate -- rate of change of bearing
         """
         # rotate update history
-        self.updateHist[1:self.histLength - 1] = self.updateHist[0:self.histLength - 2]
+        self.updateHist[1:self.histLength] = self.updateHist[0:self.histLength - 1]
 
         if (rng is None) and (bearing is None):
             self.updateHist[0] = 0                  # not updated
@@ -107,6 +107,6 @@ class Object():
         """
         Calculates history score (/ obj certainty) for use by kalman filter update
         Returns:
-            hist_score -- object certainty score (scaled from 1 - 2)
+            hist_score -- object certainty score (scaled from ~0.75 - 5)
         """
-        return (2 - sum(filter(None, self.updateHist)) / 10.)
+        return (5. - sum(filter(None, self.updateHist)) / 2.3529)

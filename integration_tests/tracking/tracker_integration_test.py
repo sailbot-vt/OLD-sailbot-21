@@ -4,7 +4,7 @@ import matplotlib
 matplotlib.use('QT5Agg')
 
 from matplotlib import pyplot as plt
-from matplotlib import animation as ani
+from matplotlib.patches import Ellipse
 
 from pubsub import pub
 from random import uniform, randint
@@ -13,6 +13,7 @@ from time import sleep
 import pdb
 
 from src.tracking.map import Map
+from src.utils.time_in_millis import time_in_millis
 
 class TrackerTest():
     """Integration test for tracking system"""
@@ -34,13 +35,23 @@ class TrackerTest():
         self.track_rng_data = [0]
         self.track_bearing_data = [0]
         self.track_type_data = [0]
-        self.tracks = self.polar.scatter(self.track_rng_data, self.track_bearing_data, c='#4444ff')
+        self.tracks = self.polar.scatter(self.track_rng_data, self.track_bearing_data, c='#4444ff', label='Tracks', s=3)
+        self.covar_ellipses = []
 
         # set up rng, bearing, and type data lists for tracks
         self.det_rng_data = [0]
         self.det_bearing_data = [0]
         self.det_type_data = [0]
-        self.dets = self.polar.scatter(self.det_rng_data, self.det_bearing_data, c='#ff4444')
+        self.dets = self.polar.scatter(self.det_rng_data, self.det_bearing_data, c='#ff4444', label='Detections', s=3)
+
+        # set up legend
+        box = self.polar.get_position()
+        self.polar.set_position([box.x0, box.y0 + box.height * 0.1,
+                         box.width, box.height * 0.9])
+
+        # Put a legend below current axis
+        self.polar.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
+                  fancybox=True, shadow=True, ncol=5)
 
         # show plot (and set up blitting)
         plt.show(block=False)
@@ -50,29 +61,43 @@ class TrackerTest():
 
         # create initial detections
         num_initial_detections = 1
-        self.frame_bounds = [(0, 100), (-70, 70)]
+        self.det_pattern_list = 'circle'
+        self.frame_bounds = [(0, 100), (-180, 180)]
         self.spawn_detections(num_initial_detections)
+
+        # start tracker
+        self.map.start()
+
+        # initialize old update time (of detection)
+        self.prev_time = [time_in_millis()] * num_initial_detections
 
     def run(self):
         """Continually updates detections"""
         while True:
-            sleep(self.update_interval)
-            # get tracks from map
-            self.get_data()
-
-            # plot tracks and detections on map (as ranges for tracks TODO)
-            self.plot_data()
+            cmd = input()                     # waits for key press to advance
+            if cmd == 's':
+                pdb.set_trace()
 
             # update detections
             self.update_detections()
+
+            # get tracks from map
+            self.get_data()
+
+            # plot tracks and detections on map
+            self.plot_data()
 
     def update_detections(self):
         """Updates detections by random dr and dtheta"""
         # loop through detections
         for ii in range(len(self.epoch_frame)):
             # generate deltas
-            dr = uniform(-1, 1)
-            dtheta = uniform(-1, 1)
+            rand_dr = uniform(-0.01, 0.01)
+            rand_dtheta = uniform(-0.001, 0.001)
+            if self.det_pattern_list == 'circle':
+                dr = rand_dr*(time_in_millis() - self.prev_time[ii])/1000
+                dtheta = (rand_dtheta + 10)*(time_in_millis() - self.prev_time[ii])/1000            # 10 degree bearing step, ccw
+                self.prev_time[ii] = time_in_millis()
             # update detection with deltas
             self.epoch_frame[ii] = (self.epoch_frame[ii][0] + dr, self.epoch_frame[ii][1] + dtheta, self.epoch_frame[ii][2])
 
@@ -83,6 +108,10 @@ class TrackerTest():
 
         # update map with detections
         pub.sendMessage('object(s) detected', epoch_frame = self.epoch_frame, frame_bounds = self.frame_bounds)
+
+        for ii, (det_rng, det_bearing) in enumerate(zip(self.det_rng_data, self.det_bearing_data)):
+            print("Detection {}: {}".format(ii, (det_rng, det_bearing)))
+            pass
 
     def spawn_detections(self, n_dets):
         """
@@ -124,6 +153,7 @@ class TrackerTest():
         """Updates plot using data"""
         # update tracks data
         self.tracks.set_offsets([self._deg_2_rad(self.track_bearing_data), self.track_rng_data])
+        self.draw_covar_ellipses(self._deg_2_rad(self.track_bearing_data), self.track_rng_data)
 
         # update detections data
         self.dets.set_offsets([self._deg_2_rad(self.det_bearing_data), self.det_rng_data])
@@ -133,12 +163,45 @@ class TrackerTest():
 
         # draw tracks and dets
         self.polar.draw_artist(self.tracks)
+        for ellipse in self.covar_ellipses:
+            self.polar.draw_artist(ellipse)
         self.polar.draw_artist(self.dets)
         self.fig.canvas.blit(self.polar.bbox)
 
         self.fig.canvas.flush_events()
 
-        print(*zip(self.track_rng_data, self.track_bearing_data))
+        for ii, (track_rng, track_bearing) in enumerate(zip(self.track_rng_data, self.track_bearing_data)):
+            print("Track {}: {}".format(ii, (track_rng, track_bearing)))
+
+    def draw_covar_ellipses(self, track_bearing_data, track_rng_data):
+        """
+        Draws covariance ellipses for each track
+        Inputs:
+            track_bearing_data -- list of track bearings (in rad)
+            track_rng_data -- list of track ranges
+        Side Effects:
+            self.covar_ellipses -- sets list of covar ellipses to new origin, size
+        """
+        # remove old ellipses from plot
+        for artist in self.covar_ellipses:
+            artist.remove()
+
+        # re-init covar_ellipses list
+        self.covar_ellipses = [0] * len(track_bearing_data)
+        
+        # generate ellipses for each track
+        # NOTE: current method of getting covariances is a bit of hack... should create API to get covars in future
+        for ii, (track_bearing, track_rng) in enumerate(zip(track_bearing_data, track_rng_data)):
+            ellipse_center = (track_bearing, track_rng)
+            ellipse_rng_radius = self.map.object_list[ii].kalman.covar[0, 0]
+            ellipse_bearing_radius = np.radians(self.map.object_list[ii].kalman.covar[1, 1])
+
+            self.covar_ellipses[ii] = Ellipse(ellipse_center, ellipse_bearing_radius, ellipse_rng_radius, \
+                                              angle = np.radians(track_bearing), fill = False)
+
+            self.polar.add_artist(self.covar_ellipses[ii])
+
+#            print("Ellipse {}: {}".format(ii, (ellipse_rng_radius, ellipse_bearing_radius)))
 
     def _deg_2_rad(self, data):
         """Converts degrees to radians for plotting"""

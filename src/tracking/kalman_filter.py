@@ -3,6 +3,8 @@ import filterpy.kalman as kalman
 
 from src.utils.time_in_millis import time_in_millis
 
+import pdb
+
 class KalmanFilter():
     def __init__(self, pos, vel, pos_sigma=None, vel_sigma=None):
         """Initialize kalman filter
@@ -15,13 +17,13 @@ class KalmanFilter():
 
         self.state = np.append(pos, vel)       # create state vector (elements are x, y, v_x, v_y)
         if pos_sigma is None:
-            pos_sigma = np.array([3, 3])     # arbitrary choice -- needs tuning
+            pos_sigma = np.array([10, 10])     # arbitrary choice -- needs tuning
         if vel_sigma is None:
-            vel_sigma = np.array([5, 5])     # arbitrary choice -- needs tuning
+            vel_sigma = np.array([12, 12])     # arbitrary choice -- needs tuning
         self.covar = np.diag(np.append(pos_sigma, vel_sigma))   # create covariance matrix (matrix of certainties of measurements)
         self.measurement_covar = self.covar
 
-        self.process_noise = np.eye(self.state.shape[0])        # initalize process noise
+        self.process_noise = np.eye(self.state.shape[0]) * 3       # initalize process noise
 
         self.last_time_changed = time_in_millis()
         self.delta_t = 0
@@ -50,13 +52,14 @@ class KalmanFilter():
         Inputs:
             pos -- position of obejct (cartesian)
             vel -- veloicty of obejct (cartesian)
-            hist_score -- certainty score based on object history (used as scale factor for measurement covariance) (range 1-2)
+            hist_score -- certainty score based on object history (used as scale factor for measurement covariance) (range ~0.5 - 5)
         """
         measurement = np.append(pos, vel)
-        self.measurement_covar *= hist_score
+        self.measurement_covar = self.covar * hist_score
+        print(self.measurement_covar)
 
         self.state, self.covar = kalman.update(x=self.state, P=self.covar, z=measurement, R=self.measurement_covar, H=self.measurement_trans)
-        
+
     def _update_trans_matrix(self):
         """Updates transition matrix for time delta since last prediction
         Side Effects:
@@ -79,5 +82,5 @@ class KalmanFilter():
             self.process_noise -- updates using range
         """
         # bearing noise increases as distance from origin DECREASES (small changes in position result in large bearing changes)
-        bearing_scale_fac = 15. / self.state[0]         # arbitrary choice for numerator
-        self.process_noise[0::2, :] *= bearing_scale_fac
+        bearing_scale_fac = np.power(self.state[0], -1)         # arbitrary choice for numerator
+        self.process_noise[1::2, :] = self.covar[1::2, :] * bearing_scale_fac

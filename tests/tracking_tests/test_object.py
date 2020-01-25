@@ -96,7 +96,7 @@ class ObjectTests(unittest.TestCase):
         self.object.update(rng, bearing)
 
         # hist score (with one detection in hist)
-        hist_score = 1.9
+        hist_score = 5 - (1/2.2222)
 
         # ensure proper behavior
         mock_kalman_update.assert_called_with([rng, bearing], [rngRate, bearingRate], hist_score)
@@ -134,7 +134,7 @@ class ObjectTests(unittest.TestCase):
         self.object.update(rng, bearing, rngRate, bearingRate)
 
         # hist score (with two detections in hist)
-        hist_score = 1.8
+        hist_score = 5 - (2/2.2222)
 
         # ensure proper behavior
         mock_kalman_update.assert_called_with([rng, bearing], [rngRate, bearingRate], hist_score)
@@ -190,9 +190,9 @@ class ObjectTests(unittest.TestCase):
                             [0, 0, 0, 1, 1, 1, 0, 1, 0, 1],
                             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
 
-        hist_scores = [1.9, 1.5, 1]
+        hist_scores = [5 - (1/2.2222), 5 - (5/2.2222), 5 - (10/2.2222)]
 
         # check for correct behavior
         for hist_vals, hist_score in zip(update_hist_vals, hist_scores):
             self.object.updateHist = hist_vals
-            self.assertEqual(hist_score, self.object._calc_hist_score())
+            self.assertAlmostEqual(hist_score, self.object._calc_hist_score())

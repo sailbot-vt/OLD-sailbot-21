@@ -63,13 +63,9 @@ class KalmanFilterTests(unittest.TestCase):
 
             measurement = np.append(pos, vel)
 
-            # set prev measurement covar
-            prev_measurement_covar = np.diag(np.append(pos_sigma, vel_sigma))
-            self.kalman.measurement_covar = prev_measurement_covar
-
             # generate new measurement covar
             hist_score = 3
-            measurement_covar = prev_measurement_covar * hist_score
+            measurement_covar = self.kalman.covar * hist_score
 
             # call update
             self.kalman.update(pos, vel, hist_score)
@@ -139,7 +135,7 @@ class KalmanFilterTests(unittest.TestCase):
             np.testing.assert_allclose(self.kalman.state, call_args[1]['x'])
             np.testing.assert_allclose(self.kalman.covar, call_args[1]['P'])
             np.testing.assert_allclose(self.kalman.state_trans, call_args[1]['F'])
-            np.testing.assert_allclose(np.eye(self.kalman.covar.shape[0]), call_args[1]['Q'])        # since calc process noise is mocked 
+            np.testing.assert_allclose(3 * np.eye(self.kalman.covar.shape[0]), call_args[1]['Q'])        # since calc process noise is mocked 
 
         # check if kalman filter results  correctly
 
