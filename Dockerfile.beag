@@ -2,7 +2,7 @@ FROM balenalib/beaglebone-black-debian-python
 
 ENV HOSTNAME beaglebone
 
-RUN apt-get update && apt-get install make wget
+RUN apt-get -y update && apt-get -y install make wget
 
 COPY scripts /sailbot/scripts
 COPY Makefile /sailbot/
