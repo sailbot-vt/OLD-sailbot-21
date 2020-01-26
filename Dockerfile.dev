@@ -1,0 +1,14 @@
+FROM debian:stretch
+
+RUN apt-get -y update && apt-get -y install make wget
+
+COPY scripts /sailbot/scripts
+COPY Makefile /sailbot/
+COPY requirements.dev.txt /sailbot/
+WORKDIR /sailbot
+
+RUN make init
+
+COPY src /sailbot/src
+COPY tests /sailbot/tests
+COPY main.py /sailbot/main.py

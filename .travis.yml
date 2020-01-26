@@ -3,9 +3,9 @@ python:
   - "3.5"
 
 install: make init
-script: make test
+script: ./scripts/test.sh
 after_success:
-  - . ./p3_5env/bin/activate
+#  - . ./p3_5env/bin/activate
   - coveralls
 
 notifications:
