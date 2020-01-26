@@ -2,8 +2,6 @@ FROM balenalib/beaglebone-black-debian-python
 
 ENV HOSTNAME beaglebone
 
-COPY qemu-arm-static /usr/bin
-
 RUN apt-get update && apt-get install make wget
 
 COPY scripts /sailbot/scripts
