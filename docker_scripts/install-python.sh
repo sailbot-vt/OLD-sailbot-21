@@ -5,11 +5,9 @@
 
 export PATH=/usr/local/bin:$PATH
 
-if [[ $HOSTNAME == beaglebone ]]; then
-    apt-get install -y python3 \
-                    python3-pip python3-setuptools python3-wheel
-    exit 0
-fi
+apt-get install -y python3 \
+                python3-pip python3-setuptools python3-wheel
+exit 0
 
 # If Python already exists, exit
 if hash python3.5 2>/dev/null; then
