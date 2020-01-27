@@ -52,19 +52,18 @@ class Logger():
                 pub.sendMessage("config dict", config_dict=out_dict)
 
 
-    def write_msg(self, pin_name, msg, rw_state):
+    def write_msg(self, author, msg):
         """
         Writes a log given data from process
 
         Keyword arguments:
-        pin_name -- Pin name that event occurs at
+        author -- author of message being written
         msg -- Message to be recorded (data on pin)
-        rw_state -- Whether pin is reading or writing
         """
 
         datetime_str = self._get_datetime_str()
         
-        self.log_dict = {'datetime': datetime_str, 'pin_name': pin_name, 'msg': msg, 'r/w' : rw_state} 
+        self.log_dict = {'datetime': datetime_str, 'author': author, 'msg': msg} 
 
         with open(self.outfile_name, 'a') as outfile:
             json.dump(self.log_dict, outfile)
