@@ -9,6 +9,9 @@
 #
 # Future extensions:
 #   -- extend with jib, rear foil, and sensor module
+# NOTE:
+#   -- since this program requires the use of the adafruit_bbio library to communicate with the arduino, this MUST be run on the #      Beaglebone Black
+#   -- connect to the Beaglebone using x11 forwarding ('ssh -Y ...') to show plots on host machine
 # -------------------------------------------------------------------------------------------------------------
 from time import sleep
 
@@ -22,8 +25,6 @@ from src.arduino.arduino import Arduino
 
 from integration_tests.controls.test_scheme_enum import TestScheme
 from integration_tests.controls.config_reader import read_test_config
-
-import pdb
 
 class ControlsTest(Thread):
     """Class that performs integration testing for the controls stack (software AND hardware)"""
@@ -83,7 +84,7 @@ class ControlsTest(Thread):
             # plot feedback positions (TODO)
 
             # sleep for update interval
-            sleep(
+            sleep(self.update_interval)
 
     def set_positions(self, sail_pos = 0, rudder_pos = 0):
         """
@@ -170,5 +171,4 @@ class ControlsTest(Thread):
         """
         Plots expected positions for sail and rudder
         """
-        pdb.set_trace()
 #        self.sail_arr
