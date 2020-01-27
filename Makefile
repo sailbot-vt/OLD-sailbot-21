@@ -7,4 +7,7 @@ test:
 run:
 	bash ./scripts/run.sh
 
-.PHONY: init test run
+clean:
+	rm logs/*
+
+.PHONY: init test run clean
