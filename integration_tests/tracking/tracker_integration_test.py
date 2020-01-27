@@ -15,9 +15,11 @@ import pdb
 from src.tracking.map import Map
 from src.utils.time_in_millis import time_in_millis
 
-class TrackerTest():
+class TrackerTest(Thread):
     """Integration test for tracking system"""
     def __init__(self):
+        super().__init__()
+
         """Initializes tracker test"""
         self.update_interval = 0.5
 
