@@ -1,0 +1,14 @@
+# config file for controls integration test
+
+ROTATE:
+  sail:
+    rotate_rate: 4      # deg/s
+    l_bound: -120       # left bound (in degrees)
+    r_bound: 120        # right bound (in degrees)
+    dir: 1              # starting direction of rotation 
+  rudder:
+    rotate_rate: 4      # deg/s
+    l_bound: -120       # left bound (in degrees)
+    r_bound: 120        # right bound (in degrees)
+    dir: 1              # starting direction of rotation 
+  update_interval: 1        # period of update
