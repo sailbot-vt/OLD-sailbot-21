@@ -49,4 +49,5 @@ port:
   encoding: "UTF-8"
 
 arduino:
-  update_interval: 5          # ms
+  author_name: "arduino"      # used by pub sub logger
+  update_interval: 0.05          # s

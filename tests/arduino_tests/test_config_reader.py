@@ -22,7 +22,7 @@ class ArduinoConfigReaderTests(unittest.TestCase):
     def test_read_arduino_config(self):
         """Tests read_arduino_config method"""
         arduino_config = read_arduino_config(path = self.path)
-        expected_config = {'update_interval': 5}
+        expected_config = {'update_interval': 0.05, 'author_name': 'test_author'}
         self.assertDictEqual(arduino_config, expected_config)
 
     def test_read_port_config(self):

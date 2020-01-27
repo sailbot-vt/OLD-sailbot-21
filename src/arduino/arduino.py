@@ -2,7 +2,7 @@ import Adafruit_BBIO.UART as uart
 
 from pubsub import pub
 from threading import Thread, Lock
-import time
+from time import sleep
 
 from src.arduino.config_reader import read_arduino_config
 from src.arduino.config_reader import read_port_config
@@ -11,14 +11,15 @@ from src.arduino.config_reader import read_pin_config
 class Arduino(Thread):
     """ Provides an interface to arudino connected over UART """
 
-    def __init__(self, mock_bbio=None, mock_port=None):
+    def __init__(self, is_active=True, mock_bbio=None, mock_port=None):
         """
         Initializes arduino thread, subscribes update methods to their respective channels
         """
         super().__init__()
-        self.is_active = True
+        self.is_active = is_active
         self.config = read_arduino_config()
         self.update_interval = self.config['update_interval']
+        self.author_name = self.config['author_name']
         self.uart_pin = read_pin_config(mock_bbio=mock_bbio)
         self.port = read_port_config(mock_port=mock_port)
         # initialize data to send
@@ -34,18 +35,19 @@ class Arduino(Thread):
         pub.subscribe(self.update_rear_foil_ang, "turn rear foil to")
         pub.subscribe(self.update_jib_ang, "turn jib to")
         pub.subscribe(self.update_sensor_ang, "turn sensor to")
-        
 
     def run(self):
         """ Runs the arduino comms thread """
         print("Started arduino thread")
         while self.is_active:
-            for val in self.data.values():
+            data_list = [self.data['rudder_ang'], self.data['sail_ang'], self.data['rear_foil_ang'], \
+                         self.data['jib_ang'], self.data['sensor_ang']]
+            for val in data_list:
                 self.port.write(str(val))
                 self.port.write('|')            # send over UART
             self.port.write('b')                # delimiter
-            print(time.time())
-            time.sleep(self.update_interval)
+            pub.sendMessage('write msg', author=self.author_name, msg = self.data)
+            sleep(self.update_interval)
 
     def update_rudder_ang(self, rudder_ang):
         """ udpates rudder angle from pub sub """

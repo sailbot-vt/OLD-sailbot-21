@@ -19,10 +19,10 @@ def main():
     # State objects
     boat = Boat()
     world = World()
+    logger = Logger()
 
     # Threads
     airmar_thread = airmar.AirmarInputThread()
-    logger = Logger()
     rc_thread = rc.RCInputThread()
     Sail = sail.SailListener(boat, world)
     Rudder = rudder.RudderListener()

@@ -49,4 +49,5 @@ port:
   encoding: "UTF-8"
 
 arduino:
-  update_interval: 5          # ms
+  author_name: 'test_author'
+  update_interval: 0.05          # s
