@@ -22,14 +22,15 @@ class Calibrator:
     method.
     """
 
-    def __init__(self, config):
+    def __init__(self, master_config):
         """ Initializes the Calibrator using the given configuration.
         *** See config.yaml for descriptions on each parameter. ***
 
         Inputs:
-            config -- A loaded YAML calibration configuration, loaded via config_reader.py (also in buoy_detection).
-                      See `config_reader.get_calibration_config()`.
+            config -- A loaded YAML buoy_detection configuration.
         """
+
+        config = master_config["calibration"]
 
         self.square_size = config["chessboard_specs"]["square_size"]
         self.grid_shape = config["chessboard_specs"]["grid_shape"]
@@ -37,12 +38,12 @@ class Calibrator:
         self.base_path = config["base_path"]
 
         tc_conf = config["term_criteria"]
-        self.term_criteria = (tc_conf["term_flags"], tc_conf["max_iterations"], tc_conf["min_accuracy"])
+        self.term_criteria = (eval(tc_conf["term_flags"]), tc_conf["max_iterations"], tc_conf["min_accuracy"])
 
         self.rectification_alpha = config["rectification_alpha"]
         self.draw_image = config["draw_image"]
 
-        self.corner_flags = config["finding_corners"]["corner_flags"]
+        self.corner_flags = eval(config["finding_corners"]["corner_flags"])
 
         base_path = config["base_path"]
         self.left_camera_directory = base_path + "LEFT"
@@ -305,18 +306,18 @@ def load_config_and_run(config_path):
     """Loads the calibration configuration from `config_path` and then runs calibration on it.
 
     Inputs:
-        config_path -- The path to the YAML configuration file.
+        config_path -- The path to the master YAML buoy_detection configuration file.
 
     Side Effects:
         Runs the calibration routine as specified by the configuration file.
     """
 
-    config = config_reader.get_calibration_config(config_path)
+    master_config = config_reader.get_config(config_path)
 
-    calibrator = Calibrator(config)
+    calibrator = Calibrator(master_config)
 
-    calibration_export_filename = config["calibration_export_filename"]
-    projection_export_filename = config["projection_export_filename"]
+    calibration_export_filename = master_config["calibration"]["calibration_export_filename"]
+    projection_export_filename = master_config["calibration"]["projection_export_filename"]
 
     calibrator.run_calibration(calibration_export_filename, projection_export_filename)
 
