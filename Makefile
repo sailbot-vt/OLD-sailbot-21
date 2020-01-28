@@ -7,7 +7,13 @@ test:
 run:
 	bash ./scripts/run.sh
 
+clean:
+	rm logs/*
+
 test_tracker:
 	bash ./scripts/test_tracker.sh
 
-.PHONY: init test run test_tracker
+test_controls:
+	bash ./scripts/test_controls.sh
+
+.PHONY: init test run clean test_tracker test_controls
