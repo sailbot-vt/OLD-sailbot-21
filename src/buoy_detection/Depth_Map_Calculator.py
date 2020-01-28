@@ -3,27 +3,39 @@ import cv2
 import os
 from math import sqrt
 
-# Focal length is 56 at red dot and 75 at blue dot
+# Focal length is 56 at red dot and 75 at blue dot << THESE ARE FOR THE OLD PS-EYE CAMERAS
 # Baseline should be in meters
-default_calibration_path = os.path.realpath(__file__)[:-len(os.path.basename(__file__))] + "stereo_calibration.npz"
+# TODO Remove the following line of code once we know the refactor works
+# default_calibration_path = os.path.realpath(__file__)[:-len(os.path.basename(__file__))] + "stereo_calibration.npz"
 
 
 class DepthMap:
-    def __init__(self, calibration_path=default_calibration_path, fov=56, baseline=.2, camera_numbers=(2, 3),
-                 draw_image=False):
-        self.calibration = None
+    def __init__(self, master_config):
+        """Initialize the DepthMap.
 
+        Inputs:
+            master_config -- A loaded master YAML buoy_detection configuration object, loaded using config_reader.
+        """
+
+        config = master_config["depth_map"]
+
+        # Load in variables from depth_map configuration.
+        calibration_filename = config["calibration_filename"]
+        fov = config["fov"]
+
+        # Import calibration data.
+        self.calibration = None
         try:
-            self.calibration = np.load(calibration_path, allow_pickle=False)
+            self.calibration = np.load(calibration_filename, allow_pickle=False)
         except IOError:
             print("Depth_Map Object could not load calibration data from the following location:")
-            print(calibration_path)
+            print(calibration_filename)
         except ValueError:
-            print("The calibration data at " + calibration_path +
+            print("The calibration data at " + calibration_filename +
                   " contains an object array but allow_pickle=False was given" +
                   "to the load function.")
 
-        self.camera_numbers = camera_numbers
+        self.camera_numbers = self["camera_numbers"]
         self.image_size = tuple(self.calibration["image_size"])
 
         self.left_xmap = self.calibration["left_xmap"]
@@ -36,87 +48,95 @@ class DepthMap:
 
         # TODO: Explain what this is
         self.pixel_degrees = 45 / sqrt((self.image_size[0] ^ 2 + self.image_size[1] ^ 2))
-        self.FOV_RADS = np.deg2rad(fov)
+        self.fov_rads = np.deg2rad(fov)
         self.focal_length = self.calibration["Q_matrix"][0][0]
-        self.baseline = baseline
+        self.baseline = master_config["common"]["baseline"]
 
         # The left and right camera objects, respectively.
-        self.left = cv2.VideoCapture(camera_numbers[0])
-        self.right = cv2.VideoCapture(camera_numbers[1])
+        self.left = cv2.VideoCapture(self.camera_numbers[0])
+        self.right = cv2.VideoCapture(self.camera_numbers[1])
 
-        # TODO: Explain what things are drawn
-        self.DRAW_IMAGE = draw_image
+        self.draw_image = config["draw_image"]
 
-        #
+        # Creates the Stereo Block Matcher, which is used to find correspondences between the two stereo images
+        # (i.e., which pair of image points [one from each image] refer to the same object point?)
+        stereo_conf = config["stereo_bm"]
+
         self.bm = cv2.StereoBM_create()
-        self.bm.setMinDisparity(0)
-        self.bm.setNumDisparities(160)
-        self.bm.setBlockSize(5)
+        self.bm.setMinDisparity(stereo_conf["min_disparity"])
+        self.bm.setNumDisparities(stereo_conf["num_disparities"])
+        self.bm.setBlockSize(stereo_conf["block_size"])
         self.bm.setROI1(self.left_roi)
         self.bm.setROI2(self.right_roi)
-        self.bm.setUniquenessRatio(15)
-        self.bm.setSpeckleWindowSize(0)
-        self.bm.setSpeckleRange(2)
-        self.REMAP_INTERPOLATION = cv2.INTER_LINEAR
-        self.DEPTH_VISUALIZATION_SCALE = 32
+        self.bm.setUniquenessRatio(stereo_conf["uniqueness_ratio"])
+        self.bm.setSpeckleWindowSize(stereo_conf["speckle_window_size"])
+        self.bm.setSpeckleRange(stereo_conf["speckle_range"])
+        self.remap_interpolation = eval(stereo_conf["remap_interpolation"])
+        self.depth_visualization_scale = stereo_conf["depth_visualization_scale"]
 
-    def calculateDepthMap(self):
-        """
-        Calculates the disparity map of a frame of the two cameras. This is used to get the distance of any given pixels
+    def calculate_depth_map(self):
+        """Calculates the disparity map of a frame of the two cameras.
+        This is used to get the distance of any given pixels.
 
-        :return:
-        The left frame (original frame that is the same orientation as disparity) and the disparity map
+        Returns:
+            The left frame (original frame in the same orientation as disparity) and the disparity map.
         """
-        # Grab first in order to reduce asynchronous issues and latency
+        # Grab first in order to reduce asynchronous issues and latency.
         if not self.left.grab() or not self.right.grab():
             print("Frames not grabbed")
             return
 
-        ### THIS HAS TO BE IN FOR THE FRAME RETRIEVAL TO WORK
-        # DON'T REMOVE THIS
+        # This must be here for frame retrieval to work. Do not remove.
+        # TODO: Find out why!!
         if cv2.waitKey(33) == 27:
             return
 
-        fixed_left = self.getLeftCameraImage()
-        fixed_right = self.getRightCameraImage()
+        fixed_left = self.get_left_camera_image()
+        fixed_right = self.get_right_camera_image()
         grey_left = cv2.cvtColor(fixed_left, cv2.COLOR_BGR2GRAY)
         grey_right = cv2.cvtColor(fixed_right, cv2.COLOR_BGR2GRAY)
         depth = self.bm.compute(grey_left, grey_right)
         depth = depth.astype(np.uint8)
-        if self.DRAW_IMAGE:
+        if self.draw_image:
             cv2.imshow('left', grey_left)
             cv2.imshow('right', grey_right)
             cv2.imshow('depth', depth)
         return fixed_left, depth
 
-    def getLeftCameraImage(self):
+    def get_left_camera_image(self):
         """
-        Gets a single frame of the left camera
-        :return: a remapped frame from the camera
+        Gets a single frame of the left camera.
+
+        Returns:
+            A remapped frame from the camera
         """
         if not self.left.grab():
             print("Could not grab left camera image")
             return None
 
-        # DON'T REMOVE THIS
+        # This must be here for frame retrieval to work. Do not remove.
+        # TODO: Find out why!!
         if cv2.waitKey(33) == 27:
             return
         read, left_frame = self.left.retrieve()
-        fixed_left = cv2.remap(left_frame, self.left_xmap, self.left_ymap, self.REMAP_INTERPOLATION)
+        fixed_left = cv2.remap(left_frame, self.left_xmap, self.left_ymap, self.remap_interpolation)
         return fixed_left
 
-    def getRightCameraImage(self):
+    def get_right_camera_image(self):
         """
-        Gets a single frame of the right camera
-        :return: a remapped frame from the camera
+        Gets a single frame of the right camera.
+
+        Returns:
+            A remapped frame from the camera
         """
         if not self.right.grab():
             print("Could not grab right camera image")
             return None
 
-        # DON'T REMOVE THIS
+        # This must be here for frame retrieval to work. Do not remove.
+        # TODO: Find out why!!
         if cv2.waitKey(33) == 27:
             return
         read, right_frame = self.right.retrieve()
-        fixed_left = cv2.remap(right_frame, self.right_xmap, self.right_ymap, self.REMAP_INTERPOLATION)
+        fixed_left = cv2.remap(right_frame, self.right_xmap, self.right_ymap, self.remap_interpolation)
         return fixed_left
