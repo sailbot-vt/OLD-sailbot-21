@@ -13,14 +13,14 @@ class CalibrationTests(unittest.TestCase):
 
     def setUp(self):
         self.config_filename = "./tests/buoy_detection_tests/test_config.yaml"
-        self.calibration_config = config_reader.get_calibration_config(self.config_filename)
+        self.config = config_reader.get_config(self.config_filename)
 
     @patch("src.buoy_detection.calibration.Calibrator")
     def test_load_config_and_run(self, mock_calibrator):
         calibration.load_config_and_run(self.config_filename)
 
         # Test if the Calibrator is created with the right configuration.
-        mock_calibrator.assert_called_once_with(self.calibration_config)
+        mock_calibrator.assert_called_once_with(self.config)
 
         # Test if the run_calibration method is called with the correct output file-names.
         mock_calibrator.assert_has_calls([call().run_calibration("stereo_calibration.npz", "projection_matrices.npz")])
