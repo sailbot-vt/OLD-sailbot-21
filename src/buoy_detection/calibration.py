@@ -118,7 +118,7 @@ class Calibrator:
         return object_points
 
     def _find_chessboards(self):
-        """ Calculates the object points and image points of chessboard images.
+        """ Calculates the image points of chessboard images.
         REQUIRES that the `left_camera_directory` and `right_camera_directory` have corresponding image pairs
         (and _only_ corresponding image pairs!).
 
