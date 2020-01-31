@@ -17,7 +17,7 @@ class AirmarReceiver:
         broadcaster -- The broadcaster object to publish data.
         logger -- logs warnings and errors from receiver.
         mock_bbio -- testable bbio library.
-        mock_pot -- testable port library.
+        mock_port -- testable port library.
 
         Returns:
         A new Airmar Receiver
