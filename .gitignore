@@ -5,6 +5,9 @@ p3_*env/
 log/
 .log
 
+# Compressed images
+*.gz
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
