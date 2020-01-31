@@ -14,11 +14,12 @@ Specific usages:
 # To send messages to pubsub
 b_messenger = Broadcaster() # = make_broadcaster(Broadcastertype.Messenger)
 b_messenger.update_dictionary(data={"test":1})
-assert 1 == b_messenger.update_key("test")
 
 # To send messages to file
 b_filewriter = make_broadcaster(BroadcasterType.FileWriter)
+b_filewriter.update_dictionary(data={"test":1})
 
 # To store messages to dictionary
 b_testable = make_broadcater(BroadcasterType.Testable)
+b_testable.update_dictionary(data={"test":1})
 ```

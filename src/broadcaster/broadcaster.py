@@ -15,26 +15,12 @@ class Broadcaster(ABC):
     """ An abstract class for interfaces required to notify the 
     rest of the system of input events. """
 
-    def __init__(self):
-        self.data = None
-
+    @abstractmethod
     def publish_dictionary(self, data):
-        """ Updates data dictionary with new dictionary. 
+        """ Publishes all key-value pair currently in the dictionary.
 
         Keyword Arguments:
         data -- A dictionary containing key and value. 
-        """
-        self.data = data
-        for key in self.data:
-            self.publish_key(key=key)
-
-    @abstractmethod
-    def publish_key(self, key):
-        """ Reads the data currently stored in data dictionary.
-        
-        Keyword Arguments:
-        key -- The id that matches key in dictionary
-            Default: None
         """
         pass
 
@@ -44,18 +30,11 @@ class TestableBroadcaster(Broadcaster):
 
     def __init__(self):
         """ Dictionary implementation of broadcaster."""
-        super().__init__()
+        self.data = None
 
-    def publish_key(self, key):
-        """ Retrieves stored data. 
-        
-        Keyword Arguments:
-        key -- The id that matches key in dictionary
-
-        Returns:
-        The data[key] value
-        """
-        return self.data[key]
+    def publish_dictionary(self, data):
+        """ Saves data to broadcaster's dictionary """
+        self.data = data
         
 
 class Messenger(Broadcaster):
@@ -66,18 +45,15 @@ class Messenger(Broadcaster):
         """ Messenger pubsub implementation of broadcaster."""
         super().__init__()
 
-    def publish_key(self, key):
-        """ Publishes data to pubsub. 
-        
-        Keyword Arguments:
-        key -- The id that matches key in dictionary
+    def publish_dictionary(self, data):
+        """ Publishes all data to pubsub.
 
-        Returns:
-        The msgData published to pubsub
+        Keyword Arguments:
+        data -- The data dictionary containing key-value pair, where
+                key is the topicName and value is the data to publish.
         """
-        value = self.data[key]
-        pub.sendMessage(topicName="{}".format(key), msgData=value)
-        return value
+        for key in data:
+            pub.sendMessage(topicName="{}".format(key), msgData=data[key])
 
 
 class FileWriter(Broadcaster):
@@ -93,18 +69,17 @@ class FileWriter(Broadcaster):
         self.filename = filename
         self.line_format = "[{0:20s}]\t\t[Requested: {1} -- Data: {2}]\n"
     
-    def publish_key(self, key):
-        """ Publishes key value pair by appending to file. 
-        
+    def publish_dictionary(self, data):
+        """ Writes a formated dictionary update to file.
+
         Keyword Arguments:
-        key -- The id that matches key in dictionary
+        data -- The data dictionary containing key-value pair to write to file.
         """
         f = open(self.filename, "a")
 
-        value = self.data[key]
-        f.write(self.line_format.format(datetime.now().__str__(), key, value))
+        for key in data:
+            f.write(self.line_format.format(datetime.now().__str__(), key, data[key]))
         f.close()
-        return value
 
 
 def make_broadcaster(broadcaster_type=None, filename=None):
