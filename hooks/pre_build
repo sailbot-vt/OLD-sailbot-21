@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker run --rm --privleged multiarch/qemu-user-static:register --reset
+docker run --rm --privileged hypriot/qemu-register
