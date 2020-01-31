@@ -42,11 +42,7 @@ class AirmarProcessor:
         raw = {}
         sid = nmea[0]
 
-        if self.parser.update_data(data=raw, fields=nmea) is None:
-            raise InvalidIDException()
-
-        if len(raw) == 0: # Empty data
-            raise UnsupportedIDException()
+        self.parser.update_data(data=raw, fields=nmea)
         
         if sid == "WIVWR":
             self._update_wind(raw=raw, sid=sid, 
