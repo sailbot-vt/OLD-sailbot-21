@@ -12,22 +12,15 @@ class BroadcasterType(Enum):
 
 
 class Broadcaster(ABC):
-    """An abstract class to hide the interface required to notify the rest of the system of airmar input events.
-    Messages are async to prevent them from blocking eachother, since RC input may need a high priority."""
+    """ An abstract class for interfaces required to notify the 
+    rest of the system of input events. """
 
     @abstractmethod
-    def update_data(self, data=None):
-        """ Updates data dictionary with new dictionary. Data must be packaged into dictionary such that
-        key represents data type, value represents data. """
-        pass
+    def publish_dictionary(self, data):
+        """ Publishes all key-value pair currently in the dictionary.
 
-    @abstractmethod
-    def read_data(self, key=None):
-        """ Reads the data currently stored in data dictionary.
-        
         Keyword Arguments:
-        key -- The id that matches key in dictionary
-            Default: None
+        data -- A dictionary containing key and value. 
         """
         pass
 
@@ -36,67 +29,57 @@ class TestableBroadcaster(Broadcaster):
     """ A broadcaster built to test methods that need to broadcast."""
 
     def __init__(self):
+        """ Dictionary implementation of broadcaster."""
         self.data = None
 
-    def update_data(self, data=None):
-        if data is not None:
-            self.data = data
-
-    def read_data(self, key=None):
-        if self.data is None or key is None or not key in self.data or self.data[key] is None:
-            return None
-        return self.data[key]
+    def publish_dictionary(self, data):
+        """ Saves data to broadcaster's dictionary """
+        self.data = data
         
-
 
 class Messenger(Broadcaster):
-    """Implements an interface with the pub/sub messaging system to broadcast data."""
+    """Implements an interface with the pub/sub 
+    messaging system to broadcast data."""
 
     def __init__(self):
-        self.data = None
+        """ Messenger pubsub implementation of broadcaster."""
+        super().__init__()
 
-    def update_data(self, data=None):
-        if data is not None:
-            self.data = data
+    def publish_dictionary(self, data):
+        """ Publishes all data to pubsub.
 
-    def read_data(self, key=None):
-        """ Publishes data to pubsub. 
-        
         Keyword Arguments:
-        key -- The id that matches key in dictionary
-            Default: None
-
-        Returns:
-        None if no key is provided/invalid, data/data[key] not initialized
-        data from map if successfully published
+        data -- The data dictionary containing key-value pair, where
+                key is the topicName and value is the data to publish.
         """
-        if self.data is None or key is None or not key in self.data or self.data[key] is None:
-            return None
-        value = self.data[key]
-        pub.sendMessage(topicName="set {}".format(key), msgData=value)
-        return value
+        for key in data:
+            pub.sendMessage(topicName="{}".format(key), msgData=data[key])
 
 
 class FileWriter(Broadcaster):
     """Implements an interface to write data to file. """
 
     def __init__(self, filename):
-        self.filename = filename
-        self.data = None
-        self.line_format = "[{0:20s}]\t\t[Requested: {1} -- Data: {2}]\n"
+        """ FileWriter implementation of broadcaster.
 
-    def update_data(self, data=None):
-        if data is not None:
-            self.data = data
+        Keyword Arguments:
+        filename -- the name of the file to read/write to.
+        """
+        super().__init__()
+        self.filename = filename
+        self.line_format = "[{0:20s}]\t\t[Requested: {1} -- Data: {2}]\n"
     
-    def read_data(self, key=None):
-        # Appends to end of file.
+    def publish_dictionary(self, data):
+        """ Writes a formated dictionary update to file.
+
+        Keyword Arguments:
+        data -- The data dictionary containing key-value pair to write to file.
+        """
         f = open(self.filename, "a")
-        if self.data is None or key is None or not key in self.data or self.data[key] is None:
-            return None
-        value = self.data[key]
-        f.write(self.line_format.format(datetime.now().__str__(), key, value))
-        return value
+
+        for key in data:
+            f.write(self.line_format.format(datetime.now().__str__(), key, data[key]))
+        f.close()
 
 
 def make_broadcaster(broadcaster_type=None, filename=None):
