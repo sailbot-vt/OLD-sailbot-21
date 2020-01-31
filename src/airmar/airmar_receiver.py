@@ -6,8 +6,6 @@ from src.airmar.nmeaparser.nmea_parser import NmeaParser
 
 from threading import Lock
 
-mutex = Lock()
-
 class AirmarReceiver:
     """Defines an Airmar receiver that sends data to a processor."""
 
@@ -63,7 +61,6 @@ class AirmarReceiver:
         """
         sentence = self.port.read_line(terminator='\r\n')
 
-        mutex.acquire()
         try:
             data = self.parser.parse(sentence)
             self.processor.update_airmar_data(nmea=data)
@@ -84,8 +81,6 @@ class AirmarReceiver:
             self.logger.write_msg(pin_name=self.uart_pin.pin_name,
             msg=r"ERROR Unhandled Exception\"{}\": \"{}\"".format(e, sentence), 
             rw_state="r")
-
-        mutex.release()
 
     def stop(self):
         """ Stops the pin and port """
