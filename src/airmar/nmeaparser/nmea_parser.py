@@ -54,10 +54,8 @@ class NmeaParser():
             nmea_fields --   A list of data fields, where nmea sentence 
                         id is the first element.
 
-        Returns:
-        A formatted map such that key="nmea_id", value=data dict with value
-            = formated data as string
-        None if field contains invalid sentence id.
+        Side effects:
+        updates mutable data dictionary with parsed fields.
 
         Note:
             Refer to 300WX User Technical Manual_0183 for detailed descriptions of
@@ -67,7 +65,6 @@ class NmeaParser():
         if interface is None:
             raise UnsupportedIDException()
         interface.update_data(nmea_map=data, fields=fields)
-        return data
 
     def toggle(self, sentence_ids=["ALL"], frequency=1, enable=1):
         """ Creates a sentence to toggle sentence(s) to be read in.
