@@ -9,5 +9,5 @@ class SailListener:
         super().__init__()
         mainsheet_config = read_mainsheet_config()
         self.mainsheet = Mainsheet(mainsheet_config)
-        pub.subscribe(self.trim_boom_to, "set trim")
-        pub.subscribe(self.trim_in_by, "set trim in")
+        pub.subscribe(self.mainsheet.trim_boom_to, "set trim")
+        pub.subscribe(self.mainsheet.trim_in_by, "set trim in")
