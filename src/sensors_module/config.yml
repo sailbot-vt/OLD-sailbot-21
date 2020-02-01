@@ -1,0 +1,8 @@
+sensor_decision:
+  weights:          # contains weights (unity sum) for each criterion
+    obj_rng: 0.4
+    obj_bearing: 0.3
+    move_required: 0.1
+    last_seen: 0.2
+
+  threshold: 0.5    # score required to cause sensor to deviate from base pattern
