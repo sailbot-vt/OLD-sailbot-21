@@ -40,10 +40,17 @@ class Arduino(Thread):
         """ Runs the arduino comms thread """
         print("Started arduino thread")
         while self.is_active:
-            for val in self.data.values():
-                pass            # send over UART
-            print(time.time())
-            time.sleep(self.update_interval)
+            data_list = [self.data['rudder_ang'], self.data['sail_ang'], self.data['rear_foil_ang'], \
+                         self.data['jib_ang'], self.data['sensor_ang']]
+            for val in data_list:
+                self.port.write(str(val))
+                self.port.write('|')            # send over UART
+            self.port.write('b')                # delimiter
+            pub.sendMessage('write msg', author=self.author_name, msg = self.data)
+
+            # TODO read feedback data from port
+
+            sleep(self.update_interval)
 
     def update_rudder_ang(self, rudder_ang):
         """ udpates rudder angle from pub sub """
@@ -64,6 +71,16 @@ class Arduino(Thread):
     def update_sensor_ang(self, sensor_ang):
         """ udpates sensor angle from pub sub """
         self.data["sensor_ang"] = sensor_ang
+
+    def read_feedback(self, msg):
+        """
+        Reads feedback from arduino serial
+        Inputs:
+            msg -- message read from arduino
+        """
+        # TODO set boat state data using pubsub
+        # ex: pub.sendMessage("sail angle", ang = sail_ang)
+        pass
 
     def disable_controls(self):
         """ disables arduino comms"""
