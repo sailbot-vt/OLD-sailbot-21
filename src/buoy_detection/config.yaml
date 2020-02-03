@@ -45,13 +45,16 @@ calibration:
   delete_unreadable_images: False
 
   # Must contain LEFT and RIGHT subdirectories, each with corresponding images.
-  base_path: "~/test/directory/images/"
+  base_path: "./tests/buoy_detection_tests/calibration_images/"
+
+  # The extensions of our calibration images.
+  image_extension: "jpg"
 
   # The name of the stereo calibration matrix output file.
-  calibration_export_filename: "stereo_calibration.npz"
+  calibration_export_filename: "./src/buoy_detection/stereo_calibration.npz"
 
   # The name of the projection / rectification matrix output file.
-  projection_export_filename: "projection_matrices.npz"
+  projection_export_filename: "./src/buoy_detection/projection_matrices.npz"
 
 
 depth_map:

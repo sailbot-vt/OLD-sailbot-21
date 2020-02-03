@@ -58,7 +58,7 @@ calibration:
 depth_map:
 
   # The name of the stereo calibration matrix file to use.
-  calibration_filename: "stereo_calibration.npz"
+  calibration_filename: "./src/buoy_detection/stereo_calibration.npz"
 
   # The field of view, in degrees.
   fov: 56

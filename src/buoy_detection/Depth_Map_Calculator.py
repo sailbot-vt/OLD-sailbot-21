@@ -1,12 +1,6 @@
 import numpy as np
 import cv2
-import os
 from math import sqrt
-
-# Focal length is 56 at red dot and 75 at blue dot << THESE ARE FOR THE OLD PS-EYE CAMERAS
-# Baseline should be in meters
-# TODO Remove the following line of code once we know the refactor works
-# default_calibration_path = os.path.realpath(__file__)[:-len(os.path.basename(__file__))] + "stereo_calibration.npz"
 
 
 class DepthMap:
@@ -35,7 +29,7 @@ class DepthMap:
                   " contains an object array but allow_pickle=False was given" +
                   "to the load function.")
 
-        self.camera_numbers = self["camera_numbers"]
+        self.camera_numbers = config["camera_numbers"]
         self.image_size = tuple(self.calibration["image_size"])
 
         self.left_xmap = self.calibration["left_xmap"]
@@ -80,16 +74,17 @@ class DepthMap:
 
         Returns:
             The left frame (original frame in the same orientation as disparity) and the disparity map.
+            If an error occurs, return (None, None).
         """
         # Grab first in order to reduce asynchronous issues and latency.
         if not self.left.grab() or not self.right.grab():
-            print("Frames not grabbed")
-            return
+            print("Couldn't grab frames!")
+            return None, None
 
         # This must be here for frame retrieval to work. Do not remove.
         # TODO: Find out why!!
         if cv2.waitKey(33) == 27:
-            return
+            return None, None
 
         fixed_left = self.get_left_camera_image()
         fixed_right = self.get_right_camera_image()
@@ -108,16 +103,16 @@ class DepthMap:
         Gets a single frame of the left camera.
 
         Returns:
-            A remapped frame from the camera
+            A remapped frame from the camera, or None if an error occurs.
         """
         if not self.left.grab():
-            print("Could not grab left camera image")
+            print("Couldn't grab left camera frame!")
             return None
 
         # This must be here for frame retrieval to work. Do not remove.
         # TODO: Find out why!!
         if cv2.waitKey(33) == 27:
-            return
+            return None
         read, left_frame = self.left.retrieve()
         fixed_left = cv2.remap(left_frame, self.left_xmap, self.left_ymap, self.remap_interpolation)
         return fixed_left
@@ -127,16 +122,17 @@ class DepthMap:
         Gets a single frame of the right camera.
 
         Returns:
-            A remapped frame from the camera
+            A remapped frame from the camera, or
+            None if an error occurs.
         """
         if not self.right.grab():
-            print("Could not grab right camera image")
+            print("Couldn't grab right camera frame!")
             return None
 
         # This must be here for frame retrieval to work. Do not remove.
         # TODO: Find out why!!
         if cv2.waitKey(33) == 27:
-            return
+            return None
         read, right_frame = self.right.retrieve()
         fixed_left = cv2.remap(right_frame, self.right_xmap, self.right_ymap, self.remap_interpolation)
         return fixed_left
