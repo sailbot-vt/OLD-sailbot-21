@@ -36,6 +36,7 @@ class Calibrator:
         self.grid_shape = config["chessboard_specs"]["grid_shape"]
 
         self.base_path = config["base_path"]
+        self.image_extension = config["image_extension"]
 
         tc_conf = config["term_criteria"]
         self.term_criteria = (eval(tc_conf["term_flags"]), tc_conf["max_iterations"], tc_conf["min_accuracy"])
@@ -46,8 +47,8 @@ class Calibrator:
         self.corner_flags = eval(config["finding_corners"]["corner_flags"])
 
         base_path = config["base_path"]
-        self.left_camera_directory = base_path + "LEFT"
-        self.right_camera_directory = base_path + "RIGHT"
+        self.left_camera_directory = base_path + "LEFT/"
+        self.right_camera_directory = base_path + "RIGHT/"
 
         self.csp_window_size = config["finding_corners"]["csp_window_size"]
         self.csp_zero_zone = config["finding_corners"]["csp_zero_zone"]
@@ -60,7 +61,7 @@ class Calibrator:
 
     def run_calibration(self, out_file1, out_file2):
         """ Master method that enumerates through images, detects chessboard calibration pattern,
-        and conducts calibration.
+        and conducts calibration. Deletes unreadable image pairs if the option is set.
         Saves final result matrices to out_file1 and out_file2.
 
         Inputs:
@@ -130,7 +131,7 @@ class Calibrator:
             Draws images with detected corners overlaid if self.draw_image == True.
         """
         print("Reading images at {0}".format(self.left_camera_directory))
-        left_image_paths = glob.glob("{0}/*.png".format(self.left_camera_directory))
+        left_image_paths = glob.glob("{0}/*.{1}".format(self.left_camera_directory, self.image_extension))
         image_names = [os.path.basename(path) for path in left_image_paths]
 
         # A list of object point arrays and image point arrays across all of the analyzed images.
@@ -148,7 +149,10 @@ class Calibrator:
             right_image = cv2.imread(right_path)
             right_grey = cv2.cvtColor(right_image, cv2.COLOR_BGR2GRAY)
 
-            camera_size = left_image.shape[::-1]
+            # Shape is initially in form (height, width, depth).
+            # We want (width, height), so we use slice notation to reverse the
+            # tuple (the -1) and then take the last two elements of the reversed tuple.
+            camera_size = left_image.shape[1::-1]
 
             has_corners_l, corners_l = cv2.findChessboardCorners(left_grey, self.grid_shape, self.corner_flags)
 
