@@ -39,7 +39,7 @@ read interval: 50 / 1000  # seconds
 
 # Settings to configure for port communication
 port:
-  port_name: "/dev/tty01"
+  port_name: "/dev/tty4"
   port_type: "SERIAL"
   frequency: 1  # seconds
   baudrate: 4800
@@ -48,6 +48,6 @@ port:
 
 # The pins connected to channels from the physical receiver
 pin:
-  pin_name: "P9_26" # TXD P9_24
+  pin_name: "P9_11" # TXD P9_13
   pin_type: "UART"
-  channel: "UART1"
+  channel: "UART4"
