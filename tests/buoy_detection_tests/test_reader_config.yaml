@@ -1,3 +1,15 @@
+# TEST CONFIGURATION FILE TO ENSURE THE CONFIG_READER WORKS AS EXPECTED!
+# There is another test_..._config.yaml file in the tests directory designed
+# to work with the other test scripts.
+#
+# Why are they separate?
+# Every time we change this file, we have to update the test_config_reader.py
+# unit tests to match. If we want to change a test config to work with an
+# updated piece of the source code we're trying to test, we would have to
+# change the test_config_reader.py unit test too (assuming it all used one
+# test file).
+# To mitigate this issue, we use two test config files.
+
 # For properties that are useful in multiple parts of the buoy_detection module.
 common:
   # The distance between the cameras (the "baseline"), in meters.
@@ -7,7 +19,7 @@ calibration:
 
   chessboard_specs:
     # The real size of each chessboard square, in meters.
-    square_size: .02423
+    square_size: .024
 
     # The shape of the grid of internal chessboard squares as a 2-tuple of the form (x_size, y_size)
     grid_shape: !!python/tuple [6, 9]
@@ -36,23 +48,20 @@ calibration:
   rectification_alpha: 0.25
 
   # Draw images with chessboard overlay as we analyze them? Can cause performance slowdowns.
-  draw_image: False
+  draw_image: True
 
   # Delete pairs of images that contain an invalid image?
   # "Invalid images" are any images that OpenCV2 cannot find a (complete) set of chessboard corners for.
   delete_unreadable_images: False
 
   # Must contain LEFT and RIGHT subdirectories, each with corresponding images.
-  base_path: "./tests/buoy_detection_tests/calibration_images/"
-
-  # The extensions of our calibration images.
-  image_extension: "jpg"
+  base_path: "~/test/directory/images/"
 
   # The name of the stereo calibration matrix output file.
-  calibration_export_filename: "./src/buoy_detection/stereo_calibration.npz"
+  calibration_export_filename: "stereo_calibration.npz"
 
   # The name of the projection / rectification matrix output file.
-  projection_export_filename: "./src/buoy_detection/projection_matrices.npz"
+  projection_export_filename: "projection_matrices.npz"
 
 
 depth_map:
