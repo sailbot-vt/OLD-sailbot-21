@@ -49,6 +49,8 @@ class Arduino(Thread):
             pub.sendMessage('write msg', author=self.author_name, msg = self.data)
 
             # TODO read feedback data from port
+            # TODO read LiDAR data from port
+            # pub.sendMessage('LiDAR raw data', rng = rng)
 
             sleep(self.update_interval)
 

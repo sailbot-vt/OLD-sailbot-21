@@ -1,5 +1,5 @@
 from threading import Thread
-
+from time import sleep
 from pubsub import pub
 
 class LiDARReader(Thread):
@@ -10,20 +10,45 @@ class LiDARReader(Thread):
 
         self.boat = boat
 
-    def run(self):
-        """
-        Starts LiDAR reading
-        """
-        while self.keep_reading:
-            # get sensor angle from boat
-            sensor_ang = self.boat.current_sensor_ang()
+        self.publish_interval = 0.5
+        self.keep_reading = True
 
-            # send data over pub
-            pub.sendMessage("LiDAR data", rng = self.rng, bearing=sensor_ang)
+        # subscribe to LiDAR pubsub channel
+        pub.subscribe(self.store_rng, 'LiDAR raw data')
+
+        # initialize raw data array
+        raw_data = [0] * 5
+
+    def run(self):
+        """Publishes data from LiDAR"""
+        while self.keep_reading:
+            self.publish()
+            sleep(self.publish_interval)
         else:
             pass
 
+    def store_rng(self, rng):
+        """
+        Stores raw range data in raw data array
+        Inputs:
+            rng -- raw range data from LiDAR
+        Side Effects:
+            self.raw_data -- pushes back raw data
+        """
+        raw_data[1:len(raw_data)] = raw_data[0:len(raw_data) - 1)
+        raw_data[0] = rng
+
+    def publish(self):
+        """
+        Publishes range data (if verified)
+        """
+        # TODO 
+        pass
+
     def stop(self):
-        """Pauses current thread without killing it"""
+        """Stops run loop without killing it"""
         self.keep_reading = False
 
+    def start(self):
+        """Starts run loop (after being stopped)"""
+        self.keep_reading = True
