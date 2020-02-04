@@ -47,6 +47,11 @@ class Arduino(Thread):
                 self.port.write('|')            # send over UART
             self.port.write('b')                # delimiter
             pub.sendMessage('write msg', author=self.author_name, msg = self.data)
+
+            # TODO read feedback data from port
+            # TODO read LiDAR data from port
+            # pub.sendMessage('LiDAR raw data', rng = rng)
+
             sleep(self.update_interval)
 
     def update_rudder_ang(self, rudder_ang):
@@ -68,6 +73,16 @@ class Arduino(Thread):
     def update_sensor_ang(self, sensor_ang):
         """ udpates sensor angle from pub sub """
         self.data["sensor_ang"] = sensor_ang
+
+    def read_feedback(self, msg):
+        """
+        Reads feedback from arduino serial
+        Inputs:
+            msg -- message read from arduino
+        """
+        # TODO set boat state data using pubsub
+        # ex: pub.sendMessage("sail angle", ang = sail_ang)
+        pass
 
     def disable_controls(self):
         """ disables arduino comms"""
