@@ -25,6 +25,10 @@ class Boat:
         return self._current_sensor_ang
 
     @property
+    def current_sensor_vel(self):
+        return self._current_sensor_vel
+
+    @property
     def current_sail_ang(self):
         return self._current_sail_ang
 
@@ -50,6 +54,7 @@ class Boat:
         pub.subscribe(self.read_heading, "boat heading")
         pub.subscribe(self.read_speed, "boat speed")
         pub.subscribe(self.read_sensor_ang, "sensor angle")
+        pub.subscribe(self.read_sensor_vel, "sensor vel")
         pub.subscribe(self.read_sail_ang, "sail angle")
         pub.subscribe(self.read_rudder_ang, "rudder angle")
         pub.subscribe(self.read_jib_ang, "jib angle")
@@ -75,6 +80,10 @@ class Boat:
     def read_sensor_ang(self, ang):
         """Updates the boat's current sensor angle"""
         self._current_sensor_ang = ang
+
+    def read_sensor_vel(self, vel):
+        """Updates the boat's current sensor angle"""
+        self._current_sensor_vel = vel
 
     def read_sail_ang(self, ang):
         """Updates the boat's current sail angle"""
