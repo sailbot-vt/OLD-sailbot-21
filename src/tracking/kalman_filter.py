@@ -44,7 +44,6 @@ class KalmanFilter():
             self.covar -- updates uncertainty matrix through kalman predict
         """
         self._update_trans_matrix()  # update state transition matrix with update delta_t
-        self._update_process_noise() # update process noise
         self.state, self.covar = kalman.predict(x=self.state, P=self.covar, F=self.state_trans, Q=self.process_noise)
 
     def update(self, pos, vel, hist_score):
@@ -56,7 +55,6 @@ class KalmanFilter():
         """
         measurement = np.append(pos, vel)
         self.measurement_covar = self.covar * hist_score
-        print(self.measurement_covar)
 
         self.state, self.covar = kalman.update(x=self.state, P=self.covar, z=measurement, R=self.measurement_covar, H=self.measurement_trans)
 
@@ -82,5 +80,5 @@ class KalmanFilter():
             self.process_noise -- updates using range
         """
         # bearing noise increases as distance from origin DECREASES (small changes in position result in large bearing changes)
-        bearing_scale_fac = np.power(self.state[0], -1)         # arbitrary choice for numerator
+        bearing_scale_fac = 1 + np.power(self.state[0], -1)         # arbitrary choice for numerator
         self.process_noise[1::2, :] = self.covar[1::2, :] * bearing_scale_fac

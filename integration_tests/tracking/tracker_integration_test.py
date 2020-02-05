@@ -64,8 +64,8 @@ class TrackerTest(Thread):
         self.background = self.fig.canvas.copy_from_bbox(self.polar.bbox)
 
         # create initial detections
-        num_initial_detections = 1
-        self.det_pattern_list = ['static',]
+        num_initial_detections = 2
+        self.det_pattern_list = ['static', 'circle']
         self.frame_bounds = [(50, 100), (-180, 180)]
         self.spawn_detections(num_initial_detections)
 
@@ -98,8 +98,8 @@ class TrackerTest(Thread):
         # loop through detections
         for ii in range(len(self.epoch_frame)):
             # generate deltas
-            rand_dr = uniform(-0.01, 0.01)
-            rand_dtheta = uniform(-0.001, 0.001)
+            rand_dr = 0 #uniform(-0.01, 0.01)
+            rand_dtheta = 0 #uniform(-0.001, 0.001)
             if self.det_pattern_list[ii] == 'circle':
                 dr = rand_dr*(time_in_millis() - self.prev_time[ii])/1000
                 dtheta = (rand_dtheta + 10)*(time_in_millis() - self.prev_time[ii])/1000            # 10 degree bearing step, ccw
@@ -159,17 +159,17 @@ class TrackerTest(Thread):
     def plot_data(self):
         """Updates plot using data"""
         # update tracks data
-        self.tracks.set_offsets([self._deg_2_rad(self.track_bearing_data), self.track_rng_data])
+        self.tracks.set_offsets([*zip(self._deg_2_rad(self.track_bearing_data), self.track_rng_data)])
         self.draw_covar_ellipses(self._deg_2_rad(self.track_bearing_data), self.track_rng_data)
 
         # update detections data
-        self.dets.set_offsets([self._deg_2_rad(self.det_bearing_data), self.det_rng_data])
+        self.dets.set_offsets([*zip(self._deg_2_rad(self.det_bearing_data), self.det_rng_data)])
 
         # restore background (blitting)
         self.fig.canvas.restore_region(self.background)
 
         # draw tracks and dets
-        self.polar.draw_artist(self.tracks)
+#        self.polar.draw_artist(self.tracks)
         for ellipse in self.covar_ellipses:
             self.polar.draw_artist(ellipse)
         self.polar.draw_artist(self.dets)
