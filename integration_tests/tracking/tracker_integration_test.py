@@ -65,8 +65,8 @@ class TrackerTest(Thread):
 
         # create initial detections
         num_initial_detections = 1
-        self.det_pattern_list = 'circle'
-        self.frame_bounds = [(0, 100), (-180, 180)]
+        self.det_pattern_list = ['static',]
+        self.frame_bounds = [(50, 100), (-180, 180)]
         self.spawn_detections(num_initial_detections)
 
         # start tracker
@@ -78,9 +78,9 @@ class TrackerTest(Thread):
     def run(self):
         """Continually updates detections"""
         while True:
-            cmd = input()                     # waits for key press to advance
-            if cmd == 's':
-                pdb.set_trace()
+#            cmd = input()                     # waits for key press to advance
+#            if cmd == 's':
+#                pdb.set_trace()
 
             # update detections
             self.update_detections()
@@ -91,6 +91,8 @@ class TrackerTest(Thread):
             # plot tracks and detections on map
             self.plot_data()
 
+            sleep(self.update_interval)
+
     def update_detections(self):
         """Updates detections by random dr and dtheta"""
         # loop through detections
@@ -98,10 +100,14 @@ class TrackerTest(Thread):
             # generate deltas
             rand_dr = uniform(-0.01, 0.01)
             rand_dtheta = uniform(-0.001, 0.001)
-            if self.det_pattern_list == 'circle':
+            if self.det_pattern_list[ii] == 'circle':
                 dr = rand_dr*(time_in_millis() - self.prev_time[ii])/1000
                 dtheta = (rand_dtheta + 10)*(time_in_millis() - self.prev_time[ii])/1000            # 10 degree bearing step, ccw
                 self.prev_time[ii] = time_in_millis()
+            elif self.det_pattern_list[ii] == 'static':
+                dr = rand_dr*(time_in_millis() - self.prev_time[ii])/1000
+                dtheta = (rand_dtheta)*(time_in_millis() - self.prev_time[ii])/1000
+
             # update detection with deltas
             self.epoch_frame[ii] = (self.epoch_frame[ii][0] + dr, self.epoch_frame[ii][1] + dtheta, self.epoch_frame[ii][2])
 
@@ -136,9 +142,6 @@ class TrackerTest(Thread):
             
             # place in epoch_frame
             epoch_frame[ii] = (rand_rng, rand_bearing, rand_type)
-
-        # send object detections to map
-        pub.sendMessage('object(s) detected', epoch_frame = epoch_frame, frame_bounds = self.frame_bounds)
 
         # save off epoch_frame
         self.epoch_frame = epoch_frame
