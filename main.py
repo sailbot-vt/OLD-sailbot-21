@@ -23,17 +23,6 @@ def main():
     world = World()
 
     # Threads
-<<<<<<< HEAD
-    # airmar_thread = airmar.AirmarInputThread()
-    logger = Logger()
-    # rc_thread = rc.RCInputThread()
-    # Sail = sail.SailListener(boat, world)
-    # Rudder = rudder.RudderListener()
-    captain_thread = captain.Captain(boat, world)
-
-    # airmar_thread.start()
-    # rc_thread.start()
-=======
     airmar_thread = airmar.AirmarInputThread()
     logger = Logger()
     rc_thread = rc.RCInputThread()
@@ -44,7 +33,6 @@ def main():
 
     airmar_thread.start()
     rc_thread.start()
->>>>>>> master
     captain_thread.start()
     arduino_thread.start()
 
