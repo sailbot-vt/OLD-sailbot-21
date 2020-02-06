@@ -23,8 +23,8 @@ def main():
     world = World()
 
     # Threads
-    airmar_thread = airmar.AirmarInputThread()
     logger = Logger()
+    airmar_thread = airmar.AirmarInputThread(logger=logger)
     rc_thread = rc.RCInputThread()
     Sail = sail.SailListener(boat, world)
     Rudder = rudder.RudderListener()
