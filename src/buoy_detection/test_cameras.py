@@ -7,7 +7,7 @@ from src.buoy_detection.Depth_Map_Calculator import Depth_Map
 from src.buoy_detection.Distance_Calculator import DistanceCalculator
 
 CHESSBOARD_CALIBRATION_SIZE = (6, 8)
-TERMINATION_CRITERIA = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 30,0.001)
+TERMINATION_CRITERIA = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
 def test():
     left = cv2.VideoCapture(2)
@@ -27,7 +27,6 @@ def test():
 
         if cv2.waitKey(33) == 27:
             break
-
     left.release()
     right.release()
 
@@ -102,7 +101,6 @@ def testFindBuoyPixels():
             print("No Moments found")
 
 def testDisparityMap():
-
     dc = DistanceCalculator(DRAW_IMAGE= False, camera_numbers=(3,2))
 
     while True:
@@ -112,12 +110,14 @@ def testDisparityMap():
 
 def getCameraNumbers():
     cams = []
-    cams_test = 10
+    cams_test = 100
     for i in range(0, cams_test):
         cap = cv2.VideoCapture(i)
         test, frame = cap.read()
         if test:
             cams.append(i)
     print(cams)
-
+    return cams
+#test()
+testFindBuoyPixels()
 testDisparityMap()

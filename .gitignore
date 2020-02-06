@@ -2,8 +2,14 @@
 p3_*env/
 
 # Log files and dir
+<<<<<<< HEAD
 log/
 *.log
+=======
+logs/
+*.log
+
+>>>>>>> master
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

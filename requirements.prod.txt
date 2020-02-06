@@ -6,4 +6,3 @@ pyserial
 flask-socketio
 eventlet
 filterpy
-sympy
