@@ -64,8 +64,7 @@ class KalmanFilterTests(unittest.TestCase):
             measurement = np.append(pos, vel)
 
             # generate new measurement covar
-            hist_score = 3
-            measurement_covar = self.kalman.covar * hist_score
+            measurement_covar = self.kalman.measurement_covar
 
             # call update
             self.kalman.update(pos, vel)

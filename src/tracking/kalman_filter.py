@@ -21,7 +21,7 @@ class KalmanFilter():
         if vel_sigma is None:
             vel_sigma = np.array([5, 5])     # arbitrary choice -- needs tuning
         self.covar = np.diag(np.append(pos_sigma, vel_sigma))   # create covariance matrix (matrix of certainties of measurements)
-        self.measurement_covar = self.covar
+        self.measurement_covar = np.eye(self.covar.shape[0])
 
         self.process_noise = np.eye(self.state.shape[0])      # initalize process noise
 
@@ -57,7 +57,6 @@ class KalmanFilter():
 #            hist_score -- certainty score based on object history (used as scale factor for measurement covariance) (range 1 - 1.05)
         """
         measurement = np.append(pos, vel)
-        self.measurement_covar = 1 * np.eye(self.covar.shape[0])
 
         self.state, self.covar = kalman.update(x=self.state, P=self.covar, z=measurement, R=self.measurement_covar, H=self.measurement_trans)
 
