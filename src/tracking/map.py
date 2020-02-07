@@ -27,7 +27,7 @@ class Map(Thread):
         self.boat = boat
         self.object_list = []
 
-        self.update_interval = 0.5
+        self.update_interval = 0.25
         self.toggle_update = toggle_update
 
     def run(self):
@@ -83,6 +83,7 @@ class Map(Thread):
         # use all detections NOT used to update objects to create new objects
         for ii, det in enumerate(epoch_frame):
             if detections_used[ii] == 0:
+                print("New object created...")
                 new_obj = Object(det[1], det[0], time_in_millis(), objectType = det[2])     # create object using detection
                 mutex.acquire()
                 self.object_list.append(new_obj)        # add to object_list
@@ -109,7 +110,7 @@ class Map(Thread):
         """ Returns objects passing within given bearing range of boat in given time range
 
         Inputs:
-            bearingRange -- Angle (in degrees) from bow to search within (0 to 360)
+            bearingRange -- Angle (in degrees) from bow to search within (-180 to 180)
             timeRange -- Time (in ms) to search within using current boat velocity
             rngRange -- Range (in m) from bow to search within 
         
@@ -163,8 +164,8 @@ class Map(Thread):
     def update_map(self):
         """ Updates map using boat state data"""
         mutex.acquire()
-        for object in self.object_list:
-            object.predict()
+        for obj in self.object_list:
+            obj.predict()
         mutex.release()
 
     def clear_objects(self, timeSinceLastSeen=0):

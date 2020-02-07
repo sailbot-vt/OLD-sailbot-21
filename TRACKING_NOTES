@@ -1,4 +1,4 @@
 Issues:
 
-    variance goes to 0 for bearing -- figure out why
     velocity seems to lag behind detection -- need to speed up reaction
+    need to switch to one-to-one data association :(

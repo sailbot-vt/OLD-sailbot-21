@@ -96,10 +96,12 @@ class ObjectTests(unittest.TestCase):
         self.object.update(rng, bearing)
 
         # hist score (with one detection in hist)
-        hist_score = 5 - (1/2.2222)
+#        max_val, min_val = 1.05, 0.95
+#        scale_fac = (max_val - min_val) / self.object.histLength
+#        hist_score = max_val - ((1+4.5)*scale_fac)
 
         # ensure proper behavior
-        mock_kalman_update.assert_called_with([rng, bearing], [rngRate, bearingRate], hist_score)
+        mock_kalman_update.assert_called_with([rng, bearing], [rngRate, bearingRate])
 
         mock_set_obj_state.assert_called_once_with()
         mock_find_rngRate.assert_called_once_with()
@@ -134,10 +136,10 @@ class ObjectTests(unittest.TestCase):
         self.object.update(rng, bearing, rngRate, bearingRate)
 
         # hist score (with two detections in hist)
-        hist_score = 5 - (2/2.2222)
+#        hist_score = max_val - ((2+4)*scale_fac)
 
         # ensure proper behavior
-        mock_kalman_update.assert_called_with([rng, bearing], [rngRate, bearingRate], hist_score)
+        mock_kalman_update.assert_called_with([rng, bearing], [rngRate, bearingRate])
 
         mock_set_obj_state.assert_called_once_with()
         mock_find_rngRate.assert_called_once_with()
@@ -182,17 +184,23 @@ class ObjectTests(unittest.TestCase):
         # ensure proper calls are made
         mock_predict.assert_called_once_with()
         mock_set_obj_state.assert_called_once_with()
-
+    """
     def test_calc_hist_score(self):
-        """Tests calc history score method of object"""
+        Tests calc history score method of object
         # set up hist vals and scores
-        update_hist_vals = [[1, None, None, None, None, None, None, None, None, None, None],
+        update_hist_vals = [[1, None, None, None, None, None, None, None, None, None],
                             [0, 0, 0, 1, 1, 1, 0, 1, 0, 1],
                             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
 
-        hist_scores = [5 - (1/2.2222), 5 - (5/2.2222), 5 - (10/2.2222)]
+        hist_len = 10.
+        max_val = 1.05
+        min_val = 0.95
+        scale_fac = (max_val - min_val) / hist_len
+
+        hist_scores = [max_val - ((1+4.5)*scale_fac), max_val - (5*scale_fac), max_val - (10*scale_fac)]
 
         # check for correct behavior
         for hist_vals, hist_score in zip(update_hist_vals, hist_scores):
             self.object.updateHist = hist_vals
             self.assertAlmostEqual(hist_score, self.object._calc_hist_score())
+    """

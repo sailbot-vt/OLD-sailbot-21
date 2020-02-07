@@ -23,7 +23,7 @@ class TrackerTest(Thread):
         super().__init__()
 
         """Initializes tracker test"""
-        self.update_interval = 0.5
+        self.update_interval = 1.0
 
         # initialize map
         self.map = Map(None, True)
@@ -82,14 +82,14 @@ class TrackerTest(Thread):
 #            if cmd == 's':
 #                pdb.set_trace()
 
-            # update detections
-            self.update_detections()
-
             # get tracks from map
             self.get_data()
 
             # plot tracks and detections on map
             self.plot_data()
+
+            # update detections
+            self.update_detections()
 
             sleep(self.update_interval)
 
@@ -108,8 +108,13 @@ class TrackerTest(Thread):
                 dr = rand_dr*(time_in_millis() - self.prev_time[ii])/1000
                 dtheta = (rand_dtheta)*(time_in_millis() - self.prev_time[ii])/1000
 
+            # fix wraparound
+            theta = self.epoch_frame[ii][1] + dtheta
+            if theta > 180:
+                theta = -180 + (theta % 180)
+
             # update detection with deltas
-            self.epoch_frame[ii] = (self.epoch_frame[ii][0] + dr, self.epoch_frame[ii][1] + dtheta, self.epoch_frame[ii][2])
+            self.epoch_frame[ii] = (self.epoch_frame[ii][0] + dr, theta, self.epoch_frame[ii][2])
 
         # set detections for plotting
         self.det_rng_data = [det[0] for det in self.epoch_frame]
@@ -150,6 +155,9 @@ class TrackerTest(Thread):
         """Gets data from map return_object function"""
         # get data
         data = self.map.return_objects(bearingRange=[-180, 180], rngRange=[0, 200])
+
+        if data != self.map.object_list:
+            pdb.set_trace()
 
         # split data into rng, bearing, and type_data
         self.track_rng_data = [obj.rng for obj in data]
