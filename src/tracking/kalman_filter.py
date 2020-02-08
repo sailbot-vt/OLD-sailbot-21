@@ -3,8 +3,6 @@ import filterpy.kalman as kalman
 
 from src.utils.time_in_millis import time_in_millis
 
-import pdb
-
 class KalmanFilter():
     def __init__(self, pos, vel, pos_sigma=None, vel_sigma=None):
         """Initialize kalman filter
@@ -81,11 +79,15 @@ class KalmanFilter():
         Side Effects:
             self.process_noise -- updates using range and object velocity
         """
+        process_noise = np.diag(np.ones(4))
+
         # bearing noise increases as distance from origin DECREASES (small changes in position result in large bearing changes)
         bearing_scale_fac = 0.5 + 50*(np.power(self.state[0], -2))        # arbitrary choice for numerator
-        vel_scale_fac = [1 + (abs(vel)) for vel in self.state[2:3]]
-        self.process_noise[0::2, 0::2] = np.ones((1,2)) * self.delta_t * vel_scale_fac
-        self.process_noise[1::2, 1::2] = np.ones((1,2)) * bearing_scale_fac * vel_scale_fac * self.delta_t
+        vel_scale_fac = [1 + (abs(vel)) for vel in self.state[2:4]]
+        process_noise[0::2, 0::2] *= self.delta_t * vel_scale_fac[0]
+        process_noise[1::2, 1::2] *= bearing_scale_fac * vel_scale_fac[1] * self.delta_t
+
+        self.process_noise = process_noise
 
     def _adjust_wraparound(self):
         """ 

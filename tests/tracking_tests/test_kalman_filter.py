@@ -164,3 +164,33 @@ class KalmanFilterTests(unittest.TestCase):
             # check if predicted state is close to expected
             predicted_state = predicted_states[ii]
             np.testing.assert_allclose(predicted_state, self.kalman.state)
+
+    def test_update_process_noise(self):
+        """Tests update process noise method"""
+        # set delta_t
+        dt = 2
+        self.kalman.delta_t = dt
+
+        # generate list of ranges
+        rng_list = [1.0, 4.0, 25.0, 100.0]
+
+        # generate list of velocities
+        vel_list = [(1., 1.), (2., 4.), (10., 5.)]
+
+        # iterate through values
+        for rng, vel in zip(rng_list, vel_list):
+            # set kalman state
+            self.kalman.state = np.array([rng, 0, vel[0], vel[1]])
+
+            # calculate process noise values
+            process_noise_truth = np.diag(np.ones(4))
+            rng_noise_fac = dt * (1 + vel[0])
+            bearing_noise_fac = dt * (1 + vel[1]) * (0.5 + 50*(np.power(rng, -2)))
+            process_noise_truth[0::2, 0::2] *= rng_noise_fac
+            process_noise_truth[1::2, 1::2] *= bearing_noise_fac
+
+            # call update process noise
+            self.kalman._update_process_noise()
+
+            # check for correct behavior
+            np.testing.assert_almost_equal(process_noise_truth, self.kalman.process_noise)
