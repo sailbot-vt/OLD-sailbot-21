@@ -14,8 +14,8 @@ class KalmanFilterTests(unittest.TestCase):
     """Tests the methods in KalmanFilter"""
     def setUp(self):
         """Sets up the objects needed for testing"""
-        self.init_pos = [0,0]
-        self.init_vel = [0,0]
+        self.init_pos = [0.,0.]
+        self.init_vel = [0.,0.]
         self.kalman = KalmanFilter(self.init_pos, self.init_vel)
 
     @patch('src.tracking.kalman_filter.time_in_millis')
@@ -194,3 +194,20 @@ class KalmanFilterTests(unittest.TestCase):
 
             # check for correct behavior
             np.testing.assert_almost_equal(process_noise_truth, self.kalman.process_noise)
+
+    def test_adjust_wraparound(self):
+        """Tests adjust wraparound method"""
+        # generate bearing data
+        bearing_list = [0, 45, 120., 179.999, 180.00001, 185, 250, 323, 355.23, 359.9999]
+        adjust_bearing_list = [0, 45, 120., 179.999, -179.99999, -175, -110, -37, -4.77, -0.0001]
+
+        # loop through values
+        for bearing, adjusted_bearing in zip(bearing_list, adjust_bearing_list):
+            # store bearing in kalman state
+            self.kalman.state[1] = bearing
+
+            # call adjust wraparound
+            self.kalman._adjust_wraparound()
+
+            # check for correct behavior
+            self.assertAlmostEqual(adjusted_bearing, self.kalman.state[1])

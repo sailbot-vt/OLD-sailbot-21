@@ -17,7 +17,7 @@ class KalmanFilter():
         if pos_sigma is None:
             pos_sigma = np.array([1.0, 1.0])     # arbitrary choice -- needs tuning
         if vel_sigma is None:
-            vel_sigma = np.array([3, 3])     # arbitrary choice -- needs tuning
+            vel_sigma = np.array([3., 3.])     # arbitrary choice -- needs tuning
         self.covar = np.diag(np.append(pos_sigma, vel_sigma))   # create covariance matrix (matrix of certainties of measurements)
         self.measurement_covar = np.eye(self.covar.shape[0])
 

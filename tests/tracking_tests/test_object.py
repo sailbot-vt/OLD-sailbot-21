@@ -184,23 +184,53 @@ class ObjectTests(unittest.TestCase):
         # ensure proper calls are made
         mock_predict.assert_called_once_with()
         mock_set_obj_state.assert_called_once_with()
-    """
+
     def test_calc_hist_score(self):
-        Tests calc history score method of object
+        """Tests calc history score method of object"""
         # set up hist vals and scores
         update_hist_vals = [[1, None, None, None, None, None, None, None, None, None],
                             [0, 0, 0, 1, 1, 1, 0, 1, 0, 1],
                             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
 
         hist_len = 10.
-        max_val = 1.05
-        min_val = 0.95
+        max_val = 1.
+        min_val = 0.
         scale_fac = (max_val - min_val) / hist_len
 
-        hist_scores = [max_val - ((1+4.5)*scale_fac), max_val - (5*scale_fac), max_val - (10*scale_fac)]
-
         # check for correct behavior
-        for hist_vals, hist_score in zip(update_hist_vals, hist_scores):
+        for hist_vals in update_hist_vals:
+            # calc hist score
+            num_nones = sum(el is None for el in hist_vals)
+            truth_hist_score = (sum(filter(None, hist_vals)) + (0.5 * num_nones)) * scale_fac
+
+            # set update hist
             self.object.updateHist = hist_vals
-            self.assertAlmostEqual(hist_score, self.object._calc_hist_score())
-    """
+
+            # call calc hist score
+            self.object._calc_hist_score()
+
+            # check for correct behavior
+            self.assertAlmostEqual(truth_hist_score, self.object.histScore)
+
+    @patch('src.tracking.object.np.sum')
+    def test_calc_confidence(self, mock_sum):
+        """Tests calc confidence method"""
+        # generate vals
+        hist_vals = [1., 0.9, 0., 0.75, 0]
+        sum_vals = [0., 20., 50., 100., 150.]
+
+        truth_confidence_vals = [1., 0.85, 0.25, 0.375, 0.]
+
+        # iterate through values
+        for hist_val, sum_val, truth_confidence in zip(hist_vals, sum_vals, truth_confidence_vals):
+            # set hist score
+            self.object.histScore = hist_val
+
+            # set mock val
+            mock_sum.return_value = sum_val
+
+            # call calc confidence
+            self.object._calc_confidence()
+
+            # check for correct behavior
+            self.assertAlmostEqual(truth_confidence, self.object.confidence)
