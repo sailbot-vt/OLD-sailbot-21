@@ -6,10 +6,8 @@ from pubsub import pub
 from src.tracking.object import Object
 from src.tracking.classification_types import ObjectType
 
-from src.utils.coord_conv import cartesian_to_polar, polar_to_cartesian
 from src.utils.time_in_millis import time_in_millis
 
-import numpy as np
 
 class Map(Thread):
     """
@@ -44,16 +42,15 @@ class Map(Thread):
         """Disables object updating using kalman filter"""
         self.toggle_update = False
 
-    def add_object(self, delta_x, delta_y, objectType=ObjectType.NONE):
+    def add_object(self, rng, bearing, objectType=ObjectType.NONE):
         """ Creates object for detection that is made to be added to map
 
         Inputs:
-            delta_x -- Relative x position of object from boat (in m)
-            delta_y= -- Relative y position of object from boat (in m)
+            rng -- Range to the object (in meters)
+            bearing -- Bearing to the object relative to the front of the boat (-180 < bearing < 180)
             lastSeen -- Time object was last seen (in ms)
             objectType -- Classification of object (None for unclassified object)
         """
-        rng, bearing = cartesian_to_polar(delta_x, delta_y)
         obj_index = self._find_object_in_map(rng, bearing, objectType)
         if (obj_index != None):                     # if object fits prior track that is made, add object to track
             self.object_list[obj_index].update(rng, bearing)

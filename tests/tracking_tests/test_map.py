@@ -5,16 +5,11 @@ except ImportError:
     from mock import MagicMock, patch
 
 from src.tracking.map import Map
-from src.tracking.object import Object
 from src.tracking.classification_types import ObjectType
 
-from src.utils.coord_conv import polar_to_cartesian, cartesian_to_polar
-from src.gps_point import GPSPoint
-
-import numpy as np
 from pubsub import pub
 from datetime import datetime as dt
-import time
+
 
 class MapTests(unittest.TestCase):
     """Tests the methods in Map"""
@@ -29,20 +24,20 @@ class MapTests(unittest.TestCase):
     def test_clear_objects(self, mock_find_obj):
         """Tests clear objects method of map"""
         # set up objects to add to list (arbitrary values)
-        delta_x_list = [12.512, 44]
-        delta_y_list = [-22, 81.5]
+        rng_list = [5, 44]
+        bearing_list = [-22, 81.5]
         type_list = [ObjectType.BUOY, ObjectType.BOAT]
 
         # add objects to object list 0.05s apart
         start_time = dt.now()
-        for ii, (x, y, obj_type) in enumerate(zip(delta_x_list, delta_y_list, type_list)):
+        for ii, (rng, bearing, obj_type) in enumerate(zip(rng_list, bearing_list, type_list)):
             while (abs((dt.now() - start_time).total_seconds()) < .05):     # while less than 0.05s since last object
                 pass
 
-            pub.sendMessage("object detected", delta_x = x, delta_y = y, objectType=obj_type)
+            pub.sendMessage("object detected", rng=rng, bearing=bearing, objectType=obj_type)
             start_time = dt.now()
-        
-        self.assertTrue(len(self.map.object_list) == 2)                 # assert that length of list is two 
+
+        self.assertTrue(len(self.map.object_list) == 2)                 # assert that length of list is two
 
         while (abs(dt.now() - start_time).total_seconds() < .05):     # while less than 0.05s since last object
             pass
@@ -56,17 +51,16 @@ class MapTests(unittest.TestCase):
     def test_add_object(self, mock_predict):
         """Tests add object method of map"""
         # set up objects to add to list (arbitrary values)
-        delta_x_list = [12.512, 44]
-        delta_y_list = [-22, 81.5]
+        rng_list = [5, 44]
+        bearing_list = [-22, 81.5]
         type_list = [ObjectType.BUOY, ObjectType.BOAT]
 
         # loop through objects to add
-        for ii, (x, y, obj_type) in enumerate(zip(delta_x_list, delta_y_list, type_list)):
+        for ii, (rng, bearing, obj_type) in enumerate(zip(rng_list, bearing_list, type_list)):
             # add object
-            pub.sendMessage("object detected", delta_x = x, delta_y = y, objectType=obj_type)
+            pub.sendMessage("object detected", rng=rng, bearing=bearing, objectType=obj_type)
 
-            # conver to polar and compare to truthed data
-            rng, bearing = cartesian_to_polar(x, y)
+            # Compare to truthed data
             self.assertAlmostEqual(bearing, self.map.object_list[ii].bearing)
             self.assertAlmostEqual(rng, self.map.object_list[ii].rng)
             self.assertEqual(obj_type, self.map.object_list[ii].objectType)
@@ -75,11 +69,11 @@ class MapTests(unittest.TestCase):
         with patch('src.tracking.object.Object.update') as mock_update:
             # add object
             obj_idx = 0
-            pub.sendMessage("object detected", delta_x = delta_x_list[obj_idx], 
-                                               delta_y = delta_y_list[obj_idx], objectType=type_list[obj_idx])
+            pub.sendMessage("object detected", rng=rng_list[obj_idx],
+                            bearing=bearing_list[obj_idx], objectType=type_list[obj_idx])
 
             # get rng and bearing
-            rng, bearing = cartesian_to_polar(delta_x_list[obj_idx], delta_y_list[obj_idx])
+            rng, bearing = rng_list[obj_idx], bearing_list[obj_idx]
 
             # assert that update is called and with correct parameters
             mock_update.assert_called_once_with(rng, bearing)
@@ -88,18 +82,18 @@ class MapTests(unittest.TestCase):
     def test_return_objects(self, mock_find_obj):
         """Tests return objects method of map"""
         # set up objects to add to map
-        timeRange = 5000                                       # time used to create rngRange 
+        timeRange = 5000                                       # time used to create rngRange
         rngRange = (0, self.boat_speed * (timeRange/1000))     # range of ranges to return
         bearingRange = (-30, 30)                        # range of bearings to return
-        type_list = [ObjectType.BUOY, ObjectType.BOAT, ObjectType.BUOY, 
+        type_list = [ObjectType.BUOY, ObjectType.BOAT, ObjectType.BUOY,
                      ObjectType.BUOY, ObjectType.BOAT, ObjectType.BUOY, ObjectType.NONE]    # object types
 
         # set up object lists 
         num_objects = 7
-        delta_x_list = [0] * num_objects 
-        delta_y_list = [0] * num_objects
-        
-        correct_object_list = [0] * num_objects     # create empty object list 
+        rng_list = [0] * num_objects
+        bearing_list = [0] * num_objects
+
+        correct_object_list = [0] * num_objects     # create empty object list
         num_correct_objects = 0             # counter for correct objects
 
         # loop over objects to create
@@ -107,19 +101,18 @@ class MapTests(unittest.TestCase):
             rng = (n*6) + 3     # get range in range from 3 to 39
             bearing = (n*15) - 45   # get bearing in range from -45 to 45
 
-            # convert to cart and add to list to be added to map
-            d_x, d_y = polar_to_cartesian(rng, bearing)
-            delta_x_list[n] = d_x
-            delta_y_list[n] = d_y
+            # add to list to be added to map
+            rng_list[n] = rng
+            bearing_list[n] = bearing
 
             # add object to correct object list if with rngRange and bearingRange
             if (rngRange[0] <= rng <= rngRange[1]) and (bearingRange[0] <= bearing <= bearingRange[1]):
                 correct_object_list[num_correct_objects] = [rng, bearing, type_list[n]]
                 num_correct_objects += 1
-        
+
         # add objects to map
-        for x, y, obj_type in zip(delta_x_list, delta_y_list, type_list):
-            pub.sendMessage("object detected", delta_x = x, delta_y = y, objectType=obj_type)
+        for rng, bearing, obj_type in zip(rng_list, bearing_list, type_list):
+            pub.sendMessage("object detected", rng=rng, bearing=bearing, objectType=obj_type)
 
         # get list of objects meeting conditions
         returned_objects = self.map.return_objects(bearingRange, rngRange=rngRange)
@@ -136,15 +129,15 @@ class MapTests(unittest.TestCase):
         """Tests update map method"""
         # add objects to list 
         num_objects = 2
-        delta_x_list = [12.512, 44]
-        delta_y_list = [-22, 81.5]
+        rng_list = [5, 44]
+        bearing_list = [-22, 81.5]
         type_list = [ObjectType.BUOY, ObjectType.BOAT]
-        for x, y, obj_type in zip(delta_x_list, delta_y_list, type_list):
-            pub.sendMessage("object detected", delta_x = x, delta_y = y, objectType=obj_type)
+        for rng, bearing, obj_type in zip(rng_list, bearing_list, type_list):
+            pub.sendMessage("object detected", rng=rng, bearing=bearing, objectType=obj_type)
 
         # call update_map
         self.map.update_map()
-        
+
         # check if predict was called for all objects in object_list
         self.assertEqual(mock_predict.call_count, num_objects)
 
@@ -152,8 +145,8 @@ class MapTests(unittest.TestCase):
     def test_get_buoys(self, mock_find_obj):
         """Tests get buoys method"""
         # create objects to add to map
-        delta_x_list = [12.512, 44, 60]
-        delta_y_list = [-22, 81.5, 60]
+        rng_list = [5, 44, 60]
+        bearing_list = [-22, 81.5, 60]
         type_list = [ObjectType.BUOY, ObjectType.BOAT, ObjectType.BUOY]
 
         # set up correct object list 
@@ -161,11 +154,9 @@ class MapTests(unittest.TestCase):
         num_correct_objects = 0
 
         # loop through objects and add to map
-        for x, y, obj_type in zip(delta_x_list, delta_y_list, type_list):
-            pub.sendMessage("object detected", delta_x = x, delta_y = y, objectType=obj_type)
+        for rng, bearing, obj_type in zip(rng_list, bearing_list, type_list):
+            pub.sendMessage("object detected", rng=rng, bearing=bearing, objectType=obj_type)
 
-            # get polar coords
-            rng, bearing = cartesian_to_polar(x, y)
             # add object to correct object list if is buoy
             if obj_type == ObjectType.BUOY:
                 correct_object_list[num_correct_objects] = [rng, bearing, obj_type]
@@ -185,20 +176,13 @@ class MapTests(unittest.TestCase):
         """Tests find object in map method"""
 
         # add objects to list
-        num_objects = 2
-        delta_x_list = [12.512, 44]
-        delta_y_list = [-22, 81.5]
+        rng_list = [5, 44]
+        bearing_list = [-22, 81.5]
         type_list = [ObjectType.BUOY, ObjectType.BOAT]
 
-        rng_list = [0] * num_objects
-        bearing_list = [0] * num_objects
-
         with patch('src.tracking.map.Map._find_object_in_map', return_value = None):
-            for ii, (x, y, obj_type) in enumerate(zip(delta_x_list, delta_y_list, type_list)):
-                pub.sendMessage("object detected", delta_x = x, delta_y = y, objectType=obj_type)
-
-                # get list of ranges and bearings
-                rng_list[ii], bearing_list[ii] = cartesian_to_polar(x, y)
+            for ii, (rng, bearing, obj_type) in enumerate(zip(rng_list, bearing_list, type_list)):
+                pub.sendMessage("object detected", rng=rng, bearing=bearing, objectType=obj_type)
 
         # test case for object not in map
         rng, bearing, obj_type = (0, 0, ObjectType.NONE)               # not in uncertainty range of any object
@@ -235,12 +219,13 @@ class MapTests(unittest.TestCase):
         # set value of detection coordinates
         rng = rng_list[list_idx] - (0.5*rng_uncertainty)        # arbitrary value in uncertainty range
         bearing = bearing_list[list_idx] + (0.9*bearing_uncertainty)        # arbitrary value in uncertainty range
-        
+
         # call find object in map
         obj_idx = self.map._find_object_in_map(rng, bearing, ObjectType.BOAT)
 
         # check that value is correct
         self.assertEqual(list_idx, obj_idx)
+
 
 if __name__ == "__main__":
         unittest.main()
