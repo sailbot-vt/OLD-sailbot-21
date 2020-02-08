@@ -1,12 +1,12 @@
-import numpy as np
 from src.buoy_detection.Depth_Map_Calculator import DepthMap
-from math import sin, cos, asin, atan2, pi
+import math
+from numpy import rad2deg
 
 
 def get_disparity_value(disparity_frame, x_pixel, y_pixel):
     """
 
-    *** UNUSED CURRENTLY *** TODO: Find out if this logic has an advantage over the raw disparity map
+    TODO: Find out if this logic has an advantage over the raw disparity map
 
     Gets the disparity value from the disparity matrix if it is near an edge.
     Otherwise, gets an average of disparity values from surrounding pixels.
@@ -24,52 +24,15 @@ def get_disparity_value(disparity_frame, x_pixel, y_pixel):
         print("disparity is None")
         return None
 
+    y_size, x_size = disparity_frame.shape[:2]
+
     # If the detected center pixel is near the edges, return just the disparity of that one pixel
-    if x_pixel <= 1 or y_pixel <= 1 or x_pixel >= 639 or y_pixel >= 479:
-        return disparity_frame[x_pixel][y_pixel]
+    if x_pixel <= 0 or y_pixel <= 0 or x_pixel >= x_size - 1 or y_pixel >= y_size - 1:
+        return disparity_frame[y_pixel][x_pixel]
 
     # Otherwise, return the average of the surrounding pixels for a little more accuracy
-    array = disparity_frame[x_pixel - 1: x_pixel + 1, y_pixel - 1: y_pixel + 1]
-    return sum(array) / array.size
-
-
-def get_obj_gps_location(boat_lat, boat_lon, distance, bearing):
-    """
-    Gets the predicted gps location of an object based on the current gps location,
-    angle to the object, and the distance to the object.
-
-    The math was found from here:
-    https://stackoverflow.com/questions/19352921/how-to-use-direction-angle-and-speed-to-calculate-next-times-latitude-and-longi
-
-    Inputs:
-        boat_lat -- the current latitude of the boat in radians
-        boat_lon -- the current longitude of the boat in radians
-        distance -- the predicted distance to the object in meters
-        bearing -- the bearing (angle) to the object in radians
-
-    Returns:
-         A 2-tuple containing the boat's latitude and longitude, in degrees.
-    """
-    # Earth radius in meters
-    earth_radius = 6371000
-
-    # Calculate angular distance (theta = distance / radius)
-    ang_distance = distance / earth_radius
-
-    # First attempt (might work?)
-    # obj_lat = asin(sin(boat_lat) * cos(distance) + cos(boat_lat) * sin(distance) * cos(bearing))
-    # d_lon = atan2(sin(bearing) * sin(distance) * cos(boat_lat), cos(distance) - sin(boat_lat) * sin(obj_lat))
-    # obj_lon = ((boat_lon - d_lon + pi) % 2 * pi) - pi
-    # return np.rad2deg(obj_lat), np.rad2deg(obj_lon)
-
-    # Here is another version if the previous isn't working well
-    # TODO Check math
-    lat2 = asin(sin(boat_lat) * cos(ang_distance) + cos(boat_lat) * sin(ang_distance) * cos(bearing))
-    a = atan2(sin(bearing) * sin(ang_distance) * cos(boat_lat), cos(ang_distance) - sin(boat_lat) * sin(lat2))
-    lon2 = boat_lon + a
-    lon2 = (lon2 + 3 * pi) % (2 * pi) - pi
-
-    return np.rad2deg(lat2), np.rad2deg(lon2)
+    array = disparity_frame[y_pixel - 1: y_pixel + 1, x_pixel - 1: x_pixel + 1]
+    return array.sum() / array.size
 
 
 class DistanceCalculator:
@@ -100,35 +63,47 @@ class DistanceCalculator:
             disparity_value -- The value of the disparity map that we use to calculate distance.
 
         Returns:
-            The distance in meters of the given disparity.
+            The distance in meters of the given disparity, or `math.inf` if the given disparity
+            is zero.
         """
+
+        if disparity_value == 0:
+            return math.inf
 
         return (self.baseline * self.depth_map_calculator.focal_length) / disparity_value
 
-    def get_bearing_from_pixel(self, x_pixel, real_bearing, cameras_rotation=0):
+    def get_bearing_from_pixel(self, x_pixel, cameras_rotation=0):
         """
-        Calculate the absolute bearing of an object of interest (such as a buoy) by specifying its x-coordinate in
+        Calculate the boat-centered bearing of an object of interest (such as a buoy) by specifying its x-coordinate in
         the camera frame.
 
         Inputs:
             x_pixel -- the pixel in the x direction in which we see the buoy
             real_bearing -- the real bearing of the boat as read by the airmar
-            cameras_rotation -- the rotation of the two cameras around the central axis (this is currently not
-                                implemented, so defaults to 0)
+            cameras_rotation -- the rotation of the two cameras around the central axis, in degrees.
 
         Returns:
             The predicted bearing of the buoy taking into consideration the real bearing of the boat.
         """
 
-        # TODO Verify that the image_size tuple is of the form (x_size, y_size) and not the other way around
-        distance_from_center = x_pixel - self.depth_map_calculator.image_size[0] / 2
+        # Math from https://math.stackexchange.com/questions/1320285/convert-a-pixel-displacement-to-angular-rotation
+        # x         := x-distance from center of the image in pixels (left / CCW = positive).
+        # theta     := 1/2 horizontal field of view (radians)
+        # b         := total number of pixels in x-direction.
+        #
+        # bearing = arctan(2x * tan(theta) / b)
 
-        # TODO Verify that angles actually work like this with the camera frame.
-        relative_bearing = distance_from_center * self.depth_map_calculator.pixel_degrees
+        b = self.depth_map_calculator.image_size[0]
+        x = b / 2 - x_pixel  # Left of the center is positive.
 
-        camera_bearing = real_bearing + cameras_rotation
-        new_bearing = camera_bearing + relative_bearing
+        theta = self.depth_map_calculator.hfov_rads / 2
 
-        # Calculate equivalent bearing in range [0, 360). The "+ 360" is necessary in case we begin with a negative
-        # value for `new_bearing`.
-        return ((new_bearing % 360) + 360) % 360
+        bearing_rads = math.atan(2 * x * math.tan(theta) / b)
+
+        bearing_degs = rad2deg(bearing_rads) + cameras_rotation
+
+        # Calculate equivalent bearing in range [-180, 180).
+        # Works because:
+        # We know bearing_degs + 180 should be in [0, 360), so we modulo by 360 to ensure that.
+        # Finally, we subtract 180 to correct for the +180 we added earlier.
+        return ((bearing_degs + 180) % 360) - 180

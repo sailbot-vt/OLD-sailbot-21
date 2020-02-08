@@ -60,8 +60,9 @@ depth_map:
   # The name of the stereo calibration matrix file to use.
   calibration_filename: "./tests/buoy_detection_tests/stereo_calibration.npz"
 
-  # The field of view, in degrees.
-  fov: 56
+  # The _horizontal_ field of view, in degrees.
+  # 0 < hfov < 90 degrees
+  hfov: 56
 
   # The numbers of the USB ports each camera is plugged into.
   camera_numbers: !!python/tuple [2, 3]

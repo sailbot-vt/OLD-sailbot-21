@@ -15,7 +15,7 @@ class DepthMap:
 
         # Load in variables from depth_map configuration.
         calibration_filename = config["calibration_filename"]
-        fov = config["fov"]
+        hfov = config["hfov"]
 
         # Import calibration data.
         self.calibration = None
@@ -40,9 +40,7 @@ class DepthMap:
         self.right_ymap = self.calibration["right_ymap"]
         self.right_roi = tuple(self.calibration["right_roi"])
 
-        # TODO: Explain what this is
-        self.pixel_degrees = 45 / sqrt((self.image_size[0] ^ 2 + self.image_size[1] ^ 2))
-        self.fov_rads = np.deg2rad(fov)
+        self.hfov_rads = np.deg2rad(hfov)
         self.focal_length = self.calibration["Q_matrix"][0][0]
         self.baseline = master_config["common"]["baseline"]
 
