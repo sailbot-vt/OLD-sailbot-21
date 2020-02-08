@@ -9,17 +9,17 @@ class KalmanFilter():
     def __init__(self, pos, vel, pos_sigma=None, vel_sigma=None):
         """Initialize kalman filter
         Inputs:
-            pos -- position of obejct (cartesian)
-            vel -- veloicty of obejct (cartesian)
-            pos_sigma -- uncretainty of position of obejct (cartesian)
-            vel_sigma -- uncertainty of veloicty of obejct (cartesian)
+            pos -- position of object (cartesian)
+            vel -- veloicty of object (cartesian)
+            pos_sigma -- uncretainty of position of object (cartesian)
+            vel_sigma -- uncertainty of veloicty of object (cartesian)
         """
 
         self.state = np.append(pos, vel)       # create state vector (elements are r, bear, v_r, v_bear)
         if pos_sigma is None:
-            pos_sigma = np.array([3, 3])     # arbitrary choice -- needs tuning
+            pos_sigma = np.array([0.5, 1])     # arbitrary choice -- needs tuning
         if vel_sigma is None:
-            vel_sigma = np.array([5, 5])     # arbitrary choice -- needs tuning
+            vel_sigma = np.array([1, 2])     # arbitrary choice -- needs tuning
         self.covar = np.diag(np.append(pos_sigma, vel_sigma))   # create covariance matrix (matrix of certainties of measurements)
         self.measurement_covar = np.eye(self.covar.shape[0])
 
@@ -52,9 +52,9 @@ class KalmanFilter():
     def update(self, pos, vel):
         """Update object position and filter
         Inputs:
-            pos -- position of obejct (cartesian)
-            vel -- veloicty of obejct (cartesian)
-#            hist_score -- certainty score based on object history (used as scale factor for measurement covariance) (range 1 - 1.05)
+            pos -- position of object (cartesian)
+            vel -- veloicty of object (cartesian)
+#           hist_score -- certainty score based on object history (used as scale factor for measurement covariance) (range 1 - 1.05)
         """
         measurement = np.append(pos, vel)
 
@@ -82,8 +82,8 @@ class KalmanFilter():
             self.process_noise -- updates using range
         """
         # bearing noise increases as distance from origin DECREASES (small changes in position result in large bearing changes)
-        bearing_scale_fac = 1 + np.power(self.state[0], -1)         # arbitrary choice for numerator
-        self.process_noise[1::2, 1::2] = np.ones((1,2))* bearing_scale_fac
+        bearing_scale_fac = 1 + (np.power(self.state[0], -1))        # arbitrary choice for numerator
+        self.process_noise[1::2, 1::2] = np.ones((1,2)) * bearing_scale_fac * self.delta_t
 
     def _adjust_wraparound(self):
         """ 

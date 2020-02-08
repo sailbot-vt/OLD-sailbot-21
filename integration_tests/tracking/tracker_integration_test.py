@@ -23,7 +23,7 @@ class TrackerTest(Thread):
         super().__init__()
 
         """Initializes tracker test"""
-        self.update_interval = 0.2
+        self.update_interval = 0.25
 
         # initialize map
         self.map = Map(None, True)
@@ -66,6 +66,8 @@ class TrackerTest(Thread):
         # create initial detections
         num_initial_detections = 12
         self.det_pattern_list = ['static', 'circle_CCW', 'circle_CW', 'circle_CCW_radial'] * 3
+        self.rng_rate_list = [0, 0, 0, 0.1] * 3
+        self.bearing_rate_list = [0, 1, 2, 3] * 3
         self.frame_bounds = [(10, 125), (-180, 180)]
         self.spawn_detections(num_initial_detections)
 
@@ -102,27 +104,29 @@ class TrackerTest(Thread):
         for ii in range(len(self.epoch_frame)):
             # get dt
             dt = (time_in_millis() - self.prev_time[ii]) / 1000.
+            # get rng and bearing rate
+            rng_rate, bearing_rate = self.rng_rate_list[ii], self.bearing_rate_list[ii]
             # generate deltas
             rand_dr = uniform(-0.01, 0.01)
             rand_dtheta = uniform(-0.001, 0.001)
             if self.det_pattern_list[ii] == 'circle_CCW':
                 dr = rand_dr*dt
-                dtheta = (rand_dtheta + 2)*dt                       # 2 degree bearing step, ccw
+                dtheta = (rand_dtheta + bearing_rate)*dt                       # 2 degree bearing step, ccw
                 self.prev_time[ii] = time_in_millis()
             elif self.det_pattern_list[ii] == 'circle_CW':
                 dr = rand_dr*dt
-                dtheta = (rand_dtheta - 2)*dt                       # 2 degree bearing step, ccw
+                dtheta = (rand_dtheta - bearing_rate)*dt                       # 2 degree bearing step, ccw
                 self.prev_time[ii] = time_in_millis()
             elif self.det_pattern_list[ii] == 'circle_CCW_radial':
-                dr = (rand_dr+0.1) *dt
-                dtheta = (rand_dtheta + 2)*dt                       # 2 degree bearing step, ccw
+                dr = (rand_dr+rng_rate) *dt
+                dtheta = (rand_dtheta + bearing_rate)*dt                       # 2 degree bearing step, ccw
                 self.prev_time[ii] = time_in_millis()
             elif self.det_pattern_list[ii] == 'circle_CW_radial':
-                dr = (rand_dr+0.1)*dt
-                dtheta = (rand_dtheta - 2)*dt                       # 2 degree bearing step, ccw
+                dr = (rand_dr+rng_rate)*dt
+                dtheta = (rand_dtheta - bearing_rate)*dt                       # 2 degree bearing step, ccw
             elif self.det_pattern_list[ii] == 'static':
                 dr = rand_dr*dt
-                dtheta = (rand_dtheta)*(time_in_millis() - self.prev_time[ii])/1000
+                dtheta = (rand_dtheta)*dt
 
             # fix wraparound
             theta = self.epoch_frame[ii][1] + dtheta
@@ -142,7 +146,8 @@ class TrackerTest(Thread):
             pub.sendMessage('object(s) detected', epoch_frame = self.epoch_frame, frame_bounds = self.frame_bounds)
 
         for ii, (det_rng, det_bearing) in enumerate(zip(self.det_rng_data, self.det_bearing_data)):
-            print("Detection {}: {}".format(ii, (det_rng, det_bearing)))
+#            print("Detection {}: {}".format(ii, (det_rng, det_bearing)))
+            pass
 
     def spawn_detections(self, n_dets):
         """
@@ -170,19 +175,16 @@ class TrackerTest(Thread):
         # get data
         data = self.map.return_objects(bearingRange=[-180, 180], rngRange=[0, 200])
 
-        if data != self.map.object_list:
-            pdb.set_trace()
-
         # split data into rng, bearing, and type_data
         self.track_rng_data = [obj.rng for obj in data]
         self.track_bearing_data = [obj.bearing for obj in data]
         self.track_type_data = [obj.objectType for obj in data]
+        self.track_conf_data = [obj.confidence for obj in data]
 
     def plot_data(self):
         """Updates plot using data"""
         # update tracks data
-#        self.tracks.set_offsets([*zip(self._deg_2_rad(self.track_bearing_data), self.track_rng_data)])
-        self.draw_covar_ellipses(self._deg_2_rad(self.track_bearing_data), self.track_rng_data)
+        self.draw_covar_ellipses(self._deg_2_rad(self.track_bearing_data), self.track_rng_data, self.track_conf_data)
 
         # update detections data
         self.dets.set_offsets([*zip(self._deg_2_rad(self.det_bearing_data), self.det_rng_data)])
@@ -198,15 +200,16 @@ class TrackerTest(Thread):
 
         self.fig.canvas.flush_events()
 
-        for ii, (track_rng, track_bearing) in enumerate(zip(self.track_rng_data, self.track_bearing_data)):
-            print("Track {}: {}".format(ii, (track_rng, track_bearing)))
+        for ii, track_conf in enumerate(self.track_conf_data):
+            print("Track {}: confidence -- {}".format(ii, track_conf))
 
-    def draw_covar_ellipses(self, track_bearing_data, track_rng_data):
+    def draw_covar_ellipses(self, track_bearing_data, track_rng_data, track_conf_data):
         """
         Draws covariance ellipses for each track
         Inputs:
             track_bearing_data -- list of track bearings (in rad)
             track_rng_data -- list of track ranges
+            track_conf_data -- list of track confidences
         Side Effects:
             self.covar_ellipses -- sets list of covar ellipses to new origin, size
         """
@@ -219,17 +222,26 @@ class TrackerTest(Thread):
         
         # generate ellipses for each track
         # NOTE: current method of getting covariances is a bit of hack... should create API to get covars in future
-        for ii, (track_bearing, track_rng) in enumerate(zip(track_bearing_data, track_rng_data)):
+        for ii, (track_bearing, track_rng, track_conf) in enumerate(zip(track_bearing_data, track_rng_data, track_conf_data)):
             ellipse_center = (track_bearing, track_rng)
             ellipse_rng_radius = self.map.object_list[ii].kalman.covar[0, 0]
             ellipse_bearing_radius = np.radians(self.map.object_list[ii].kalman.covar[1, 1])
+            ellipse_conf = track_conf
+            if ellipse_conf > 0.7:
+                color = 'green'
+            elif ellipse_conf > 0.3:
+                color = 'blue'
+            else:
+                color = 'red'
+
+            alpha = 0.4
 
             self.covar_ellipses[ii] = Ellipse(ellipse_center, ellipse_bearing_radius, ellipse_rng_radius, \
-                                              angle = np.radians(track_bearing), fill = False)
+                                              angle = np.radians(track_bearing), alpha = alpha, color = color)
 
             self.polar.add_artist(self.covar_ellipses[ii])
 
-            print("Ellipse {}: {}".format(ii, (ellipse_rng_radius, ellipse_bearing_radius)))
+#            print("Ellipse {}: {}".format(ii, (ellipse_rng_radius, ellipse_bearing_radius)))
 
     def _deg_2_rad(self, data):
         """Converts degrees to radians for plotting"""

@@ -96,14 +96,9 @@ class Map(Thread):
         # iterate through objects in track
         mutex.acquire()
         for ii, obj in enumerate(self.object_list):
-            num_updates = sum(filter(None, obj.updateHist))
-            expected_updates = sum((x is not None for x in obj.updateHist))
-
-            # prune tracks w/ updates in <= 0.4 * expected updates
-            if num_updates <= (0.4 * expected_updates) and expected_updates >= 4:
+            if obj.confidence < 0.1:
                 print("Deleting object {}".format(ii))
                 del self.object_list[ii]
-
         mutex.release()
 
     def return_objects(self, bearingRange=[-30,30], timeRange=[0,5000], rngRange=None):
@@ -117,7 +112,7 @@ class Map(Thread):
         Returns:
             return_list -- list made up of objects fitting criteria specified
         """
-        _max_objs = 10               # Maximum number of objects to output (arbitrary choice)
+        _max_objs = 20               # Maximum number of objects to output (arbitrary choice)
         return_list = [0] * _max_objs
 
         if rngRange == None:
@@ -128,7 +123,7 @@ class Map(Thread):
         ii = 0
         mutex.acquire()
         for obj in self.object_list:
-            if ii >= 10:
+            if ii >= _max_objs:
                 break
             if (rngRange[0] <= obj.rng <= rngRange[1] and (bearingRange[0] <= obj.bearing <= bearingRange[1])):
                 return_list[ii] = obj
@@ -146,13 +141,13 @@ class Map(Thread):
         """
 
         # Create output array
-        _max_objs = 5               # Maximum number of objects to output (arbitrary choice)
+        _max_objs = 10               # Maximum number of objects to output (arbitrary choice)
         return_list = [0] * _max_objs
 
         num_buoys = 0
         mutex.acquire()
         for ii, obj in enumerate(self.object_list):
-            if num_buoys >= 5:
+            if num_buoys >= _max_objs:
                 break
             if obj.objectType == ObjectType.BUOY:
                 return_list[num_buoys] = obj

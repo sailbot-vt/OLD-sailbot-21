@@ -1,4 +1,3 @@
 Issues:
 
-    velocity seems to lag behind detection -- need to speed up reaction
-    need to switch to one-to-one data association :(
+    include look direction in simulation (and VISUALIZE)

@@ -27,6 +27,7 @@ class Object():
         self.histLength = 10
         self.updateHist = [None] * self.histLength        # list to store if track updates for past <histLength> update cycles
         self.histScore = 0                                # history score of object
+        self.confidence = 0                               # confidence score of obj
 
         self.prevRng = 0
         self.prevBearing = 0
@@ -65,7 +66,7 @@ class Object():
         self.prevBearing = self.bearing
 
         # set hist score
-        self.hist_score = self._calc_hist_score()
+        self._calc_hist_score()
 
     def predict(self):
         """
@@ -73,9 +74,12 @@ class Object():
         Side Effects:
             Updates self.rng with predicted range
             Updates self.bearing with predicted bearing
+            Updates self.confidence
         """
         self.kalman.predict()
         self._set_object_state()
+
+        self._calc_confidence()
         
     def _set_object_state(self):
         """
@@ -109,10 +113,27 @@ class Object():
         """
         Calculates history score (/ obj certainty) for use by kalman filter update
         Returns:
-            hist_score -- object certainty score (scaled from 0.95 - 1.05)
+            hist_score -- object certainty score (scaled from 0.0 - 1.0)
         """
-        max_val = 1.05
-        min_val = 0.95
+        min_val = 0.
         num_nones = sum(el is None for el in self.updateHist)
-        scale_fac = (max_val - min_val) / (self.histLength)
-        return max_val - ((sum(filter(None, self.updateHist)) + (0.5 * num_nones)) * scale_fac)
+        scale_fac = 1. / self.histLength
+        self.histScore = (sum(filter(None, self.updateHist)) + (0.5 * num_nones)) * scale_fac
+
+    def _calc_confidence(self):
+        """
+        Calculates confidence score based on magnitude of covariance matrix and hist score
+        Side Effects:
+            self.confidence -- updates confidence score
+        """
+        # get covar magnitude 
+        covar_mag = np.sum(self.kalman.covar)
+
+        # map to 0-1 range (set confidence to 0 if magnitude greater than 100)
+        if covar_mag > 100:
+            self.confidence = 0
+            return
+        else:
+            scaled_covar_mag = (100 - covar_mag) / 100.
+
+        self.confidence = (self.histScore + scaled_covar_mag) / 2. 
