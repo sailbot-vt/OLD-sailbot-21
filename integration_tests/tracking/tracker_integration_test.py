@@ -31,7 +31,7 @@ class TrackerTest(Thread):
         # create polar plot
         self.fig = plt.figure()
         self.polar = self.fig.add_subplot(111, projection='polar')
-        self.polar.set_ylim(0, 150)
+        self.polar.set_ylim(0, 200)
         self.polar.grid(True)
         self.polar.set_title('Tracker Map')
 
@@ -57,19 +57,34 @@ class TrackerTest(Thread):
         self.polar.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
                   fancybox=True, shadow=True, ncol=5)
 
+        # color plot grey
+        self.polar.set_facecolor('#F5F5F5')
+        self.polar.set_alpha(0.2)
+
         # show plot (and set up blitting)
         plt.show(block=False)
         plt.pause(0.01)
         self.fig.canvas.draw()
+
+        input('Make plot full screen then press enter')
         self.background = self.fig.canvas.copy_from_bbox(self.polar.bbox)
 
         # create initial detections
-        num_initial_detections = 12
-        self.det_pattern_list = ['static', 'circle_CCW', 'circle_CW', 'circle_CCW_radial'] * 3
-        self.rng_rate_list = [0, 0, 0, 0.1] * 3
-        self.bearing_rate_list = [0, 1, 2, 3] * 3
-        self.frame_bounds = [(10, 125), (-180, 180)]
+        num_initial_detections = 20
+        self.det_pattern_list = ['static', 'circle_CCW', 'circle_CW', 'circle_CCW_radial'] * 5
+        self.rng_rate_list = [0, 0, 0, 0.1] * 5
+        self.bearing_rate_list = [0, 1, 2, 3] * 5
+        self.frame_bounds = [(10, 175), (-180, 180)]
         self.spawn_detections(num_initial_detections)
+
+        # set look frame parameters
+        self.look_frame = 'aperture'     #'full'
+        self.look_rng = (0, 150)        # initial (and perm) range range of look aperture
+        self.look_bearing = (-70, 70)   # initial bearing range of look aperture
+        self.look_sweep = (-30, 30)     # sweeps so that the center of the aperture goes between these two points
+        self.pan_direction = 1          # direction of pan (+1 = CW, -1 = CCW)
+        self.look_apertures = []
+        self.num_apertures = 1
 
         # start tracker
         self.map.start()
@@ -95,6 +110,10 @@ class TrackerTest(Thread):
 
             # update detections
             self.update_detections(loop_counter)
+
+            if self.look_frame == 'aperture':
+                # move aperture
+                self.pan_aperture()
 
             loop_counter = (loop_counter + 1) % 5
 
@@ -141,9 +160,19 @@ class TrackerTest(Thread):
         self.det_bearing_data = [det[1] for det in self.epoch_frame]
         self.det_type_data = [det[2] for det in self.epoch_frame]
 
+        if self.look_frame == 'aperture':
+            # trim epoch frame to objects in view look aperture
+            idx_list = [None] * len(self.epoch_frame)
+            for ii, obj in enumerate(self.epoch_frame):
+                if self.look_rng[0] <= obj[0] <= self.look_rng[1] and \
+                   self.look_bearing[0] <= obj[1] <= self.look_bearing[1]:
+                    idx_list[ii] = 1
+
+            epoch_frame = [obj for (ii, obj) in zip(idx_list, self.epoch_frame) if ii == 1 ]
+
         if send_counter == 0:
             # update map with detections
-            pub.sendMessage('object(s) detected', epoch_frame = self.epoch_frame, frame_bounds = self.frame_bounds)
+            pub.sendMessage('object(s) detected', epoch_frame = epoch_frame, frame_bounds = self.frame_bounds)
 
         for ii, (det_rng, det_bearing) in enumerate(zip(self.det_rng_data, self.det_bearing_data)):
 #            print("Detection {}: {}".format(ii, (det_rng, det_bearing)))
@@ -186,6 +215,9 @@ class TrackerTest(Thread):
         # update tracks data
         self.draw_covar_ellipses(self._deg_2_rad(self.track_bearing_data), self.track_rng_data, self.track_conf_data)
 
+        # update look aperture
+        self.draw_look_aperture()
+
         # update detections data
         self.dets.set_offsets([*zip(self._deg_2_rad(self.det_bearing_data), self.det_rng_data)])
 
@@ -196,12 +228,63 @@ class TrackerTest(Thread):
         for ellipse in self.covar_ellipses:
             self.polar.draw_artist(ellipse)
         self.polar.draw_artist(self.dets)
+
+        # draw look aperture
+        for line in self.look_apertures:
+            self.polar.draw_artist(line[0])
+
         self.fig.canvas.blit(self.polar.bbox)
 
         self.fig.canvas.flush_events()
 
         for ii, track_conf in enumerate(self.track_conf_data):
             print("Track {}: confidence -- {}".format(ii, track_conf))
+
+    def pan_aperture(self):
+        """
+        Pans look aperture
+        Side effects:
+            self.look_bearing -- pans look bearing (at 1 deg per step)
+        """
+        bearing_rate = 1
+        aperture_center = sum(self.look_bearing) / 2.
+        new_ap_center = aperture_center + (bearing_rate * self.pan_direction)
+
+        if new_ap_center > self.look_sweep[1]:
+            new_ap_center = self.look_sweep[1] - (new_ap_center % self.look_sweep[1])
+            self.pan_direction *= -1
+        elif new_ap_center < self.look_sweep[0]:
+            new_ap_center = self.look_sweep[0] - (new_ap_center % self.look_sweep[0])
+            self.pan_direction *= -1
+
+        diff = new_ap_center - aperture_center
+        self.look_bearing = tuple(bear + diff for bear in self.look_bearing[:])
+
+    def draw_look_aperture(self):
+        """
+        Draws look aperture
+        Side Effects:
+            self.look_apertures -- changes look aperture to reflect new look direction
+        """
+        # remove old aperture from plot
+        for artist in self.look_apertures:
+            self.polar.lines.remove(artist[0])
+
+        # re-init look_apertures list
+        self.look_apertures = [0] * 3
+
+        # create wedge
+        rad_look_bearing = self._deg_2_rad(self.look_bearing)
+        self.look_apertures[0] = self.polar.plot([rad_look_bearing[0]] * 2, [self.look_rng[0], self.look_rng[1]], \
+                                                  '--', color = 'g', alpha = 0.6)
+        self.look_apertures[1] = self.polar.plot([rad_look_bearing[1]] * 2, [self.look_rng[0], self.look_rng[1]], \
+                                                  '--', color = 'g', alpha = 0.6)
+        bearing_sweep = np.arange(rad_look_bearing[0], rad_look_bearing[1], (rad_look_bearing[1] - rad_look_bearing[0]) / 100.)
+        self.look_apertures[2] = self.polar.plot(bearing_sweep, [self.look_rng[1]] * 100, \
+                                                  '--', color = 'g', alpha = 0.6)
+
+        for aperture in self.look_apertures:
+            self.polar.add_artist(aperture[0])
 
     def draw_covar_ellipses(self, track_bearing_data, track_rng_data, track_conf_data):
         """
