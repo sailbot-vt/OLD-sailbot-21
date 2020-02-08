@@ -39,7 +39,7 @@ class TrackerTest(Thread):
 #        self.track_rng_data = [0]
 #        self.track_bearing_data = [0]
 #        self.track_type_data = [0]
-#        self.tracks = self.polar.scatter(self.track_rng_data, self.track_bearing_data, c='#4444ff', label='Tracks', s=3)
+#        self.tracks = self.polar.scatter(self.track_rng_data, self.track_bearing_data, marker='+', label='Tracks', s=3)
         self.covar_ellipses = []
 
         # set up rng, bearing, and type data lists for tracks
@@ -70,10 +70,10 @@ class TrackerTest(Thread):
         self.background = self.fig.canvas.copy_from_bbox(self.polar.bbox)
 
         # create initial detections
-        num_initial_detections = 20
-        self.det_pattern_list = ['static', 'circle_CCW', 'circle_CW', 'circle_CCW_radial'] * 5
-        self.rng_rate_list = [0, 0, 0, 0.1] * 5
-        self.bearing_rate_list = [0, 1, 2, 3] * 5
+        num_initial_detections = 18
+        # patterns: static, circle_CCW, circle_CW, circle_CCW_radial_out, circle_CW_radial_out, radial_out
+        self.rng_rate_list = [0, 0, 0, 0.05, 0.05, 0.075] * 3
+        self.bearing_rate_list = [0, 0.0375, -0.0375, 0.025, -0.025, 0] * 3
         self.frame_bounds = [(10, 175), (-180, 180)]
         self.spawn_detections(num_initial_detections)
 
@@ -85,6 +85,10 @@ class TrackerTest(Thread):
         self.pan_direction = 1          # direction of pan (+1 = CW, -1 = CCW)
         self.look_apertures = []
         self.num_apertures = 1
+
+        # detection parameters
+        self.detect_mode = 'regular' #'constant' #'random'
+        self.detect_probability = 0.6
 
         # start tracker
         self.map.start()
@@ -115,7 +119,7 @@ class TrackerTest(Thread):
                 # move aperture
                 self.pan_aperture()
 
-            loop_counter = (loop_counter + 1) % 5
+            loop_counter = (loop_counter + 1) % 4
 
     def update_detections(self, send_counter):
         """Updates detections by random dr and dtheta"""
@@ -125,54 +129,61 @@ class TrackerTest(Thread):
             dt = (time_in_millis() - self.prev_time[ii]) / 1000.
             # get rng and bearing rate
             rng_rate, bearing_rate = self.rng_rate_list[ii], self.bearing_rate_list[ii]
+
+            # adjust bearing rate based on distance from origin
+            bearing_rate /= 0.5* self.epoch_frame[ii][0]
+
             # generate deltas
             rand_dr = uniform(-0.01, 0.01)
             rand_dtheta = uniform(-0.001, 0.001)
-            if self.det_pattern_list[ii] == 'circle_CCW':
-                dr = rand_dr*dt
-                dtheta = (rand_dtheta + bearing_rate)*dt                       # 2 degree bearing step, ccw
-                self.prev_time[ii] = time_in_millis()
-            elif self.det_pattern_list[ii] == 'circle_CW':
-                dr = rand_dr*dt
-                dtheta = (rand_dtheta - bearing_rate)*dt                       # 2 degree bearing step, ccw
-                self.prev_time[ii] = time_in_millis()
-            elif self.det_pattern_list[ii] == 'circle_CCW_radial':
-                dr = (rand_dr+rng_rate) *dt
-                dtheta = (rand_dtheta + bearing_rate)*dt                       # 2 degree bearing step, ccw
-                self.prev_time[ii] = time_in_millis()
-            elif self.det_pattern_list[ii] == 'circle_CW_radial':
-                dr = (rand_dr+rng_rate)*dt
-                dtheta = (rand_dtheta - bearing_rate)*dt                       # 2 degree bearing step, ccw
-            elif self.det_pattern_list[ii] == 'static':
-                dr = rand_dr*dt
-                dtheta = (rand_dtheta)*dt
+            
+            dr = (rand_dr + rng_rate) * dt
+            dtheta = (rand_dtheta + bearing_rate) * dt
 
             # fix wraparound
             theta = self.epoch_frame[ii][1] + dtheta
+            rng = self.epoch_frame[ii][0] + dr
             if theta > 180:
                 theta = -180 + (theta % 180)
 
+            if rng < 0:
+                rng *= -1
+                theta %= -180
+
             # update detection with deltas
-            self.epoch_frame[ii] = (self.epoch_frame[ii][0] + dr, theta, self.epoch_frame[ii][2])
+            self.epoch_frame[ii] = (rng, theta, self.epoch_frame[ii][2])
 
         # set detections for plotting
         self.det_rng_data = [det[0] for det in self.epoch_frame]
         self.det_bearing_data = [det[1] for det in self.epoch_frame]
         self.det_type_data = [det[2] for det in self.epoch_frame]
 
+        idx_list = [1] * len(self.epoch_frame)
+
         if self.look_frame == 'aperture':
             # trim epoch frame to objects in view look aperture
-            idx_list = [None] * len(self.epoch_frame)
             for ii, obj in enumerate(self.epoch_frame):
-                if self.look_rng[0] <= obj[0] <= self.look_rng[1] and \
-                   self.look_bearing[0] <= obj[1] <= self.look_bearing[1]:
-                    idx_list[ii] = 1
+                if not self.look_rng[0] <= obj[0] <= self.look_rng[1] or \
+                   not self.look_bearing[0] <= obj[1] <= self.look_bearing[1]:
+                    idx_list[ii] = 0
 
-            epoch_frame = [obj for (ii, obj) in zip(idx_list, self.epoch_frame) if ii == 1 ]
+        if self.detect_mode == 'random':
+            # trim epoch frame using randint (to determine whether or not to send data)
+            for ii in range(len(idx_list)):
+                if randint(0, 9) >= (self.detect_probability * 10):
+                    idx_list[ii] = 0
 
-        if send_counter == 0:
-            # update map with detections
-            pub.sendMessage('object(s) detected', epoch_frame = epoch_frame, frame_bounds = self.frame_bounds)
+        elif self.detect_mode == 'regular':
+            if send_counter != 0:
+                idx_list = [0] * len(idx_list)
+
+        elif self.detect_mode == 'constant':
+            pass
+
+        epoch_frame = [obj for (ii, obj) in zip(idx_list, self.epoch_frame) if ii == 1 ]
+
+        # update map with detections
+        pub.sendMessage('object(s) detected', epoch_frame = epoch_frame, frame_bounds = self.frame_bounds)
 
         for ii, (det_rng, det_bearing) in enumerate(zip(self.det_rng_data, self.det_bearing_data)):
 #            print("Detection {}: {}".format(ii, (det_rng, det_bearing)))
@@ -239,14 +250,16 @@ class TrackerTest(Thread):
 
         for ii, track_conf in enumerate(self.track_conf_data):
             print("Track {}: confidence -- {}".format(ii, track_conf))
+        print("Track List Length: {}".format(len(self.track_conf_data)))
+        print('-------------------------------------------------------')
 
     def pan_aperture(self):
         """
         Pans look aperture
         Side effects:
-            self.look_bearing -- pans look bearing (at 1 deg per step)
+            self.look_bearing -- pans look bearing (at 0.5 deg per step)
         """
-        bearing_rate = 1
+        bearing_rate = 0.5
         aperture_center = sum(self.look_bearing) / 2.
         new_ap_center = aperture_center + (bearing_rate * self.pan_direction)
 

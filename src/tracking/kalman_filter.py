@@ -9,17 +9,17 @@ class KalmanFilter():
     def __init__(self, pos, vel, pos_sigma=None, vel_sigma=None):
         """Initialize kalman filter
         Inputs:
-            pos -- position of object (cartesian)
-            vel -- veloicty of object (cartesian)
-            pos_sigma -- uncretainty of position of object (cartesian)
-            vel_sigma -- uncertainty of veloicty of object (cartesian)
+            pos -- position of object (polar)
+            vel -- velocity of object (polar)
+            pos_sigma -- uncertainty of position of object (polar)
+            vel_sigma -- uncertainty of veloicty of object (polar)
         """
 
         self.state = np.append(pos, vel)       # create state vector (elements are r, bear, v_r, v_bear)
         if pos_sigma is None:
-            pos_sigma = np.array([0.5, 1])     # arbitrary choice -- needs tuning
+            pos_sigma = np.array([1.0, 1.0])     # arbitrary choice -- needs tuning
         if vel_sigma is None:
-            vel_sigma = np.array([1, 2])     # arbitrary choice -- needs tuning
+            vel_sigma = np.array([3, 3])     # arbitrary choice -- needs tuning
         self.covar = np.diag(np.append(pos_sigma, vel_sigma))   # create covariance matrix (matrix of certainties of measurements)
         self.measurement_covar = np.eye(self.covar.shape[0])
 
@@ -77,13 +77,15 @@ class KalmanFilter():
 
     def _update_process_noise(self):
         """
-        Updates process noise using distance from origin of object
+        Updates process noise using distance from origin of object and velocity of obj
         Side Effects:
-            self.process_noise -- updates using range
+            self.process_noise -- updates using range and object velocity
         """
         # bearing noise increases as distance from origin DECREASES (small changes in position result in large bearing changes)
-        bearing_scale_fac = 1 + (np.power(self.state[0], -1))        # arbitrary choice for numerator
-        self.process_noise[1::2, 1::2] = np.ones((1,2)) * bearing_scale_fac * self.delta_t
+        bearing_scale_fac = 0.5 + 50*(np.power(self.state[0], -2))        # arbitrary choice for numerator
+        vel_scale_fac = [1 + (abs(vel)) for vel in self.state[2:3]]
+        self.process_noise[0::2, 0::2] = np.ones((1,2)) * self.delta_t * vel_scale_fac
+        self.process_noise[1::2, 1::2] = np.ones((1,2)) * bearing_scale_fac * vel_scale_fac * self.delta_t
 
     def _adjust_wraparound(self):
         """ 

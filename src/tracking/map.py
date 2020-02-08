@@ -112,7 +112,7 @@ class Map(Thread):
         Returns:
             return_list -- list made up of objects fitting criteria specified
         """
-        _max_objs = 20               # Maximum number of objects to output (arbitrary choice)
+        _max_objs = 25               # Maximum number of objects to output (arbitrary choice)
         return_list = [0] * _max_objs
 
         if rngRange == None:
