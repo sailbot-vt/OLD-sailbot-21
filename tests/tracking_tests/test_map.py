@@ -14,6 +14,7 @@ import numpy as np
 from datetime import datetime as dt
 from time import sleep
 
+
 class MapTests(unittest.TestCase):
     """Tests the methods in Map"""
     def setUp(self):
