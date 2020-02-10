@@ -11,6 +11,7 @@ from pubsub import pub
 from datetime import datetime as dt
 
 
+
 class MapTests(unittest.TestCase):
     """Tests the methods in Map"""
     def setUp(self):

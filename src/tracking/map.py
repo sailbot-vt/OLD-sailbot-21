@@ -30,7 +30,7 @@ class Map(Thread):
     def run(self):
         """ Continuously updates objects in object list using Kalman filter prediction"""
         while True:
-            if toggle_update:
+            if self.toggle_update:
                 self.update_map()
                 sleep(self.update_interval)
 
