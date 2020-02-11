@@ -5,6 +5,8 @@ from pubsub import pub
 
 from src.tracking.object import Object
 from src.tracking.classification_types import ObjectType
+from src.tracking.pdaf import joint_pdaf
+
 
 from src.utils.time_in_millis import time_in_millis
 
@@ -18,21 +20,21 @@ class Map(Thread):
     def __init__(self, boat, toggle_update):
         """ Initializes Map (done on startup) """
         super().__init__()
-        pub.subscribe(self.add_object, "object detected")
+        pub.subscribe(self.smooth_frame, "object(s) detected")
 
         self.boat = boat
         self.object_list = []
 
-        self.update_interval = 1
+        self.update_interval = 0.5
         self.toggle_update = toggle_update
         self.old_position = self.boat.current_position()
 
     def run(self):
         """ Continuously updates objects in object list using Kalman filter prediction"""
-        while True:
-            if toggle_update:
-                self.update_map()
-                sleep(self.update_interval)
+        while self.toggle_update:
+            self.update_map()
+            self.prune_objects()
+            sleep(self.update_interval)
 
     def enable_update(self):
         """Enables object updating using kalman filter"""
@@ -42,22 +44,48 @@ class Map(Thread):
         """Disables object updating using kalman filter"""
         self.toggle_update = False
 
-    def add_object(self, delta_x, delta_y, objectType=ObjectType.NONE):
-        """ Creates object for detection that is made to be added to map
+    def smooth_frame(self, epoch_frame, frame_bounds):
+        """
+        Updates map using observations from object list input
 
         Inputs:
-            delta_x -- Relative x position of object from boat (in m)
-            delta_y= -- Relative y position of object from boat (in m)
-            lastSeen -- Time object was last seen (in ms)
-            objectType -- Classification of object (None for unclassified object)
+            epoch_frame  -- list containing rng, bearing, and object type for each detection in epoch
+            frame_bounds -- tuple of lists containing range and bearing bounds
+
+        Side Effects:
+            object_list -- Updates object list using data from frame (updates or creates new objects)
         """
-        rng, bearing = cartesian_to_polar(delta_x, delta_y)
-        obj_index = self._find_object_in_map(rng, bearing, objectType)
-        if (obj_index != None):                     # if object fits prior track that is made, add object to track
-            self.object_list[obj_index].update(rng, bearing)
-        else:
-            new_object = Object(bearing, rng, time_in_millis(), objectType=objectType)
-            self.object_list.append(new_object)
+        # trim object list to only include tracks with frame bounds
+        trimmed_object_list = self.return_objects(bearingRange = frame_bounds[1], rngRange = frame_bounds[0])
+
+        # generate gate list
+        gate_list = [self._generate_obj_gate(obj) for obj in trimmed_object_list]
+
+        # get update list from joint pdaf
+        update_list, detections_used = joint_pdaf(trimmed_object_list, gate_list, epoch_frame)
+
+        for obj, update in zip(trimmed_object_list, update_list):
+            # update objects
+            if update is not None:
+                obj.update(update[0], update[1])
+
+        # use all detections NOT used to update objects to create new objects
+        for ii, det in enumerate(epoch_frame):
+            if detections_used[ii] == 0:
+                new_obj = Object(det[1], det[0], time_in_millis(), objectType = det[2])     # create object using detection
+                self.object_list.append(new_obj)        # add to object_list
+
+    def prune_objects(self):
+        """
+        Prunes objects in object list
+        """
+        # iterate through objects in track
+        for ii, obj in enumerate(self.object_list):
+            num_updates = sum(filter(None, obj.updateHist))
+
+            # prune tracks w/ updates in <= 0.4 * expected updates
+            if num_updates <= (0.4 * obj.histLength):
+                del self.object_list[ii]
 
     def return_objects(self, bearingRange=[-30,30], timeRange=[0,5000], rngRange=None):
         """ Returns objects passing within given bearing range of boat in given time range
@@ -131,36 +159,16 @@ class Map(Thread):
         for index in sorted(del_list, reverse=True):
             del self.object_list[index]
 
-    def _find_object_in_map(self, rng, bearing, obj_type):
-        """Finds if object exists in map and returns object index if true, otherwise returns None
-        Inputs:
-            rng -- range of object detected
-            bearing -- bearing of object detected
-            obj_type -- type of object detected
-        Returns:
-            object_index -- index of object that matches track, none if no object matches
+    def _generate_obj_gate(self, obj):
         """
+        Generates tuple containing gate around object
+        Inputs:
+            obj -- object to create gate around
+        Returns:
+            gate -- tuple containing range range, bearing range, and allowable object types
+        """
+        rng_gate = (obj.rng - obj.kalman.covar[0,0], obj.rng + obj.kalman.covar[0, 0])
+        bearing_gate = (obj.bearing - obj.kalman.covar[1,1], obj.bearing + obj.kalman.covar[1, 1])
+        type_gate = (ObjectType.NONE, obj.objectType)
 
-        # init x and y ranges
-        rng_range = [0] * 2
-        bearing_range = [0] * 2
-
-        # search through objects in object list
-        for ii, obj in enumerate(self.object_list):
-            # get newest prediction for object
-            obj.predict()
-            
-            # find range around objects position
-            rng_range[0] = obj.kalman.state[0] - obj.kalman.covar[0,0]
-            rng_range[1] = obj.kalman.state[0] + obj.kalman.covar[0,0]
-
-            bearing_range[0] = obj.kalman.state[1] - obj.kalman.covar[1,1]
-            bearing_range[1] = obj.kalman.state[1] + obj.kalman.covar[1,1]
-
-            # if detection is in uncertainty range of object and is same type (or unknown type)
-            if (rng_range[0] <= rng <= rng_range[1]) and (bearing_range[0] <= bearing <= bearing_range[1]) and \
-                                                   ((obj_type == obj.objectType) or (obj_type == ObjectType.NONE)):
-
-                return ii
-
-        return None
+        return (rng_gate, bearing_gate, type_gate)
