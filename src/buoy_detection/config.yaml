@@ -51,16 +51,16 @@ calibration:
   image_extension: "jpg"
 
   # The name of the stereo calibration matrix output file.
-  calibration_export_filename: "./src/buoy_detection/stereo_calibration.npz"
+  calibration_export_filename: "./src/buoy_detection/data/stereo_calibration.npz"
 
   # The name of the projection / rectification matrix output file.
-  projection_export_filename: "./src/buoy_detection/projection_matrices.npz"
+  projection_export_filename: "./src/buoy_detection/data/projection_matrices.npz"
 
 
 depth_map:
 
   # The name of the stereo calibration matrix file to use.
-  calibration_filename: "stereo_calibration.npz"
+  calibration_filename: "./src/buoy_detection/data/stereo_calibration.npz"
 
   # The _horizontal_ field of view, in degrees.
   # 0 < hfov < 90 degrees

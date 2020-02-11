@@ -1,120 +1,127 @@
-from threading import Thread
+"""
+buoy_detector.py
+Evan Allen - SailBOT Buoy Detection 2019-2020
+Adapted from Wyatt Lansford's test_cameras.py in the sailbot-20 repo.
 
-from pubsub import pub
+Lots of utility methods for analyzing images to find buoys.
+"""
 
-import numpy as np
 import cv2
-
-import src.buoy_detection.Distance_Calculator as dc
-from src.waypoint import Waypoint
-import logging
+import numpy as np
+import pickle
 
 
-def find_buoy_pixels(frame, draw_image=False):
+def get_mask(relevance_map, threshold, open_radius, close_radius):
     """
-    Determine if the given frame has an image of the of buoy in it using color. The calibration setup
-    has the left camera as the primary camera, so the disparity map pixels are equivalent to the ones in
-    the disparity map.
+    Generate the binary mask for a given relevance map.
 
     Inputs:
-        frame -- The color (BGR format) image to analyze.
-        draw_image -- Whether or not to draw the buoy pixel contours after finding buoy pixels.
-
-    TODO split buoy-specific code into separate function and create generic object-outlining function.
+        relevance_map -- The relevance map to generate a mask for.
+        threshold -- The threshold used to decide what pixels are chosen as "on" and which are chosen as "off".
+        open_radius -- The radius of the opening kernel used during mask cleaning.
+        close_radius -- The radius of the closing kernel used during mask cleaning.
 
     Returns:
-        The coordinates of the center of the largest buoy.
+        A mask image of the same dimensions as `relevance_map` with one channel. Values are either 0 or 255.
     """
-
-    kernel_close = np.ones((2, 2))
-    kernel_open = np.ones((12, 12))
-
-    frame_copy = frame
-
-    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
-    # mask = cv2.inRange(hsv, RED_ORANGE_LOW, RED_ORANGE_HIGH)
-    mask = cv2.inRange(hsv, (10, 100, 20), (15, 255, 255))
-    mask_open = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel_open)
-    mask = mask_open
-    mask_close = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel_close)
-    mask = mask_close
-    contours, __ = cv2.findContours(mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    if len(contours) > 0:
-        biggest = sorted(contours, key=cv2.contourArea)[-1]
-        if draw_image:
-            cv2.drawContours(frame, contours, -1, (0, 255, 0), 3)
-            x, y, w, h = cv2.boundingRect(biggest)
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-        moment = cv2.moments(biggest)
-        return int(moment['m10'] / moment['m00']), int(moment['m01'] / moment['m00'])
-    raise Exception("No buoy found in image")
+    _, mask = cv2.threshold(relevance_map, threshold, 255, cv2.THRESH_BINARY)
+    mask = clean_mask(mask, open_radius, close_radius)
+    return mask
 
 
-def is_buoy_in_image(frame):
+def clean_mask(mask, open_radius, close_radius):
     """
-    Returns boolean value of if a large orange contour (buoy) is found in a frame.
+    Execute opening/closing operations on the mask to get rid of small holes / specks in it.
 
     Inputs:
-        frame -- The frame from the main camera (normally the left camera).
+        mask -- The mask to clean.
+        open_radius -- The radius of the opening kernel.
+        close_radius -- The radius of the closing kernel.
 
     Returns:
-         Boolean representing if a buoy is found.
+        The cleaned mask.
     """
-    kernel_close = np.ones((2, 2))
-    kernel_open = np.ones((12, 12))
-
-    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
-    # mask = cv2.inRange(hsv, RED_ORANGE_LOW, RED_ORANGE_HIGH)
-    mask = cv2.inRange(hsv, (10, 100, 20), (15, 255, 255))
-    mask_open = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel_open)
-    mask = mask_open
-    mask_close = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel_close)
-    mask = mask_close
-    contours, __ = cv2.findContours(mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    return len(contours) > 0
+    open_kernel = np.ones((open_radius, open_radius), np.uint8)
+    close_kernel = np.ones((close_radius, close_radius), np.uint8)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, open_kernel)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, close_kernel)
+    return mask
 
 
-class BuoyDetector(Thread):
-    def __init__(self, boat):
-        super().__init__()
-        self.distance_calculator = dc
-        self.buoy_location = None
-        self.boat = boat
+def map_func_combined(depth_channels, histogram_3d):
+    """
+    Defines a map that assigns each pixel in a relevance map a value by looking it up in a 3D histogram with
+    axes corresponding to H/S/V channels.
+    ** Only works if we're using 3D histograms that contain information for the H/S/V channels combined! **
 
-    def run(self):
-        """Continuously checks for a buoy"""
-        while True:
-            try:
-                left_frame, disparity_frame = self.distance_calculator.depth_map_calculator.calculate_depth_map()
-            except Exception:
-                logging.getLogger().error("Couldn't calculate depth map!", exc_info=True)
-                continue
+    Inputs:
+        depth_channels -- A list/tuple of length 3 containing the H/S/V values of an input pixel, respectively.
+        histogram_3d -- A 3D histogram representing the relevance of each HSV color.
 
-            try:
-                # We use the left frame here because the left camera is our "primary camera."
-                buoy_pixel_x, buoy_pixel_y = self.distance_calculator.find_buoy_pixels(left_frame)
-            except Exception:
-                logging.getLogger().error("Couldn't find buoy pixels!", exc_info=True)
-                continue
+    Returns:
+        The resulting relevance map value for that pixel.
+    """
+    return histogram_3d[depth_channels[0]][depth_channels[1]][depth_channels[2]]
 
-            # Get the disparity value of the pixels found
-            disparity_of_buoy = dc.get_disparity_value(disparity_frame, buoy_pixel_x, buoy_pixel_y)
 
-            # Calculate the distance to the buoy using the disparity values
-            distance_to_buoy = self.distance_calculator.get_distance(disparity_of_buoy)
+def get_relevance_map(hsv, histogram_3d, blur_ksize):
+    """
+    Generate a relevance map from an inputted HSV-format image and the histogram previously retrieved during
+    initialization.
 
-            # Get a reading from airmar
-            real_bearing_reading_from_airmar = self.boat.current_heading
-            get_latitude_from_airmar = self.boat.current_position.lat
-            get_longitude_from_airmar = self.boat.current_position.long
+    Inputs:
+        hsv -- The input image, in HSV-format.
+        histogram_3d -- The 3D histogram containing relevance values for each HSV color.
+        blur_ksize -- The k-parameter for the median blur used to clean the relevance map.
 
-            calculated_bearing_to_buoy = \
-                self.distance_calculator.get_bearing_from_pixel(buoy_pixel_x, real_bearing_reading_from_airmar)
+    Returns:
+        The relevance map for that input image, in the form of a 1-channel image (uint8) of the same
+        dimensions as the input image.
+    """
 
-            estimated_buoy_lat, estimated_buoy_long = \
-                dc.get_obj_gps_location(get_latitude_from_airmar, get_longitude_from_airmar,
-                                        distance_to_buoy, calculated_bearing_to_buoy)
+    relevance_map = np.apply_along_axis(map_func_combined, 2, hsv, histogram_3d)
+    relevance_map = relevance_map.astype(np.uint8)
 
-            pub.sendMessage("buoy detected", location=Waypoint(estimated_buoy_lat, estimated_buoy_long))
+    # De-noise
+    relevance_map = cv2.medianBlur(relevance_map, blur_ksize)
+
+    return relevance_map
+
+
+def get_histogram(histogram_path):
+    """
+    Load the histogram(s) from the stored file ("buoy_histogram.pickle").
+
+    Returns:
+        The loaded histogram.
+    """
+    # The stored histogram is the only element in a tuple. This is because we used to have an option to pass
+    # multiple histograms.
+    # TODO Store the histogram by itself and don't wrap it in a tuple.
+    with open(histogram_path, "rb") as pickle_file:
+        return pickle.load(pickle_file)[0]
+
+
+def process_image(image, threshold, histogram_3d, open_radius, close_radius, blur_ksize):
+    """
+    Convert the image to HSV, find the buoy-colored pixels, and draw contours.
+
+    Inputs:
+        image -- The image to analyze.
+        threshold -- The threshold used to create a binary mask from the relevance map.
+        histogram_3d -- The 3D histogram containing relevance values for each HSV color.
+        open_radius -- The radius of the opening kernel for mask cleaning.
+        close_radius -- The radius of the closing kernel for mask cleaning.
+        blur_ksize -- The k-parameter for the median blur used for cleaning the relevance map.
+
+    Returns:
+        A tuple (relevance_map, mask) with those elements.
+    """
+    # Convert image to HSV, and find/clean mask with buoy-colored pixels.
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+
+    relevance_map = get_relevance_map(hsv, histogram_3d, blur_ksize)
+
+    mask = get_mask(relevance_map, threshold, open_radius, close_radius)
+
+    return relevance_map, mask
