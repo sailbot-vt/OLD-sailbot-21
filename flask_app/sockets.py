@@ -3,6 +3,7 @@ from flask_socketio import Namespace, emit
 from flask_app.boat.boat_socket import BoatSocket
 from flask_app.logger.logger_socket import LoggerSocket
 from flask_app.captain.captain_socket import CaptainSocket
+from flask_app.tracker.tracker_socket import TrackerSocket
 from flask_app.sys_monitor.sys_monitor_socket import SysMonitorSocket
 
 
@@ -24,8 +25,7 @@ def apply_sockets(app, **kwargs):
         pass
     if 'captain' in kwargs:
         app.on_namespace(CaptainSocket(Namespace='/captain', captain=kwargs['captain']))
-    if 'rc_thread' in kwargs:
-        # RC Socket
-        pass
+    if 'tracker' in kwargs:
+        app.on_namespace(TrackerSocket(Namespace='/tracker', tracker=kwargs['tracker']))
 
     app.on_namespace(SysMonitorSocket(Namespace='/sys_monitor'))
