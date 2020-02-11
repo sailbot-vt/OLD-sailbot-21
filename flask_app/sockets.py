@@ -14,15 +14,14 @@ def apply_sockets(app, **kwargs):
     app - The Flask-socketio app to apply the sockets.
 
     **kwargs - Applies sockets based on keyword arguments given.
-        valid kwargs: boat, world, captain, logger, rc_thread
+        valid kwargs: boat, world, captain, logger, tracker
     """
     if 'boat' in kwargs:
         app.on_namespace(BoatSocket(Namespace='/boat', boat=kwargs['boat']))
     if 'logger' in kwargs:
         app.on_namespace(LoggerSocket(Namespace='/logger', logger=kwargs['logger']))
     if 'world' in kwargs:
-        # world socket
-        pass
+        app.on_namespace(WorldSocket(Namespace='/world', world=kwargs['world']))
     if 'captain' in kwargs:
         app.on_namespace(CaptainSocket(Namespace='/captain', captain=kwargs['captain']))
     if 'tracker' in kwargs:

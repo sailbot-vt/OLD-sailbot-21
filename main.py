@@ -41,7 +41,8 @@ def main():
 
     # Start flask-socketio
     app = create_app()
-    socketio = create_socket(app, 
+    socketio = create_socket(app,
+        captain=captain_thread, 
         boat=boat, 
         world=world, 
         logger=logger,
