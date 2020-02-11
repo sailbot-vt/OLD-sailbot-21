@@ -4,7 +4,7 @@ import src.rudder.rudder_listener as rudder
 import src.sail.sail_listener as sail
 import src.nav.captain as captain
 
-# import src.arduino.arduino.Arduino as Arduino
+import src.arduino.arduino.Arduino as Arduino
 
 from src.boat.boat import Boat
 from src.world.world import World
@@ -28,7 +28,7 @@ def main():
     tracker = Map(boat=boat, toggle_update=True)
     airmar_thread = airmar.AirmarInputThread(logger=logger)
     rc_thread = rc.RCInputThread()
-    # Sail = sail.SailListener(boat, world)
+    Sail = sail.SailListener(boat, world)
     Rudder = rudder.RudderListener()
     arduino_thread = Arduino()
     captain_thread = captain.Captain(boat, world)
@@ -37,7 +37,7 @@ def main():
     airmar_thread.start()
     rc_thread.start()
     captain_thread.start()
-    # arduino_thread.start()
+    arduino_thread.start()
 
     # Start flask-socketio
     app = create_app()
