@@ -7,11 +7,8 @@ from src.tracking.object import Object
 from src.tracking.classification_types import ObjectType
 from src.tracking.pdaf import joint_pdaf
 
-
-from src.utils.coord_conv import cartesian_to_polar, polar_to_cartesian
 from src.utils.time_in_millis import time_in_millis
 
-import numpy as np
 
 class Map(Thread):
     """
