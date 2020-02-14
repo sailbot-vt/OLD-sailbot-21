@@ -17,7 +17,7 @@ class HelmsmanTests(unittest.TestCase):
     def test_rudder_angle(self):
         """Tests that the autopilot calculates rudder angles correctly"""
 
-    @patch('src.autopilot.helmsman.pub', autospec=True)
+    @patch('src.autonomy.autopilot.helmsman.pub', autospec=True)
     def test_turn_to(self, mock_pub):
         """Tests that the autopilot sets the right turn angles"""
         boat = MagicMock(name="src.boat")
