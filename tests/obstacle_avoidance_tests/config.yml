@@ -1,0 +1,13 @@
+# config.yml for obstacle avoidance
+
+object_field:
+  time_range:
+    time_range_l: 0
+    time_range_r: 5000
+  bearing_range:
+    bearing_range_l: -30
+    bearing_range_r: 30
+
+gap_config:
+  t_step: 100
+  theta_step: 2
