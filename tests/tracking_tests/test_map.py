@@ -14,6 +14,7 @@ import numpy as np
 from datetime import datetime as dt
 from time import sleep
 
+
 class MapTests(unittest.TestCase):
     """Tests the methods in Map"""
     def setUp(self):
@@ -39,8 +40,8 @@ class MapTests(unittest.TestCase):
             obj = Object(bearing, rng, time_in_millis(), objectType = obj_type)
             self.map.object_list.append(obj)
             start_time = dt.now()
-        
-        self.assertTrue(len(self.map.object_list) == 2)                 # assert that length of list is two 
+
+        self.assertTrue(len(self.map.object_list) == 2)                 # assert that length of list is two
 
         while (abs(dt.now() - start_time).total_seconds() < .05):     # while less than 0.05s since last object
             pass
@@ -51,12 +52,40 @@ class MapTests(unittest.TestCase):
         self.assertTrue(len(self.map.object_list) == 0)                 # assert that length of list is zero
 
     def test_return_objects(self):
+        rng_list = [5, 44]
+        bearing_list = [-22, 81.5]
+        type_list = [ObjectType.BUOY, ObjectType.BOAT]
+
+        # loop through objects to add
+        for ii, (rng, bearing, obj_type) in enumerate(zip(rng_list, bearing_list, type_list)):
+            # add object
+            pub.sendMessage("object detected", rng=rng, bearing=bearing, objectType=obj_type)
+
+            # Compare to truthed data
+            self.assertAlmostEqual(bearing, self.map.object_list[ii].bearing)
+            self.assertAlmostEqual(rng, self.map.object_list[ii].rng)
+            self.assertEqual(obj_type, self.map.object_list[ii].objectType)
+
+        # check if new detections that match track in object list are handled correctly
+        with patch('src.tracking.object.Object.update') as mock_update:
+            # add object
+            obj_idx = 0
+            pub.sendMessage("object detected", rng=rng_list[obj_idx],
+                            bearing=bearing_list[obj_idx], objectType=type_list[obj_idx])
+
+            # get rng and bearing
+            rng, bearing = rng_list[obj_idx], bearing_list[obj_idx]
+
+            # assert that update is called and with correct parameters
+            mock_update.assert_called_once_with(rng, bearing)
+
+    def test_return_objects(self):
         """Tests return objects method of map"""
         # set up objects to add to map
-        timeRange = 5000                                       # time used to create rngRange 
+        timeRange = 5000                                       # time used to create rngRange
         rngRange = (0, self.boat_speed * (timeRange/1000))     # range of ranges to return
         bearingRange = (-30, 30)                        # range of bearings to return
-        type_list = [ObjectType.BUOY, ObjectType.BOAT, ObjectType.BUOY, 
+        type_list = [ObjectType.BUOY, ObjectType.BOAT, ObjectType.BUOY,
                      ObjectType.BUOY, ObjectType.BOAT, ObjectType.BUOY, ObjectType.NONE]    # object types
 
         # set up objects
@@ -83,9 +112,9 @@ class MapTests(unittest.TestCase):
 
         # check that objects match
         for jj, obj in enumerate(correct_object_list[0:num_correct_objects]):
-            self.assertAlmostEqual(obj[0], returned_objects[jj].rng)
-            self.assertAlmostEqual(obj[1], returned_objects[jj].bearing)
-            self.assertEqual(obj[2], returned_objects[jj].objectType)
+            self.assertAlmostEqual(obj[0], returned_objects[jj][0])
+            self.assertAlmostEqual(obj[1], returned_objects[jj][1])
+            self.assertEqual(obj[2], returned_objects[jj][2])
 
     @patch('src.tracking.map.Object.predict')
     def test_update_map(self, mock_predict):
@@ -102,7 +131,7 @@ class MapTests(unittest.TestCase):
 
         # call update_map
         self.map.update_map()
-        
+
         # check if predict was called for all objects in object_list
         self.assertEqual(mock_predict.call_count, num_objects)
 
@@ -229,9 +258,9 @@ class MapTests(unittest.TestCase):
 
         # check if objects map correct object list
         for jj, obj in enumerate(correct_object_list):
-            self.assertAlmostEqual(obj[0], returned_objects[jj].rng)
-            self.assertAlmostEqual(obj[1], returned_objects[jj].bearing)
-            self.assertEqual(obj[2], returned_objects[jj].objectType)
+            self.assertAlmostEqual(obj[0], returned_objects[jj][0])
+            self.assertAlmostEqual(obj[1], returned_objects[jj][1])
+            self.assertEqual(obj[2], returned_objects[jj][2])
 
     def test_enable_update(self):
         """Tests enable update method"""
