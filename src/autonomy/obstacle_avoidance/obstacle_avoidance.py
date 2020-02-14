@@ -1,8 +1,8 @@
 from threading import Thread, Lock
 
-from src.autonomy.obstacle_detection import read_object_field_config
+from src.autonomy.obstacle_avoidance import read_object_field_config
 
-mutex = Lock()
+mutex_waypoint, mutex_object_field = Lock(), Lock()
 class ObstacleAvoidance(Thread):
     """Obstacle avoidance thread"""
     def __init__(self, wind, tracker):
@@ -26,6 +26,7 @@ class ObstacleAvoidance(Thread):
         """Runs obstacle avoidance thread"""
         while self.is_active:
             # get objects in near field
+            self.get_objects()
             # find optimal avoiding path
             # initiate movement using pubsub
             pass
@@ -38,9 +39,9 @@ class ObstacleAvoidance(Thread):
         Side Effects:
             self.waypoint -- updates self.waypoint
         """
-        mutex.acquire()
+        mutex_waypoint.acquire()
         self.waypoint = new_waypoint
-        mutex.release()
+        mutex_waypoint.release()
 
     def quit(self):
         """Quits obstacle avoidance thread"""
@@ -52,11 +53,20 @@ class ObstacleAvoidance(Thread):
         Side effects:
             self.object_field -- sets object field using return_objects method from map
         """
+        # get time and bearing ranges
         time_range = self.object_field_config['time_range']
         bearing_range = self.object_field_config['bearing_range']
 
-        object_list = self.tracker.return_objects(bearingRange = bearing_range, timeRange = time_range)
+        # update object field
+        mutex_object_field.acquire()
+        self.object_field = self.tracker.return_objects(bearingRange = bearing_range, timeRange = time_range) 
+        mutex_object_field.release()
 
-        mutex.acquire()
-        self.object_field = [(obj.rng, obj.bearing, obj.objectType) for obj in object_list]
-        mutex.release()
+    def find_path(self):
+        """
+        Finds optimal obstacle avoidance path given desired heading and object field
+        Returns:
+            adjusted_heading -- heading adjusted for obstacles in near field
+        """
+        # create gap vector
+        
