@@ -4,7 +4,7 @@ try:
 except ImportError:
     from mock import patch, MagicMock
 
-from src.autopilot.helmsman import Helmsman
+from src.autonomy.autopilot.helmsman import Helmsman
 
 
 class HelmsmanTests(unittest.TestCase):

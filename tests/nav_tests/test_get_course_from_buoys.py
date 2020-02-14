@@ -7,7 +7,7 @@ except ImportError:
 import numpy as np
 from src.tracking.classification_types import ObjectType
 
-from src.nav.get_course_from_buoys import get_course_from_buoys 
+from src.autonomy.nav.get_course_from_buoys import get_course_from_buoys 
 
 class BuoySortTests(unittest.TestCase):
     """Tests the method get_course_from_buoys"""

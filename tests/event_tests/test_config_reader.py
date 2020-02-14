@@ -1,10 +1,10 @@
 import os
 import unittest
 
-from src.events.config_reader import read_interval
+from src.autonomy.events.config_reader import read_interval
 
-class RudderConfigReaderTests(unittest.TestCase):
-    """Tests methods in Rudder Config Reader"""
+class EventsConfigReaderTests(unittest.TestCase):
+    """Tests methods in Events Config Reader"""
     def setUp(self):
         """Sets up the path of config.yaml for each test method"""
         self.path = os.path.dirname(os.path.abspath(__file__))

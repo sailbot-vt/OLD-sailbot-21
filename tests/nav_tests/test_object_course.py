@@ -4,7 +4,7 @@ try:
 except ImportError:
     from mock import MagicMock
 
-from src.nav.course import ObjectCourse
+from src.autonomy.nav.course import ObjectCourse
 
 from src.tracking.object import Object
 from src.tracking.classification_types import ObjectType
