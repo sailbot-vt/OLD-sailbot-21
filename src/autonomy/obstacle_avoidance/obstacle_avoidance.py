@@ -30,6 +30,8 @@ class ObstacleAvoidance(Thread):
         self.object_field_config = read_object_field_config()
         self.gap_config = read_gap_config()
 
+        self.update_interval = 0.5
+
     def run(self):
         """Runs obstacle avoidance thread"""
         while self.is_active:
@@ -37,6 +39,8 @@ class ObstacleAvoidance(Thread):
             self.get_objects()
             # find optimal avoiding path
             # initiate movement using pubsub
+
+            sleep(self.update_interval)
             pass
 
     def update_waypoint(self, new_waypoint):
