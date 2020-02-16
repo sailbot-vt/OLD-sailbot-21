@@ -113,8 +113,13 @@ class ObstacleAvoidanceTests(unittest.TestCase):
        
         self.obstacle_avoidance.object_field = object_field 
 
+        # generate truth theta list
+        truth_theta_list = [val+0.5 for val in range(-25, 25)]
+
         # check for correct behavior
-        np.testing.assert_array_equal(truth_gap_matrix, self.obstacle_avoidance.create_gap_matrix())
+        gap_mat, theta_list = self.obstacle_avoidance.create_gap_matrix()
+        np.testing.assert_array_equal(truth_gap_matrix, gap_mat)
+        self.assertListEqual(truth_theta_list, theta_list)
 
         # -------- Test 2 (50% overlap) ---------------------------
 
@@ -164,8 +169,13 @@ class ObstacleAvoidanceTests(unittest.TestCase):
        
         self.obstacle_avoidance.object_field = object_field 
 
+        # generate truth theta list
+        truth_theta_list = [((val/2)+0.5) for val in range(-50, 49)] + [24.75]
+
         # check for correct behavior
-        np.testing.assert_array_equal(truth_gap_matrix, self.obstacle_avoidance.create_gap_matrix())
+        gap_mat, theta_list = self.obstacle_avoidance.create_gap_matrix()
+        np.testing.assert_array_equal(truth_gap_matrix, gap_mat)
+        self.assertListEqual(truth_theta_list, theta_list)
 
         # -------- Test 3 (75% overlap) ---------------------------
 
@@ -277,5 +287,10 @@ class ObstacleAvoidanceTests(unittest.TestCase):
        
         self.obstacle_avoidance.object_field = object_field 
 
+        # generate truth theta list
+        truth_theta_list = [((val/4)+0.5) for val in range(-100, 97)] + [24.625, 24.75, 24.875]
+
         # check for correct behavior
-        np.testing.assert_array_equal(truth_gap_matrix, self.obstacle_avoidance.create_gap_matrix())
+        gap_mat, theta_list = self.obstacle_avoidance.create_gap_matrix()
+        np.testing.assert_array_equal(truth_gap_matrix, gap_mat)
+        self.assertListEqual(truth_theta_list, theta_list)

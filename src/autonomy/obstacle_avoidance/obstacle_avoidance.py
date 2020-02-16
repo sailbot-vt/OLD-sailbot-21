@@ -2,14 +2,11 @@ from threading import Thread, Lock
 
 from pubsub import pub
 from math import ceil
+from statistics import mean
 import numpy as np
 
 from src.autonomy.obstacle_avoidance.config_reader import read_object_field_config
 from src.autonomy.obstacle_avoidance.config_reader import read_gap_config
-
-#TODO REMOVE
-import pdb
-from pprint import pprint as pp
 
 mutex_waypoint, mutex_object_field = Lock(), Lock()
 class ObstacleAvoidance(Thread):
@@ -85,14 +82,23 @@ class ObstacleAvoidance(Thread):
         Returns:
             adjusted_heading -- heading adjusted for obstacles in near field
         """
+        # find desired heading
+        desired_heading = self.waypoint[1]
+
         # create gap matrix
-        gap_matrix = self.create_gap_matrix()
+        gap_matrix, theta_list = self.create_gap_matrix()
+
+        # find paths without obstacles (assuming constant heading over time range) (constraint probably acceptable given turning rate of boat AND short time ranges for obstacle detection)
+        paths = np.sum(gap_matrix, 0)
+
+        
         
     def create_gap_matrix(self):
         """
         Creates gap matrix using object field
         Returns:
             gap_matrix -- matrix with 0's in fields where obstacles are present
+            theta_list -- list of bearings corresponding to columns in gap matrix
         """
         # t and theta steps
         t_step = self.gap_config['t_step']
@@ -142,5 +148,8 @@ class ObstacleAvoidance(Thread):
 
         mutex_object_field.release()
 
+        # generate theta list
+        theta_list = [mean(theta_bound) for theta_bound in theta_bounds]
+
         # return gap matrix
-        return gap_matrix
+        return gap_matrix, theta_list
