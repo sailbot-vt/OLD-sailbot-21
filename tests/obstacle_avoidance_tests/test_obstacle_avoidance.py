@@ -71,9 +71,72 @@ class ObstacleAvoidanceTests(unittest.TestCase):
         # check that object field was set to correct value
         self.assertListEqual(truth_object_field, self.obstacle_avoidance.object_field)
 
-    def test_find_path(self):
+    @patch('src.autonomy.obstacle_avoidance.obstacle_avoidance.ObstacleAvoidance.create_gap_matrix')
+    def test_find_path(self, mock_gap_mat):
         """Tests find path method of obstacle avoidance"""
-        pass
+        # --------------------------------------------------------
+        # Testing methodology:
+        #   - 3 tests (no adjust needed (no obstacles), no adjust needed (some obstacles), adjust needed)
+        #   - check returned matrix vs hand-created comparison
+        # --------------------------------------------------------
+        
+        # -------- Test 1 (No obstacles, no adjust needed) ---------------------------
+        # create gap matrix
+        gap_matrix = np.ones((5, 5))        # create 5x5 gap matrix (no obstacles)
+        theta_list = [*range(-2, 3)]
+
+        # set up mock create gap matrix
+        mock_gap_mat.return_value = gap_matrix, theta_list
+
+        # set up waypoint
+        desired_heading = 1
+        self.obstacle_avoidance.waypoint = (10, desired_heading)
+
+        # no change to heading
+        truth_adjusted_heading = desired_heading
+
+        # check for correct behavior
+        self.assertEqual(self.obstacle_avoidance.find_path(), truth_adjusted_heading)
+
+        # -------- Test 2 (Obstacles, no adjust needed) ---------------------------
+        # create gap matrix
+        gap_matrix = np.ones((5, 5))        # create 5x5 gap matrix (no obstacles)
+        gap_matrix[3, 0] = 0
+        gap_matrix[4, 2] = 0
+        theta_list = [*range(-2, 3)]
+
+        # set up mock create gap matrix
+        mock_gap_mat.return_value = gap_matrix, theta_list
+
+        # set up waypoint
+        desired_heading = -1
+        self.obstacle_avoidance.waypoint = (10, desired_heading)
+
+        # no change to heading
+        truth_adjusted_heading = desired_heading
+
+        # check for correct behavior
+        self.assertEqual(truth_adjusted_heading, self.obstacle_avoidance.find_path())
+
+        # -------- Test 3 (Obstacles, adjust needed) ---------------------------
+        # create gap matrix
+        gap_matrix = np.ones((5, 5))        # create 5x5 gap matrix (no obstacles)
+        gap_matrix[2, 0] = 0
+        gap_matrix[3, 1] = 0
+        theta_list = [*range(-2, 3)]
+
+        # set up mock create gap matrix
+        mock_gap_mat.return_value = gap_matrix, theta_list
+
+        # set up waypoint
+        desired_heading = -1
+        self.obstacle_avoidance.waypoint = (10, desired_heading)
+
+        # no change to heading
+        truth_adjusted_heading = 0
+
+        # check for correct behavior
+        self.assertEqual(self.obstacle_avoidance.find_path(), truth_adjusted_heading)
 
     def test_create_gap_matrix(self):
         """Tests create gap matrix method of obstacle avoidance"""
