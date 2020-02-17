@@ -89,10 +89,17 @@ class ObstacleAvoidance(Thread):
         gap_matrix, theta_list = self.create_gap_matrix()
 
         # find paths without obstacles (assuming constant heading over time range) (constraint probably acceptable given turning rate of boat AND short time ranges for obstacle detection)
-        paths = np.sum(gap_matrix, 0)
+        gap_paths = np.sum(gap_matrix, 0).tolist()
 
+        # transform path indices into headings
+        poss_paths = [theta for theta, path in zip(theta_list, gap_paths) if path == gap_matrix.shape[0]]
         
-        
+        # find best path
+        delta_list = [abs(theta - desired_heading) for theta in poss_paths]
+        adjusted_heading = poss_paths[delta_list.index(min(delta_list))]
+
+        return adjusted_heading
+ 
     def create_gap_matrix(self):
         """
         Creates gap matrix using object field
