@@ -42,6 +42,8 @@ class ObstacleAvoidanceTests(unittest.TestCase):
         mock_pub.assert_called_with('set heading', heading = adjusted_heading)
         mock_sleep.assert_called_with(self.obstacle_avoidance.update_interval)
 
+        self.obstacle_avoidance.is_active = False
+
     def test_update_waypoint(self):
         """Tests update waypoint method of obstacle avoidance"""
         # generate test waypoints
@@ -96,6 +98,8 @@ class ObstacleAvoidanceTests(unittest.TestCase):
         #   - 3 tests (no adjust needed (no obstacles), no adjust needed (some obstacles), adjust needed)
         #   - check returned matrix vs hand-created comparison
         # --------------------------------------------------------
+
+        self.obstacle_avoidance.object_field = []
         
         # -------- Test 1 (No obstacles, no adjust needed) ---------------------------
         # create gap matrix
@@ -116,6 +120,7 @@ class ObstacleAvoidanceTests(unittest.TestCase):
         self.assertEqual(self.obstacle_avoidance.find_path(), truth_adjusted_heading)
 
         # -------- Test 2 (Obstacles, no adjust needed) ---------------------------
+        self.obstacle_avoidance.object_field = [0]
         # create gap matrix
         gap_matrix = np.ones((5, 5))        # create 5x5 gap matrix (no obstacles)
         gap_matrix[3, 0] = 0
