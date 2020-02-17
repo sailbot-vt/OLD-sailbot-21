@@ -5,9 +5,12 @@ except ImportError:
     from mock import MagicMock, patch
 
 from pubsub import pub
+from time import sleep
 import numpy as np
 
 from src.autonomy.obstacle_avoidance.obstacle_avoidance import ObstacleAvoidance, mutex_waypoint, mutex_object_field
+
+import pdb
 
 class ObstacleAvoidanceTests(unittest.TestCase):
     """Tests methods in Obstacle Avoidance class"""
@@ -21,9 +24,23 @@ class ObstacleAvoidanceTests(unittest.TestCase):
 
         self.obstacle_avoidance = ObstacleAvoidance(None, None, None)
 
-    def test_run(self):
+    @patch('src.autonomy.obstacle_avoidance.obstacle_avoidance.ObstacleAvoidance.get_objects')
+    @patch('src.autonomy.obstacle_avoidance.obstacle_avoidance.ObstacleAvoidance.find_path')
+    @patch('src.autonomy.obstacle_avoidance.obstacle_avoidance.sleep')
+    @patch('src.autonomy.obstacle_avoidance.obstacle_avoidance.pub.sendMessage')
+    def test_run(self, mock_pub, mock_sleep, mock_find_path, mock_get_objects):
         """Tests run method of obstacle avoidance"""
-        pass
+        adjusted_heading = 1
+        mock_find_path.return_value = adjusted_heading
+
+        # start run thread
+        self.obstacle_avoidance.start()
+
+        # check that methods are called (and with correct args)
+        mock_get_objects.assert_any_call()
+        mock_find_path.assert_any_call()
+        mock_pub.assert_called_with('set heading', heading = adjusted_heading)
+        mock_sleep.assert_called_with(self.obstacle_avoidance.update_interval)
 
     def test_update_waypoint(self):
         """Tests update waypoint method of obstacle avoidance"""
