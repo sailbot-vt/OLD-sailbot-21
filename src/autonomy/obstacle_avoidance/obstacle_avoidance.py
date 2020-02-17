@@ -1,12 +1,16 @@
 from threading import Thread, Lock
 
 from pubsub import pub
+from time import sleep
 from math import ceil
 from statistics import mean
 import numpy as np
 
 from src.autonomy.obstacle_avoidance.config_reader import read_object_field_config
 from src.autonomy.obstacle_avoidance.config_reader import read_gap_config
+
+#TODO REMOVE
+import pdb
 
 mutex_waypoint, mutex_object_field = Lock(), Lock()
 class ObstacleAvoidance(Thread):
@@ -40,10 +44,11 @@ class ObstacleAvoidance(Thread):
             # get objects in near field
             self.get_objects()
             # find optimal avoiding path
+            adjusted_heading = self.find_path()
             # initiate movement using pubsub
+            pub.sendMessage('set heading', heading = adjusted_heading)
 
             sleep(self.update_interval)
-            pass
 
     def update_waypoint(self, new_waypoint):
         """
