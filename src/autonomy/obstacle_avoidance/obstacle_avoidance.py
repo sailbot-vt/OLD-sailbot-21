@@ -15,20 +15,18 @@ import pdb
 mutex_waypoint, mutex_object_field = Lock(), Lock()
 class ObstacleAvoidance(Thread):
     """Obstacle avoidance thread"""
-    def __init__(self, wind, tracker, boat):
+    def __init__(self, tracker, boat):
         """
         Initializes obstacle avoidance thread
         Inputs:
-            wind -- wind object containing true and apparent wind reading
             tracker -- tracker instance
             boat -- boat object containing boat state data
         """
         super().__init__()
-        self.wind = wind
         self.tracker = tracker
         self.boat = boat
 
-        self.waypoint = (0, 0)
+        self.waypoint = (0, 0)                              # range, bearing
         pub.subscribe(self.update_waypoint, 'waypoint')
 
         self.is_active = True
@@ -90,20 +88,24 @@ class ObstacleAvoidance(Thread):
         # find desired heading
         desired_heading = self.waypoint[1]
 
-        # create gap matrix
-        gap_matrix, theta_list = self.create_gap_matrix()
+        if len(self.object_field) != 0:
+            # create gap matrix
+            gap_matrix, theta_list = self.create_gap_matrix()
 
-        # find paths without obstacles (assuming constant heading over time range) (constraint probably acceptable given turning rate of boat AND short time ranges for obstacle detection)
-        gap_paths = np.sum(gap_matrix, 0).tolist()
+            # find paths without obstacles (assuming constant heading over time range) (constraint probably acceptable given turning rate of boat AND short time ranges for obstacle detection)
+            gap_paths = np.sum(gap_matrix, 0).tolist()
 
-        # transform path indices into headings
-        poss_paths = [theta for theta, path in zip(theta_list, gap_paths) if path == gap_matrix.shape[0]]
-        
-        # find best path
-        delta_list = [abs(theta - desired_heading) for theta in poss_paths]
-        adjusted_heading = poss_paths[delta_list.index(min(delta_list))]
+            # transform path indices into headings
+            poss_paths = [theta for theta, path in zip(theta_list, gap_paths) if path == gap_matrix.shape[0]]
 
-        return adjusted_heading
+            # find best path
+            delta_list = [abs(theta - desired_heading) for theta in poss_paths]
+            adjusted_heading = poss_paths[delta_list.index(min(delta_list))]
+
+            return adjusted_heading
+
+        else:
+            return desired_heading
  
     def create_gap_matrix(self):
         """

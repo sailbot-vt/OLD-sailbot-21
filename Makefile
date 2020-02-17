@@ -7,4 +7,7 @@ test:
 run:
 	bash ./scripts/run.sh
 
-.PHONY: init test run
+test_obstacle:
+	bash ./scripts/test_obstacle_avoidance.sh
+
+.PHONY: init test run test_obstacle

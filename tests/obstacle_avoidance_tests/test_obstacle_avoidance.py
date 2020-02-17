@@ -22,7 +22,7 @@ class ObstacleAvoidanceTests(unittest.TestCase):
         if mutex_object_field.locked():
             mutex_object_field.release()
 
-        self.obstacle_avoidance = ObstacleAvoidance(None, None, None)
+        self.obstacle_avoidance = ObstacleAvoidance(None, None)
 
     @patch('src.autonomy.obstacle_avoidance.obstacle_avoidance.ObstacleAvoidance.get_objects')
     @patch('src.autonomy.obstacle_avoidance.obstacle_avoidance.ObstacleAvoidance.find_path')

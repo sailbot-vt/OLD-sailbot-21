@@ -11,3 +11,4 @@ object_field:
 gap_config:
   t_step: 0.1
   theta_step: 2
+  overlap: 50
