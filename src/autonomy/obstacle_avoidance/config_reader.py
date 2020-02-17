@@ -12,8 +12,9 @@ def read_object_field_config(path=None):
 
     time_range = (object_field_config['time_range']['time_range_l'], object_field_config['time_range']['time_range_r'])
     bearing_range = (object_field_config['bearing_range']['bearing_range_l'], object_field_config['bearing_range']['bearing_range_r'])
+    num_predictions = object_field_config['num_predictions']
 
-    return_config = {'time_range': time_range, 'bearing_range': bearing_range}
+    return_config = {'time_range': time_range, 'bearing_range': bearing_range, 'num_predictions': num_predictions}
 
     return return_config
 

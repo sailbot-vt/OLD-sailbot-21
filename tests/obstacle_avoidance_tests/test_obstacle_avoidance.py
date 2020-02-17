@@ -73,10 +73,11 @@ class ObstacleAvoidanceTests(unittest.TestCase):
         # set time and bearing range
         time_range = (0, 3000)
         bearing_range = (-25, 25)
-        self.obstacle_avoidance.object_field_config = {'time_range': time_range, 'bearing_range': bearing_range}
+        self.obstacle_avoidance.object_field_config = {'time_range': time_range, 'bearing_range': bearing_range,
+                                                       'num_predictions': False}
 
         # mock return val for tracker return_objects method
-        truth_object_field = [(1, 2, 0), (2, 3, 1)]
+        truth_object_field = [(1, 2, 0, 0, 0), (2, 3, 1, 0, 0)]
         mock_tracker = MagicMock(name='Map')
         self.obstacle_avoidance.tracker = mock_tracker
         mock_tracker.return_objects.return_value = truth_object_field
@@ -164,15 +165,16 @@ class ObstacleAvoidanceTests(unittest.TestCase):
         """Tests create gap matrix method of obstacle avoidance"""
         # --------------------------------------------------------
         # Testing methodology:
-        #   - 3 tests (no overlap, 50% overlap, 75% overlap)
+        #   - 4 tests (no overlap, 50% overlap, 75% overlap, 50% overlap AND predictions)
         #   - check returned matrix vs hand-created comparison
         # --------------------------------------------------------
-        
+
         # -------- Test 1 (0% overlap) ---------------------------
 
         # set overlap, steps, and ranges
         self.obstacle_avoidance.gap_config = {'t_step':  0.5, 'theta_step': 1, 'overlap': 0}
-        self.obstacle_avoidance.object_field_config = {'time_range': (0, 5), 'bearing_range': (-25, 25)}
+        self.obstacle_avoidance.object_field_config = {'time_range': (0, 5), 'bearing_range': (-25, 25),
+                                                       'num_predictions': 0}
 
         # set boat speed
         boat_speed = 1
@@ -185,14 +187,14 @@ class ObstacleAvoidanceTests(unittest.TestCase):
 
         # set object field -- 5 objects (2 in same field, 3 in different fields)
         object_field = [0] * 5
-        object_field[0] = (0.75, 20.5, 0)
+        object_field[0] = (0.75, 20.5, 0, 0, 0)
         truth_gap_matrix[1, 45] = 0
-        object_field[1] = (0.85, 20.75, 0)    # in same field as prev object
-        object_field[2] = (4.2, 1.1, 0)
+        object_field[1] = (0.85, 20.75, 0, 0, 0)    # in same field as prev object
+        object_field[2] = (4.2, 1.1, 0, 0, 0)
         truth_gap_matrix[8, 26] = 0
-        object_field[3] = (4.2, -1.1, 0)
+        object_field[3] = (4.2, -1.1, 0, 0, 0)
         truth_gap_matrix[8, 23] = 0
-        object_field[4] = (3.89, -5.0, 0)
+        object_field[4] = (3.89, -5.0, 0, 0, 0)
         truth_gap_matrix[7, 19] = 0
         truth_gap_matrix[7, 20] = 0
        
@@ -210,7 +212,8 @@ class ObstacleAvoidanceTests(unittest.TestCase):
 
         # set overlap, steps, and ranges
         self.obstacle_avoidance.gap_config = {'t_step':  0.5, 'theta_step': 1, 'overlap': 0.5}
-        self.obstacle_avoidance.object_field_config = {'time_range': (0, 5), 'bearing_range': (-25, 25)}
+        self.obstacle_avoidance.object_field_config = {'time_range': (0, 5), 'bearing_range': (-25, 25),
+                                                       'num_predictions': 0}
 
         # set boat speed
         boat_speed = 1
@@ -223,7 +226,7 @@ class ObstacleAvoidanceTests(unittest.TestCase):
 
         # set object field -- 5 objects
         object_field = [0] * 5
-        object_field[0] = (0.75, 20.5, 0)
+        object_field[0] = (0.75, 20.5, 0, 0, 0)
         truth_gap_matrix[1, 89] = 0
         truth_gap_matrix[2, 89] = 0
         truth_gap_matrix[3, 89] = 0
@@ -233,18 +236,18 @@ class ObstacleAvoidanceTests(unittest.TestCase):
         truth_gap_matrix[1, 91] = 0
         truth_gap_matrix[2, 91] = 0
         truth_gap_matrix[3, 91] = 0
-        object_field[1] = (0.85, 20.75, 0)    # in same field as prev object
-        object_field[2] = (4.2, 1.1, 0)
+        object_field[1] = (0.85, 20.75, 0, 0, 0)    # in same field as prev object
+        object_field[2] = (4.2, 1.1, 0, 0, 0)
         truth_gap_matrix[15, 51] = 0
         truth_gap_matrix[16, 51] = 0
         truth_gap_matrix[15, 52] = 0
         truth_gap_matrix[16, 52] = 0
-        object_field[3] = (4.2, -1.1, 0)
+        object_field[3] = (4.2, -1.1, 0, 0, 0)
         truth_gap_matrix[15, 46] = 0
         truth_gap_matrix[16, 46] = 0
         truth_gap_matrix[15, 47] = 0
         truth_gap_matrix[16, 47] = 0
-        object_field[4] = (3.89, -5.0, 0)
+        object_field[4] = (3.89, -5.0, 0, 0, 0)
         truth_gap_matrix[14, 38] = 0
         truth_gap_matrix[15, 38] = 0
         truth_gap_matrix[14, 39] = 0
@@ -266,7 +269,8 @@ class ObstacleAvoidanceTests(unittest.TestCase):
 
         # set overlap, steps, and ranges
         self.obstacle_avoidance.gap_config = {'t_step':  0.5, 'theta_step': 1, 'overlap': 0.75}
-        self.obstacle_avoidance.object_field_config = {'time_range': (0, 5), 'bearing_range': (-25, 25)}
+        self.obstacle_avoidance.object_field_config = {'time_range': (0, 5), 'bearing_range': (-25, 25),
+                                                       'num_predictions': 0}
 
         # set boat speed
         boat_speed = 1
@@ -279,7 +283,7 @@ class ObstacleAvoidanceTests(unittest.TestCase):
 
         # set object field -- 5 objects
         object_field = [0] * 5
-        object_field[0] = (0.75, 20.5, 0)
+        object_field[0] = (0.75, 20.5, 0, 0, 0)
         truth_gap_matrix[2, 178] = 0
         truth_gap_matrix[3, 178] = 0
         truth_gap_matrix[4, 178] = 0
@@ -305,7 +309,7 @@ class ObstacleAvoidanceTests(unittest.TestCase):
         truth_gap_matrix[4, 182] = 0
         truth_gap_matrix[5, 182] = 0
         truth_gap_matrix[6, 182] = 0
-        object_field[1] = (0.85, 20.75, 0)    # in same field as prev object
+        object_field[1] = (0.85, 20.75, 0, 0, 0)    # in same field as prev object
         truth_gap_matrix[3, 179] = 0
         truth_gap_matrix[4, 180] = 0
         truth_gap_matrix[5, 181] = 0
@@ -314,7 +318,7 @@ class ObstacleAvoidanceTests(unittest.TestCase):
         truth_gap_matrix[4, 183] = 0
         truth_gap_matrix[5, 183] = 0
         truth_gap_matrix[6, 183] = 0
-        object_field[2] = (4.2, 1.1, 0)
+        object_field[2] = (4.2, 1.1, 0, 0, 0)
         truth_gap_matrix[30, 101] = 0
         truth_gap_matrix[31, 101] = 0
         truth_gap_matrix[32, 101] = 0
@@ -331,7 +335,7 @@ class ObstacleAvoidanceTests(unittest.TestCase):
         truth_gap_matrix[31, 104] = 0
         truth_gap_matrix[32, 104] = 0
         truth_gap_matrix[33, 104] = 0
-        object_field[3] = (4.2, -1.1, 0)
+        object_field[3] = (4.2, -1.1, 0, 0, 0)
         truth_gap_matrix[30, 92] = 0
         truth_gap_matrix[31, 92] = 0
         truth_gap_matrix[32, 92] = 0
@@ -348,7 +352,7 @@ class ObstacleAvoidanceTests(unittest.TestCase):
         truth_gap_matrix[31, 95] = 0
         truth_gap_matrix[32, 95] = 0
         truth_gap_matrix[33, 95] = 0
-        object_field[4] = (3.89, -5.0, 0)
+        object_field[4] = (3.89, -5.0, 0, 0, 0)
         truth_gap_matrix[28, 76] = 0
         truth_gap_matrix[29, 76] = 0
         truth_gap_matrix[30, 76] = 0
@@ -379,3 +383,76 @@ class ObstacleAvoidanceTests(unittest.TestCase):
         gap_mat, theta_list = self.obstacle_avoidance.create_gap_matrix()
         np.testing.assert_array_equal(truth_gap_matrix, gap_mat)
         self.assertListEqual(truth_theta_list, theta_list)
+
+        # -------- Test 4 (50% overlap AND predictions) ---------------------------
+
+        # set overlap, steps, and ranges
+        self.obstacle_avoidance.gap_config = {'t_step':  0.5, 'theta_step': 1, 'overlap': 0.5}
+        self.obstacle_avoidance.object_field_config = {'time_range': (0, 5), 'bearing_range': (-25, 25),
+                                                       'num_predictions': 5}
+
+        # set boat speed
+        boat_speed = 1
+        mock_boat = MagicMock(name='boat')
+        self.obstacle_avoidance.boat = mock_boat
+        mock_boat.current_speed.return_value = boat_speed
+
+        # initialize truth gap matrix
+        truth_gap_matrix = np.ones((20, 100))
+
+        # set object field -- 5 objects
+        object_field = [0] * 5
+        object_field[0] = (0.75, 20.5, 0, 0, 0.25)         # bearing movement
+        truth_gap_matrix[1, 89] = 0
+        truth_gap_matrix[2, 89] = 0
+        truth_gap_matrix[3, 89] = 0
+        truth_gap_matrix[1, 90] = 0
+        truth_gap_matrix[2, 90] = 0
+        truth_gap_matrix[3, 90] = 0
+        truth_gap_matrix[1, 91] = 0
+        truth_gap_matrix[2, 91] = 0
+        truth_gap_matrix[3, 91] = 0
+        truth_gap_matrix[1, 92] = 0
+        truth_gap_matrix[2, 92] = 0
+        truth_gap_matrix[3, 92] = 0
+        object_field[1] = (0.85, 20.75, 0, 0, 0)    # in overlapping fields w prev object
+        object_field[2] = (4.2, 1.1, 0, 0.2, 0)
+        truth_gap_matrix[15, 51] = 0
+        truth_gap_matrix[16, 51] = 0
+        truth_gap_matrix[17, 51] = 0
+        truth_gap_matrix[18, 51] = 0
+        truth_gap_matrix[15, 52] = 0
+        truth_gap_matrix[16, 52] = 0
+        truth_gap_matrix[17, 52] = 0
+        truth_gap_matrix[18, 52] = 0
+        object_field[3] = (4.2, -1.1, 0, 0.18, -0.5)
+        truth_gap_matrix[15, 47] = 0
+        truth_gap_matrix[15, 46] = 0
+        truth_gap_matrix[16, 47] = 0
+        truth_gap_matrix[16, 46] = 0
+        truth_gap_matrix[16, 45] = 0
+        truth_gap_matrix[17, 47] = 0
+        truth_gap_matrix[17, 46] = 0
+        truth_gap_matrix[17, 45] = 0
+        truth_gap_matrix[17, 44] = 0
+        truth_gap_matrix[18, 45] = 0
+        truth_gap_matrix[18, 44] = 0
+        object_field[4] = (3.89, -5.0, 0, 0, 0)
+        truth_gap_matrix[14, 38] = 0
+        truth_gap_matrix[15, 38] = 0
+        truth_gap_matrix[14, 39] = 0
+        truth_gap_matrix[15, 39] = 0
+        truth_gap_matrix[14, 40] = 0
+        truth_gap_matrix[15, 40] = 0
+       
+        self.obstacle_avoidance.object_field = object_field 
+
+        # generate truth theta list
+        truth_theta_list = [((val/2)+0.5) for val in range(-50, 49)] + [24.75]
+
+        # check for correct behavior
+        gap_mat, theta_list = self.obstacle_avoidance.create_gap_matrix()
+        print(np.argwhere(truth_gap_matrix != gap_mat))
+        np.testing.assert_array_equal(truth_gap_matrix, gap_mat)
+        self.assertListEqual(truth_theta_list, theta_list)
+

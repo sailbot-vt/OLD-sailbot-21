@@ -96,7 +96,7 @@ class Map(Thread):
             rngRange -- Range (in m) from bow to search within 
         
         Returns:
-            return_list -- list made up of rng, bearing, and type data of objects in map fitting criteria specified
+            return_list -- list made up of rng, bearing, type, range rate, and bearing rate data of objects in map fitting criteria specified
         """
         _max_objs = 10               # Maximum number of objects to output (arbitrary choice)
         object_list = [0] * _max_objs
@@ -137,7 +137,7 @@ class Map(Thread):
                 object_list[num_buoys] = obj
                 num_buoys += 1
 
-        return_list = [(obj.rng, obj.bearing, obj.objectType) for obj in object_list[0:ii]] 
+        return_list = [(obj.rng, obj.bearing, obj.objectType, obj.rngRate, obj.bearingRate) for obj in object_list[0:ii]] 
 
         return return_list
 

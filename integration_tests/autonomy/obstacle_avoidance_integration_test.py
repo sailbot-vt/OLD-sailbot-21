@@ -143,22 +143,28 @@ class ObstacleAvoidanceTest(Thread):
 
                           self.obstacle_rng_rates, self.obstacle_bearing_rates)):
             # account for ownship movement
-            boat_moved_rng, boat_moved_bearing = self._ownship_delta(obstacle_rng, obstacle_bearing, \
-                                                                       self.boat_speed, self.rel_heading)
+            ownship_dr, ownship_dtheta = self._ownship_delta(obstacle_rng, obstacle_bearing, \
+                                                             self.boat_speed, self.rel_heading)
 
             # apply obstacle movement
-            dr = rng_rate * self.update_interval
-            dtheta = bearing_rate * self.update_interval
+            dr = (rng_rate * self.update_interval) + ownship_dr
+            dtheta = (bearing_rate * self.update_interval) + ownship_dtheta
+
+            new_r = obstacle_rng + dr
+            new_theta = obstacle_bearing + dtheta
 
             # trim obstacles that went past boat
-            if (-45 <= boat_moved_bearing + dtheta <= 45):
-                object_field[ii] = (boat_moved_rng + dr, boat_moved_bearing + dr, 0)
+            if (-45 <= new_theta <= 45):
+                object_field[ii] = (new_r, new_theta, 0, \
+                                    dr/self.update_interval, dtheta/self.update_interval)
             else:
                 # spawn a new detection
-                object_field[ii] = (self.rng_range[1], uniform(*self.bearing_range), 0)
+                object_field[ii] = (self.plot_rng_range[1], uniform(*self.plot_bearing_range), 0, 0, 0)
+                print("spawning new detection")
 
         # trim object field to objects in bounds of obstacle avoidance
-        return_object_field = [(rng, bearing, obj_type) for rng, bearing, obj_type in object_field
+        return_object_field = [(rng, bearing, obj_type, rng_rate, bearing_rate)
+                               for rng, bearing, obj_type, rng_rate, bearing_rate in object_field
                                if (self.rng_range[0] <= rng <= self.rng_range[1] and
                                    self.bearing_range[0] <= bearing <= self.bearing_range[1])]
 
@@ -166,8 +172,8 @@ class ObstacleAvoidanceTest(Thread):
         self.tracker.return_objects.return_value = return_object_field
 
         # set obstacle data (for plotting)
-        self.obstacle_rng_data = [rng for rng, _, _ in object_field]
-        self.obstacle_bearing_data = [bearing for _, bearing, _ in object_field]
+        self.obstacle_rng_data = [rng for rng, _, _, _, _ in object_field]
+        self.obstacle_bearing_data = [bearing for _, bearing, _, _, _ in object_field]
 
     def update_heading(self, heading):
         """Updates heading from obstacle avoidance"""
@@ -202,17 +208,17 @@ class ObstacleAvoidanceTest(Thread):
         return [elem * (np.pi)/ 180. for elem in data]
 
     def _ownship_delta(self, r, bearing, speed, heading):
-        """Returns new obstacle coords given ownship speed and heading"""
+        """Returns delta of obstacle coords given ownship speed and heading"""
         prev_x = r * np.cos(np.radians(bearing))
         prev_y = r * np.sin(np.radians(bearing))
 
-        dx = speed * np.cos(np.radians(heading)) * self.update_interval
-        dy = speed * np.sin(np.radians(heading)) * self.update_interval
+        dx = -1 * speed * np.cos(np.radians(heading)) * self.update_interval
+        dy = -1 * speed * np.sin(np.radians(heading)) * self.update_interval
 
-        new_x = prev_x - dx
-        new_y = prev_y - dy
+        new_x = prev_x + dx
+        new_y = prev_y + dy
 
         new_r = np.sqrt(new_x**2 + new_y**2)
-        new_bearing = np.arctan2(new_y, new_x)
+        new_theta = np.arctan2(new_y, new_x)
 
-        return new_r, np.degrees(new_bearing)
+        return new_r - r, np.degrees(new_theta - np.radians(bearing))

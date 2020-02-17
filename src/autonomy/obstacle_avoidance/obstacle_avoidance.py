@@ -11,6 +11,7 @@ from src.autonomy.obstacle_avoidance.config_reader import read_gap_config
 
 #TODO REMOVE
 import pdb
+from pprint import pprint as pp
 
 mutex_waypoint, mutex_object_field = Lock(), Lock()
 class ObstacleAvoidance(Thread):
@@ -122,9 +123,12 @@ class ObstacleAvoidance(Thread):
         time_range = self.object_field_config['time_range']
         theta_range = self.object_field_config['bearing_range']
 
+        # get use predictions flag
+        num_predicts = self.object_field_config['num_predictions']
+
         # overlap
         overlap = self.gap_config['overlap']
-        
+
         # initialize time/range bounds list
         t_bounds = [0] * ceil((abs(time_range[1] - time_range[0])/t_step) * (1-overlap)**(-1))
         # initialize bearing bounds list
@@ -146,19 +150,24 @@ class ObstacleAvoidance(Thread):
                 r_bound = theta_range[1]
             theta_bounds[jj] = (l_bound, r_bound)
 
+        mutex_object_field.acquire()
+        # generate object field with predicted obstacle positions
+        predicted_object_field = [(rng + ((ii%(num_predicts+1))*t_step*rng_rate), 
+                                    bearing + (ii%(num_predicts+1))*t_step*bearing_rate, obj_type) 
+                                  for ii, (rng, bearing, obj_type, rng_rate, bearing_rate) in
+                                  enumerate((num_predicts + 1)*self.object_field)]
+
         # create gap matrix
         gap_matrix = np.ones((len(t_bounds),len(theta_bounds)))
-        mutex_object_field.acquire()
         for ii, t_bound in enumerate(t_bounds):
             # calc range bounds given t_bounds
             rng_bound = tuple(t * self.boat.current_speed() for t in t_bound)
             for jj, theta_bound in enumerate(theta_bounds):
                 # place 0 in gap matrix IF object exists in bounds
-                for obj in self.object_field:
+                for obj in predicted_object_field:
                     if rng_bound[0] <= obj[0] <= rng_bound[1] and \
                        theta_bound[0] <= obj[1] <= theta_bound[1]:
                         gap_matrix[ii,jj] = 0
-                        break
 
         mutex_object_field.release()
 

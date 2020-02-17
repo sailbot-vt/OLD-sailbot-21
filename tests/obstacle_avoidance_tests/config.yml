@@ -3,12 +3,13 @@
 object_field:
   time_range:
     time_range_l: 0
-    time_range_r: 5
+    time_range_r: 20
   bearing_range:
     bearing_range_l: -30
     bearing_range_r: 30
+  num_predictions: 5
 
 gap_config:
   t_step: 0.1
-  theta_step: 2
-  overlap: 50
+  theta_step: 5
+  overlap: 0.5
