@@ -10,8 +10,6 @@ import numpy as np
 
 from src.autonomy.obstacle_avoidance.obstacle_avoidance import ObstacleAvoidance, mutex_waypoint, mutex_object_field
 
-import pdb
-
 class ObstacleAvoidanceTests(unittest.TestCase):
     """Tests methods in Obstacle Avoidance class"""
     def setUp(self):
@@ -460,7 +458,6 @@ class ObstacleAvoidanceTests(unittest.TestCase):
 
         # check for correct behavior
         gap_mat, theta_list = self.obstacle_avoidance.create_gap_matrix()
-        print(np.argwhere(truth_gap_matrix != gap_mat))
         np.testing.assert_array_equal(truth_gap_matrix, gap_mat)
         self.assertListEqual(truth_theta_list, theta_list)
 

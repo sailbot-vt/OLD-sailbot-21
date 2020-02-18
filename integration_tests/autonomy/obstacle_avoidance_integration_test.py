@@ -7,18 +7,16 @@ except ImportError:
 from threading import Thread
 
 import numpy as np
+from math import ceil
 
 import matplotlib
 matplotlib.use('QT5Agg')
-
 from matplotlib import pyplot as plt
 from matplotlib.patches import Arrow
 
 from pubsub import pub
 from random import uniform, randint
 from time import sleep
-
-import pdb
 
 from src.autonomy.obstacle_avoidance.obstacle_avoidance import ObstacleAvoidance
 from src.utils.time_in_millis import time_in_millis
@@ -38,8 +36,8 @@ class ObstacleAvoidanceTest(Thread):
         # set up mock boat and set boat movement parameters
         self.boat = MagicMock(name='boat')
         self.boat_speed = 0.5   # m/s
-        self.boat_bearing_rate = 0.1        # deg/s
-        self.heading = 0
+        self.boat_bearing_rate = 5        # deg/s
+        self.rel_heading = 0
         self.boat.current_speed.return_value = self.boat_speed
 
         # initialize obstacle avoidance thread
@@ -48,7 +46,7 @@ class ObstacleAvoidanceTest(Thread):
         # create polar plot
         self.fig = plt.figure()
         self.polar = self.fig.add_subplot(111, projection='polar')
-        self.plot_rng_range = (0, 12)
+        self.plot_rng_range = (0, 18)
         self.polar.set_ylim(self.plot_rng_range[0], self.plot_rng_range[1])
         self.plot_bearing_range = (-45, 45)
         self.polar.set_thetamin(self.plot_bearing_range[0])
@@ -90,18 +88,29 @@ class ObstacleAvoidanceTest(Thread):
         self.polar.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
                   fancybox=True, shadow=True, ncol=5)
 
+        # create imshow plot
+        self.sector_fig = plt.figure()
+        self.sectorview_ax = self.sector_fig.add_subplot(111)
+        self.sectorview = self.sectorview_ax.imshow(np.ones((len(self.rng_range), len(self.bearing_range))), \
+                                                      extent=[*self.bearing_range, *self.rng_range], cmap = 'plasma')
+        self.sectorview_ax.set_title('Sector View')
+        self.sectorview_ax.set_xlabel('Bearing')
+        self.sectorview_ax.set_ylabel('Range')
+
         # show plot (and set up blitting)
         plt.show(block=False)
         plt.pause(0.01)
         self.fig.canvas.draw()
+        self.sector_fig.canvas.draw()
 
         input('Make plot full screen then press enter')
         self.background = self.fig.canvas.copy_from_bbox(self.polar.bbox)
+        self.sector_background = self.sector_fig.canvas.copy_from_bbox(self.sectorview_ax.bbox)
 
         # spawn obstacles
-        self.num_obstacles = 4
-        self.obstacle_rng_rates = [0, 0, 0, 0]        # both static
-        self.obstacle_bearing_rates = [0, 0, 0, 0]        # both static
+        self.num_obstacles = 64
+        self.obstacle_rng_rates = [0, 0, 0, 0, 0.2, -0.2, 0.1, 0] * 8
+        self.obstacle_bearing_rates = [0, 0, 0, 0, 0, 0, -0.3, 0.2] * 8
         self.spawn_obstacles()
 
         # subscribe to set heading
@@ -130,8 +139,8 @@ class ObstacleAvoidanceTest(Thread):
         """
 
         # spawn random obstacles in field bounds and set obstacle data (for plotting)
-        self.obstacle_rng_data = [self.rng_range[1] for _ in range(self.num_obstacles)]
-        self.obstacle_bearing_data = [uniform(*self.bearing_range) for _ in range(self.num_obstacles)]
+        self.obstacle_rng_data = [self.plot_rng_range[1] for _ in range(self.num_obstacles)]
+        self.obstacle_bearing_data = [uniform(*self.plot_bearing_range) for _ in range(self.num_obstacles)]
 
     def update_obstacles(self):
         """Updates obstacle positions (using mocked boat movement, obstacle movement)"""
@@ -177,19 +186,23 @@ class ObstacleAvoidanceTest(Thread):
 
     def update_heading(self, heading):
         """Updates heading from obstacle avoidance"""
-        self.rel_heading = heading
-        print("setting course to {}".format(heading))
+        self.desired_rel_heading = heading
+        print("setting course towards {}".format(heading))
+
+        self.rel_heading += np.sign(heading - self.rel_heading) * (self.boat_bearing_rate * self.update_interval)
+        print("new rel heading {}".format(self.rel_heading))
 
     def plot_data(self):
         """Plots obstacle data, boat heading"""
         # restore background
         self.fig.canvas.restore_region(self.background)
+        self.sector_fig.canvas.restore_region(self.sector_background)
 
         # plot boat movement arrow
         if self.boat_arrow:
             self.boat_arrow.remove()
-        self.boat_arrow = Arrow(0, 0, 0, 4 * self.boat_speed,
-                                width=0.1, color='blue', alpha=0.5)
+        self.boat_arrow = Arrow(0, 0, np.radians(self.rel_heading), 10 * self.boat_speed,
+                                width=0.5, color='blue', alpha=0.2)
         self.polar.add_artist(self.boat_arrow)
         self.polar.draw_artist(self.boat_arrow)
 
@@ -197,11 +210,17 @@ class ObstacleAvoidanceTest(Thread):
         self.obstacles.set_offsets([*zip(self._deg_2_rad(self.obstacle_bearing_data), self.obstacle_rng_data)])
         self.polar.draw_artist(self.obstacles)
 
-        # rotate plot to <heading> degrees
-        self.polar.set_theta_offset(np.radians(self.heading))
-
         self.fig.canvas.blit(self.polar.bbox)
         self.fig.canvas.flush_events()
+
+        # update sector plot
+        self.sectorview.set_data(np.flipud(self.obstacle_avoidance.gap_matrix))
+        self.sectorview_ax.add_artist(self.sectorview)
+        self.sectorview_ax.draw_artist(self.sectorview)
+        self.sectorview.autoscale()
+
+        self.sector_fig.canvas.blit(self.sectorview_ax.bbox)
+        self.sector_fig.canvas.flush_events()
 
     def _deg_2_rad(self, data):
         """Converts degrees to radians for plotting"""

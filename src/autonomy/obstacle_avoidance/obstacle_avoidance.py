@@ -9,10 +9,6 @@ import numpy as np
 from src.autonomy.obstacle_avoidance.config_reader import read_object_field_config
 from src.autonomy.obstacle_avoidance.config_reader import read_gap_config
 
-#TODO REMOVE
-import pdb
-from pprint import pprint as pp
-
 mutex_waypoint, mutex_object_field = Lock(), Lock()
 class ObstacleAvoidance(Thread):
     """Obstacle avoidance thread"""
@@ -39,6 +35,9 @@ class ObstacleAvoidance(Thread):
 
         self._make_time_bounds()
         self._make_theta_bounds()
+
+        # TODO REMOVE
+        self.gap_matrix = np.ones((len(self.t_bounds), len(self.theta_bounds)))
 
     def run(self):
         """Runs obstacle avoidance thread"""
@@ -102,11 +101,15 @@ class ObstacleAvoidance(Thread):
             # transform path indices into headings
             poss_paths = [theta for theta, path in zip(theta_list, gap_paths) if path == gap_matrix.shape[0]]
 
-            # find best path
-            delta_list = [abs(theta - desired_heading) for theta in poss_paths]
-            adjusted_heading = poss_paths[delta_list.index(min(delta_list))]
+            if len(poss_paths) != 0:            # if any possible path
+                # find best path
+                delta_list = [abs(theta - desired_heading) for theta in poss_paths]
+                adjusted_heading = poss_paths[delta_list.index(min(delta_list))]
 
-            return adjusted_heading
+                return adjusted_heading
+
+            else:
+                return desired_heading
 
         else:
             return desired_heading
@@ -146,6 +149,9 @@ class ObstacleAvoidance(Thread):
 
         # generate theta list
         theta_list = [mean(theta_bound) for theta_bound in self.theta_bounds]
+
+        # TODO REMOVE
+        self.gap_matrix = gap_matrix    # exposes gap matrix to integration test script
 
         # return gap matrix
         return gap_matrix, theta_list
