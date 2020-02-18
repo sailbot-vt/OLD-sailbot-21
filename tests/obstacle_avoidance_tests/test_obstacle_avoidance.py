@@ -171,10 +171,12 @@ class ObstacleAvoidanceTests(unittest.TestCase):
 
         # -------- Test 1 (0% overlap) ---------------------------
 
-        # set overlap, steps, and ranges
         self.obstacle_avoidance.gap_config = {'t_step':  0.5, 'theta_step': 1, 'overlap': 0}
         self.obstacle_avoidance.object_field_config = {'time_range': (0, 5), 'bearing_range': (-25, 25),
                                                        'num_predictions': 0}
+        # create bounds
+        self.obstacle_avoidance.t_bounds = [(x/2, (x+1)/2) for x in range(10)]
+        self.obstacle_avoidance.theta_bounds = [(x, x+1) for x in range(-25, 25)]
 
         # set boat speed
         boat_speed = 1
@@ -210,10 +212,12 @@ class ObstacleAvoidanceTests(unittest.TestCase):
 
         # -------- Test 2 (50% overlap) ---------------------------
 
-        # set overlap, steps, and ranges
         self.obstacle_avoidance.gap_config = {'t_step':  0.5, 'theta_step': 1, 'overlap': 0.5}
         self.obstacle_avoidance.object_field_config = {'time_range': (0, 5), 'bearing_range': (-25, 25),
                                                        'num_predictions': 0}
+        # create bounds
+        self.obstacle_avoidance.t_bounds = [(x/4, (x/4)+(1/2)) for x in range(19)] + [(4.75, 5)]
+        self.obstacle_avoidance.theta_bounds = [(x/2, (x/2)+1) for x in range(-50, 49)] + [(24.5, 25)]
 
         # set boat speed
         boat_speed = 1
@@ -267,10 +271,12 @@ class ObstacleAvoidanceTests(unittest.TestCase):
 
         # -------- Test 3 (75% overlap) ---------------------------
 
-        # set overlap, steps, and ranges
         self.obstacle_avoidance.gap_config = {'t_step':  0.5, 'theta_step': 1, 'overlap': 0.75}
         self.obstacle_avoidance.object_field_config = {'time_range': (0, 5), 'bearing_range': (-25, 25),
                                                        'num_predictions': 0}
+        # create bounds
+        self.obstacle_avoidance.t_bounds = [(x/8, (x/8)+(1/2)) for x in range(37)] + [(4.625, 5), (4.75, 5), (4.875, 5)]
+        self.obstacle_avoidance.theta_bounds = [(x/4, (x/4)+1) for x in range(-100, 97)] + [(24.25, 25), (24.5, 25), (24.75, 25)]
 
         # set boat speed
         boat_speed = 1
@@ -386,10 +392,12 @@ class ObstacleAvoidanceTests(unittest.TestCase):
 
         # -------- Test 4 (50% overlap AND predictions) ---------------------------
 
-        # set overlap, steps, and ranges
         self.obstacle_avoidance.gap_config = {'t_step':  0.5, 'theta_step': 1, 'overlap': 0.5}
         self.obstacle_avoidance.object_field_config = {'time_range': (0, 5), 'bearing_range': (-25, 25),
                                                        'num_predictions': 5}
+        # create bounds
+        self.obstacle_avoidance.t_bounds = [(x/4, (x/4)+(1/2)) for x in range(19)] + [(4.75, 5)]
+        self.obstacle_avoidance.theta_bounds = [(x/2, (x/2)+1) for x in range(-50, 49)] + [(24.5, 25)]
 
         # set boat speed
         boat_speed = 1
@@ -456,3 +464,96 @@ class ObstacleAvoidanceTests(unittest.TestCase):
         np.testing.assert_array_equal(truth_gap_matrix, gap_mat)
         self.assertListEqual(truth_theta_list, theta_list)
 
+    def test_make_time_bounds(self):
+        """Tests make time bounds method"""
+        # -------- Test 1 (0% overlap) ---------------------------
+        # set overlap, steps, and ranges
+        self.obstacle_avoidance.gap_config = {'t_step':  0.5, 'theta_step': 1, 'overlap': 0}
+        self.obstacle_avoidance.object_field_config = {'time_range': (0, 5), 'bearing_range': (-25, 25),
+                                                       'num_predictions': 0}
+
+        # generate truth time bounds
+        truth_t_bounds = [(x/2, (x+1)/2) for x in range(10)]
+
+        # call make time bounds
+        self.obstacle_avoidance._make_time_bounds()
+
+        # check for correct behavior
+        self.assertListEqual(truth_t_bounds, self.obstacle_avoidance.t_bounds)
+
+        # -------- Test 2 (50% overlap) ---------------------------
+        # set overlap, steps, and ranges
+        self.obstacle_avoidance.gap_config = {'t_step':  0.5, 'theta_step': 1, 'overlap': 0.5}
+        self.obstacle_avoidance.object_field_config = {'time_range': (0, 5), 'bearing_range': (-25, 25),
+                                                       'num_predictions': 0}
+
+        # generate truth time bounds
+        truth_t_bounds = [(x/4, (x/4)+(1/2)) for x in range(19)] + [(4.75, 5)]
+
+        # call make time bounds
+        self.obstacle_avoidance._make_time_bounds()
+
+        # check for correct behavior
+        self.assertListEqual(truth_t_bounds, self.obstacle_avoidance.t_bounds)
+
+        # -------- Test 3 (75% overlap) ---------------------------
+        # set overlap, steps, and ranges
+        self.obstacle_avoidance.gap_config = {'t_step':  0.5, 'theta_step': 1, 'overlap': 0.75}
+        self.obstacle_avoidance.object_field_config = {'time_range': (0, 5), 'bearing_range': (-25, 25),
+                                                       'num_predictions': 0}
+
+        # generate truth time bounds
+        truth_t_bounds = [(x/8, (x/8)+(1/2)) for x in range(37)] + [(4.625, 5), (4.75, 5), (4.875, 5)]
+
+        # call make time bounds
+        self.obstacle_avoidance._make_time_bounds()
+
+        # check for correct behavior
+        self.assertListEqual(truth_t_bounds, self.obstacle_avoidance.t_bounds)
+
+    def test_make_theta_bounds(self):
+        """Tests make theta bounds method"""
+        # -------- Test 1 (0% overlap) ---------------------------
+        # set overlap, steps, and ranges
+        self.obstacle_avoidance.gap_config = {'t_step':  0.5, 'theta_step': 1, 'overlap': 0}
+        self.obstacle_avoidance.object_field_config = {'time_range': (0, 5), 'bearing_range': (-25, 25),
+                                                       'num_predictions': 0}
+
+        # generate truth theta bounds
+        truth_theta_bounds = [(x, x+1) for x in range(-25, 25)]
+
+        # call make theta bounds
+        self.obstacle_avoidance._make_theta_bounds()
+
+        # check for correct behavior
+        self.assertListEqual(truth_theta_bounds, self.obstacle_avoidance.theta_bounds)
+
+        # -------- Test 2 (50% overlap) ---------------------------
+        # set overlap, steps, and ranges
+        self.obstacle_avoidance.gap_config = {'t_step':  0.5, 'theta_step': 1, 'overlap': 0.5}
+        self.obstacle_avoidance.object_field_config = {'time_range': (0, 5), 'bearing_range': (-25, 25),
+                                                       'num_predictions': 0}
+
+        # generate truth theta bounds
+        truth_theta_bounds = [(x/2, (x/2)+1) for x in range(-50, 49)] + [(24.5, 25)]
+
+        # call make time bounds
+        self.obstacle_avoidance._make_theta_bounds()
+
+        # check for correct behavior
+        self.assertListEqual(truth_theta_bounds, self.obstacle_avoidance.theta_bounds)
+
+        # -------- Test 3 (75% overlap) ---------------------------
+        # set overlap, steps, and ranges
+        self.obstacle_avoidance.gap_config = {'t_step':  0.5, 'theta_step': 1, 'overlap': 0.75}
+        self.obstacle_avoidance.object_field_config = {'time_range': (0, 5), 'bearing_range': (-25, 25),
+                                                       'num_predictions': 0}
+
+        # generate truth theta bounds
+        truth_theta_bounds = [(x/4, (x/4)+1) for x in range(-100, 97)] + [(24.25, 25), (24.5, 25), (24.75, 25)]
+
+        # call make theta bounds
+        self.obstacle_avoidance._make_theta_bounds()
+
+        # check for correct behavior
+        self.assertListEqual(truth_theta_bounds, self.obstacle_avoidance.theta_bounds)

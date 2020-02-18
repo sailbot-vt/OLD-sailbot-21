@@ -37,6 +37,9 @@ class ObstacleAvoidance(Thread):
 
         self.update_interval = 0.5
 
+        self._make_time_bounds()
+        self._make_theta_bounds()
+
     def run(self):
         """Runs obstacle avoidance thread"""
         while self.is_active:
@@ -115,40 +118,10 @@ class ObstacleAvoidance(Thread):
             gap_matrix -- matrix with 0's in fields where obstacles are present
             theta_list -- list of bearings corresponding to columns in gap matrix
         """
-        # t and theta steps
+        # t step
         t_step = self.gap_config['t_step']
-        theta_step = self.gap_config['theta_step']
 
-        # get time and bearing ranges
-        time_range = self.object_field_config['time_range']
-        theta_range = self.object_field_config['bearing_range']
-
-        # get use predictions flag
         num_predicts = self.object_field_config['num_predictions']
-
-        # overlap
-        overlap = self.gap_config['overlap']
-
-        # initialize time/range bounds list
-        t_bounds = [0] * ceil((abs(time_range[1] - time_range[0])/t_step) * (1-overlap)**(-1))
-        # initialize bearing bounds list
-        theta_bounds = [0] * ceil((abs(theta_range[1] - theta_range[0])/theta_step) * (1-overlap)**(-1))
-
-        # fill out time/range bounds list
-        for ii in range(len(t_bounds)):
-            l_bound = (ii * (time_range[1] - time_range[0])) / len(t_bounds) + time_range[0]
-            r_bound = l_bound + t_step
-            if r_bound > time_range[1]:
-                r_bound = time_range[1]
-            t_bounds[ii] = (l_bound, r_bound)
-
-        # fill out bearing bounds list
-        for jj in range(len(theta_bounds)):
-            l_bound = (jj  * (theta_range[1] - theta_range[0])) / len(theta_bounds) + theta_range[0]
-            r_bound = l_bound + theta_step
-            if r_bound > theta_range[1]:
-                r_bound = theta_range[1]
-            theta_bounds[jj] = (l_bound, r_bound)
 
         mutex_object_field.acquire()
         # generate object field with predicted obstacle positions
@@ -158,11 +131,11 @@ class ObstacleAvoidance(Thread):
                                   enumerate((num_predicts + 1)*self.object_field)]
 
         # create gap matrix
-        gap_matrix = np.ones((len(t_bounds),len(theta_bounds)))
-        for ii, t_bound in enumerate(t_bounds):
+        gap_matrix = np.ones((len(self.t_bounds),len(self.theta_bounds)))
+        for ii, t_bound in enumerate(self.t_bounds):
             # calc range bounds given t_bounds
             rng_bound = tuple(t * self.boat.current_speed() for t in t_bound)
-            for jj, theta_bound in enumerate(theta_bounds):
+            for jj, theta_bound in enumerate(self.theta_bounds):
                 # place 0 in gap matrix IF object exists in bounds
                 for obj in predicted_object_field:
                     if rng_bound[0] <= obj[0] <= rng_bound[1] and \
@@ -172,7 +145,63 @@ class ObstacleAvoidance(Thread):
         mutex_object_field.release()
 
         # generate theta list
-        theta_list = [mean(theta_bound) for theta_bound in theta_bounds]
+        theta_list = [mean(theta_bound) for theta_bound in self.theta_bounds]
 
         # return gap matrix
         return gap_matrix, theta_list
+
+    def _make_time_bounds(self):
+        """
+        Makes time bounds for gap matrix
+        Side Effects:
+            self.t_bounds -- fills time bounds
+        """
+        # t step
+        t_step = self.gap_config['t_step']
+
+        # get time ranges
+        time_range = self.object_field_config['time_range']
+
+        # overlap
+        overlap = self.gap_config['overlap']
+
+        # initialize time/range bounds list
+        t_bounds = [0] * ceil((abs(time_range[1] - time_range[0])/t_step) * (1-overlap)**(-1))
+
+        # fill out time/range bounds list
+        for ii in range(len(t_bounds)):
+            l_bound = (ii * (time_range[1] - time_range[0])) / len(t_bounds) + time_range[0]
+            r_bound = l_bound + t_step
+            if r_bound > time_range[1]:
+                r_bound = time_range[1]
+            t_bounds[ii] = (l_bound, r_bound)
+
+        self.t_bounds = t_bounds
+    
+    def _make_theta_bounds(self):
+        """
+        Makes theta bounds for gap matrix
+        Side Effects:
+            self.theta_bounds -- fills bearing bounds
+        """
+        # theta step
+        theta_step = self.gap_config['theta_step']
+
+        # get bearing range
+        theta_range = self.object_field_config['bearing_range']
+
+        # overlap
+        overlap = self.gap_config['overlap']
+
+        # initialize bearing bounds list
+        theta_bounds = [0] * ceil((abs(theta_range[1] - theta_range[0])/theta_step) * (1-overlap)**(-1))
+
+        # fill out bearing bounds list
+        for jj in range(len(theta_bounds)):
+            l_bound = (jj  * (theta_range[1] - theta_range[0])) / len(theta_bounds) + theta_range[0]
+            r_bound = l_bound + theta_step
+            if r_bound > theta_range[1]:
+                r_bound = theta_range[1]
+            theta_bounds[jj] = (l_bound, r_bound)
+
+        self.theta_bounds = theta_bounds
