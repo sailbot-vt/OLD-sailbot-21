@@ -84,3 +84,21 @@ depth_map:
     speckle_range: 2
     remap_interpolation: "cv2.INTER_LINEAR"
     depth_visualization_scale: 32
+
+
+buoy_detector:
+
+  # The threshold percentage used when creating the mask from the relevance map during buoy detection.
+  threshold_pct: 38
+
+  # Where the color-histogram is stored.
+  histogram_path: "./src/buoy_detection/data/buoy_histogram.pickle"
+
+  # Radius of kernels for opening and closing operations used during mask cleaning.
+  # These are morphological operations designed to clear away noise in the mask.
+  # See https://docs.opencv.org/trunk/d9/d61/tutorial_py_morphological_ops.html
+  open_radius: 2
+  close_radius: 12
+
+  # The k-parameter for the median blur used for cleaning the relevance map.
+  blur_ksize: 7
