@@ -100,5 +100,5 @@ class DetectorThreadTests(unittest.TestCase):
             self.assertTrue(self.thread.is_alive())
 
             self.thread.quit()
-            sleep(0.5)
+            sleep(1)
             self.assertFalse(self.thread.is_alive())
