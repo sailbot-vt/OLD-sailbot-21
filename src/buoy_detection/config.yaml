@@ -102,3 +102,6 @@ buoy_detector:
 
   # The k-parameter for the median blur used for cleaning the relevance map.
   blur_ksize: 7
+
+  # The enforced minimum interval between each loop of the thread.
+  update_interval: 0.2

@@ -1,4 +1,5 @@
 import unittest
+
 try:
     from unittest.mock import MagicMock, patch, call
 except ImportError:
@@ -6,6 +7,7 @@ except ImportError:
 
 import numpy as np
 import cv2
+from time import sleep
 
 import src.buoy_detection.detector_thread as detector_thread
 import src.buoy_detection.config_reader as config_reader
@@ -80,6 +82,23 @@ class DetectorThreadTests(unittest.TestCase):
         # The epoch_frame should contain two detections.
         self.assertEqual(2, len(mock_send_msg.mock_calls[0][2]['epoch_frame']))
 
-    def test_run(self):
+    def test_run_and_quit(self):
         """Test main runner method."""
-        # TODO Finish.
+        # Crazy patch object call here just replaces the depth map function
+        # to provide blank images for the detector to run on.
+        # Without this, it'll crash since there are no cameras connected.
+        with patch.object(self.thread.distance_calculator.depth_map_calculator, 'calculate_depth_map',
+                          return_value=(
+                                  np.zeros((480, 640, 3), dtype=np.uint8),
+                                  np.zeros((480, 640), dtype=np.uint8))):
+
+            # Sleeps are important here because the thread needs time to handle our calls.
+            self.assertFalse(self.thread.is_alive())
+
+            self.thread.start()
+            sleep(0.5)
+            self.assertTrue(self.thread.is_alive())
+
+            self.thread.quit()
+            sleep(0.5)
+            self.assertFalse(self.thread.is_alive())

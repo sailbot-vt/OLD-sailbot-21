@@ -5,6 +5,7 @@ from pubsub import pub
 import src.buoy_detection.Distance_Calculator as dc
 import src.buoy_detection.buoy_detector as bd
 from src.tracking.classification_types import ObjectType
+import time
 import logging
 import cv2
 
@@ -70,6 +71,9 @@ class DetectorThread(Thread):
         histogram_path = config["histogram_path"]
         self.histogram = bd.get_histogram(histogram_path)
 
+        self.update_interval = config["update_interval"]
+        self.running = False
+
     def get_camera_heading(self):
         """Returns the heading of the camera.
         Placeholder for now until we actually have this functionality - for
@@ -121,9 +125,28 @@ class DetectorThread(Thread):
 
             pub.sendMessage("object(s) detected", epoch_frame=epoch_frame, frame_bounds=frame_bounds)
 
+    def quit(self):
+        """Quit the run method.
+
+        Side Effects:
+            Sets the self.running field to False and quits the continuous buoy
+            detection thread.
+        """
+        self.running = False
+
     def run(self):
-        """Continuously checks for a buoy."""
-        while True:
+        """Continuously checks for a buoy.
+        Do not directly call! Use the Thread superclass's
+        start() method so this doesn't run synchronously."""
+        self.running = True
+        last_time = time.time()
+
+        while self.running:
+
+            # Enforce minimum update interval.
+            if time.time() - last_time < self.update_interval:
+                continue
+
             try:
                 left_frame, disparity_frame = self.distance_calculator.depth_map_calculator.calculate_depth_map()
             except Exception:
@@ -135,6 +158,8 @@ class DetectorThread(Thread):
 
             # Finding the external contours of our mask allows us to separate each individual detection.
             # For the purposes of our system, connected pixels in the mask are one detection.
-            contours, _ = cv2.findContours(left_frame, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             self.handle_contours(contours, disparity_frame)
+
+            last_time = time.time()
 
