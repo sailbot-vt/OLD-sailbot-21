@@ -14,7 +14,6 @@ import numpy as np
 from datetime import datetime as dt
 from time import sleep
 
-
 class MapTests(unittest.TestCase):
     """Tests the methods in Map"""
     def setUp(self):
@@ -40,8 +39,8 @@ class MapTests(unittest.TestCase):
             obj = Object(bearing, rng, time_in_millis(), objectType = obj_type)
             self.map.object_list.append(obj)
             start_time = dt.now()
-
-        self.assertTrue(len(self.map.object_list) == 2)                 # assert that length of list is two
+        
+        self.assertTrue(len(self.map.object_list) == 2)                 # assert that length of list is two 
 
         while (abs(dt.now() - start_time).total_seconds() < .05):     # while less than 0.05s since last object
             pass
@@ -54,15 +53,15 @@ class MapTests(unittest.TestCase):
     def test_return_objects(self):
         """Tests return objects method of map"""
         # set up objects to add to map
-        timeRange = 5000                                       # time used to create rngRange
+        timeRange = 5000                                       # time used to create rngRange 
         rngRange = (0, self.boat_speed * (timeRange/1000))     # range of ranges to return
         bearingRange = (-30, 30)                        # range of bearings to return
-        type_list = [ObjectType.BUOY, ObjectType.BOAT, ObjectType.BUOY,
+        type_list = [ObjectType.BUOY, ObjectType.BOAT, ObjectType.BUOY, 
                      ObjectType.BUOY, ObjectType.BOAT, ObjectType.BUOY, ObjectType.NONE]    # object types
 
         # set up objects
         num_objects = 7
-        correct_object_list = [0] * num_objects     # create empty object list
+        correct_object_list = [0] * num_objects     # create empty object list 
         num_correct_objects = 0             # counter for correct objects
 
         # loop over objects to create
@@ -103,7 +102,7 @@ class MapTests(unittest.TestCase):
 
         # call update_map
         self.map.update_map()
-
+        
         # check if predict was called for all objects in object_list
         self.assertEqual(mock_predict.call_count, num_objects)
 

@@ -23,6 +23,9 @@ class Object():
         self.objectType = objectType
         self.rngRate = rngRate
         self.bearingRate = bearingRate
+        self.histLength = 10
+        self.updateHist = [None] * self.histLength        # list to store if track updates for past <histLength> update cycles
+
 
         self.prevRng = 0
         self.prevBearing = 0
@@ -33,10 +36,18 @@ class Object():
         """Updates object position and model based on new reading
         Inputs:
             rng -- range measured by sensors
-            bearing -- bearing measured by sensorss
+            bearing -- bearing measured by sensors
             rngRate -- rate of change of range
             bearingRate -- rate of change of bearing
         """
+        # rotate update history
+        self.updateHist[1:self.histLength - 1] = self.updateHist[0:self.histLength - 2]
+
+        if (rng is None) and (bearing is None):
+            self.updateHist[0] = 0                  # not updated
+            return                                  # exit function
+
+        self.updateHist[0] = 1                      # updated
 
         if (rngRate is None) and (bearingRate is None):
             self.kalman.update(rng, bearing, self.rngRate, self.bearingRate)
