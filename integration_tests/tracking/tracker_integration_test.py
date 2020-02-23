@@ -12,8 +12,6 @@ from pubsub import pub
 from random import uniform, randint
 from time import sleep
 
-import pdb
-
 from src.tracking.map import Map
 from src.utils.time_in_millis import time_in_millis
 
@@ -36,10 +34,6 @@ class TrackerTest(Thread):
         self.polar.set_title('Tracker Map')
 
         # set up rng, bearing, and type data lists for tracks
-#        self.track_rng_data = [0]
-#        self.track_bearing_data = [0]
-#        self.track_type_data = [0]
-#        self.tracks = self.polar.scatter(self.track_rng_data, self.track_bearing_data, marker='+', label='Tracks', s=3)
         self.covar_ellipses = []
 
         # set up rng, bearing, and type data lists for tracks
@@ -100,10 +94,6 @@ class TrackerTest(Thread):
         """Continually updates detections"""
         loop_counter = 0
         while True:
-#            cmd = input()                     # waits for key press to advance
-#            if cmd == 's':
-#                pdb.set_trace()
-
             sleep(self.update_interval)
 
             # get tracks from map
@@ -184,10 +174,6 @@ class TrackerTest(Thread):
 
         # update map with detections
         pub.sendMessage('object(s) detected', epoch_frame = epoch_frame, frame_bounds = self.frame_bounds)
-
-        for ii, (det_rng, det_bearing) in enumerate(zip(self.det_rng_data, self.det_bearing_data)):
-#            print("Detection {}: {}".format(ii, (det_rng, det_bearing)))
-            pass
 
     def spawn_detections(self, n_dets):
         """
