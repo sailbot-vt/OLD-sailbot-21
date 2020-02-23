@@ -13,15 +13,15 @@ class KalmanFilter():
             vel_sigma -- uncertainty of veloicty of object (polar)
         """
 
-        self.state = np.append(pos, vel)       # create state vector (elements are r, bear, v_r, v_bear)
+        self.state = np.append(pos, vel).astype(np.float32)       # create state vector (elements are r, bear, v_r, v_bear)
         if pos_sigma is None:
             pos_sigma = np.array([1.0, 1.0])     # arbitrary choice -- needs tuning
         if vel_sigma is None:
             vel_sigma = np.array([3., 3.])     # arbitrary choice -- needs tuning
-        self.covar = np.diag(np.append(pos_sigma, vel_sigma))   # create covariance matrix (matrix of certainties of measurements)
-        self.measurement_covar = np.eye(self.covar.shape[0])
+        self.covar = np.diag(np.append(pos_sigma, vel_sigma)).astype(np.float32)   # create covariance matrix (matrix of certainties of measurements)
+        self.measurement_covar = np.eye(self.covar.shape[0]).astype(np.float32)
 
-        self.process_noise = np.eye(self.state.shape[0])      # initalize process noise
+        self.process_noise = np.eye(self.state.shape[0]).astype(np.float32)      # initalize process noise
 
         self.last_time_changed = time_in_millis()
         self.delta_t = 0
@@ -54,7 +54,7 @@ class KalmanFilter():
             vel -- veloicty of object (cartesian)
 #           hist_score -- certainty score based on object history (used as scale factor for measurement covariance) (range 1 - 1.05)
         """
-        measurement = np.append(pos, vel)
+        measurement = np.append(pos, vel).astype(np.float32)
 
         self.state, self.covar = kalman.update(x=self.state, P=self.covar, z=measurement, R=self.measurement_covar, H=self.measurement_trans)
 
