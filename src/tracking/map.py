@@ -57,7 +57,7 @@ class Map(Thread):
             object_list -- Updates object list using data from frame (updates or creates new objects)
         """
         # trim object list to only include tracks with frame bounds
-        trimmed_object_list = self.return_objects(bearingRange = frame_bounds[1], rngRange = frame_bounds[0])
+        trimmed_object_list = self._return_full_objects(bearingRange = frame_bounds[1], rngRange = frame_bounds[0])
 
         if len(trimmed_object_list) != 0:
             # generate gate list
@@ -129,10 +129,44 @@ class Map(Thread):
 
         mutex.release()
                 
-        return_list = [(obj.rng, obj.bearing, obj.objectType) for obj in object_list[0:ii]] 
+        return_list = [(obj.rng, obj.bearing, obj.objectType, obj.rngRate, obj.bearingRate, obj.confidence)
+                        for obj in object_list[0:ii]] 
 
         return return_list
 
+    def _return_full_objects(self, bearingRange=[-30,30], timeRange=[0,5000], rngRange=None):
+        """Returns objects (Object types) passing within given bearing range of boat in given time range
+
+        Inputs:
+            bearingRange -- Angle (in degrees) from bow to search within (-180 to 180)
+            timeRange -- Time (in ms) to search within using current boat velocity
+            rngRange -- Range (in m) from bow to search within 
+        
+        Returns:
+            return_list -- list made up of rng, bearing, and type data of objects in map fitting criteria specified
+        """
+        _max_objs = 25               # Maximum number of objects to output (arbitrary choice)
+        object_list = [0] * _max_objs
+
+        if rngRange == None:
+            # Convert time range to range range
+            current_speed = self.boat.current_speed()
+            rngRange = [(current_speed * (time_val/1000.)) for time_val in timeRange]
+
+        ii = 0
+        mutex.acquire()
+        for obj in self.object_list:
+            if ii >= _max_objs:
+                break
+            if (rngRange[0] <= obj.rng <= rngRange[1] and (bearingRange[0] <= obj.bearing <= bearingRange[1])):
+                object_list[ii] = obj
+                ii += 1
+
+        mutex.release()
+                
+        return_list = [obj for obj in object_list[0:ii]] 
+
+        return return_list
 
     def get_buoys(self):
         """Returns buoys that are tracked in the map

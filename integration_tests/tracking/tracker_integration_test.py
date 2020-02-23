@@ -202,10 +202,10 @@ class TrackerTest(Thread):
         data = self.map.return_objects(bearingRange=[-180, 180], rngRange=[0, 200])
 
         # split data into rng, bearing, and type_data
-        self.track_rng_data = [obj.rng for obj in data]
-        self.track_bearing_data = [obj.bearing for obj in data]
-        self.track_type_data = [obj.objectType for obj in data]
-        self.track_conf_data = [obj.confidence for obj in data]
+        self.track_rng_data = [obj[0] for obj in data]
+        self.track_bearing_data = [obj[1] for obj in data]
+        self.track_type_data = [obj[2] for obj in data]
+        self.track_conf_data = [obj[5] for obj in data]
 
     def plot_data(self):
         """Updates plot using data"""

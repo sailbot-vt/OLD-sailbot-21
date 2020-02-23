@@ -88,6 +88,43 @@ class MapTests(unittest.TestCase):
             self.assertAlmostEqual(obj[1], returned_objects[jj][1])
             self.assertEqual(obj[2], returned_objects[jj][2])
 
+    def test_return_full_objects(self):
+        """Tests return full objects method of map"""
+        # set up objects to add to map
+        timeRange = 5000                                       # time used to create rngRange 
+        rngRange = (0, self.boat_speed * (timeRange/1000))     # range of ranges to return
+        bearingRange = (-30, 30)                        # range of bearings to return
+        type_list = [ObjectType.BUOY, ObjectType.BOAT, ObjectType.BUOY, 
+                     ObjectType.BUOY, ObjectType.BOAT, ObjectType.BUOY, ObjectType.NONE]    # object types
+
+        # set up objects
+        num_objects = 7
+        correct_object_list = [0] * num_objects     # create empty object list 
+        num_correct_objects = 0             # counter for correct objects
+
+        # loop over objects to create
+        for n in range(num_objects):
+            rng = (n*6) + 3     # get range in range from 3 to 39
+            bearing = (n*15) - 45   # get bearing in range from -45 to 45
+
+            # add object to correct object list if with rngRange and bearingRange
+            if (rngRange[0] <= rng <= rngRange[1]) and (bearingRange[0] <= bearing <= bearingRange[1]):
+                correct_object_list[num_correct_objects] = [rng, bearing, type_list[n]]
+                num_correct_objects += 1
+        
+            # add object to map
+            obj = Object(bearing, rng, time_in_millis(), objectType = type_list[n])
+            self.map.object_list.append(obj)
+
+        # get list of objects meeting conditions
+        returned_objects = self.map._return_full_objects(bearingRange, rngRange=rngRange)
+
+        # check that objects match
+        for jj, obj in enumerate(correct_object_list[0:num_correct_objects]):
+            self.assertAlmostEqual(obj[0], returned_objects[jj].rng)
+            self.assertAlmostEqual(obj[1], returned_objects[jj].bearing)
+            self.assertEqual(obj[2], returned_objects[jj].objectType)
+
     @patch('src.tracking.map.Object.predict')
     def test_update_map(self, mock_predict):
         """Tests update map method"""
@@ -131,7 +168,7 @@ class MapTests(unittest.TestCase):
              patch('src.tracking.map.Object.update') as mock_update, \
              patch('src.tracking.map.Map._generate_obj_gate', return_value = 0), \
              patch('src.tracking.map.Object.__init__', return_value = None) as mock_obj_init, \
-             patch('src.tracking.map.Map.return_objects', return_value = self.map.object_list), \
+             patch('src.tracking.map.Map._return_full_objects', return_value = self.map.object_list), \
              patch('src.tracking.map.time_in_millis', return_value = 1):
 
             # set mock joint pdaf return value
