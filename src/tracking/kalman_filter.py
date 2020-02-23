@@ -3,6 +3,8 @@ import filterpy.kalman as kalman
 
 from src.utils.time_in_millis import time_in_millis
 
+from src.tracking.config_reader import read_kalman_config
+
 class KalmanFilter():
     def __init__(self, pos, vel, pos_sigma=None, vel_sigma=None):
         """Initialize kalman filter
@@ -13,11 +15,13 @@ class KalmanFilter():
             vel_sigma -- uncertainty of veloicty of object (polar)
         """
 
+        kalman_config = read_kalman_config()
+
         self.state = np.append(pos, vel).astype(np.float32)       # create state vector (elements are r, bear, v_r, v_bear)
         if pos_sigma is None:
-            pos_sigma = np.array([1.0, 1.0])     # arbitrary choice -- needs tuning
+            pos_sigma = np.array([kalman_config['r_sigma'], kalman_config['theta_sigma']]).astype(np.float32)
         if vel_sigma is None:
-            vel_sigma = np.array([3., 3.])     # arbitrary choice -- needs tuning
+            vel_sigma = np.array([kalman_config['r_hat_sigma'], kalman_config['theta_hat_sigma']]).astype(np.float32)
         self.covar = np.diag(np.append(pos_sigma, vel_sigma)).astype(np.float32)   # create covariance matrix (matrix of certainties of measurements)
         self.measurement_covar = np.eye(self.covar.shape[0]).astype(np.float32)
 
@@ -96,4 +100,4 @@ class KalmanFilter():
             self.state -- wraps bearing
         """
         if self.state[1] > 180:
-            self.state[1] = -180 + (self.state[1] % 180)
+            self.state[1] = -180. + (self.state[1] % 180)

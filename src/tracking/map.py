@@ -3,6 +3,7 @@ from time import sleep
 
 from pubsub import pub
 
+from src.tracking.config_reader import read_map_config
 from src.tracking.object import Object
 from src.tracking.classification_types import ObjectType
 from src.tracking.pdaf import joint_pdaf
@@ -27,7 +28,9 @@ class Map(Thread):
         self.boat = boat
         self.object_list = []
 
-        self.update_interval = 0.25
+        config = read_map_config()
+
+        self.update_interval = config['update_interval']
         self.toggle_update = toggle_update
 
     def run(self):
@@ -83,7 +86,6 @@ class Map(Thread):
         # use all detections NOT used to update objects to create new objects
         for ii, det in enumerate(epoch_frame):
             if detections_used[ii] == 0:
-                print("New object created...")
                 new_obj = Object(det[1], det[0], time_in_millis(), objectType = det[2])     # create object using detection
                 mutex.acquire()
                 self.object_list.append(new_obj)        # add to object_list
@@ -97,7 +99,6 @@ class Map(Thread):
         mutex.acquire()
         for ii, obj in enumerate(self.object_list):
             if obj.confidence < 0.1:
-                print("Deleting object {}".format(ii))
                 del self.object_list[ii]
         mutex.release()
 

@@ -198,8 +198,8 @@ class KalmanFilterTests(unittest.TestCase):
     def test_adjust_wraparound(self):
         """Tests adjust wraparound method"""
         # generate bearing data
-        bearing_list = [0, 45, 120., 179.999, 180.00001, 185, 250, 323, 355.23, 359.9999]
-        adjust_bearing_list = [0, 45, 120., 179.999, -179.99999, -175, -110, -37, -4.77, -0.0001]
+        bearing_list = [0, 45, 120., 179.99, 180.00001, 185, 250, 323, 355.23, 359.999]
+        adjust_bearing_list = [0, 45, 120., 179.99, -179.99999, -175, -110, -37, -4.77, -0.001]
 
         # loop through values
         for bearing, adjusted_bearing in zip(bearing_list, adjust_bearing_list):
@@ -209,5 +209,7 @@ class KalmanFilterTests(unittest.TestCase):
             # call adjust wraparound
             self.kalman._adjust_wraparound()
 
+            truth_state = np.array([0., adjusted_bearing, 0., 0.]).astype(np.float32)
+
             # check for correct behavior
-            self.assertAlmostEqual(adjusted_bearing, self.kalman.state[1])
+            np.testing.assert_allclose(truth_state, self.kalman.state, atol=1e-4)
