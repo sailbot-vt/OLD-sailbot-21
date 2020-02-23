@@ -14,6 +14,7 @@ import numpy as np
 from datetime import datetime as dt
 from time import sleep
 
+
 class MapTests(unittest.TestCase):
     """Tests the methods in Map"""
     def setUp(self):
@@ -83,9 +84,9 @@ class MapTests(unittest.TestCase):
 
         # check that objects match
         for jj, obj in enumerate(correct_object_list[0:num_correct_objects]):
-            self.assertAlmostEqual(obj[0], returned_objects[jj].rng)
-            self.assertAlmostEqual(obj[1], returned_objects[jj].bearing)
-            self.assertEqual(obj[2], returned_objects[jj].objectType)
+            self.assertAlmostEqual(obj[0], returned_objects[jj][0])
+            self.assertAlmostEqual(obj[1], returned_objects[jj][1])
+            self.assertEqual(obj[2], returned_objects[jj][2])
 
     @patch('src.tracking.map.Object.predict')
     def test_update_map(self, mock_predict):
@@ -229,9 +230,9 @@ class MapTests(unittest.TestCase):
 
         # check if objects map correct object list
         for jj, obj in enumerate(correct_object_list):
-            self.assertAlmostEqual(obj[0], returned_objects[jj].rng)
-            self.assertAlmostEqual(obj[1], returned_objects[jj].bearing)
-            self.assertEqual(obj[2], returned_objects[jj].objectType)
+            self.assertAlmostEqual(obj[0], returned_objects[jj][0])
+            self.assertAlmostEqual(obj[1], returned_objects[jj][1])
+            self.assertEqual(obj[2], returned_objects[jj][2])
 
     def test_enable_update(self):
         """Tests enable update method"""
