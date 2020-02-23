@@ -10,7 +10,6 @@ from src.tracking.pdaf import joint_pdaf
 
 from src.utils.time_in_millis import time_in_millis
 
-
 mutex = Lock()
 class Map(Thread):
     """
@@ -112,7 +111,7 @@ class Map(Thread):
             return_list -- list made up of rng, bearing, and type data of objects in map fitting criteria specified
         """
         _max_objs = 25               # Maximum number of objects to output (arbitrary choice)
-        return_list = [0] * _max_objs
+        object_list = [0] * _max_objs
 
         if rngRange == None:
             # Convert time range to range range
@@ -127,6 +126,8 @@ class Map(Thread):
             if (rngRange[0] <= obj.rng <= rngRange[1] and (bearingRange[0] <= obj.bearing <= bearingRange[1])):
                 object_list[ii] = obj
                 ii += 1
+
+        mutex.release()
                 
         return_list = [(obj.rng, obj.bearing, obj.objectType) for obj in object_list[0:ii]] 
 
@@ -142,18 +143,20 @@ class Map(Thread):
 
         # Create output array
         _max_objs = 10               # Maximum number of objects to output (arbitrary choice)
-        return_list = [0] * _max_objs
+        object_list = [0] * _max_objs
 
         num_buoys = 0
         mutex.acquire()
-        for ii, obj in enumerate(self.object_list):
+        for obj in self.object_list:
             if num_buoys >= _max_objs:
                 break
             if obj.objectType == ObjectType.BUOY:
                 object_list[num_buoys] = obj
                 num_buoys += 1
 
-        return_list = [(obj.rng, obj.bearing, obj.objectType) for obj in object_list[0:ii]] 
+        mutex.release()
+
+        return_list = [(obj.rng, obj.bearing, obj.objectType) for obj in object_list[0:num_buoys]] 
 
         return return_list
 
