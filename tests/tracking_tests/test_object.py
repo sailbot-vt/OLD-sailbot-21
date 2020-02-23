@@ -6,8 +6,6 @@ except ImportError:
 
 from src.tracking.object import Object
 
-from src.utils.coord_conv import cartesian_to_polar, polar_to_cartesian
-
 import numpy as np
 import time
 

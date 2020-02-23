@@ -8,10 +8,8 @@ from src.tracking.object import Object
 from src.tracking.classification_types import ObjectType
 from src.tracking.pdaf import joint_pdaf
 
-from src.utils.coord_conv import cartesian_to_polar, polar_to_cartesian
 from src.utils.time_in_millis import time_in_millis
 
-import numpy as np
 
 mutex = Lock()
 class Map(Thread):
@@ -111,7 +109,7 @@ class Map(Thread):
             rngRange -- Range (in m) from bow to search within 
         
         Returns:
-            return_list -- list made up of objects fitting criteria specified
+            return_list -- list made up of rng, bearing, and type data of objects in map fitting criteria specified
         """
         _max_objs = 25               # Maximum number of objects to output (arbitrary choice)
         return_list = [0] * _max_objs
@@ -127,18 +125,19 @@ class Map(Thread):
             if ii >= _max_objs:
                 break
             if (rngRange[0] <= obj.rng <= rngRange[1] and (bearingRange[0] <= obj.bearing <= bearingRange[1])):
-                return_list[ii] = obj
+                object_list[ii] = obj
                 ii += 1
+                
+        return_list = [(obj.rng, obj.bearing, obj.objectType) for obj in object_list[0:ii]] 
 
-        mutex.release()
+        return return_list
 
-        return return_list[0:ii]
 
     def get_buoys(self):
         """Returns buoys that are tracked in the map
 
         Returns:
-            return_list -- list made up of buoys in map
+            return_list -- list made up of rng, bearing, and type data of buoys in map
         """
 
         # Create output array
@@ -151,11 +150,12 @@ class Map(Thread):
             if num_buoys >= _max_objs:
                 break
             if obj.objectType == ObjectType.BUOY:
-                return_list[num_buoys] = obj
+                object_list[num_buoys] = obj
                 num_buoys += 1
 
-        mutex.release()
-        return return_list[0:num_buoys]
+        return_list = [(obj.rng, obj.bearing, obj.objectType) for obj in object_list[0:ii]] 
+
+        return return_list
 
     def update_map(self):
         """ Updates map using boat state data"""

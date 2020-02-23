@@ -93,6 +93,8 @@ class SerialPort(Port):
         self.remaining_input = bytearray()
 
     def open(self):
+        # Fix for force quit serial bug
+        self.port.close()
         if not self.is_open():
             self.port.open()
 
