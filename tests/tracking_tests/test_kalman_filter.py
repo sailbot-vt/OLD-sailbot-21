@@ -59,7 +59,6 @@ class KalmanFilterTests(unittest.TestCase):
 
             # generate measurement values (arbitrary)
             pos, vel = np.array([4, 45]), np.array([1, 90])
-            pos_sigma, vel_sigma = np.array([1, 1]), np.array([2, 2])
 
             measurement = np.append(pos, vel)
 

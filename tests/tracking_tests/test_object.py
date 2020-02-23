@@ -135,9 +135,6 @@ class ObjectTests(unittest.TestCase):
         # call update
         self.object.update(rng, bearing, rngRate, bearingRate)
 
-        # hist score (with two detections in hist)
-#        hist_score = max_val - ((2+4)*scale_fac)
-
         # ensure proper behavior
         mock_kalman_update.assert_called_with([rng, bearing], [rngRate, bearingRate])
 
