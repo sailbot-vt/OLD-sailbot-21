@@ -1,6 +1,9 @@
 FROM balenalib/beaglebone-black-debian-python
 
 ENV HOSTNAME beaglebone
+ENV UDEV=1
+
+ENTRYPOINT ["/usr/bin/entry.sh"]
 
 RUN apt-get -y update && apt-get -y install make wget
 
