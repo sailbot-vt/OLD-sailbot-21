@@ -28,7 +28,7 @@ class SysMonitorSocket(Namespace):
      def memory_usage(self):
 	"""
 	Returns:
-	A string that contains information on total and available memory, as 		well as other memory info.
+	A string that contains total memory usage.
 	"""
 	memoryUse = psutil.virtual_memory()
 	return memoryUse[2]
