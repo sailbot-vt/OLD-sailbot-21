@@ -4,9 +4,10 @@ from threading import Thread, Lock
 from pubsub import pub
 
 from src.navigation_mode import NavigationMode
-from src.nav.course import ObjectCourse
+from src.autonomy.nav.course import ObjectCourse
 
 mutex = Lock()
+
 
 class Event(ABC, Thread):
     """Base event type"""
@@ -67,7 +68,7 @@ class Event(ABC, Thread):
 
     def clear_course(self):
         """
-        Clears course of all obejcts 
+        Clears course of all objects
         Side Effects:
             course -- clears course
         """

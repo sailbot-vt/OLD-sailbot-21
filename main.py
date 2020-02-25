@@ -2,13 +2,14 @@ import src.airmar.airmar_input_thread as airmar
 import src.rc_input.rc_input_thread as rc
 import src.rudder.rudder_listener as rudder
 import src.sail.sail_listener as sail
-import src.nav.captain as captain
+import src.autonomy.nav.captain as captain
 import src.arduino.arduino.Arduino as Arduino
-
+import src.autonomy.events.fleet_race as fleet_race
 from src.boat.boat import Boat
 from src.world.world import World
 
 from src.logging.logger import Logger
+
 
 def main():
     """Runs the program."""
@@ -49,7 +50,7 @@ def main():
     cmd = input()
 
     if cmd == 0:
-        pass        # run fleet race
+        fleet_race.FleetRace(boat, wind, world)    # run fleet race
     elif cmd == 1:
         pass        # run endurance race
     elif cmd == 2:
