@@ -7,14 +7,14 @@ except ImportError:
 from src.airmar.airmar_receiver import AirmarReceiver
 from src.broadcaster.broadcaster import BroadcasterType
 from src.broadcaster.broadcaster import make_broadcaster
-from src.hardware.pin import make_pin
-from src.hardware.port import make_port
+from src.logging.logger import Logger
+
 from tests.mock_bbio import Adafruit_BBIO
 from tests.mock_port import serial
 
 
-class AirmarIntegrationTests(unittest.TestCase):
-    """ Tests airmar program """
+class AirmarReceiverTests(unittest.TestCase):
+    """ Tests airmar receiver """
 
     def setUp(self):
         """ Initialize testing receiver """
@@ -26,28 +26,14 @@ class AirmarIntegrationTests(unittest.TestCase):
         serial.Serial.write = MagicMock(name='serial.Serial.write')
         Adafruit_BBIO.UART.setup = MagicMock(name='Adafruit_BBIO.UART.setup')
 
-        pin = make_pin(config={
-            "pin_name": "P0_0",
-            "pin_type": "UART",
-            "channel": "UART1"
-        }, mock_lib=Adafruit_BBIO.UART)
-
-        port = make_port(config={
-            "port_name": "/dev/tty0",
-            "port_type": "SERIAL",
-            "baudrate": "4800",
-            "encoding": "UTF-8",
-            "timeout": 0 
-        }, mock_port=serial.Serial)
-
-        ids = ["VTG", "MWD", "GGA"]
-
         broadcaster = make_broadcaster(
             broadcaster_type=BroadcasterType.Testable)
 
         self.receiver = AirmarReceiver(
+            logger=Logger(),
             broadcaster=broadcaster,
-            ids=ids, pin=pin, port=port)
+            mock_bbio=Adafruit_BBIO,
+            mock_port=serial.Serial)
 
     def test_start_stop(self):
         """ 
@@ -71,4 +57,4 @@ class AirmarIntegrationTests(unittest.TestCase):
         self.receiver.send_airmar_data()
         self.receiver.parser.parse.return_value = ["test"] 
         self.receiver.send_airmar_data()
-        self.assertEqual(1, self.receiver.processor.update_airmar_data.call_count)
+        self.assertEqual(2, self.receiver.processor.update_airmar_data.call_count)

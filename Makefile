@@ -23,4 +23,13 @@ run:
 run_loc_img:
 	docker run -it --rm --name sailbot_run beag_img ./scripts/run.sh
 
-.PHONY: init test test_remote_img build_beag_img run run_loc_img run_stretch_build
+clean:
+	rm logs/*
+
+test_tracker:
+	bash ./scripts/test_tracker.sh
+
+test_controls:
+	bash ./scripts/test_controls.sh
+
+.PHONY: init test test_remote_img build_beag_img run run_loc_img run_stretch_build clean test_tracker test_controls

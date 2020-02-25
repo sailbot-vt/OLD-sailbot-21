@@ -2,7 +2,7 @@
 p3_*env/
 
 # Log files and dir
-logs/*
+logs/
 *.log
 
 # Byte-compiled / optimized / DLL files
