@@ -3,8 +3,8 @@ import src.rc_input.rc_input_thread as rc
 import src.rudder.rudder_listener as rudder
 import src.sail.sail_listener as sail
 import src.nav.captain as captain
-import src.arduino.arduino.Arduino as Arduino
 
+from src.arduino.arduino import Arduino
 from src.boat.boat import Boat
 from src.world.world import World
 
@@ -21,8 +21,8 @@ def main():
     world = World()
 
     # Threads
-    airmar_thread = airmar.AirmarInputThread()
     logger = Logger()
+    airmar_thread = airmar.AirmarInputThread(logger)
     rc_thread = rc.RCInputThread()
     Sail = sail.SailListener(boat, world)
     Rudder = rudder.RudderListener()

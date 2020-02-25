@@ -5,6 +5,9 @@ p3_*env/
 logs/
 *.log
 
+# beaglebone img
+*.tar.gz
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
