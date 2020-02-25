@@ -38,3 +38,6 @@ make install
 
 # Clean up
 rm -rf /tmp/py-transient
+
+# Upgrade pip
+pip3 install --upgrade pip
