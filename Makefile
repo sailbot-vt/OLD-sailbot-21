@@ -7,7 +7,13 @@ test:
 run:
 	bash ./scripts/run.sh
 
-calibrate:
-	python3 ./src/buoy_detection/calibration.py ./src/buoy_detection/config.yaml
+clean:
+	rm logs/*
 
-.PHONY: init test run
+test_tracker:
+	bash ./scripts/test_tracker.sh
+
+test_controls:
+	bash ./scripts/test_controls.sh
+
+.PHONY: init test run clean test_tracker test_controls
