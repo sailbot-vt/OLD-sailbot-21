@@ -14,17 +14,21 @@ class SysMonitorSocket(Namespace):
 	"""
         return psutil.cpu_percent(interval=1)
 
-     def cpu_temperature(self):
+     def cpu_temperature(self, degF):
 	"""
+	parameters:
+	degF: boolean, specifies units of temperature: true for fahrenheit, false for celcius.
 	Returns:
 	A string that returns hardware temperatures in celcius.
 	For Farenheit, specify fahrenheit as true.
 	"""
-	return psutil.sensors_temperatures(fahrenheit=False)
+	sensorTemp = psutil.sensors_temperatures(fahrenheit= degF)
+	return sensorTemp
 
      def memory_usage(self):
 	"""
 	Returns:
 	A string that contains information on total and available memory, as 		well as other memory info.
 	"""
-	return psutil.virtual_memory()
+	memoryUse = psutil.virtual_memory()
+	return memoryUse[2]
