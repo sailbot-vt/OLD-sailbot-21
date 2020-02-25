@@ -8,6 +8,9 @@ logs/
 # beaglebone img
 *.tar.gz
 
+# Compressed images
+*.gz
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

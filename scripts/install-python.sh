@@ -2,14 +2,12 @@
 # Installs Python 3.5
 # Works for Debian 9 (Stretch)
 
-
 export PATH=/usr/local/bin:$PATH
 
-if [[ $HOSTNAME == beaglebone ]]; then
-    apt-get install -y python3 \
-                    python3-pip python3-setuptools python3-wheel
-    exit 0
-fi
+#if [[ $HOSTNAME == beaglebone ]]; then
+#    apt-get install -y python3 \
+#                    python3-pip python3-setuptools python3-wheel
+#fi
 
 # If Python already exists, exit
 if hash python3.5 2>/dev/null; then
@@ -19,23 +17,23 @@ fi
 
 # Get Python build dependencies
 apt-get install -y build-essential
-apt-get install -y libbz2-dev libsqlite3-dev libreadline-dev zlib1g-dev libncurses5-dev libssl-dev libgdbm-dev libffi-dev python-pip
+apt-get install -y libbz2-dev libsqlite3-dev libreadline-dev zlib1g-dev libncurses5-dev libssl-dev libgdbm-dev libffi-dev python-pip openssl
 apt-get install -y make
 
-# Create temporary working directory
-mkdir /tmp/py-transient
+mkdir -p /tmp/py-transient
 cd /tmp/py-transient
 
-# Download Python source
-wget https://www.python.org/ftp/python/3.5.7/Python-3.5.7.tar.xz
-tar xf Python-3.5.7.tar.xz
+wget https://www.python.org/ftp/python/3.5.7/Python-3.5.7.tgz
+tar -xzf Python-3.5.7.tgz
 cd Python-3.5.7
-
-# Build python3.5 executable
 ./configure
 make
 make install
 
+<<<<<<< HEAD
 # Clean up
 rm -rf /tmp/py-transient
 
+=======
+rm -r /tmp/py-transient
+>>>>>>> 6cff95a9b4eba66f6dd210b59f599de9e54729dc

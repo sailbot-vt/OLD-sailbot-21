@@ -2,6 +2,7 @@ language: python
 python:
   - "3.5"
 
+before_install: docker run --rm --privileged hypriot/qemu-register
 install: make init
 script: ./scripts/test.sh
 

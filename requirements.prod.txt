@@ -4,4 +4,6 @@ numpy
 pynmea2
 parse
 pyserial
+scipy
+opencv-python
 filterpy

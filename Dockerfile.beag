@@ -12,7 +12,7 @@ COPY Makefile /sailbot/
 COPY requirements.prod.txt /sailbot/
 WORKDIR /sailbot
 
-RUN make init
+RUN make _init
 
 COPY src /sailbot/src
 COPY tests /sailbot/tests
