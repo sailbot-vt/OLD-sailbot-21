@@ -2,18 +2,8 @@ language: python
 python:
   - "3.5"
 
-addons:
-  apt:
-    packages:
-      - docker-ce
-
-services:
-  - docker
-
-before_install:
-  - make test
-  - docker ps -a
-  # - make test_remote_img
+install: make init
+script: ./scripts/test.sh
 
 after_success:
   #  - . ./p3_5env/bin/activate
