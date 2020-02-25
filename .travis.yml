@@ -2,10 +2,21 @@ language: python
 python:
   - "3.5"
 
-install: make init
-script: ./scripts/test.sh
+addons:
+  apt:
+    packages:
+      - docker-ce
+
+services:
+  - docker
+
+before_install:
+  - make test
+  - docker ps -a
+  # - make test_remote_img
+
 after_success:
-#  - . ./p3_5env/bin/activate
+  #  - . ./p3_5env/bin/activate
   - coveralls
 
 notifications:
