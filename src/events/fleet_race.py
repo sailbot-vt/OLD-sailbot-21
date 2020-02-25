@@ -1,7 +1,7 @@
 from autonomy.objectives import Objectives
 from src.events.base_event import Event
 from src.events.config_reader import read_interval
-from src.autonomy.nav.cap as captain
+import src.autonomy.nav.cap as captain
 
 
 class FleetRace(Event):
