@@ -9,26 +9,21 @@ import numpy as np
 from src.autonomy.obstacle_avoidance.config_reader import read_object_field_config
 from src.autonomy.obstacle_avoidance.config_reader import read_gap_config
 
-#TODO REMOVE
-import pdb
-
 mutex_waypoint, mutex_object_field = Lock(), Lock()
 class ObstacleAvoidance(Thread):
     """Obstacle avoidance thread"""
-    def __init__(self, wind, tracker, boat):
+    def __init__(self, tracker, boat):
         """
         Initializes obstacle avoidance thread
         Inputs:
-            wind -- wind object containing true and apparent wind reading
             tracker -- tracker instance
             boat -- boat object containing boat state data
         """
         super().__init__()
-        self.wind = wind
         self.tracker = tracker
         self.boat = boat
 
-        self.waypoint = (0, 0)
+        self.waypoint = (0, 0)                              # range, bearing
         pub.subscribe(self.update_waypoint, 'waypoint')
 
         self.is_active = True
@@ -37,6 +32,12 @@ class ObstacleAvoidance(Thread):
         self.gap_config = read_gap_config()
 
         self.update_interval = 0.5
+
+        self._make_time_bounds()
+        self._make_theta_bounds()
+
+        # TODO REMOVE
+        self.gap_matrix = np.ones((len(self.t_bounds), len(self.theta_bounds)))
 
     def run(self):
         """Runs obstacle avoidance thread"""
@@ -90,20 +91,28 @@ class ObstacleAvoidance(Thread):
         # find desired heading
         desired_heading = self.waypoint[1]
 
-        # create gap matrix
-        gap_matrix, theta_list = self.create_gap_matrix()
+        if len(self.object_field) != 0:
+            # create gap matrix
+            gap_matrix, theta_list = self.create_gap_matrix()
 
-        # find paths without obstacles (assuming constant heading over time range) (constraint probably acceptable given turning rate of boat AND short time ranges for obstacle detection)
-        gap_paths = np.sum(gap_matrix, 0).tolist()
+            # find paths without obstacles (assuming constant heading over time range) (constraint probably acceptable given turning rate of boat AND short time ranges for obstacle detection)
+            gap_paths = np.sum(gap_matrix, 0).tolist()
 
-        # transform path indices into headings
-        poss_paths = [theta for theta, path in zip(theta_list, gap_paths) if path == gap_matrix.shape[0]]
-        
-        # find best path
-        delta_list = [abs(theta - desired_heading) for theta in poss_paths]
-        adjusted_heading = poss_paths[delta_list.index(min(delta_list))]
+            # transform path indices into headings
+            poss_paths = [theta for theta, path in zip(theta_list, gap_paths) if path == gap_matrix.shape[0]]
 
-        return adjusted_heading
+            if len(poss_paths) != 0:            # if any possible path
+                # find best path
+                delta_list = [abs(theta - desired_heading) for theta in poss_paths]
+                adjusted_heading = poss_paths[delta_list.index(min(delta_list))]
+
+                return adjusted_heading
+
+            else:
+                return desired_heading
+
+        else:
+            return desired_heading
  
     def create_gap_matrix(self):
         """
@@ -112,21 +121,58 @@ class ObstacleAvoidance(Thread):
             gap_matrix -- matrix with 0's in fields where obstacles are present
             theta_list -- list of bearings corresponding to columns in gap matrix
         """
-        # t and theta steps
+        # t step
         t_step = self.gap_config['t_step']
-        theta_step = self.gap_config['theta_step']
 
-        # get time and bearing ranges
+        num_predicts = self.object_field_config['num_predictions']
+
+        mutex_object_field.acquire()
+        # generate object field with predicted obstacle positions
+        predicted_object_field = [(rng + ((ii%(num_predicts+1))*t_step*rng_rate), 
+                                    bearing + (ii%(num_predicts+1))*t_step*bearing_rate, obj_type) 
+                                  for ii, (rng, bearing, obj_type, rng_rate, bearing_rate) in
+                                  enumerate((num_predicts + 1)*self.object_field)]
+
+        # create gap matrix
+        gap_matrix = np.ones((len(self.t_bounds),len(self.theta_bounds)))
+        for ii, t_bound in enumerate(self.t_bounds):
+            # calc range bounds given t_bounds
+            rng_bound = tuple(t * self.boat.current_speed() for t in t_bound)
+            for jj, theta_bound in enumerate(self.theta_bounds):
+                # place 0 in gap matrix IF object exists in bounds
+                for obj in predicted_object_field:
+                    if rng_bound[0] <= obj[0] <= rng_bound[1] and \
+                       theta_bound[0] <= obj[1] <= theta_bound[1]:
+                        gap_matrix[ii,jj] = 0
+
+        mutex_object_field.release()
+
+        # generate theta list
+        theta_list = [mean(theta_bound) for theta_bound in self.theta_bounds]
+
+        # TODO REMOVE
+        self.gap_matrix = gap_matrix    # exposes gap matrix to integration test script
+
+        # return gap matrix
+        return gap_matrix, theta_list
+
+    def _make_time_bounds(self):
+        """
+        Makes time bounds for gap matrix
+        Side Effects:
+            self.t_bounds -- fills time bounds
+        """
+        # t step
+        t_step = self.gap_config['t_step']
+
+        # get time ranges
         time_range = self.object_field_config['time_range']
-        theta_range = self.object_field_config['bearing_range']
 
         # overlap
         overlap = self.gap_config['overlap']
-        
+
         # initialize time/range bounds list
         t_bounds = [0] * ceil((abs(time_range[1] - time_range[0])/t_step) * (1-overlap)**(-1))
-        # initialize bearing bounds list
-        theta_bounds = [0] * ceil((abs(theta_range[1] - theta_range[0])/theta_step) * (1-overlap)**(-1))
 
         # fill out time/range bounds list
         for ii in range(len(t_bounds)):
@@ -136,6 +182,26 @@ class ObstacleAvoidance(Thread):
                 r_bound = time_range[1]
             t_bounds[ii] = (l_bound, r_bound)
 
+        self.t_bounds = t_bounds
+    
+    def _make_theta_bounds(self):
+        """
+        Makes theta bounds for gap matrix
+        Side Effects:
+            self.theta_bounds -- fills bearing bounds
+        """
+        # theta step
+        theta_step = self.gap_config['theta_step']
+
+        # get bearing range
+        theta_range = self.object_field_config['bearing_range']
+
+        # overlap
+        overlap = self.gap_config['overlap']
+
+        # initialize bearing bounds list
+        theta_bounds = [0] * ceil((abs(theta_range[1] - theta_range[0])/theta_step) * (1-overlap)**(-1))
+
         # fill out bearing bounds list
         for jj in range(len(theta_bounds)):
             l_bound = (jj  * (theta_range[1] - theta_range[0])) / len(theta_bounds) + theta_range[0]
@@ -144,24 +210,4 @@ class ObstacleAvoidance(Thread):
                 r_bound = theta_range[1]
             theta_bounds[jj] = (l_bound, r_bound)
 
-        # create gap matrix
-        gap_matrix = np.ones((len(t_bounds),len(theta_bounds)))
-        mutex_object_field.acquire()
-        for ii, t_bound in enumerate(t_bounds):
-            # calc range bounds given t_bounds
-            rng_bound = tuple(t * self.boat.current_speed() for t in t_bound)
-            for jj, theta_bound in enumerate(theta_bounds):
-                # place 0 in gap matrix IF object exists in bounds
-                for obj in self.object_field:
-                    if rng_bound[0] <= obj[0] <= rng_bound[1] and \
-                       theta_bound[0] <= obj[1] <= theta_bound[1]:
-                        gap_matrix[ii,jj] = 0
-                        break
-
-        mutex_object_field.release()
-
-        # generate theta list
-        theta_list = [mean(theta_bound) for theta_bound in theta_bounds]
-
-        # return gap matrix
-        return gap_matrix, theta_list
+        self.theta_bounds = theta_bounds
