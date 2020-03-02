@@ -75,3 +75,10 @@ class Event(ABC, Thread):
         mutex.acquire()
         self.course.clear()
         mutex.release()
+
+    def create_objectives(self):
+        """
+        Creates objectives based on enumerations
+        """
+        return []
+
