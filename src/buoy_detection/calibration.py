@@ -14,6 +14,15 @@ from time import sleep
 import logging
 import src.buoy_detection.config_reader as config_reader
 import sys
+from pubsub import pub
+
+
+def _log_message(msg):
+    """
+    Helper function to log messages to pubsub.
+    :param msg: The message to log.
+    """
+    pub.sendMessage('write msg', author='Calibration', msg=msg)
 
 
 class Calibrator:
@@ -119,7 +128,7 @@ class Calibrator:
         return object_points
 
     def _find_chessboards(self):
-        """ Calculates the image points of chessboard images.
+        """Calculates the image points of chessboard images.
         REQUIRES that the `left_camera_directory` and `right_camera_directory` have corresponding image pairs
         (and _only_ corresponding image pairs!).
 
@@ -130,7 +139,7 @@ class Calibrator:
             Updates the self.unreadable_images set.
             Draws images with detected corners overlaid if self.draw_image == True.
         """
-        print("Reading images at {0}".format(self.left_camera_directory))
+        _log_message("Reading images at {0}".format(self.left_camera_directory))
         left_image_paths = glob.glob("{0}/*.{1}".format(self.left_camera_directory, self.image_extension))
         image_names = [os.path.basename(path) for path in left_image_paths]
 
@@ -179,7 +188,7 @@ class Calibrator:
                 sleep(.1)
                 cv2.waitKey(1)
 
-        print("Found corners in {0} out of {1} images".format(len(image_points_l), len(image_names)))
+        _log_message("Found corners in {0} out of {1} images".format(len(image_points_l), len(image_names)))
 
         return image_points_l, image_points_r, camera_size
 
@@ -192,7 +201,7 @@ class Calibrator:
         Side Effects:
             Adds the image's basename to `self.unreadable_images`.
         """
-        print("Corners could not be found in " + path + "!")
+        _log_message("Corners could not be found in " + path + "!")
         name = os.path.basename(path)
         self.unreadable_images.add(name)
 
@@ -238,19 +247,19 @@ class Calibrator:
         Side Effects:
             Saves calibration data to out_file1 and out_file2.
         """
-        print("Calibrating left camera...")
+        _log_message("Calibrating left camera...")
         _, left_camera_matrix, left_distortion_coefficients, _, _ = \
             cv2.calibrateCamera(object_points, left_image_points, camera_size, None, None)
-        print("Done")
+        _log_message("Done")
 
-        print("Calibrating right camera...")
+        _log_message("Calibrating right camera...")
         _, right_camera_matrix, right_distortion_coefficients, _, _ = \
             cv2.calibrateCamera(object_points, right_image_points, camera_size, None, None)
-        print("Done")
+        _log_message("Done")
 
         # rotationMatrix is the rotation between coordinate systems of the first and second cameras
         # translationVector is the translation between the coordinate systems of the two cameras
-        print("Calibrating stereo cameras...")
+        _log_message("Calibrating stereo cameras...")
         (_, _, _, _, _, rotationMatrix, translationVector, _, _) = \
             cv2.stereoCalibrate(
                 object_points, left_image_points, right_image_points,
@@ -258,9 +267,9 @@ class Calibrator:
                 right_camera_matrix, right_distortion_coefficients,
                 camera_size, None, None, None, None,
                 cv2.CALIB_FIX_INTRINSIC, self.term_criteria)
-        print("Done")
+        _log_message("Done")
 
-        print("Starting stereo rectification...")
+        _log_message("Starting stereo rectification...")
         # Rectification matrices are the 3x3 matrices that rotate them onto a common plane (so that their epipolar
         # lines are parallel and disparities only occur horizontally).
         #
@@ -281,10 +290,10 @@ class Calibrator:
                 camera_size, rotationMatrix, translationVector,
                 None, None, None, None, None,
                 cv2.CALIB_ZERO_DISPARITY, self.rectification_alpha)
-        print("Done")
+        _log_message("Done")
 
         # X and Y maps are the projection maps
-        print("Saving the stereo calibration...")
+        _log_message("Saving the stereo calibration...")
         left_xmap, left_ymap = \
             cv2.initUndistortRectifyMap(
                 left_camera_matrix, left_distortion_coefficients, leftRectification,
@@ -303,7 +312,7 @@ class Calibrator:
                             leftProjection=left_projection, rightProjection=right_projection,
                             Q_matrix=Q_matrix)
         cv2.destroyAllWindows()
-        print("Done")
+        _log_message("Done")
 
 
 def load_config_and_run(config_path):

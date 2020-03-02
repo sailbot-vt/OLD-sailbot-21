@@ -1,6 +1,7 @@
 from src.buoy_detection.Depth_Map_Calculator import DepthMap
 import math
 from numpy import rad2deg
+from pubsub import pub
 
 
 def get_disparity_value(disparity_frame, x_pixel, y_pixel):
@@ -21,7 +22,7 @@ def get_disparity_value(disparity_frame, x_pixel, y_pixel):
     """
 
     if disparity_frame is None:
-        print("disparity is None")
+        pub.sendMessage('write msg', author='Distance Calculator', msg='No disparity data provided!')
         return None
 
     y_size, x_size = disparity_frame.shape[:2]

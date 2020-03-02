@@ -1,6 +1,14 @@
 import numpy as np
 import cv2
-from math import sqrt
+from pubsub import pub
+
+
+def _log_message(msg):
+    """
+    Helper function to log a message to pubsub.
+    :param msg: The message to log.
+    """
+    pub.sendMessage('write msg', author='Depth Map Calculator', msg=msg)
 
 
 class DepthMap:
@@ -22,12 +30,12 @@ class DepthMap:
         try:
             self.calibration = np.load(calibration_filename, allow_pickle=False)
         except IOError:
-            print("Depth_Map Object could not load calibration data from the following location:")
-            print(calibration_filename)
+            _log_message("Depth_Map Object could not load calibration data from the following location:")
+            _log_message(calibration_filename)
         except ValueError:
-            print("The calibration data at " + calibration_filename +
-                  " contains an object array but allow_pickle=False was given" +
-                  "to the load function.")
+            _log_message("The calibration data at " + calibration_filename +
+                         " contains an object array but allow_pickle=False was given" +
+                         "to the load function.")
 
         self.camera_numbers = config["camera_numbers"]
         self.image_size = tuple(self.calibration["image_size"])
@@ -76,7 +84,7 @@ class DepthMap:
         """
         # Grab first in order to reduce asynchronous issues and latency.
         if not self.left.grab() or not self.right.grab():
-            print("Couldn't grab frames!")
+            _log_message("Couldn't grab frames!")
             return None, None
 
         # This must be here for frame retrieval to work. Do not remove.
@@ -104,7 +112,7 @@ class DepthMap:
             A remapped frame from the camera, or None if an error occurs.
         """
         if not self.left.grab():
-            print("Couldn't grab left camera frame!")
+            _log_message("Couldn't grab left camera frame!")
             return None
 
         # This must be here for frame retrieval to work. Do not remove.
@@ -124,7 +132,7 @@ class DepthMap:
             None if an error occurs.
         """
         if not self.right.grab():
-            print("Couldn't grab right camera frame!")
+            _log_message("Couldn't grab right camera frame!")
             return None
 
         # This must be here for frame retrieval to work. Do not remove.

@@ -118,9 +118,7 @@ class CalibrationTests(unittest.TestCase):
 
         # First test: Does it successfully handle an image that doesn't
         # even exist? ("image999")
-        print("*** BEGIN LOGGED ERROR MESSAGES FOR NONEXISTENT IMAGE ***")
         self.calibrator._remove_unreadable_image_pairs()
-        print("*** END LOGGED ERROR MESSAGES FOR NONEXISTANT IMAGE ***")
 
         # Check to see "image0" is gone and "image1" is still present.
         self.assertFalse(os.path.isfile(self.mock_left_dir + "image0") or
