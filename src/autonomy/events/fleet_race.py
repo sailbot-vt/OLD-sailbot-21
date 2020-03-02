@@ -28,8 +28,7 @@ class FleetRace(Event):
         Runs event thread
         """
         while self.is_active:
-
-            pass
+            self.captain_thread.update_objectives()
 
     def create_objectives(self):
         """
