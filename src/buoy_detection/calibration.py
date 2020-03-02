@@ -1,194 +1,341 @@
+"""
+calibration.py
+Contains a class, Calibrator, that can compute calibration data for two stereo cameras based on a set of
+image pairs from each of them.
+
+For information and background on the calibration process, see `calibration_readme.md`.
+"""
+
 import glob
 import os
 import numpy as np
 import cv2
 from time import sleep
-
-###
-#Solve PnP function
-# This is the real size of the single squares (print with laser)
-# psi camera
-CHESSBOARD_SQUARE_SIZE = .024 #Length of square of checkerboard in meters
-#Frame rate over resolution
-CHESSBOARD_CALIBRATION_SIZE = (6,9)
-CHESSBOARD_OPTIONS = (cv2.CALIB_CB_NORMALIZE_IMAGE | cv2.CALIB_CB_FAST_CHECK | cv2.CALIB_CB_ADAPTIVE_THRESH)
-DRAW_IMAGE = True
-
-#Required size for cv2
-OBJECT_POINT_ZERO = np.zeros((CHESSBOARD_CALIBRATION_SIZE[0] * CHESSBOARD_CALIBRATION_SIZE[1], 3), np.float32)
-OBJECT_POINT_ZERO[:, :2] = np.mgrid[0:CHESSBOARD_CALIBRATION_SIZE[0],0 : CHESSBOARD_CALIBRATION_SIZE[1]].T.reshape(-1, 2)*CHESSBOARD_SQUARE_SIZE
-
-#subject to change
-OPTIMIZE_ALPHA = 0.25
-
-TERMINATION_CRITERIA = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 30,0.001)
-
-unreadable = []
+import logging
+import src.buoy_detection.config_reader as config_reader
+import sys
+from pubsub import pub
 
 
-path = os.path.realpath(__file__)[:-len(os.path.basename(__file__))]
-left_camera_directory = path + "LEFT"
-right_camera_directory = path + "RIGHT"
-out_file1 = path + "stereo_calibration.npz"
-out_file2 = path + "projection_matrices.npz"
-
-print("Doing pre image check...")
-left_images = glob.glob("{0}/*.png".format(left_camera_directory))
-right_images = glob.glob("{0}/*.png".format(right_camera_directory))
-
-for x in left_images:
-    image = cv2.imread(x)
-    image_grey = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    has_corners, corners = cv2.findChessboardCorners(image_grey, CHESSBOARD_CALIBRATION_SIZE, cv2.CALIB_CB_FAST_CHECK)
-    if not has_corners:
-        unreadable.append(x.split("/")[-1])
-
-for x in right_images:
-    if x.split("/")[-1] not in unreadable:
-        image = cv2.imread(x)
-        image_grey = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        has_corners, corners = cv2.findChessboardCorners(image_grey, CHESSBOARD_CALIBRATION_SIZE, cv2.CALIB_CB_FAST_CHECK)
-        if not has_corners:
-            unreadable.append(x.split("/")[-1])
-    else:
-        pass
-if len(unreadable) > 0:
-    print("Chessboard not found in the following images. Removing them...")
-for x in unreadable:
-    print(x)
-    try:
-        os.remove(left_camera_directory + "/" + x)
-    except:
-        pass
-for x in unreadable:
-    try:
-        os.remove(right_camera_directory + "/" + x)
-    except:
-        pass
-
-def findChessboards(imageDirectory):
+def _log_message(msg):
     """
-    Calculates the object points and image points of chessboard images
-    :param imageDirectory: the directory to look through for chessboard images
-    :return: names of the files, the object points list, the image points list, resolution of the camera
+    Helper function to log messages to pubsub.
+    :param msg: The message to log.
     """
-    #out_file = "{0}/chessboards.npz".format(imageDirectory)
-    print("Reading images at {0}".format(imageDirectory))
-    images = glob.glob("{0}/*.png".format(imageDirectory))
-
-    file_names = []
-    object_points = []
-    image_points = []
-    left_camera_size = None
+    pub.sendMessage('write msg', author='Calibration', msg=msg)
 
 
-    for image_path in sorted(images):
-        image = cv2.imread(image_path)
-        image_grey = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        left_camera_size = image_grey.shape[::-1]
-        has_corners, corners = cv2.findChessboardCorners(image_grey, CHESSBOARD_CALIBRATION_SIZE, cv2.CALIB_CB_FAST_CHECK)
-
-        if has_corners:
-            file_names.append(os.path.basename(image_path))
-            object_points.append(OBJECT_POINT_ZERO)
-            cv2.cornerSubPix(image_grey, corners, (11, 11), (-1, -1), TERMINATION_CRITERIA)
-            image_points.append(corners)
-        else:
-            print(image_path)
-        if DRAW_IMAGE:
-            cv2.drawChessboardCorners(image, CHESSBOARD_CALIBRATION_SIZE, corners, has_corners)
-            cv2.imshow(imageDirectory, image)
-            sleep(.1)
-
-        cv2.waitKey(1)
-
-    #cv2.destroyWindow(imageDirectory)
-
-    print("Found corners in {0} out of {1} images".format(len(image_points), len(images)))
-
-    #np.savez_compressed(out_file, file_names = file_names, object_points = object_points, image_points = image_points, imageSize = left_camera_size)
-    return file_names, object_points, image_points, left_camera_size
-
-
-def get_matching_points(requested_file_names, all_file_names, object_points, image_points):
+class Calibrator:
+    """ Class that contains machinery for doing stereo camera calibration!
+    To run the calibration process and save the results, instantiate this class and then use the `run_calibration`
+    method.
     """
-        Gets the object points and image points of a requested set of files
 
-    :param requested_file_names: files to look through
-    :param all_file_names: the list of file names
-    :param object_points: the object points list of the images in the given directory
-    :param image_points: the image points list of the images in the given directory
-    :return: the requested object points and image points
-    """
-    requested_file_nameset = set(requested_file_names)
-    requested_object_points = []
-    requested_image_points = []
+    def __init__(self, master_config):
+        """ Initializes the Calibrator using the given configuration.
+        *** See config.yaml for descriptions on each parameter. ***
 
-    for index, filename in enumerate(all_file_names):
-        if filename in requested_file_nameset:
-            requested_object_points.append(object_points[index])
-            requested_image_points.append(image_points[index])
+        Inputs:
+            config -- A loaded YAML buoy_detection configuration.
+        """
 
-    return requested_object_points, requested_image_points
+        config = master_config["calibration"]
 
+        self.square_size = config["chessboard_specs"]["square_size"]
+        self.grid_shape = config["chessboard_specs"]["grid_shape"]
 
-(left_file_names, left_object_points, left_image_points, left_camera_size) = findChessboards(left_camera_directory)
-(right_file_names, right_object_points, right_image_points, left_camera_size) = findChessboards(right_camera_directory)
+        self.base_path = config["base_path"]
+        self.image_extension = config["image_extension"]
 
-file_names = sorted(list(set(left_file_names) & set(right_file_names)))
+        tc_conf = config["term_criteria"]
+        self.term_criteria = (eval(tc_conf["term_flags"]), tc_conf["max_iterations"], tc_conf["min_accuracy"])
 
-left_object_points, left_image_points = get_matching_points(file_names,
-        left_file_names, left_object_points, left_image_points)
+        self.rectification_alpha = config["rectification_alpha"]
+        self.draw_image = config["draw_image"]
 
-right_object_points, right_image_points = get_matching_points(file_names,
-        right_file_names, right_object_points, right_image_points)
+        self.corner_flags = eval(config["finding_corners"]["corner_flags"])
 
-object_points = left_object_points
+        base_path = config["base_path"]
+        self.left_camera_directory = base_path + "LEFT/"
+        self.right_camera_directory = base_path + "RIGHT/"
 
-print("calibrating left camera...")
-_, leftCameraMatrix, leftDistortionCoefficients, _, _ = cv2.calibrateCamera(
-        object_points, left_image_points, left_camera_size, None, None)
-print("Done")
-print("calibrating right camera...")
-_, rightCameraMatrix, rightDistortionCoefficients, _, _ = cv2.calibrateCamera(
-        object_points, right_image_points, left_camera_size, None, None)
-print("Done")
-#rotationMatrix is the rotation between coordinate systems of the first and second cameras
-#translationVector is the translation between the coordinate systems of the two cameras
-print("calibrating stereo cameras...")
-(_, _, _, _, _, rotationMatrix, translationVector, _, _) = cv2.stereoCalibrate(
-        object_points, left_image_points, right_image_points,
-        leftCameraMatrix, leftDistortionCoefficients,
-        rightCameraMatrix, rightDistortionCoefficients,
-        left_camera_size, None, None, None, None,
-        cv2.CALIB_FIX_INTRINSIC, TERMINATION_CRITERIA)
-print("Done")
-print("Starting stereo rectification...")
-#Rectification matrices are the 3x3 rotation matrices for each of the two cameras
-#Project matrices are the new rectified coordinate systems for each of the two cameras
-#Q is the disparity to depth mapping
-(leftRectification, rightRectification, leftProjection, rightProjection,
-        Q_matrix, left_roi, right_roi) = cv2.stereoRectify(
-                leftCameraMatrix, leftDistortionCoefficients,
-                rightCameraMatrix, rightDistortionCoefficients,
-                left_camera_size, rotationMatrix, translationVector,
+        self.csp_window_size = config["finding_corners"]["csp_window_size"]
+        self.csp_zero_zone = config["finding_corners"]["csp_zero_zone"]
+
+        # Set of unreadable image file-names, used so we can exclude a _pair_ of images from analysis if one is
+        # invalid (i.e., we can't read the chessboard).
+        self.unreadable_images = set()
+
+        self.delete_unreadable_images = config["delete_unreadable_images"]
+
+    def run_calibration(self, out_file1, out_file2):
+        """ Master method that enumerates through images, detects chessboard calibration pattern,
+        and conducts calibration. Deletes unreadable image pairs if the option is set.
+        Saves final result matrices to out_file1 and out_file2.
+
+        Inputs:
+            out_file1 -- The path to save the stereo calibration matrices.
+            out_file2 -- The path to save the projection & rectification matrices.
+
+        Side Effects:
+            Calls self._remove_unreadable_image_pairs() to delete invalid calibration image pairs.
+            Saves calibration data to out_file1 and out_file2 as described above.
+        """
+
+        left_image_points, right_image_points, camera_size = self._find_chessboards()
+
+        # We need a list of object point lists, where each object point list corresponds to an image (in exactly
+        # the same way that `left_image_points` and `right_image_points` are set up.
+        # Since each image is *defined* to have the same set of object points, we just make a list here with as many
+        # duplicate object point lists as we have images.
+        object_points = [self._get_object_points()] * len(left_image_points)
+
+        if self.delete_unreadable_images:
+            self._remove_unreadable_image_pairs()
+
+        self._calculate_calibration_matrices(object_points, left_image_points, right_image_points, camera_size,
+                                             out_file1, out_file2)
+
+    def _get_object_points(self):
+        """ Calculates a numpy array of 3D object points that represent the internal corners of a chessboard.
+        The 3D object points are written in the chessboard coordinate system (see above documentation).
+        All corners are located at non-negative integer points on the XY-plane multiplied by the square_size.
+        For example, if the following represents a grid of chessboard intersections:
+            -----------> X-axis
+          | A   B   C
+          | D   E   F
+          | G   H   I
+          V
+          Y-axis
+        Then the positions of each intersection are given by:
+        A = [0, 0, 0];                 B = [square_size, 0, 0];              C = [square_size*2, 0, 0];
+        D = [0, square_size, 0];       E = [square_size, square_size, 0];    F = [square_size*2, square_size, 0];
+        ... etc.
+
+        Returns:
+            A numpy array of 3D object points representing the internal corners of the chessboard, of shape
+                 (self.grid_shape[0] * self.grid_shape[1], 3). Appears like [[0, 0, 0], [square_size, 0, 0], ... ].
+        """
+
+        # Create the list of object points, where each object point is zeroed to [0, 0, 0].
+        object_points = np.zeros((self.grid_shape[0] * self.grid_shape[1], 3), np.float32)
+
+        # Calculate the individual X & Y coordinates of each object point.
+        # Effectively, this just creates a list of all non-negative integer object points (with Z=0) to represent each
+        # corner, all multiplied by the square_size to scale it to real-world size.
+        object_points[:, :2] = np.mgrid[0:self.grid_shape[0], 0:self.grid_shape[1]].T.reshape(-1, 2) * self.square_size
+
+        return object_points
+
+    def _find_chessboards(self):
+        """Calculates the image points of chessboard images.
+        REQUIRES that the `left_camera_directory` and `right_camera_directory` have corresponding image pairs
+        (and _only_ corresponding image pairs!).
+
+        Returns:
+            A 3-tuple with the list of left image points, the list of right image points, and the camera size.
+
+        Side Effects:
+            Updates the self.unreadable_images set.
+            Draws images with detected corners overlaid if self.draw_image == True.
+        """
+        _log_message("Reading images at {0}".format(self.left_camera_directory))
+        left_image_paths = glob.glob("{0}/*.{1}".format(self.left_camera_directory, self.image_extension))
+        image_names = [os.path.basename(path) for path in left_image_paths]
+
+        # A list of object point arrays and image point arrays across all of the analyzed images.
+        image_points_l = []
+        image_points_r = []
+        camera_size = None
+
+        for image_name in sorted(image_names):
+            left_path = self.left_camera_directory + "/" + image_name
+            right_path = self.right_camera_directory + "/" + image_name
+
+            left_image = cv2.imread(left_path)
+            left_grey = cv2.cvtColor(left_image, cv2.COLOR_BGR2GRAY)
+
+            right_image = cv2.imread(right_path)
+            right_grey = cv2.cvtColor(right_image, cv2.COLOR_BGR2GRAY)
+
+            # Shape is initially in form (height, width, depth).
+            # We want (width, height), so we use slice notation to reverse the
+            # tuple (the -1) and then take the last two elements of the reversed tuple.
+            camera_size = left_image.shape[1::-1]
+
+            has_corners_l, corners_l = cv2.findChessboardCorners(left_grey, self.grid_shape, self.corner_flags)
+
+            has_corners_r, corners_r = cv2.findChessboardCorners(right_grey, self.grid_shape, self.corner_flags)
+
+            if has_corners_l and has_corners_r:
+                # Refine corner image points.
+                cv2.cornerSubPix(left_grey, corners_l, self.csp_window_size, self.csp_zero_zone, self.term_criteria)
+                cv2.cornerSubPix(right_grey, corners_r, self.csp_window_size, self.csp_zero_zone, self.term_criteria)
+                image_points_l.append(corners_l)
+                image_points_r.append(corners_r)
+            else:
+                if not has_corners_l:
+                    self._find_corners_fail(left_path)
+
+                if not has_corners_r:
+                    self._find_corners_fail(right_path)
+
+            if self.draw_image:
+                cv2.drawChessboardCorners(left_image, self.grid_shape, corners_l, has_corners_l)
+                cv2.drawChessboardCorners(right_image, self.grid_shape, corners_r, has_corners_r)
+                cv2.imshow(left_path, left_image)
+                cv2.imshow(right_path, right_image)
+                sleep(.1)
+                cv2.waitKey(1)
+
+        _log_message("Found corners in {0} out of {1} images".format(len(image_points_l), len(image_names)))
+
+        return image_points_l, image_points_r, camera_size
+
+    def _find_corners_fail(self, path):
+        """ Handler for when an invalid image (illegible chessboard corners, etc.) is found.
+
+        Inputs:
+            path -- The path to the invalid image.
+
+        Side Effects:
+            Adds the image's basename to `self.unreadable_images`.
+        """
+        _log_message("Corners could not be found in " + path + "!")
+        name = os.path.basename(path)
+        self.unreadable_images.add(name)
+
+    def _remove_unreadable_image_pairs(self):
+        """ Removes unreadable image pairs.
+
+        Side Effects:
+            Removes images from the left and right camera directories that are part of a pair in which at least one
+            image has been marked as unreadable by `self.unreadable_images`.
+        """
+        for image_name in self.unreadable_images:
+            left_image_path = self.left_camera_directory + "/" + image_name
+            right_image_path = self.right_camera_directory + "/" + image_name
+
+            try:
+                os.remove(left_image_path)
+            except:
+                logging.getLogger().error("Failed to remove LEFT image " + left_image_path + "!", exc_info=True)
+
+            try:
+                os.remove(right_image_path)
+            except:
+                logging.getLogger().error("Failed to remove RIGHT image " + right_image_path + "!", exc_info=True)
+
+    def _calculate_calibration_matrices(self, object_points, left_image_points, right_image_points, camera_size,
+                                        calibration_filename, projection_filename):
+        """ Actually conducts the camera calibration, and then saves the result.
+        Do not run directly - instead, do `run_calibration`.
+
+        Inputs:
+            object_points -- A list of object point lists, describing which object points were found in which image.
+                             Since all the images should contain the chessboard, and our 3D coordinate system is
+                             standardized with respect to the chessboard, all the object point lists should be the
+                             same (see `_get_object_points`).
+            left_image_points -- A list of lists of 2D image points from the left camera. Should correspond to the
+                                 points in `object_points` and `right_image_points`.
+            right_image_points -- A list of lists of 2D image points from the right camera. Should correspond to the
+                                  points in `object_points` and `left_image_points`.
+            camera_size -- The resolution of the camera.
+            calibration_filename -- The path to save the stereo calibration matrices.
+            projection_filename -- The path to save the projection & rectification matrices.
+
+        Side Effects:
+            Saves calibration data to out_file1 and out_file2.
+        """
+        _log_message("Calibrating left camera...")
+        _, left_camera_matrix, left_distortion_coefficients, _, _ = \
+            cv2.calibrateCamera(object_points, left_image_points, camera_size, None, None)
+        _log_message("Done")
+
+        _log_message("Calibrating right camera...")
+        _, right_camera_matrix, right_distortion_coefficients, _, _ = \
+            cv2.calibrateCamera(object_points, right_image_points, camera_size, None, None)
+        _log_message("Done")
+
+        # rotationMatrix is the rotation between coordinate systems of the first and second cameras
+        # translationVector is the translation between the coordinate systems of the two cameras
+        _log_message("Calibrating stereo cameras...")
+        (_, _, _, _, _, rotationMatrix, translationVector, _, _) = \
+            cv2.stereoCalibrate(
+                object_points, left_image_points, right_image_points,
+                left_camera_matrix, left_distortion_coefficients,
+                right_camera_matrix, right_distortion_coefficients,
+                camera_size, None, None, None, None,
+                cv2.CALIB_FIX_INTRINSIC, self.term_criteria)
+        _log_message("Done")
+
+        _log_message("Starting stereo rectification...")
+        # Rectification matrices are the 3x3 matrices that rotate them onto a common plane (so that their epipolar
+        # lines are parallel and disparities only occur horizontally).
+        #
+        # Project matrices are the new rectified coordinate systems for each of the two cameras that map points
+        # in 3D space to points in 2D image space.
+        #
+        # Q is the disparity to depth mapping in homogeneous coordinates - essentially allows you to
+        # take the 2D coordinates of a pixel and its disparity, and find its 3D location.
+        #   (input: 4-vector of the form [u, v, d, 1]
+        #       where u, v are pixel coordinates and d is disparity;
+        #   output: 4-vector of the form [x, y, z, w] where
+        #       x, y, and z are 3D coordinates and w scales them appropriately (see 'Homogeneous coordinates')
+        (leftRectification, rightRectification, left_projection, right_projection,
+         Q_matrix, left_roi, right_roi) = \
+            cv2.stereoRectify(
+                left_camera_matrix, left_distortion_coefficients,
+                right_camera_matrix, right_distortion_coefficients,
+                camera_size, rotationMatrix, translationVector,
                 None, None, None, None, None,
-                cv2.CALIB_ZERO_DISPARITY, OPTIMIZE_ALPHA)
-print("Done")
-#X and y maps are the projection maps
-print("Saving the stereo calibration...")
-left_xmap, left_ymap = cv2.initUndistortRectifyMap(
-        leftCameraMatrix, leftDistortionCoefficients, leftRectification,
-        leftProjection, left_camera_size, cv2.CV_32FC1)
-right_xmap, right_ymap = cv2.initUndistortRectifyMap(
-        rightCameraMatrix, rightDistortionCoefficients, rightRectification,
-        rightProjection, left_camera_size, cv2.CV_32FC1)
+                cv2.CALIB_ZERO_DISPARITY, self.rectification_alpha)
+        _log_message("Done")
 
-np.savez_compressed(out_file1, image_size=left_camera_size,
-        left_xmap=left_xmap, left_ymap=left_ymap, left_roi=left_roi,
-        right_xmap=right_xmap, right_ymap=right_ymap, right_roi=right_roi, Q_matrix = Q_matrix)
+        # X and Y maps are the projection maps
+        _log_message("Saving the stereo calibration...")
+        left_xmap, left_ymap = \
+            cv2.initUndistortRectifyMap(
+                left_camera_matrix, left_distortion_coefficients, leftRectification,
+                left_projection, camera_size, cv2.CV_32FC1)
+        right_xmap, right_ymap = \
+            cv2.initUndistortRectifyMap(
+                right_camera_matrix, right_distortion_coefficients, rightRectification,
+                right_projection, camera_size, cv2.CV_32FC1)
 
-np.savez_compressed(out_file2, leftRectification = leftRectification, rightRectification=rightRectification, leftProjection=leftProjection, rightProjection=rightProjection,
-        Q_matrix=Q_matrix)
-cv2.destroyAllWindows()
-print("Done")
+        np.savez_compressed(calibration_filename, image_size=camera_size,
+                            left_xmap=left_xmap, left_ymap=left_ymap, left_roi=left_roi,
+                            right_xmap=right_xmap, right_ymap=right_ymap, right_roi=right_roi, Q_matrix=Q_matrix)
+
+        np.savez_compressed(projection_filename, leftRectification=leftRectification,
+                            rightRectification=rightRectification,
+                            leftProjection=left_projection, rightProjection=right_projection,
+                            Q_matrix=Q_matrix)
+        cv2.destroyAllWindows()
+        _log_message("Done")
+
+
+def load_config_and_run(config_path):
+    """Loads the calibration configuration from `config_path` and then runs calibration on it.
+
+    Inputs:
+        config_path -- The path to the master YAML buoy_detection configuration file.
+
+    Side Effects:
+        Runs the calibration routine as specified by the configuration file.
+    """
+
+    master_config = config_reader.get_config(config_path)
+
+    calibrator = Calibrator(master_config)
+
+    calibration_export_filename = master_config["calibration"]["calibration_export_filename"]
+    projection_export_filename = master_config["calibration"]["projection_export_filename"]
+
+    calibrator.run_calibration(calibration_export_filename, projection_export_filename)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        raise TypeError("Wrong number of arguments! Format: " + sys.argv[0] + " <config_path>")
+    load_config_and_run(sys.argv[1])
