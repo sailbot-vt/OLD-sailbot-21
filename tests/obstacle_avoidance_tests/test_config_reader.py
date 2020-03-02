@@ -12,13 +12,13 @@ class ObstacleAvoidanceConfigReaderTests(unittest.TestCase):
     def test_read_object_field_config(self):
         """Tests read object field config method"""
         # expected values
-        expected_vals = {'time_range': (0, 5), 'bearing_range': (-30, 30)}
+        expected_vals = {'time_range': (0, 20), 'bearing_range': (-30, 30), 'num_predictions': 5}
 
         self.assertDictEqual(expected_vals, read_object_field_config(self.path))
 
     def test_read_gap_config(self):
         """Tests read gap config method"""
         # expected values
-        expected_vals = {'t_step': 0.1, 'theta_step': 2}
+        expected_vals = {'t_step': 0.1, 'theta_step': 5, 'overlap': 0.5}
 
         self.assertDictEqual(expected_vals, read_gap_config(self.path))
