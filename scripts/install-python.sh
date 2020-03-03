@@ -18,7 +18,7 @@ fi
 
 # Get Python build dependencies
 apt-get install -y build-essential
-apt-get install -y libbz2-dev libsqlite3-dev libreadline-dev zlib1g-dev libncurses5-dev libssl-dev libgdbm-dev libffi-dev python3-pip openssl
+apt-get install -y libbz2-dev libsqlite3-dev libreadline-dev zlib1g-dev libncurses5-dev libssl-dev libgdbm-dev libffi-dev python-pip openssl
 apt-get install -y make
 
 mkdir -p /tmp/py-transient
