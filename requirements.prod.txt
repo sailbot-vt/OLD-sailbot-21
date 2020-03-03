@@ -1,7 +1,6 @@
 pypubsub
 pyyaml
 numpy
-pynmea2
 parse
 pyserial
 scipy
