@@ -7,12 +7,12 @@ import src.autonomy.nav.captain as captain
 class FleetRace(Event):
     """Fleet race event"""
 
-    def __init__(self, boat, wind, world):
+    def __init__(self, boat, wind):
         super().__init__()
         self.objectives = self.create_objectives()
         self.boat = boat
         self.wind = wind
-        self.captain_thread = captain.Captain(boat, world)
+        self.captain_thread = captain.Captain(self.boat, self.wind, self.objectives)
         self.captain_thread.start()
 
     def read_interval(self):
