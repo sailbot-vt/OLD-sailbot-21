@@ -4,5 +4,4 @@ numpy
 parse
 pyserial
 scipy
-opencv-python
 filterpy
