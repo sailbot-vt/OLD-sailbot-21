@@ -1,6 +1,11 @@
-FROM balenalib/beaglebone-black-debian-python
+FROM balenalib/beaglebone-black-debian:stretch-build
 
 ENV HOSTNAME beaglebone
+ENV UDEV=1
+
+ENV LANG C.UTF-8
+
+ENTRYPOINT ["/usr/bin/entry.sh"]
 
 RUN apt-get -y update && apt-get -y install make wget
 
@@ -12,5 +17,4 @@ WORKDIR /sailbot
 RUN make _init
 
 COPY src /sailbot/src
-COPY tests /sailbot/tests
 COPY main.py /sailbot/main.py
