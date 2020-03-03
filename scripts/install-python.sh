@@ -5,7 +5,6 @@
 export PATH=/usr/local/bin:$PATH
 
 if [[ $HOSTNAME == beaglebone ]]; then
-    # Docker img does not include by default.
     apt-get install -y python3-pip python3-setuptools python3-wheel
     pip3 install --upgrade pip
 fi
