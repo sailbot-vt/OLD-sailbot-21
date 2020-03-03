@@ -5,3 +5,6 @@ parse
 pyserial
 scipy
 filterpy
+
+coverage
+pyqt5

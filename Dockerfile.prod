@@ -7,9 +7,10 @@ ENV LANG C.UTF-8
 
 ENTRYPOINT ["/usr/bin/entry.sh"]
 
-RUN apt-get update && apt-get install -y
+RUN apt-get update && apt-get install -y make wget
 
 COPY scripts /sailbot/scripts
+COPY tests /sailbot/tests
 COPY Makefile /sailbot/
 COPY requirements.prod.txt /sailbot/
 WORKDIR /sailbot
