@@ -21,9 +21,10 @@ class Course:
     def clear(self):
         self.legs = []
 
+
 class ObjectCourse:
-    def __init__(self):
-        self.objs = []
+    def __init__(self, objects):
+        self.objs = objects
 
     def __iter__(self):
         return ObjectCourseIterator(self)
