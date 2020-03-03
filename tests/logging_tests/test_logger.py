@@ -14,8 +14,7 @@ class LoggerTests(unittest.TestCase):
     def test_write_msg(self):
         """Tests that logger receives messages correctly"""
 
-        pub.sendMessage('write msg', pin_name='test', msg='testing', rw_state='r')
+        pub.sendMessage('write msg', author='test', msg='testing')
         log_dict = self.logger.log_dict
-        assert(log_dict['pin_name'] == 'test')
+        assert(log_dict['author'] == 'test')
         assert(log_dict['msg'] == 'testing')
-        assert(log_dict['r/w'] == 'r')

@@ -18,4 +18,13 @@ run_prod:
 	# change bash -> run.sh for production.
 	docker run -it --rm --privileged --name beaglebone_prod beag_img bash
 
-.PHONY: _init test build_beag_img run
+clean:
+	rm logs/*
+
+test_tracker:
+	bash ./scripts/test_tracker.sh
+
+test_controls:
+	bash ./scripts/test_controls.sh
+
+.PHONY: _init test build_beag_img run run_prod clean test_tracker test_controls

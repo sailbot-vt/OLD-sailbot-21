@@ -34,11 +34,11 @@ class TestablePin(Pin):
         self.written_values = []
 
     def read(self):
-        pub.sendMessage("write msg", pin_name = self.pin_name, msg = self.value, rw_state = 'r')
+        pub.sendMessage("write msg", author = self.pin_name, msg = self.value)
         return self.value
 
     def set_state(self, state):
-        pub.sendMessage("write msg", pin_name = self.pin_name, msg = self.value, rw_state = 'w')
+        pub.sendMessage("write msg", author = self.pin_name, msg = self.value)
         self.written_values.append(state)
 
     def start(self, *args):
@@ -84,7 +84,7 @@ class ADCPin(Pin):
             self.pin_name)  # According to the Internet, we have to do this twice
         raw_value = self.adc_lib.read(self.pin_name)
         norm_value = self._normalize_voltage(raw_value)
-        pub.sendMessage("write msg", pin_name = self.pin_name, msg = norm_value, rw_state = 'r')
+        pub.sendMessage("write msg", author = self.pin_name, msg = norm_value)
         return norm_value 
     def read_v(self):
         """Reads the voltage being supplied to the pin.
@@ -139,7 +139,7 @@ class GPIOPin(Pin):
         """
         self.io_type = self.gpio_lib.IN
         value = self.gpio_lib.input(self.pin_name)
-        pub.sendMessage("write msg", pin_name = self.pin_name, msg = value, rw_state = 'r')
+        pub.sendMessage("write msg", author = self.pin_name, msg = value)
         return value 
     def set_state(self, state):
         """Sets the output state of the pin.
@@ -152,7 +152,7 @@ class GPIOPin(Pin):
             self.gpio_lib.output(self.pin_name, self.gpio_lib.HIGH)
         else:
             self.gpio_lib.output(self.pin_name, self.gpio_lib.LOW)
-        pub.sendMessage("write msg", pin_name = self.pin_name, msg = state, rw_state = 'w')
+        pub.sendMessage("write msg", author = self.pin_name, msg = state)
 
 class PWMPin(Pin):
     """Provides an interface to a PWM pin"""
@@ -165,11 +165,11 @@ class PWMPin(Pin):
 
     def start(self, duty, frequency=60.0):
         self.pwm_lib.start(self.pin_name, duty, frequency)
-        pub.sendMessage("write msg", pin_name = self.pin_name, msg = 'PWM_start', rw_state = 'w')
+        pub.sendMessage("write msg", author = self.pin_name, msg = 'PWM_start')
 
     def stop(self):
         self.pwm_lib.stop(self.pin_name)
-        pub.sendMessage("write msg", pin_name = self.pin_name, msg = 'PWM_stop', rw_state = 'w')
+        pub.sendMessage("write msg", author = self.pin_name, msg = 'PWM_stop')
 
     def set_duty_cycle(self, duty_cycle):
         self.pwm_lib.set_duty_cycle(self.pin_name, duty_cycle)
@@ -187,10 +187,14 @@ class UARTPin(Pin):
         self.uart_lib = uart_lib
 
     def setup(self):
-        """ Set up and start the UART channel. This will export the given UART so that it can be accessed by other software that controls its serial lines.
+        """ Set up and start the UART channel. 
+        
+        This will export the given UART so that it can be 
+        accessed by other software that controls its serial lines.
 
         Keyword arguments:
-        channel -- UART channel to set up. One of "UART1", "UART2", "UART4" or "UART5"
+        channel -- UART channel to set up. 
+                One of "UART1", "UART2", "UART4" or "UART5"
         """
         self.uart_lib.setup(self.channel)
 

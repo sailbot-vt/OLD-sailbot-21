@@ -2,8 +2,9 @@
 p3_*env/
 
 # Log files and dir
-log/
-.log
+logs/
+*.log
+
 
 # Compressed images
 *.gz
