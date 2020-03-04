@@ -3,17 +3,17 @@ _init:
 
 test:
 	docker build -t sailbotvt/sailbot-20:deployment_testing_dev -f Dockerfile.dev .
-	docker run -it --rm --name sailbotvt/sailbot-20:deployment_testing_dev ./scripts/test.sh
+	docker run -it --rm --name sailbot_test sailbotvt/sailbot-20:deployment_testing_dev ./scripts/test.sh
 
 test_production:
 	docker build -t sailbotvt/sailbot-20:deployment_testing_beaglebone -f Dockerfile.prod .
 	docker run -it --rm --privileged --name sailbot_run sailbotvt/sailbot-20:deployment_testing_beaglebone ./scripts/test.sh
 
 run:
-	docker run -it --rm --privileged --name sailbot_run sailbotvt/sailbot-20:deployment_testing_beaglebone ./scripts/run.sh
+	docker run -it --rm --privileged --name sailbot_run sailbotvt/sailbot-20:deployment_beaglebone ./scripts/run.sh
 
 run_cli:
-	docker run -it --rm --privileged --name sailbot_run sailbotvt/sailbot-20:deployment_testing_beaglebone bash
+	docker run -it --rm --privileged --name sailbot_run sailbotvt/sailbot-20:deployment_beaglebone bash
 
 build_prod:
 	docker build -t sailbotvt/sailbot-20:deployment_testing_beaglebone -f Dockerfile.prod .
