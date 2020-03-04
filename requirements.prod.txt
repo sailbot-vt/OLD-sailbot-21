@@ -7,4 +7,3 @@ scipy
 filterpy
 
 coverage
-pyqt5
