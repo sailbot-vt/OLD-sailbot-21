@@ -5,9 +5,9 @@ ENV UDEV=1
 
 ENV LANG C.UTF-8
 
-ENTRYPOINT ["/usr/bin/entry.sh"]
+RUN apt-get update
 
-RUN apt-get -y update
+ENTRYPOINT ["/usr/bin/entry.sh"]
 
 COPY scripts /sailbot/scripts
 COPY tests /sailbot/tests
