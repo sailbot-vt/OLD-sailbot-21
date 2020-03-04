@@ -3,7 +3,7 @@ python:
   - "3.5"
 
 install: docker run --rm --privileged hypriot/qemu-register
-script: make test_production
+script: make test
 after_success:
 #  - . ./p3_5env/bin/activate
   - coveralls

@@ -19,21 +19,6 @@ else
     echo "Building dev version"
     python3.5 -m pip install -r requirements.dev.txt
 fi
-#    python3.5 -m pip install virtualenv
-#	python3.5 -m virtualenv -p python3.5 p3_5env --no-site-packages
-
-#    if [[ $TRAVIS ]]; then
-        # Install test dependencies
-#        echo "Building test version"
-#        . ./p3_5env/bin/activate; \
-#	    pip install -r requirements.test.txt
-#	else
-#	    # Install dev dependencies
-#	    echo "Building production version"
-#	    . ./p3_5env/bin/activate; \
-#	    pip install -r requirements.dev.txt
-#    fi
-#fi
 
 if mkdir logs; then
     # Do nothing

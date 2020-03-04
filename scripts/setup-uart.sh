@@ -1,5 +1,6 @@
  #! /bin/sh cd /sys/devices/platform/bone_capemgr File=slots if grep -q "Override Board Name,00A0,Override Manuf,univ-emmc" "$File";  then    
     cd
+   # TODO - Test if this is needed for docker images.
     ###Overide capes with eeprom
     uboot_overlay_addr0=/lib/firmware/BB-UART1-00A0.dtbo
     uboot_overlay_addr1=/lib/firmware/BB-UART2-00A0.dtbo

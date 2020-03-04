@@ -2,8 +2,8 @@ _init:
 	bash ./scripts/init.sh
 
 test:
-	docker build -t testing_dev -f Dockerfile.dev .
-	docker run -it --rm --name testing_dev ./scripts/test.sh
+	docker build -t sailbotvt/sailbot-20:deployment_testing_dev -f Dockerfile.dev .
+	docker run -it --rm --name sailbotvt/sailbot-20:deployment_testing_dev ./scripts/test.sh
 
 test_production:
 	docker build -t sailbotvt/sailbot-20:deployment_testing_beaglebone -f Dockerfile.prod .
@@ -12,7 +12,7 @@ test_production:
 run:
 	docker run -it --rm --privileged --name sailbot_run sailbotvt/sailbot-20:deployment_testing_beaglebone ./scripts/run.sh
 
-run_bash:
+run_cli:
 	docker run -it --rm --privileged --name sailbot_run sailbotvt/sailbot-20:deployment_testing_beaglebone bash
 
 build_prod:
@@ -29,4 +29,4 @@ test_tracker:
 test_controls:
 	bash ./scripts/test_controls.sh
 
-.PHONY: _init test test_production run run_bash build_prod clean test_tracker test_controls
+.PHONY: _init test test_production run run_cli build_prod clean test_tracker test_controls
