@@ -16,8 +16,8 @@ run_cli:
 	docker run -it --rm --privileged --name sailbot_run sailbotvt/sailbot-20:deployment_beaglebone bash
 
 build_prod:
-	docker build -t sailbotvt/sailbot-20:deployment_testing_beaglebone -f Dockerfile.prod .
-	docker save -o beag_img.tar.gz sailbotvt/sailbot-20:deployment_testing_beaglebone
+	docker build -t sailbotvt/sailbot-20:deployment_beaglebone -f Dockerfile.prod .
+	docker save -o beag_img.tar.gz sailbotvt/sailbot-20:deployment_beaglebone
 	echo "Copy over to beaglbone using rsync, scp, ... \n Then load on beaglbeone using: \n docker load -i <path_to_tar_file>"
 
 clean:
