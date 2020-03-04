@@ -1,4 +1,5 @@
 FROM balenalib/beaglebone-black-debian:stretch-build
+COPY qemu-arm-static /usr/bin/
 
 ENV HOSTNAME beaglebone
 ENV UDEV=1
