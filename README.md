@@ -19,6 +19,8 @@ The software design document detailing the system architecture can be found [her
 
 3. There is no longer a distinct initialization step. Initialization will occur upon first building an image through the commands `make test` or `make build_prod`. Note: the first time that you run these commands on your machine, the initialization will be very slow and take 15-20 minutes. After that first initialization, if there are no changes to the initialization instructions for the container, building the new docker image will be much faster.
 
+4. A developmental environment is included in the sailbot-development docker image. We reccommend the use of this docker container rather than a typical python virtual environment, so our development environment remains consitent throughout the team. The image can be built and ran through the command `make dev`. This will allow you to enter a debian-stretch environment with python3 and our developmental packages installed. Note, this environment is not production ready, and code must be tested through `make test`.
+
 ### Testing Instructions
 
 Any code pushed to this repository will automatically be subject to all existing test methods as well as any newly added tests.
@@ -37,4 +39,4 @@ Upon a successful pull request with master, a new Docker image will be built and
 
 #### Local Deployment
 
-By running `make build_prod`, a local docker image built for the Beaglebone is created and compressed on your local machine. Please note, the first time that this command is run after each change to initialization instructions will take 20-30 minutes. Then, with the Beaglebone either physically connected to your machine (via USB or Ethernet) or on the same network as your machine, you can sync the Docker image tarball to Beaglebone using rsync, scp, etc. Then, on the Beaglebone, use the command `docker load -i <path_to_tar_file> and then use `make run`.
+To use this command, you will need to set `experimental=True` in your docker-daemon configurations: [docker-daemon documentation](https://docs.docker.com/engine/reference/commandline/dockerd/). By running `make build_prod_tar`, a local docker image built for the Beaglebone is created and compressed on your local machine. Please note, the first time that this command is run after each change to initialization instructions will take 20-30 minutes. Then, with the Beaglebone either physically connected to your machine (via USB or Ethernet) or on the same network as your machine, you can sync the Docker image tarball to Beaglebone using rsync, scp, etc. Then, on the Beaglebone, use the command `docker load -i <path_to_tar_file>` and then use `make run`.
