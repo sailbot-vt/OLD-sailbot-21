@@ -1,32 +1,74 @@
-_init:
-	bash ./scripts/init.sh
+# Builds the base, development, production, and testing images to local docker daemon
+.PHONY: build
+build:
+	docker build -t sailbotvt/sailbot-20:beaglebone-black-debian-stretch-python -f Dockerfile.base .
+	docker build -t sailbotvt/sailbot-20:sailbot-development -f Dockerfile.dev .
+	docker build -t sailbotvt/sailbot-20:sailbot-test -f Dockerfile.test .
+	docker build -t sailbotvt/sailbot-20:sailbot-production -f Dockerfile.prod .
 
-test:
-	docker build -t sailbotvt/sailbot-20:deployment_testing_dev -f Dockerfile.dev .
-	docker run -it --rm --name sailbot_test sailbotvt/sailbot-20:deployment_testing_dev ./scripts/test.sh
+.PHONY: build_base
+build_base:
+	docker build -t sailbotvt/sailbot-20:beaglebone-black-debian-stretch-python -f Dockerfile.base .
 
-test_production:
-	docker build -t sailbotvt/sailbot-20:deployment_testing_beaglebone -f Dockerfile.prod .
-	docker run -it --rm --privileged --name sailbot_run sailbotvt/sailbot-20:deployment_testing_beaglebone ./scripts/test.sh
+.PHONY: build_dev
+build_dev:
+	docker build -t sailbotvt/sailbot-20:sailbot-development -f Dockerfile.dev .
 
-run:
-	docker run -it --rm --privileged --name sailbot_run sailbotvt/sailbot-20:deployment_beaglebone ./scripts/run.sh
+.PHONY: build_test
+build_test:
+	docker build -t sailbotvt/sailbot-20:sailbot-test -f Dockerfile.test .
 
-run_cli:
-	docker run -it --rm --privileged --name sailbot_run sailbotvt/sailbot-20:deployment_beaglebone bash
-
+.PHONY: build_prod
 build_prod:
-	docker build -t sailbotvt/sailbot-20:deployment_beaglebone -f Dockerfile.prod .
-	docker save -o beag_img.tar.gz sailbotvt/sailbot-20:deployment_beaglebone
-	echo "Copy over to beaglbone using rsync, scp, ... \n Then load on beaglbeone using: \n docker load -i <path_to_tar_file>"
+	docker build -t sailbotvt/sailbot-20:sailbot-production -f Dockerfile.prod .
 
+# Builds a local beaglebone base and production image, 
+# and the beaglebone-img.tar.gz to be loaded onto the beaglebone through scp.
+# Note: Requires `experimental = True` in docker-daemon config file
+.PHONY: build_prod_tar
+build_prod_tar:
+	docker build -t sailbotvt/sailbot-20:beaglebone-black-debian-stretch-python -f Dockerfile.base . --squash
+	docker build -t sailbotvt/sailbot-20:sailbot-production -f Dockerfile.prod . --squash
+	docker save -o beaglebone-img.tar.gz sailbotvt/sailbot-20:sailbot-production
+	echo "Copy over to beaglebone using rsync, scp, ... \n Then load on beaglebone using: \n docker load -i <path_to_tar_file>"
+
+# Starts bash in the development image.
+.PHONY: dev
+development:
+	docker build -t sailbotvt/sailbot-20:sailbot-development -f Dockerfile.dev .
+	docker run -it --rm --name sailbot_dev sailbotvt/sailbot-20:sailbot-development bash
+
+# Run tests on a production-ready image.
+.PHONY: test
+test:
+	docker build -t sailbotvt/sailbot-20:sailbot-test -f Dockerfile.test .
+	docker run -it --rm --name sailbot_test sailbotvt/sailbot-20:sailbot-test ./scripts/test.sh
+
+# Runs main.py on the production image.
+.PHONY: run
+run:
+	docker run -it --rm --privileged --name sailbot_run sailbotvt/sailbot-20:sailbot-production ./scripts/run.sh
+
+# Connects to bash on the production image.
+.PHONY: run_cli
+run_cli:
+	docker run -it --rm --privileged --name sailbot_run sailbotvt/sailbot-20:sailbot-production bash
+
+# Removes docker images and containers.
+.PHONY: clean_docker
+clean:
+	docker image prune -a
+
+# Cleans the sailbot directory
+.PHONY: clean
 clean:
 	rm logs/*
 
+# These don't work? 
+.PHONY: test_tracker
 test_tracker:
 	bash ./scripts/test_tracker.sh
 
+.PHONY: test_controls
 test_controls:
 	bash ./scripts/test_controls.sh
-
-.PHONY: _init test test_production run run_cli build_prod clean test_tracker test_controls
