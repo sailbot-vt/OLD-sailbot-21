@@ -34,7 +34,7 @@ build_prod_tar:
 
 # Starts bash in the development image.
 .PHONY: dev
-development:
+dev:
 	docker build -t sailbotvt/sailbot-20:sailbot-development -f Dockerfile.dev .
 	docker run -it --rm --name sailbot_dev sailbotvt/sailbot-20:sailbot-development bash
 
