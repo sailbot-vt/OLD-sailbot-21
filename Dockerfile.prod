@@ -1,25 +1,33 @@
-FROM balenalib/beaglebone-black-debian:stretch-build
+FROM sailbotvt/sailbot-20:beaglebone-black-debian-stretch-python
 
-ENV HOSTNAME beaglebone
-ENV UDEV=1
-
-ENV LANG C.UTF-8
-
+# Allow for running ARM images in x86/x86_64 machines
+# Triggers resin-xbuild and QEMU
 RUN [ "cross-build-start" ]
 
-RUN apt-get -y update && apt-get -y install make wget
-
-ENTRYPOINT ["/usr/bin/entry.sh"]
-
-COPY scripts /sailbot/scripts
-COPY tests /sailbot/tests
-COPY Makefile /sailbot/
-COPY requirements.prod.txt /sailbot/
 WORKDIR /sailbot
 
-RUN make _init
+# Installing production requirements
+COPY requirements.prod.txt ./
+RUN pip3 install -r requirements.prod.txt \
+    && mkdir logs
 
-COPY src /sailbot/src
-COPY main.py /sailbot/main.py
+# Deleting packages to trim image
+RUN apt-get autoremove && apt-get remove --purge \
+        curl \
+        wget \
+        build-essential \
+        python3-wheel \
+        python3-setuptools \
+        python3-pip \
+        python3-dev
+
+# Copying source files
+COPY scripts ./scripts
+COPY Makefile main.py ./
+COPY src ./src
+
+# Checks for UDEV=1 to run container as privileged
+ENV UDEV=1
+ENTRYPOINT [ "/usr/bin/entry.sh" ]
 
 RUN [ "cross-build-end" ]

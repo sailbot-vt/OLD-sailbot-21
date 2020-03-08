@@ -1,0 +1,53 @@
+FROM balenalib/beaglebone-black-debian:stretch-run
+
+# Setting env variables
+ENV HOSTNAME beaglebone
+
+# remove several traces of debian python
+RUN apt-get purge -y python.*
+
+# http://bugs.python.org/issue19846
+# > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
+ENV LANG C.UTF-8
+
+# Allow for running ARM images in x86/x86_64 machines
+# Triggers resin-xbuild and QEMU
+RUN [ "cross-build-start" ]
+
+# Installing python3 from apt-get
+# > It may be beneficial to specify versions of python & pip here.
+RUN install_packages python3-wheel python3-setuptools python3-pip python3-dev \
+    && pip3 install --upgrade pip
+
+# set PYTHONPATH to point to site-packages
+ENV PYTHONPATH /usr/local/lib/python3.5/site-packages
+
+# Installing Adafruit_BBIO-1.1.1 build dependencies and make
+RUN install_packages build-essential wget make
+
+# Installing Adafruit_BBIO-1.1.1
+RUN wget https://files.pythonhosted.org/packages/53/2b/b0e3dce6113225aae9beb886b2addd4fd5c140ba93c9503d7e4a97021bcc/Adafruit_BBIO-1.1.1.tar.gz \
+    && tar -xf Adafruit_BBIO-1.1.1.tar.gz \
+    && cd Adafruit_BBIO-1.1.1 \
+    && python3.5 setup.py install \
+    && cd .. \
+    && rm -rf Adafruit_BBIO-1.1.1*
+
+# Caching these layers to improve build time for larger packages.
+# -----------------------------------------------------
+# > Add additional packages here on separate RUN lines
+# > to cache larger installation steps into docker daemon
+
+# Installing numpy, scipy, opencv
+RUN install_packages python3-numpy python3-scipy python3-opencv
+
+# Installing dependencies for filterpy
+RUN install_packages pkg-config libfreetype6-dev \
+    && pip3 install filterpy
+
+# -----------------------------------------------------
+
+# Cleanup unused dependencies
+RUN apt-get autoremove
+
+RUN [ "cross-build-end" ]
