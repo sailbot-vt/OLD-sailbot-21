@@ -8,8 +8,7 @@ WORKDIR /sailbot
 
 # Installing production requirements
 COPY requirements.prod.txt ./
-RUN pip3 install -r requirements.prod.txt \
-    && mkdir logs
+RUN pip3 install -r requirements.prod.txt
 
 # Deleting packages to trim image
 RUN apt-get autoremove && apt-get remove --purge \
