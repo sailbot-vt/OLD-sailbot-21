@@ -5,5 +5,3 @@ parse
 pyserial
 scipy
 filterpy
-
-coverage
