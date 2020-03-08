@@ -25,7 +25,7 @@ The software design document detailing the system architecture can be found [her
 
 Any code pushed to this repository will automatically be subject to all existing test methods as well as any newly added tests.
 
-To run tests locally before pushing, run `make test` on macOS or Linux, or run each command under `test` in `Makefile` separately on Windows. Running `make test` first builds a docker container with updated source files. Upon build completetion, unit tests are run.
+To run tests locally before pushing, run `make test` on macOS or Linux, or run each command under `test` in `Makefile` separately on Windows. Running `make test` first builds a docker container with updated source files. Upon build completetion, unit tests are run. Note, `requirements.tests.txt` `requirements.prod.txt`, `requirements.base.txt` must all be updated with any newly added python packages.
 
 Test coverage should be as complete as is practical – for most classes, it should be 90% to 100%. Recall that robustness is our first design requirement.
 
