@@ -38,16 +38,31 @@ RUN wget https://files.pythonhosted.org/packages/53/2b/b0e3dce6113225aae9beb886b
 # > Add additional packages here on separate RUN lines
 # > to cache larger installation steps into docker daemon
 
-# Installing numpy, scipy, opencv
-RUN install_packages python3-numpy python3-scipy python3-opencv
+# Installing opencv-python-armv7l
+# > Note, this is very unofficial but it is the quickest one
+# > I found without recompiling the source code.
+# > Credits: https://pypi.org/project/opencv-python-armv7l/
+RUN pip3 install --upgrade https://github.com/popjxc/opencv-python-armv7l/tarball/master
 
-# Installing dependencies for filterpy
-RUN install_packages pkg-config libfreetype6-dev \
-    && pip3 install filterpy
+# Installing numpy and scipy
+RUN pip3 install numpy
+RUN pip3 install scipy
+
+# Installing filterpy
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        pkg-config \
+        libfreetype6-dev \
+    && rm -rf /var/lib/apt/lists/*
+RUN pip3 install filterpy
+
+# Installing base requirements
+COPY requirements.base.txt /sailbot/
+RUN pip3 install -r /sailbot/requirements.base.txt
 
 # -----------------------------------------------------
 
-# Cleanup unused dependencies
-RUN apt-get autoremove
+# Cleanup unused dependencies and make log directory
+RUN apt-get autoremove \
+    && mkdir -p /sailbot/logs
 
 RUN [ "cross-build-end" ]
