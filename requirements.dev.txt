@@ -1,11 +1,12 @@
 pypubsub
 pyyaml
 numpy
-coverage
 parse
 pyserial
 scipy
-opencv-python
 filterpy
 matplotlib
+
+opencv-python
+coverage==4.0.3
 pyqt5

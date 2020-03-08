@@ -5,4 +5,7 @@ parse
 pyserial
 scipy
 filterpy
-coverage
+matplotlib
+
+coverage==4.0.3
+python-coveralls

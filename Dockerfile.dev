@@ -7,10 +7,12 @@ ENV HOSTNAME debian-stretch
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
 ENV LANG C.UTF-8
 
-# Installing build packages
+# Installing useful packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
         make \
         wget \
+        git \
+        cmake \
         build-essential \
     && rm -rf /var/lib/apt/lists/*
 
@@ -35,29 +37,34 @@ ENV PYTHONPATH /usr/local/lib/python3.5/site-packages
 # > Add additional packages here on separate RUN lines
 # > to cache larger installation steps into docker daemon
 
-# Installing numpy, scipy, opencv
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        python3-numpy \
-        python3-scipy \
-        python3-opencv \
-    && rm-rf /var/lib/apt/lists/*
+# Installing numpy, scipy, and opencv
+RUN pip3 install opencv-python
+RUN pip3 install numpy
+RUN pip3 install scipy
 
-# Installing dependencies for filterpy
+# Installing filterpy
 RUN apt-get update && apt-get install -y --no-install-recommends \
         pkg-config \
-        libfreetyp6-dev \
-    && rm-rf /var/lib/apt/lists/*
-
+        libfreetype6-dev \
+    && rm -rf /var/lib/apt/lists/*
 RUN pip3 install filterpy
 
+# Installing base requirements
+COPY requirements.base.txt /sailbot/
+RUN pip3 install -r /sailbot/requirements.base.txt
+
 # -----------------------------------------------------
+
+# Cleanup unused dependencies and make log directory
+RUN apt-get autoremove \ 
+    && mkdir -p /sailbot/logs
 
 WORKDIR /sailbot
 
 # Installing development requirements
 COPY requirements.dev.txt ./
-RUN pip3 install -r requirements.dev.txt \
-    && mkdir logs
+
+RUN pip3 install -r requirements.dev.txt
 
 # Copying source files to image
 COPY scripts ./scripts
