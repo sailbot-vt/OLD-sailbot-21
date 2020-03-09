@@ -6,7 +6,7 @@ build:
 	docker build -t sailbotvt/sailbot-20:sailbot-test -f Dockerfile.test .
 	docker build -t sailbotvt/sailbot-20:sailbot-production -f Dockerfile.prod .
 
-# Warning: build_base takes a *VERY* long time to compile (~3 hours).
+# Warning: build_base takes a *VERY* long time to compile (>10 hours).
 # > Unless you've updated Dockerfile.base, never do this to yourself.
 .PHONY: build_base
 build_base:

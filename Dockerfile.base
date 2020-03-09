@@ -14,46 +14,78 @@ ENV LANG C.UTF-8
 # Triggers resin-xbuild and QEMU
 RUN [ "cross-build-start" ]
 
-# Installing python3 from apt-get
-# > It may be beneficial to specify versions of python & pip here.
-RUN install_packages python3-wheel python3-setuptools python3-pip python3-dev \
-    && pip3 install --upgrade pip
+# > We will install specific versions to optimize caching.
+# > https://packages.debian.org/search?keywords=search
+# Installing python3 tools from apt-get
+RUN apt-get update && apt-get install -y --no-install-recommends \ 
+        python3-wheel=0.29.0-2 \
+        python3-setuptools=33.1.1-1 \
+        python3-pip=9.0.1-2+deb9u1 \ 
+        python3-dev=3.5.3-1 \
+    && rm -rf /var/lib/apt/lists/* \
+    && pip3 install -Iv --upgrade pip==20.0.2
 
 # set PYTHONPATH to point to site-packages
 ENV PYTHONPATH /usr/local/lib/python3.5/site-packages
 
 # Installing Adafruit_BBIO-1.1.1 build dependencies and make
-RUN install_packages build-essential wget make
+RUN apt-get update && apt-get install -y --no-install-recommends \ 
+        build-essential=12.3 \
+        wget=1.18-5+deb9u3 \
+        make=4.1-9.1 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Installing Adafruit_BBIO-1.1.1
 RUN wget https://files.pythonhosted.org/packages/53/2b/b0e3dce6113225aae9beb886b2addd4fd5c140ba93c9503d7e4a97021bcc/Adafruit_BBIO-1.1.1.tar.gz \
     && tar -xf Adafruit_BBIO-1.1.1.tar.gz \
     && cd Adafruit_BBIO-1.1.1 \
-    && python3.5 setup.py install \
-    && cd .. \
+    && python3 setup.py install \
+    && cd ~ \
     && rm -rf Adafruit_BBIO-1.1.1*
 
-# Caching these layers to improve build time for larger packages.
+# Caching these layers to improve build time for packages
+# that require compile from source.
 # -----------------------------------------------------
 # > Add additional packages here on separate RUN lines
 # > to cache larger installation steps into docker daemon
 
-# Installing opencv-python-armv7l
-# > Note, this is very unofficial but it is the quickest one
-# > I found without recompiling the source code.
-# > Credits: https://pypi.org/project/opencv-python-armv7l/
-RUN pip3 install --upgrade https://github.com/popjxc/opencv-python-armv7l/tarball/master
+# > This order was chosen so we dont have to recompile scipy 
+# > and filterpy everytime opencv or numpy updates
 
-# Installing numpy and scipy
-RUN pip3 install numpy
-RUN pip3 install scipy
+# Installing numpy and scipy dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libopenblas-base=0.2.19-3 \
+        libopenblas-dev=0.2.19-3 \
+        gcc=4:6.3.0-4 \
+        gfortran=4:6.3.0-4 \
+    && rm -rf /var/lib/apt/lists/* \
+    && pip3 install -Iv pybind11==2.4.3 \
+    && pip3 install -Iv cython==0.29.15
+
+# Installing numpy
+RUN pip3 install -Iv numpy==1.18.1
+
+# Installing scipy
+RUN wget https://github.com/scipy/scipy/archive/v1.4.1.tar.gz \
+    && tar -xf v1.4.1.tar.gz \
+    && cd scipy-1.4.1 \
+    && python3 setup.py build \
+    && python3 setup.py install \
+    && cd ~ \
+    && rm -rf scipy*
 
 # Installing filterpy
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        pkg-config \
-        libfreetype6-dev \
+        pkg-config=0.29-4+b1 \
+        libfreetype6-dev=2.6.3-3.2+deb9u1 \
     && rm -rf /var/lib/apt/lists/*
-RUN pip3 install filterpy
+RUN pip3 install -Iv filterpy==1.4.5
+
+# Installing latest binaries for opencv and numpy
+# > Ideally, we want to make our own wheel to lock versions.
+# > This package will update numpy and opencv to latest.
+# > https://pypi.org/project/opencv-python-armv7l/
+RUN pip3 install --upgrade https://github.com/popjxc/opencv-python-armv7l/tarball/master
 
 # Installing base requirements
 COPY requirements.base.txt /sailbot/
