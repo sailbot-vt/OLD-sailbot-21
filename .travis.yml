@@ -9,8 +9,7 @@ script: make test
 after_success:
   - coveralls
 
-# Temporarily silencing to test environmental variables passing
-# notifications:
-#   slack:
-#     rooms:
-#       - virginia-tech-sailbot:7TUtMKl4iXUIRxEy0YAhrsVk#boat-programming
+notifications:
+  slack:
+    rooms:
+      - virginia-tech-sailbot:7TUtMKl4iXUIRxEy0YAhrsVk#boat-programming
