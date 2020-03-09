@@ -46,7 +46,6 @@ dev:
 	docker run -it --rm \
 		--name sailbot_dev sailbotvt/sailbot-20:sailbot-development \
 		bash
-	docker stop sailbot_dev
 
 # Runs tests on development image.
 .PHONY: test_dev
@@ -72,8 +71,6 @@ test:
 		-e TRAVIS_BRANCH=${TRAVIS_BRANCH} \
 		--name sailbot_test sailbotvt/sailbot-20:sailbot-test \
 		./scripts/test.sh
-	docker stop sailbot_test
-	docker stop hypriot/qemu-register
 
 # Runs main.py on the production image.
 .PHONY: run
@@ -85,8 +82,6 @@ run:
 	docker run -it --rm --privileged \
 		--name sailbot_run sailbotvt/sailbot-20:sailbot-production \
 		./scripts/run.sh
-	docker stop sailbot_run
-	docker stop hypriot/qemu-register
 
 # Connects to bash on the production image.
 .PHONY: run_cli
@@ -96,10 +91,8 @@ run_cli:
 		-f Dockerfile.prod .
 	docker run --rm --privileged hypriot/qemu-register
 	docker run -it --rm --privileged \
-		--name sailbot_run sailbotvt/sailbot-20:sailbot-production \
+		--name sailbot_run_cli sailbotvt/sailbot-20:sailbot-production \
 		bash
-	docker stop sailbot_run
-	docker stop hypriot/qemu-register
 
 # Removes docker images and containers.
 .PHONY: clean_docker
