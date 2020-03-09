@@ -45,13 +45,13 @@ dev:
 .PHONY: test_dev
 test_dev:
 	docker build -t sailbotvt/sailbot-20:sailbot-dev-test -f Dockerfile.dev .
-	docker run -it --rm --name sailbot_dev_test sailbotvt/sailbot-20:sailbot-dev-test ./scripts/test.sh
+	docker run -it --rm --name sailbot_dev_test sailbotvt/sailbot-20:sailbot-dev-test ./scripts/test.sh -e TRAVIS_JOB_ID="$TRAVIS_JOB_ID" -e TRAVIS_BRANCH="$TRAVIS_BRANCH"
 
 # Run tests on a production-ready image.
 .PHONY: test
 test:
 	docker build -t sailbotvt/sailbot-20:sailbot-test -f Dockerfile.test .
-	docker run -it --rm --name sailbot_test sailbotvt/sailbot-20:sailbot-test ./scripts/test.sh
+	docker run -it --rm --name sailbot_test sailbotvt/sailbot-20:sailbot-test ./scripts/test.sh -e TRAVIS_JOB_ID="$TRAVIS_JOB_ID" -e TRAVIS_BRANCH="$TRAVIS_BRANCH"
 
 # Runs main.py on the production image.
 .PHONY: run
