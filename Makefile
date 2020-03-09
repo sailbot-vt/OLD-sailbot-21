@@ -21,7 +21,6 @@ build_base:
 # 		as well as the latest beaglebone image in sailbot's dockerhub
 .PHONY: build_prod_tar
 build_prod_tar:
-	# docker build -t sailbotvt/sailbot-20:beaglebone-black-debian-stretch-python -f Dockerfile.base . --squash
 	docker build \
 		-t sailbotvt/sailbot-20:sailbot-production \
 		-f Dockerfile.prod . \
@@ -47,6 +46,7 @@ dev:
 	docker run -it --rm \
 		--name sailbot_dev sailbotvt/sailbot-20:sailbot-development \
 		bash
+	docker stop sailbot_dev
 
 # Runs tests on development image.
 .PHONY: test_dev
@@ -66,11 +66,14 @@ test:
 	docker build \
 		-t sailbotvt/sailbot-20:sailbot-test \
 		-f Dockerfile.test .
+	docker run --rm --privileged hypriot/qemu-register
 	docker run -it --rm \
 		-e TRAVIS_JOB_ID=${TRAVIS_JOB_ID} \
 		-e TRAVIS_BRANCH=${TRAVIS_BRANCH} \
 		--name sailbot_test sailbotvt/sailbot-20:sailbot-test \
 		./scripts/test.sh
+	docker stop sailbot_test
+	docker stop hypriot/qemu-register
 
 # Runs main.py on the production image.
 .PHONY: run
@@ -78,9 +81,12 @@ run:
 	docker build \
 		-t sailbotvt/sailbot-20:sailbot-production \
 		-f Dockerfile.prod .
+	docker run --rm --privileged hypriot/qemu-register
 	docker run -it --rm --privileged \
 		--name sailbot_run sailbotvt/sailbot-20:sailbot-production \
 		./scripts/run.sh
+	docker stop sailbot_run
+	docker stop hypriot/qemu-register
 
 # Connects to bash on the production image.
 .PHONY: run_cli
@@ -88,9 +94,12 @@ run_cli:
 	docker build \
 		-t sailbotvt/sailbot-20:sailbot-production \
 		-f Dockerfile.prod .
+	docker run --rm --privileged hypriot/qemu-register
 	docker run -it --rm --privileged \
 		--name sailbot_run sailbotvt/sailbot-20:sailbot-production \
 		bash
+	docker stop sailbot_run
+	docker stop hypriot/qemu-register
 
 # Removes docker images and containers.
 .PHONY: clean_docker
