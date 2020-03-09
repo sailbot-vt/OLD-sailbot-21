@@ -55,8 +55,8 @@ test_dev:
 		-t sailbotvt/sailbot-20:sailbot-dev-test \
 		-f Dockerfile.dev .
 	docker run -it --rm \
-		-e TRAVIS_JOB_ID="$$TRAVIS_JOB_ID" \
-		-e TRAVIS_BRANCH="$$TRAVIS_BRANCH" \
+		-e TRAVIS_JOB_ID=${TRAVIS_JOB_ID} \
+		-e TRAVIS_BRANCH=${TRAVIS_BRANCH} \
 		--name sailbot_dev_test sailbotvt/sailbot-20:sailbot-dev-test \
 		./scripts/test.sh
 
@@ -67,8 +67,8 @@ test:
 		-t sailbotvt/sailbot-20:sailbot-test \
 		-f Dockerfile.test .
 	docker run -it --rm \
-		-e TRAVIS_JOB_ID="$$TRAVIS_JOB_ID" \
-		-e TRAVIS_BRANCH="$$TRAVIS_BRANCH" \
+		-e TRAVIS_JOB_ID=${TRAVIS_JOB_ID} \
+		-e TRAVIS_BRANCH=${TRAVIS_BRANCH} \
 		--name sailbot_test sailbotvt/sailbot-20:sailbot-test \
 		./scripts/test.sh
 
