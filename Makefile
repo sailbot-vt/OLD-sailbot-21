@@ -10,8 +10,8 @@ build_dev_base:
 build_base:
 	docker build -t sailbotvt/sailbot-20:beaglebone-black-debian-stretch-python -f Dockerfile.base .
 
-# Builds a local beaglebone production image, 
-# and the beaglebone-img.tar.gz to be loaded onto the beaglebone through scp.
+# Builds a local beaglebone production image and scp to beaglebone. 
+# Ensure that beaglebone is ready to scp and ssh.
 # Note: Requires `experimental = True` in docker-daemon config file
 # 		as well as the latest beaglebone image in sailbot's dockerhub
 .PHONY: build_prod_tar
@@ -19,7 +19,14 @@ build_prod_tar:
 	# docker build -t sailbotvt/sailbot-20:beaglebone-black-debian-stretch-python -f Dockerfile.base . --squash
 	docker build -t sailbotvt/sailbot-20:sailbot-production -f Dockerfile.prod . --squash
 	docker save -o beaglebone-img.tar.gz sailbotvt/sailbot-20:sailbot-production
-	echo "Copy over to beaglebone using rsync, scp, ... \n Then load on beaglebone using: \n docker load -i <path_to_tar_file>"
+	scp beaglebone-img.tar.gz debian@beaglebone.local:~/
+	echo -e "After connecting to the beaglebone, run\n\033[0;32m1) sudo make load\033[0m\n\033[0;32m2a) sudo make run\033[0m or \033[0;32m2b) sudo make run-cli\033[0m\n"
+
+# Transfers Makefile_beag to beaglebone and renames to Makefile
+# Ensure that beaglebone is ready to scp and ssh
+.PHONY: beag_init
+beag_init:
+	scp Makefile_beag debian@beaglebone.local.:Makefile
 
 # Starts bash in the development image.
 .PHONY: dev
