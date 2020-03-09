@@ -6,15 +6,16 @@ build:
 	docker build -t sailbotvt/sailbot-20:sailbot-test -f Dockerfile.test .
 	docker build -t sailbotvt/sailbot-20:sailbot-production -f Dockerfile.prod .
 
-# Warning: build_base takes a *VERY* long time to compile (>10 hours).
+# Warning: build_base takes a *VERY* long time to compile (>5 hours).
 # > Unless you've updated Dockerfile.base, never do this to yourself.
+# > Docker will load the latest base image from Dockerhub when needed.
 .PHONY: build_base
 build_base:
 	docker build -t sailbotvt/sailbot-20:beaglebone-black-debian-stretch-python -f Dockerfile.base .
 
 .PHONY: build_dev
 build_dev:
-	docker build -t sailbotvt/sailbot-20:sailbot-development -f Dockerfile.dev .
+	docker build -t sailbotvt/sailbot-20:sailbot-development --build-arg FLAVOR=stretch -f Dockerfile.dev . 
 
 .PHONY: build_test
 build_test:
@@ -37,7 +38,7 @@ build_prod_tar:
 # Starts bash in the development image.
 .PHONY: dev
 dev:
-	docker build -t sailbotvt/sailbot-20:sailbot-development -f Dockerfile.dev .
+	docker build -t sailbotvt/sailbot-20:sailbot-development --build-arg FLAVOR=stretch -f Dockerfile.dev .
 	docker run -it --rm --name sailbot_dev sailbotvt/sailbot-20:sailbot-development bash
 
 # Runs tests on development image.
