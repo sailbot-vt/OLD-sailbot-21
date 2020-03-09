@@ -1,11 +1,13 @@
-# Builds the base, development, production, and testing images to local docker daemon
+# Builds the development, production, and testing images to local docker daemon
 .PHONY: build
 build:
-	docker build -t sailbotvt/sailbot-20:beaglebone-black-debian-stretch-python -f Dockerfile.base .
+	# docker build -t sailbotvt/sailbot-20:beaglebone-black-debian-stretch-python -f Dockerfile.base .
 	docker build -t sailbotvt/sailbot-20:sailbot-development -f Dockerfile.dev .
 	docker build -t sailbotvt/sailbot-20:sailbot-test -f Dockerfile.test .
 	docker build -t sailbotvt/sailbot-20:sailbot-production -f Dockerfile.prod .
 
+# Warning: build_base takes a *VERY* long time to compile (~3 hours).
+# > Unless you've updated Dockerfile.base, never do this to yourself.
 .PHONY: build_base
 build_base:
 	docker build -t sailbotvt/sailbot-20:beaglebone-black-debian-stretch-python -f Dockerfile.base .
@@ -22,12 +24,12 @@ build_test:
 build_prod:
 	docker build -t sailbotvt/sailbot-20:sailbot-production -f Dockerfile.prod .
 
-# Builds a local beaglebone base and production image, 
+# Builds a local beaglebone production image, 
 # and the beaglebone-img.tar.gz to be loaded onto the beaglebone through scp.
 # Note: Requires `experimental = True` in docker-daemon config file
 .PHONY: build_prod_tar
 build_prod_tar:
-	docker build -t sailbotvt/sailbot-20:beaglebone-black-debian-stretch-python -f Dockerfile.base . --squash
+	# docker build -t sailbotvt/sailbot-20:beaglebone-black-debian-stretch-python -f Dockerfile.base . --squash
 	docker build -t sailbotvt/sailbot-20:sailbot-production -f Dockerfile.prod . --squash
 	docker save -o beaglebone-img.tar.gz sailbotvt/sailbot-20:sailbot-production
 	echo "Copy over to beaglebone using rsync, scp, ... \n Then load on beaglebone using: \n docker load -i <path_to_tar_file>"
@@ -56,7 +58,7 @@ run_cli:
 
 # Removes docker images and containers.
 .PHONY: clean_docker
-clean:
+clean_docker:
 	docker image prune -a
 
 # Cleans the sailbot directory
