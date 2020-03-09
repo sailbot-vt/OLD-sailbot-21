@@ -16,4 +16,7 @@ COPY scripts ./scripts
 COPY Makefile main.py ./
 COPY src ./src
 
+# Checks for UDEV=1 to run as privileged
+ENTRYPOINT [ "/usr/bin/entry.sh" ]
+
 RUN [ "cross-build-end" ]
