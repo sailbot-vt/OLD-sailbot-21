@@ -9,4 +9,5 @@ matplotlib
 
 opencv-python
 coverage==4.0.3
+python-coveralls
 pyqt5

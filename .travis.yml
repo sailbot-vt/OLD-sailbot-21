@@ -3,9 +3,9 @@ python:
   - "3.5"
 
 # Assumes latest beaglebone-base image is pushed onto docker.
-# script: make test
+script: make test
 # Temporarily test only on dev, while base image is building
-scipt: make test_dev
+# scipt: make test_dev
 after_success:
   - coveralls
 

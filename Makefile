@@ -1,33 +1,19 @@
-# Builds the development, production, and testing images to local docker daemon
-.PHONY: build
-build:
-	# docker build -t sailbotvt/sailbot-20:beaglebone-black-debian-stretch-python -f Dockerfile.base .
-	docker build -t sailbotvt/sailbot-20:sailbot-development -f Dockerfile.dev .
-	docker build -t sailbotvt/sailbot-20:sailbot-test -f Dockerfile.test .
-	docker build -t sailbotvt/sailbot-20:sailbot-production -f Dockerfile.prod .
+# Builds the base development image
+.PHONY: build_dev_base
+build_dev_base:
+	docker build -t sailbotvt/sailbot-20:sailbot-development-base --build-arg FLAVOR=stretch -f Dockerfile.base_dev .
 
-# Warning: build_base takes a *VERY* long time to compile (>5 hours).
+# Warning: build_base takes a *VERY* long time to compile (>7 hours).
 # > Unless you've updated Dockerfile.base, never do this to yourself.
 # > Docker will load the latest base image from Dockerhub when needed.
 .PHONY: build_base
 build_base:
 	docker build -t sailbotvt/sailbot-20:beaglebone-black-debian-stretch-python -f Dockerfile.base .
 
-.PHONY: build_dev
-build_dev:
-	docker build -t sailbotvt/sailbot-20:sailbot-development --build-arg FLAVOR=stretch -f Dockerfile.dev . 
-
-.PHONY: build_test
-build_test:
-	docker build -t sailbotvt/sailbot-20:sailbot-test -f Dockerfile.test .
-
-.PHONY: build_prod
-build_prod:
-	docker build -t sailbotvt/sailbot-20:sailbot-production -f Dockerfile.prod .
-
 # Builds a local beaglebone production image, 
 # and the beaglebone-img.tar.gz to be loaded onto the beaglebone through scp.
 # Note: Requires `experimental = True` in docker-daemon config file
+# 		as well as the latest beaglebone image in sailbot's dockerhub
 .PHONY: build_prod_tar
 build_prod_tar:
 	# docker build -t sailbotvt/sailbot-20:beaglebone-black-debian-stretch-python -f Dockerfile.base . --squash
@@ -38,7 +24,7 @@ build_prod_tar:
 # Starts bash in the development image.
 .PHONY: dev
 dev:
-	docker build -t sailbotvt/sailbot-20:sailbot-development --build-arg FLAVOR=stretch -f Dockerfile.dev .
+	docker build -t sailbotvt/sailbot-20:sailbot-development -f Dockerfile.dev .
 	docker run -it --rm --name sailbot_dev sailbotvt/sailbot-20:sailbot-development bash
 
 # Runs tests on development image.
@@ -56,11 +42,13 @@ test:
 # Runs main.py on the production image.
 .PHONY: run
 run:
+	docker build -t sailbotvt/sailbot-20:sailbot-production -f Dockerfile.prod .
 	docker run -it --rm --privileged --name sailbot_run sailbotvt/sailbot-20:sailbot-production ./scripts/run.sh
 
 # Connects to bash on the production image.
 .PHONY: run_cli
 run_cli:
+	docker build -t sailbotvt/sailbot-20:sailbot-production -f Dockerfile.prod .
 	docker run -it --rm --privileged --name sailbot_run sailbotvt/sailbot-20:sailbot-production bash
 
 # Removes docker images and containers.
