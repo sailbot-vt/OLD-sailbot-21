@@ -40,6 +40,12 @@ dev:
 	docker build -t sailbotvt/sailbot-20:sailbot-development -f Dockerfile.dev .
 	docker run -it --rm --name sailbot_dev sailbotvt/sailbot-20:sailbot-development bash
 
+# Runs tests on development image.
+.PHONY: test_dev
+test_dev:
+	docker build -t sailbotvt/sailbot-20:sailbot-dev-test -f Dockerfile.dev .
+	docker run -it --rm --name sailbot_dev_test sailbotvt/sailbot-20:sailbot-dev-test ./scripts/test.sh
+
 # Run tests on a production-ready image.
 .PHONY: test
 test:

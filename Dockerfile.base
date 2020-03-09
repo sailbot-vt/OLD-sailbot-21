@@ -15,7 +15,6 @@ ENV LANG C.UTF-8
 RUN [ "cross-build-start" ]
 
 # > We will install specific versions to optimize caching.
-# > https://packages.debian.org/search?keywords=search
 # Installing python3 tools from apt-get
 RUN apt-get update && apt-get install -y --no-install-recommends \ 
         python3-wheel=0.29.0-2 \
@@ -59,11 +58,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         gcc=4:6.3.0-4 \
         gfortran=4:6.3.0-4 \
     && rm -rf /var/lib/apt/lists/* \
-    && pip3 install -Iv pybind11==2.4.3 \
-    && pip3 install -Iv cython==0.29.15
+    && pip3 install -Iv pybind11==2.4.3 --no-cache-dir --compile \
+    && pip3 install -Iv cython==0.29.15 --no-cache-dir --compile
 
 # Installing numpy
-RUN pip3 install -Iv numpy==1.18.1
+RUN pip3 install -Iv numpy==1.18.1 --no-cache-dir --compile
 
 # Installing scipy
 RUN wget https://github.com/scipy/scipy/archive/v1.4.1.tar.gz \
@@ -79,17 +78,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         pkg-config=0.29-4+b1 \
         libfreetype6-dev=2.6.3-3.2+deb9u1 \
     && rm -rf /var/lib/apt/lists/*
-RUN pip3 install -Iv filterpy==1.4.5
+RUN pip3 install -Iv filterpy==1.4.5 --no-cache-dir --compile
 
 # Installing latest binaries for opencv and numpy
 # > Ideally, we want to make our own wheel to lock versions.
 # > This package will update numpy and opencv to latest.
 # > https://pypi.org/project/opencv-python-armv7l/
-RUN pip3 install --upgrade https://github.com/popjxc/opencv-python-armv7l/tarball/master
+RUN pip3 install --upgrade https://github.com/popjxc/opencv-python-armv7l/tarball/master --no-cache-dir --compile
 
 # Installing base requirements
 COPY requirements.base.txt /sailbot/
-RUN pip3 install -r /sailbot/requirements.base.txt
+RUN pip3 install -r /sailbot/requirements.base.txt --no-cache-dir --compile
 
 # -----------------------------------------------------
 
