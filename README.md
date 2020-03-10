@@ -41,7 +41,7 @@ Test coverage should be as complete as is practical – for most classes, it sho
 
 ### Deployment Instructions
 
-There are two options to deploy to the Beaglebone Black. For both ensure that the beaglebone is connected and run `make beag_init`, then `ssh debian@beaglebone.local`, and run `make init` to setup the Beaglebone. If on Windows, inspect the `beag_init` commands to transfer the appropriate files to the Beaglebone, and use an ssh client to connect.
+There are two options to deploy to the Beaglebone Black. For both ensure that the beaglebone is connected and run `make beag_init`, then `ssh debian@beaglebone.local`, and run `sudo make init` to setup the Beaglebone. If on Windows, inspect the `beag_init` commands to transfer the appropriate files to the Beaglebone, and use an ssh client to connect.
 
 #### Automated Deployment
 

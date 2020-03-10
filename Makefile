@@ -31,11 +31,11 @@ build_prod_tar:
 	sudo make load\033[0m\n\033[0;32m2a) sudo make run\033[0m or \
 	\033[0;32m2b) sudo make run-cli\033[0m\n"
 
-# Transfers Makefile_beag to beaglebone and renames to Makefile
+# Transfers scripts and Makefile to beaglebone
 # Ensure that beaglebone is ready to scp and ssh
 .PHONY: beag_init
 beag_init:
-	scp Makefile_beag debian@beaglebone.local.:Makefile
+	scp -r ./setup_beaglebone/* debian@beaglebone.local:~/
 
 # Starts bash in the development image.
 .PHONY: dev
