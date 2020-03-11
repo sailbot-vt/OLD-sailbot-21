@@ -7,9 +7,9 @@ init:
 	apt-get update && apt-get install -y docker-ce docker-ce-cli containerd.io
 	groupadd docker
 	usermod -aG docker ${USER}
-    bash grow-partition.sh
+	bash grow-partition.sh
 	echo "Docker and partition setup, rebooting now..."
-    reboot now
+	reboot now
 
 # Runs program on dockerhub image
 .PHONY: run

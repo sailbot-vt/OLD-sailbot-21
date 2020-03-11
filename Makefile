@@ -56,8 +56,10 @@ test_dev:
 	docker run -it --rm \
 		-e TRAVIS_JOB_ID=${TRAVIS_JOB_ID} \
 		-e TRAVIS_BRANCH=${TRAVIS_BRANCH} \
+		-e COVERALLS_REPO_TOKEN=${COVERALLS_REPO_TOKEN} \
 		--name sailbot_dev_test sailbotvt/sailbot-20:sailbot-dev-test \
 		./scripts/test.sh
+		# bash
 
 # Run tests on a production-ready image.
 .PHONY: test
@@ -69,6 +71,7 @@ test:
 	docker run -it --rm \
 		-e TRAVIS_JOB_ID=${TRAVIS_JOB_ID} \
 		-e TRAVIS_BRANCH=${TRAVIS_BRANCH} \
+		-e COVERALLS_REPO_TOKEN=${COVERALLS_REPO_TOKEN} \
 		--name sailbot_test sailbotvt/sailbot-20:sailbot-test \
 		./scripts/test.sh
 
