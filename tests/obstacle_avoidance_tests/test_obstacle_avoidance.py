@@ -22,6 +22,10 @@ class ObstacleAvoidanceTests(unittest.TestCase):
 
         self.obstacle_avoidance = ObstacleAvoidance(None, None)
 
+    def tearDown(self):
+        """Cleans up obstacle avoidance class"""
+        self.obstacle_avoidance.is_active = False
+
     @patch('src.autonomy.obstacle_avoidance.obstacle_avoidance.ObstacleAvoidance.get_objects')
     @patch('src.autonomy.obstacle_avoidance.obstacle_avoidance.ObstacleAvoidance.find_path')
     @patch('src.autonomy.obstacle_avoidance.obstacle_avoidance.sleep')
