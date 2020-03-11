@@ -4,7 +4,7 @@ from threading import Thread, Lock
 from pubsub import pub
 
 from src.navigation_mode import NavigationMode
-from src.autonomy.nav.course import ObjectCourse
+from src.autonomy.nav.captain import Captain
 
 mutex = Lock()
 
@@ -12,24 +12,30 @@ mutex = Lock()
 class Event(ABC, Thread):
     """Base event type"""
 
-    def __init__(self):
+    def __init__(self, boat, wind):
         """Creates a new event"""
-        Thread.__init__()
-
-        self.is_active = True
-        self.read_interval()
-
-        self.course = ObjectCourse()
-        
         pub.subscribe(self.switch_mode, "set nav mode")
+
+        self.create_objectives()
+
+        self.captain = Captain(self.objectives, boat, wind)
+        self.captain.start()
 
     @abstractmethod
     def run(self):
         """Runs event thread"""
+        pass
 
     @abstractmethod
     def read_interval(self):
         """Reads update interval from config"""
+        pass
+
+    @abstractmethod
+    def create_objectives(self):
+        """
+        Creates objectives based on enumerations
+        """
         pass
 
     def switch_mode(self, mode):
@@ -45,40 +51,11 @@ class Event(ABC, Thread):
 
     def enable(self):
         """Enables autonomous navigation"""
-        self.is_active = True
+        self.captain = Captain()
+        self.captain.start()
 
     def disable(self):
         """
         Disable autonomous navigation
-        Side Effects:
-            course -- clears course
         """   
-        self.is_active = False
-        self.course.clear()
-
-    def add_object(self, obj):
-        """
-        Adds waypoint at object
-        Side Effects:
-            course -- adds object to course
-        """
-        mutex.acquire()
-        self.course.add_obj(obj)
-        mutex.release()
-
-    def clear_course(self):
-        """
-        Clears course of all objects
-        Side Effects:
-            course -- clears course
-        """
-        mutex.acquire()
-        self.course.clear()
-        mutex.release()
-
-    def create_objectives(self):
-        """
-        Creates objectives based on enumerations
-        """
-        return []
-
+        self.captain.quit()
