@@ -1,0 +1,18 @@
+rudder_angles:
+  fast_turn: 15
+  medium_turn: 10
+  slow_turn: 5
+
+jib_angles:
+  q1:
+    p0: 14
+  q2:
+    p0: 14
+  q3:
+    p0: 14
+  q4:
+    p0: 14
+
+default_turn_rate: 'medium_turn'
+
+update_interval: 0.1
