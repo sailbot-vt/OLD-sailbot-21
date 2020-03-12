@@ -10,4 +10,7 @@ run:
 test_obstacle:
 	bash ./scripts/test_obstacle_avoidance.sh
 
-.PHONY: init test run test_obstacle
+test_autonomy:
+	bash ./scripts/test_autonomy.sh
+
+.PHONY: init test run test_obstacle test_autonomy

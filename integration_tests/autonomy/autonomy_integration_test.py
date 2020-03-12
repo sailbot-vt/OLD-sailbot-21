@@ -1,0 +1,232 @@
+import unittest
+try:
+    from unittest.mock import MagicMock, patch
+except ImportError:
+    from mock import MagicMock, patch
+
+from threading import Thread
+
+import numpy as np
+from math import ceil
+
+import matplotlib
+matplotlib.use('QT5Agg')
+from matplotlib import pyplot as plt
+from matplotlib.patches import Arrow
+
+from pubsub import pub
+from random import randint
+from time import sleep
+from src.utils.vec import Vec2
+
+"""
+from src.autonomy.events.collision_avoidance_event import CollisionAvoidanceEvent
+from src.autonomy.events.endurance_race_event import EnduranceRace
+from src.autonomy.events.fleet_race_event import FleetRace
+from src.autonomy.events.payload_event import PayloadEvent
+from src.autonomy.events.precision_navigation_event import PrecisionNavigationEvent
+from src.autonomy.events.search_event import SearchEvent
+from src.autonomy.events.station_keeping_event import StationKeepingEvent
+"""
+
+class AutonomyTest(Thread):
+    """Integration test for autonomy system"""
+    def __init__(self):
+        """Initializes autonomy test"""
+        super().__init__()
+
+        self.update_interval = 0.1
+
+        # set up mock tracker
+        self.tracker = MagicMock(name='map')
+        self.tracker.return_objects.return_value = []
+
+        # set up mock boat and set boat movement parameters
+        self.boat = MagicMock(name='boat')
+        self.boat_speed = 0.5   # m/s
+        self.boat_bearing_rate = 5        # deg/s
+        self.rel_heading = 0
+        self.boat.current_speed.return_value = self.boat_speed
+
+        # st up mock wind
+        self.wind = MagicMock(name = 'wind')
+        self.apparent_wind = Vec2(0, 0)
+        self.wind.apparent_wind.return_value = self.apparent_wind
+
+        # initialize event thread
+        event = 0
+
+        if event == 0:
+#            self.event = FleetRace(tracker, boat, wind)    # run fleet race
+            pass
+        elif event == 1:
+            self.event = enduranceRace(tracker, boat, wind) # run endurance race
+        elif event == 2:
+            self.event = PayloadEvent(tracker, boat, wind)        # run payload event
+        elif event == 3:
+            self.event = PrecisionNavigationEvent(tracker, boat, wind)        # run precision navigation 
+        elif event == 4:
+            self.event = StationKeepingEvent(tracker, boat, wind)        # run station keeping
+        elif event == 5:
+            self.event = CollisionAvoidanceEvent(tracker, boat, wind)    # run collision avoidance
+        elif event == 6:
+            self.event = SearchEvent(tracker, boat, wind)            # run search
+
+        # create polar plot
+        self.fig = plt.figure()
+        self.polar = self.fig.add_subplot(111, projection='polar')
+        self.plot_rng_range = (0, 100)
+        self.polar.set_ylim(self.plot_rng_range[0], self.plot_rng_range[1])
+        self.polar.grid(True)
+        self.polar.set_title('Dynamic Course Map')
+
+        # color plot grey
+        self.polar.set_facecolor('#F5F5F5')
+        self.polar.set_alpha(0.2)
+
+        # set up boat arrow
+        self.boat_arrow = None
+
+        # set up buoy scatter plot
+        self.buoy_rng_data = [0]
+        self.buoy_bearing_data = [0]
+        self.buoys = self.polar.scatter(self.buoy_rng_data, self.buoy_bearing_data, c='#ffa500', \
+                                            label='Buoys', s=3)
+
+        # set up legend
+        box = self.polar.get_position()
+        self.polar.set_position([box.x0, box.y0 + box.height * 0.1,
+                         box.width, box.height * 0.9])
+
+        # Put a legend below current axis
+        self.polar.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
+                  fancybox=True, shadow=True, ncol=5)
+
+        # show plot (and set up blitting)
+        plt.show(block=False)
+        plt.pause(0.01)
+        self.fig.canvas.draw()
+
+        input('Make plot full screen then press enter')
+        self.background = self.fig.canvas.copy_from_bbox(self.polar.bbox)
+
+        # spawn buoys
+        self.spawn_buoys(event)
+
+        # subscribe to set rudder
+        pub.subscribe(self.update_heading, 'set rudder')
+
+        # start event thread
+#        self.event.start()
+
+    def run(self):
+        """Run loop for autonomy test"""
+        while 1:
+            # update buoys
+            self.update_buoys()
+
+            # plot data
+            self.plot_data()
+
+            sleep(self.update_interval)
+
+    def spawn_buoys(self, event):
+        """
+        Spawns buoys (initial position is randomly placed in plot area)
+        Inputs:
+            event -- event number
+        Side Effects:
+            self.buoy_rng_data -- range data for buoys
+            self.buoy_bearing_data -- bearing data for buoys
+        """
+        x_shift = randint(5, 50)
+        y_shift = randint(-50, 50)
+        if event == 0:      # fleet race
+            self.num_buoys = 4
+            self.buoy_rng_data = [0] * self.num_buoys
+            self.buoy_bearing_data = [0] * self.num_buoys
+
+            # create start gate
+            self.buoy_rng_data[0], self.buoy_bearing_data[0] = self._cart_2_polar(0+x_shift, 2.5+y_shift)
+            self.buoy_rng_data[1], self.buoy_bearing_data[1] = self._cart_2_polar(0+x_shift, -2.5+y_shift)
+
+            # create buoys to round
+            self.buoy_rng_data[2], self.buoy_bearing_data[2] = self._cart_2_polar(60+x_shift, -15+y_shift)
+            self.buoy_rng_data[3], self.buoy_bearing_data[3] = self._cart_2_polar(60+x_shift, 15+y_shift)
+
+    def update_buoys(self):
+        """Updates buoy positions (using mocked boat movement)"""
+        # init object field
+        object_field = [0] * self.num_buoys
+
+        for ii, (buoy_rng, buoy_bearing) in \
+            enumerate(zip(self.buoy_rng_data, self.buoy_bearing_data)):
+            # account for ownship movement
+            ownship_dr, ownship_dtheta = self._ownship_delta(buoy_rng, buoy_bearing, \
+                                                             self.boat_speed, self.rel_heading)
+
+            new_r = buoy_rng + ownship_dr
+            new_theta = buoy_bearing + ownship_dtheta
+
+            object_field[ii] = (new_r, new_theta, 0, \
+                                ownship_dr/self.update_interval, ownship_dtheta/self.update_interval)
+
+        # set return objects mock
+        self.tracker.return_objects.return_value = object_field
+
+        # set buoy data (for plotting)
+        self.buoy_rng_data = [rng for rng, _, _, _, _ in object_field]
+        self.buoy_bearing_data = [bearing for _, bearing, _, _, _ in object_field]
+
+    def update_heading(self, heading):
+        """Updates heading from obstacle avoidance"""
+        self.desired_rel_heading = heading
+        print("setting course towards {}".format(heading))
+
+        self.rel_heading += np.sign(heading - self.rel_heading) * (self.boat_bearing_rate * self.update_interval)
+        print("new rel heading {}".format(self.rel_heading))
+
+    def plot_data(self):
+        """Plots buoy data, boat heading"""
+        # restore background
+        self.fig.canvas.restore_region(self.background)
+
+        # plot boat movement arrow
+        if self.boat_arrow:
+            self.boat_arrow.remove()
+        self.boat_arrow = Arrow(0, 0, np.radians(self.rel_heading), 50 * self.boat_speed,
+                                width=0.5, color='blue', alpha=0.5)
+        self.polar.add_artist(self.boat_arrow)
+        self.polar.draw_artist(self.boat_arrow)
+
+        # update obstacles
+        self.buoys.set_offsets([*zip(self._deg_2_rad(self.buoy_bearing_data), self.buoy_rng_data)])
+        self.polar.draw_artist(self.buoys)
+
+        self.fig.canvas.blit(self.polar.bbox)
+        self.fig.canvas.flush_events()
+
+    def _deg_2_rad(self, data):
+        """Converts degrees to radians for plotting"""
+        return [elem * (np.pi)/ 180. for elem in data]
+
+    def _cart_2_polar(self, x, y):
+        """Converts from cartesian to polar coords"""
+        return (np.sqrt(x**2 + y**2),
+                np.arctan2(y, x) * 180/np.pi)
+
+    def _ownship_delta(self, r, bearing, speed, heading):
+        """Returns delta of obstacle coords given ownship speed and heading"""
+        prev_x = r * np.cos(np.radians(bearing))
+        prev_y = r * np.sin(np.radians(bearing))
+
+        dx = -1 * speed * np.cos(np.radians(heading)) * self.update_interval
+        dy = -1 * speed * np.sin(np.radians(heading)) * self.update_interval
+
+        new_x = prev_x + dx
+        new_y = prev_y + dy
+
+        new_r = np.sqrt(new_x**2 + new_y**2)
+        new_theta = np.arctan2(new_y, new_x)
+
+        return new_r - r, np.degrees(new_theta - np.radians(bearing))

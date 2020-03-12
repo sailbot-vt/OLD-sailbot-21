@@ -1,30 +1,21 @@
 from abc import ABC, abstractmethod
 
-from threading import Thread, Lock
 from pubsub import pub
 
 from src.navigation_mode import NavigationMode
 from src.autonomy.nav.captain import Captain
 
-mutex = Lock()
-
-
-class Event(ABC, Thread):
+class Event(ABC):
     """Base event type"""
 
-    def __init__(self, boat, wind):
+    def __init__(self, tracker, boat, wind):
         """Creates a new event"""
         pub.subscribe(self.switch_mode, "set nav mode")
 
         self.create_objectives()
 
-        self.captain = Captain(self.objectives, boat, wind)
+        self.captain = Captain(self.objectives, tracker, boat, wind)
         self.captain.start()
-
-    @abstractmethod
-    def run(self):
-        """Runs event thread"""
-        pass
 
     @abstractmethod
     def read_interval(self):
