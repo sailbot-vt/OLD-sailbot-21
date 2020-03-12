@@ -1,0 +1,8 @@
+rudder_angles:
+  fast_turn: 15
+  medium_turn: 10
+  slow_turn: 5
+
+default_turn_rate: 'medium_turn'
+
+update_interval: 0.5
