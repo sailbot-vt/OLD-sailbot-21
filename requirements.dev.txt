@@ -8,3 +8,5 @@ pyserial
 scipy
 opencv-python
 filterpy
+matplotlib
+pyqt5

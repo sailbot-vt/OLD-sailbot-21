@@ -76,7 +76,7 @@ class PinTests(unittest.TestCase):
                                              return_value=True)
 
         gpio_pin.read()
-        mock_pub.sendMessage.assert_any_call("write msg", pin_name="GPIOread", msg=True, rw_state='r')        
+        mock_pub.sendMessage.assert_any_call("write msg", author="GPIOread", msg=True)        
 
         # Set up pin for output
         Adafruit_BBIO.GPIO.setup = MagicMock(name='Adafruit.BBIO.GPIO.setup')
@@ -94,7 +94,7 @@ class PinTests(unittest.TestCase):
         # Set to HIGH voltage
         gpio_pin.set_state(True)
         
-        mock_pub.sendMessage.assert_any_call("write msg", pin_name = "GPIOwrite", msg=True, rw_state = 'w')
+        mock_pub.sendMessage.assert_any_call("write msg", author = "GPIOwrite", msg=True)
 
     @staticmethod
     def test_adc_read_v():
@@ -167,7 +167,21 @@ class PinTests(unittest.TestCase):
         err = abs(val - 1)
         assert err < 0.01
 
-        mock_pub.sendMessage.assert_any_call("write msg", pin_name="Hello", msg=val, rw_state='r')        
+        mock_pub.sendMessage.assert_any_call("write msg", author="Hello", msg=val)        
+
+    @staticmethod
+    def test_uart_setup():
+        Adafruit_BBIO.UART.setup = MagicMock(name='Adafruit.BBIO.UART.setup')
+
+        uart_pin = make_pin({
+            "pin_name": "uart-test",
+            "pin_type": "UART",
+            "channel": "test-channel"
+        }, mock_lib=Adafruit_BBIO.UART)
+
+        # Tests the method
+        uart_pin.setup()
+        Adafruit_BBIO.UART.setup.assert_called_with("test-channel")
 
     @staticmethod
     def test_uart_setup():

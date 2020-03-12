@@ -14,8 +14,8 @@ class KalmanFilterTests(unittest.TestCase):
     """Tests the methods in KalmanFilter"""
     def setUp(self):
         """Sets up the objects needed for testing"""
-        self.init_pos = [0,0]
-        self.init_vel = [0,0]
+        self.init_pos = [0.,0.]
+        self.init_vel = [0.,0.]
         self.kalman = KalmanFilter(self.init_pos, self.init_vel)
 
     @patch('src.tracking.kalman_filter.time_in_millis')
@@ -59,13 +59,14 @@ class KalmanFilterTests(unittest.TestCase):
 
             # generate measurement values (arbitrary)
             pos, vel = np.array([4, 45]), np.array([1, 90])
-            pos_sigma, vel_sigma = np.array([1, 1]), np.array([2, 2])
 
             measurement = np.append(pos, vel)
-            measurement_covar = np.diag(np.append(pos_sigma, vel_sigma))
-            
+
+            # generate new measurement covar
+            measurement_covar = self.kalman.measurement_covar
+
             # call update
-            self.kalman.update(pos, vel, pos_sigma, vel_sigma)
+            self.kalman.update(pos, vel)
 
             # check for proper behavior
             self.assertEqual(1, mock_update.call_count)
@@ -96,8 +97,10 @@ class KalmanFilterTests(unittest.TestCase):
             # reset covariance matrix
             pos_sigma, vel_sigma = np.array([1, 1]), np.array([2, 2])
             self.kalman.covar = np.diag(np.append(pos_sigma, vel_sigma))
+            self.kalman.measurement_covar = self.kalman.covar
 
             # call update
+            hist_score = 1
             self.kalman.update(measurements[ii, 0:2], measurements[ii, 2:4])
         
             # check if updated state is close to expected
@@ -105,7 +108,8 @@ class KalmanFilterTests(unittest.TestCase):
             np.testing.assert_allclose(updated_state, self.kalman.state)
 
     @patch('src.tracking.kalman_filter.KalmanFilter._update_trans_matrix')
-    def test_predict(self, mock_update_trans):
+    @patch('src.tracking.kalman_filter.KalmanFilter._update_process_noise')
+    def test_predict(self, mock_update_noise, mock_update_trans):
         """Tests predict method of kalman filter"""
         # Testing methodology:
         #   check if correct function calls are made with correct arguments
@@ -129,7 +133,7 @@ class KalmanFilterTests(unittest.TestCase):
             np.testing.assert_allclose(self.kalman.state, call_args[1]['x'])
             np.testing.assert_allclose(self.kalman.covar, call_args[1]['P'])
             np.testing.assert_allclose(self.kalman.state_trans, call_args[1]['F'])
-            self.assertEqual(0, call_args[1]['Q'])
+            np.testing.assert_allclose(np.eye(self.kalman.covar.shape[0]), call_args[1]['Q'])        # since calc process noise is mocked 
 
         # check if kalman filter results  correctly
 
@@ -159,3 +163,52 @@ class KalmanFilterTests(unittest.TestCase):
             # check if predicted state is close to expected
             predicted_state = predicted_states[ii]
             np.testing.assert_allclose(predicted_state, self.kalman.state)
+
+    def test_update_process_noise(self):
+        """Tests update process noise method"""
+        # set delta_t
+        dt = 2
+        self.kalman.delta_t = dt
+
+        # generate list of ranges
+        rng_list = [1.0, 4.0, 25.0, 100.0]
+
+        # generate list of velocities
+        vel_list = [(1., 1.), (2., 4.), (10., 5.)]
+
+        # iterate through values
+        for rng, vel in zip(rng_list, vel_list):
+            # set kalman state
+            self.kalman.state = np.array([rng, 0, vel[0], vel[1]])
+
+            # calculate process noise values
+            process_noise_truth = np.diag(np.ones(4))
+            rng_noise_fac = dt * (1 + vel[0])
+            bearing_noise_fac = dt * (1 + vel[1]) * (0.5 + 50*(np.power(rng, -2)))
+            process_noise_truth[0::2, 0::2] *= rng_noise_fac
+            process_noise_truth[1::2, 1::2] *= bearing_noise_fac
+
+            # call update process noise
+            self.kalman._update_process_noise()
+
+            # check for correct behavior
+            np.testing.assert_almost_equal(process_noise_truth, self.kalman.process_noise)
+
+    def test_adjust_wraparound(self):
+        """Tests adjust wraparound method"""
+        # generate bearing data
+        bearing_list = [0, 45, 120., 179.99, 180.00001, 185, 250, 323, 355.23, 359.999]
+        adjust_bearing_list = [0, 45, 120., 179.99, -179.99999, -175, -110, -37, -4.77, -0.001]
+
+        # loop through values
+        for bearing, adjusted_bearing in zip(bearing_list, adjust_bearing_list):
+            # store bearing in kalman state
+            self.kalman.state[1] = bearing
+
+            # call adjust wraparound
+            self.kalman._adjust_wraparound()
+
+            truth_state = np.array([0., adjusted_bearing, 0., 0.]).astype(np.float32)
+
+            # check for correct behavior
+            np.testing.assert_allclose(truth_state, self.kalman.state, atol=1e-4)

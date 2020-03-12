@@ -1,0 +1,12 @@
+# WARNING: YAML IS WHITESPACE SENSITIVE! PLEASE MATCH INDENTATION STYLE! This
+# means consistently use tabs or spaces, and use the indentation amounts in the
+# language spec available here: https://yaml.org/spec/1.2/spec.html
+
+kalman:
+  r_sigma: 1.           # range measurement uncertainty
+  theta_sigma: 1.       # bearing measurement uncertainty
+  r_hat_sigma: 3.       # range rate measurement uncertainty
+  theta_hat_sigma: 3.   # bearing rate measurement uncertainty
+
+map:
+  update_interval: 0.5      # s

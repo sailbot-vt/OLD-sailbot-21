@@ -1,6 +1,6 @@
 import sys
 
-#from integration_tests.tracking.tracker_integration_test import TrackerTest
+from integration_tests.tracking.tracker_integration_test import TrackerTest
 #from integration_tests.controls.controls_integration_test import ControlsTest
 from integration_tests.autonomy.obstacle_avoidance_integration_test import ObstacleAvoidanceTest
 from integration_tests.autonomy.autonomy_integration_test import AutonomyTest
