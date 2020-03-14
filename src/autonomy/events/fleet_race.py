@@ -22,4 +22,4 @@ class FleetRace(Event):
         """
         Returns objectives based on enumeration file
         """
-        self.objectives = [Objectives.ENTER_STARTING_GATE, Objectives.ROUND_BUOYS_CCW, Objectives.RETURN_TO_STARTING_GATE]
+        self.objectives = [Objectives.ENTER_STARTING_GATE, Objectives.ROUND_BUOYS_CCW, Objectives.ENTER_STARTING_GATE]

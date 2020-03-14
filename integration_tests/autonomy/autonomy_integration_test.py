@@ -19,10 +19,10 @@ from random import randint
 from time import sleep
 from src.utils.vec import Vec2
 
+from src.autonomy.events.fleet_race import FleetRace
 """
 from src.autonomy.events.collision_avoidance_event import CollisionAvoidanceEvent
 from src.autonomy.events.endurance_race_event import EnduranceRace
-from src.autonomy.events.fleet_race_event import FleetRace
 from src.autonomy.events.payload_event import PayloadEvent
 from src.autonomy.events.precision_navigation_event import PrecisionNavigationEvent
 from src.autonomy.events.search_event import SearchEvent
@@ -39,7 +39,7 @@ class AutonomyTest(Thread):
 
         # set up mock tracker
         self.tracker = MagicMock(name='map')
-        self.tracker.return_objects.return_value = []
+        self.tracker.get_buoys.return_value = []
 
         # set up mock boat and set boat movement parameters
         self.boat = MagicMock(name='boat')
@@ -57,20 +57,19 @@ class AutonomyTest(Thread):
         event = 0
 
         if event == 0:
-#            self.event = FleetRace(tracker, boat, wind)    # run fleet race
-            pass
+            self.event = FleetRace(self.tracker, self.boat, self.wind)    # run fleet race
         elif event == 1:
-            self.event = enduranceRace(tracker, boat, wind) # run endurance race
+            self.event = EnduranceRace(self.tracker, self.boat, self.wind) # run endurance race
         elif event == 2:
-            self.event = PayloadEvent(tracker, boat, wind)        # run payload event
+            self.event = PayloadEvent(self.tracker, self.boat, self.wind)        # run payload event
         elif event == 3:
-            self.event = PrecisionNavigationEvent(tracker, boat, wind)        # run precision navigation 
+            self.event = PrecisionNavigationEvent(self.tracker, self.boat, self.wind)        # run precision navigation 
         elif event == 4:
-            self.event = StationKeepingEvent(tracker, boat, wind)        # run station keeping
+            self.event = StationKeepingEvent(self.tracker, self.boat, self.wind)        # run station keeping
         elif event == 5:
-            self.event = CollisionAvoidanceEvent(tracker, boat, wind)    # run collision avoidance
+            self.event = CollisionAvoidanceEvent(self.self.tracker, self.boat, self.wind)    # run collision avoidance
         elif event == 6:
-            self.event = SearchEvent(tracker, boat, wind)            # run search
+            self.event = SearchEvent(self.tracker, self.boat, self.wind)            # run search
 
         # create polar plot
         self.fig = plt.figure()
@@ -91,7 +90,13 @@ class AutonomyTest(Thread):
         self.buoy_rng_data = [0]
         self.buoy_bearing_data = [0]
         self.buoys = self.polar.scatter(self.buoy_rng_data, self.buoy_bearing_data, c='#ffa500', \
-                                            label='Buoys', s=3)
+                                            label='Buoys', s=5)
+
+        # set up waypoint scatter plot
+        self.waypoint_rng_data = [0]
+        self.waypoint_bearing_data = [0]
+        self.waypoints = self.polar.scatter(self.waypoint_rng_data, self.waypoint_bearing_data, c='#000000', \
+                                            label='Waypoints', s=4)
 
         # set up legend
         box = self.polar.get_position()
@@ -116,14 +121,14 @@ class AutonomyTest(Thread):
         # subscribe to set rudder
         pub.subscribe(self.update_heading, 'set rudder')
 
-        # start event thread
-#        self.event.start()
-
     def run(self):
         """Run loop for autonomy test"""
         while 1:
             # update buoys
             self.update_buoys()
+
+            # get waypoints
+            self.get_waypoints()
 
             # plot data
             self.plot_data()
@@ -139,20 +144,20 @@ class AutonomyTest(Thread):
             self.buoy_rng_data -- range data for buoys
             self.buoy_bearing_data -- bearing data for buoys
         """
-        x_shift = randint(5, 50)
-        y_shift = randint(-50, 50)
+        x_shift = randint(5, 40)
+        y_shift = randint(5, 30)
         if event == 0:      # fleet race
             self.num_buoys = 4
             self.buoy_rng_data = [0] * self.num_buoys
             self.buoy_bearing_data = [0] * self.num_buoys
 
             # create start gate
-            self.buoy_rng_data[0], self.buoy_bearing_data[0] = self._cart_2_polar(0+x_shift, 2.5+y_shift)
-            self.buoy_rng_data[1], self.buoy_bearing_data[1] = self._cart_2_polar(0+x_shift, -2.5+y_shift)
+            self.buoy_rng_data[0], self.buoy_bearing_data[0] = self._cart_2_polar(2.5+x_shift, 0+y_shift)
+            self.buoy_rng_data[1], self.buoy_bearing_data[1] = self._cart_2_polar(-2.5+x_shift, 0+y_shift)
 
             # create buoys to round
-            self.buoy_rng_data[2], self.buoy_bearing_data[2] = self._cart_2_polar(60+x_shift, -15+y_shift)
-            self.buoy_rng_data[3], self.buoy_bearing_data[3] = self._cart_2_polar(60+x_shift, 15+y_shift)
+            self.buoy_rng_data[2], self.buoy_bearing_data[2] = self._cart_2_polar(15+x_shift, 60+y_shift)
+            self.buoy_rng_data[3], self.buoy_bearing_data[3] = self._cart_2_polar(-15+x_shift, 60+y_shift)
 
     def update_buoys(self):
         """Updates buoy positions (using mocked boat movement)"""
@@ -168,15 +173,14 @@ class AutonomyTest(Thread):
             new_r = buoy_rng + ownship_dr
             new_theta = buoy_bearing + ownship_dtheta
 
-            object_field[ii] = (new_r, new_theta, 0, \
-                                ownship_dr/self.update_interval, ownship_dtheta/self.update_interval)
+            object_field[ii] = (new_r, new_theta)
 
         # set return objects mock
-        self.tracker.return_objects.return_value = object_field
+        self.tracker.get_buoys.return_value = object_field
 
         # set buoy data (for plotting)
-        self.buoy_rng_data = [rng for rng, _, _, _, _ in object_field]
-        self.buoy_bearing_data = [bearing for _, bearing, _, _, _ in object_field]
+        self.buoy_rng_data = [rng for rng, _,  in object_field]
+        self.buoy_bearing_data = [bearing for _, bearing in object_field]
 
     def update_heading(self, heading):
         """Updates heading from obstacle avoidance"""
@@ -185,6 +189,13 @@ class AutonomyTest(Thread):
 
         self.rel_heading += np.sign(heading - self.rel_heading) * (self.boat_bearing_rate * self.update_interval)
         print("new rel heading {}".format(self.rel_heading))
+
+    def get_waypoints(self):
+        """Gets waypoints from captain"""
+        marks = self.event.captain.course.marks.copy()
+
+        self.waypoint_rng_data = [rng for rng, _ in marks]
+        self.waypoint_bearing_data = [bearing for _, bearing in marks]
 
     def plot_data(self):
         """Plots buoy data, boat heading"""
@@ -199,9 +210,16 @@ class AutonomyTest(Thread):
         self.polar.add_artist(self.boat_arrow)
         self.polar.draw_artist(self.boat_arrow)
 
-        # update obstacles
+        # update buoys
         self.buoys.set_offsets([*zip(self._deg_2_rad(self.buoy_bearing_data), self.buoy_rng_data)])
         self.polar.draw_artist(self.buoys)
+
+        # update waypoints
+        self.waypoints.set_offsets([*zip(self._deg_2_rad(self.waypoint_bearing_data), self.waypoint_rng_data)])
+        if len(self.waypoint_rng_data) > 0:
+            self.polar.draw_artist(self.waypoints)
+            for ii, (bearing, rng) in enumerate(zip(self._deg_2_rad(self.waypoint_bearing_data), self.waypoint_rng_data)):
+                self.polar.annotate(ii, (bearing, rng), xycoords='polar')
 
         self.fig.canvas.blit(self.polar.bbox)
         self.fig.canvas.flush_events()

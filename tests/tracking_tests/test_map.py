@@ -275,19 +275,21 @@ class MapTests(unittest.TestCase):
         rng_list = [12.512, 44, 50]
         bearing_list = [-22, 81.5, 2]
         type_list = [ObjectType.BUOY, ObjectType.BOAT, ObjectType.BUOY]
+        conf_list = [0.3, 0.4, 0.5]
 
         # set up correct object list 
         correct_object_list = [0] * 2
         num_correct_objects = 0
 
         # loop through objects and add to map
-        for rng, bearing, obj_type in zip(rng_list, bearing_list, type_list):
+        for rng, bearing, obj_type, conf in zip(rng_list, bearing_list, type_list, conf_list):
             obj = Object(bearing, rng, time_in_millis(), objectType = obj_type)
+            obj.confidence = conf
             self.map.object_list.append(obj)
 
             # add object to correct object list if is buoy
             if obj_type == ObjectType.BUOY:
-                correct_object_list[num_correct_objects] = [rng, bearing, obj_type]
+                correct_object_list[num_correct_objects] = [rng, bearing, obj_type, conf]
                 num_correct_objects += 1
 
         # get list of objects from get_buoys
@@ -297,7 +299,6 @@ class MapTests(unittest.TestCase):
         for jj, obj in enumerate(correct_object_list):
             self.assertAlmostEqual(obj[0], returned_objects[jj][0])
             self.assertAlmostEqual(obj[1], returned_objects[jj][1])
-            self.assertEqual(obj[2], returned_objects[jj][2])
 
     def test_enable_update(self):
         """Tests enable update method"""

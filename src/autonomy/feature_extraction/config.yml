@@ -1,0 +1,6 @@
+start_gate:
+  width: 5
+  width_variance: 1.5
+
+round_buoy:
+  margin: 1.5

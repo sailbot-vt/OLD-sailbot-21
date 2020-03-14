@@ -1,22 +1,22 @@
 import yaml
 import os
 
-def read_interval(path=None):
-    """Reads the read interval from config.yml"""
+def read_start_gate_config(path=None):
+    """Reads the read start gate config from config.yml"""
     if path is None:
         path = os.path.dirname(os.path.abspath(__file__))
     with open(path + "/config.yml", "r") as yml:
         conf = yaml.full_load(yml)
-        helm_interval = conf["nav interval"]
+        start_gate_conf = conf["start_gate"]
 
-    return eval(str(helm_interval))
+    return start_gate_conf
 
-def read_nav_config(path=None):
-    """Reads the read interval from config.yml"""
+def read_round_buoy_config(path=None):
+    """Reads the read round buoy config from config.yml"""
     if path is None:
         path = os.path.dirname(os.path.abspath(__file__))
     with open(path + "/config.yml", "r") as yml:
         conf = yaml.full_load(yml)
-        nav_config = conf["nav_config"]
+        round_buoy_conf = conf["round_buoy"]
 
-    return nav_config
+    return round_buoy_conf

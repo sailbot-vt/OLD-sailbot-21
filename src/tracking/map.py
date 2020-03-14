@@ -190,7 +190,7 @@ class Map(Thread):
 
         mutex.release()
 
-        return_list = [(obj.rng, obj.bearing, obj.objectType) for obj in object_list[0:num_buoys]] 
+        return_list = [(obj.rng, obj.bearing) for obj in object_list[0:num_buoys] if obj.confidence > 0.2] 
 
         return return_list
 

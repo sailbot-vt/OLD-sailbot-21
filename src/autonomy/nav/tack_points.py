@@ -6,7 +6,7 @@ from numpy import sign
 
 from src.gps_point import GPSPoint
 from src.waypoint import Waypoint
-from src.nav.strategy import favored_side
+from src.autonomy.nav.strategy import favored_side
 
 
 def place_tacks(start, end, boat, wind):

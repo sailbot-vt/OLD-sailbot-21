@@ -4,23 +4,29 @@ def get_course_from_buoys(buoy_array, direction):
     """Returns a sorted array of buoys
 
      Inputs:
-            buoy_array -- array made up of bearing and range data for each object in range inputted
+            buoy_array -- array made up of range and bearing data for each object in range inputted
             direction -- String to determine in what direction the array should be sorted in
 
      Returns:
             sorted_array -- array made up of bearing and range data for each object in range inputted
         """
 
-    # Sorts the buoy array by bearing value
-    if (buoy_array[1] >= 180).any():        # if boat is inside of bounding polygon made by buoys
-        sorted_array = sort_inside_polygon(buoy_array.view(np.float))
-    else:                                          # if boat is outside of bounding polygon
-        sorted_array = np.sort(buoy_array.view('f8, f8'), order='f1', axis=0).view(np.float)    # sort along bearing column
+    if len(buoy_array) > 0:
+        # cast input to numpy array
+        buoy_array = np.array(buoy_array)
 
-    if direction == "CCW":
-        return sorted_array
+        # Sorts the buoy array by bearing value
+        if (buoy_array[1] >= 180).any():        # if boat is inside of bounding polygon made by buoys
+            sorted_array = sort_inside_polygon(buoy_array.view(np.float))
+        else:                                          # if boat is outside of bounding polygon
+            sorted_array = np.sort(buoy_array.view('f8, f8'), order='f1', axis=0).view(np.float)    # sort along bearing column
+
+        if direction == "CCW":
+            return sorted_array.tolist()
+        else:
+            return np.flipud(sorted_array).tolist()
     else:
-        return np.flipud(sorted_array)
+        return buoy_array
 
 def sort_inside_polygon(coord_array):
     """Returns a sorted array accounting for boat being inside polygons
