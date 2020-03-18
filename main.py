@@ -1,15 +1,17 @@
-import src.airmar.airmar_input_thread as airmar
-import src.rc_input.rc_input_thread as rc
-import src.rudder.rudder_listener as rudder
-import src.sail.sail_listener as sail
-import src.autonomy.nav.captain as captain
-import src.arduino.arduino.Arduino as Arduino
-import src.autonomy.events.fleet_race as fleet_race
+from src.airmar.airmar_input_thread import AirmarInputThread as Airmar
+
+from src.rc_input.rc_input_thread import RCInputThread as RCInput
+from src.rudder.rudder_listener import RudderListener as Rudder
+from src.sail.sail_listener import SailListener as Sail
+
+from src.arduino.arduino import Arduino
+
+from src.autonomy.events.fleet_race import FleetRace
+
 from src.boat.boat import Boat
 from src.world.world import World
 
 from src.logging.logger import Logger
-
 
 def main():
     """Runs the program."""
@@ -21,20 +23,21 @@ def main():
     boat = Boat()
     world = World()
 
-    # Init threads
-    airmar_thread = airmar.AirmarInputThread()
     logger = Logger()
-    rc_thread = rc.RCInputThread()
-    Sail = sail.SailListener(boat, world)
-    Rudder = rudder.RudderListener()
-    arduino_thread = Arduino()
-    captain_thread = captain.Captain(boat, world)
+
+    # Init threads
+    airmar = Airmar()
+    rc_input = RCInput()
+    sail = sail.SailListener(boat, world)
+    rudder = rudder.RudderListener()
+    arduino = Arduino()
 
     # Start threads
-    airmar_thread.start()
-    rc_thread.start()
-    captain_thread.start()
-    arduino_thread.start()
+    airmar.start()
+    rc_input.start()
+    arduino.start()
+    sail.start()
+    rudder.start()
 
     # Prompt for event
     print("Select event:\n"
@@ -50,7 +53,7 @@ def main():
     cmd = input()
 
     if cmd == 0:
-        fleet_race.FleetRace(boat, wind, world)    # run fleet race
+        FleetRace(boat, wind, world)    # run fleet race
     elif cmd == 1:
         pass        # run endurance race
     elif cmd == 2:
