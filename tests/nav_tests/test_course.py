@@ -6,7 +6,7 @@ except ImportError:
 
 from src.autonomy.nav.course import Course
 
-class ObjectCourseTests(unittest.TestCase):
+class CourseTests(unittest.TestCase):
     """Tests the methods in Course"""
     def setUp(self):
         self.course = Course()

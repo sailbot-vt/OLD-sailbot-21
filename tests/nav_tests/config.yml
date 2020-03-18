@@ -3,8 +3,11 @@
 # language spec available here: https://yaml.org/spec/1.2/spec.html
 
 # The interval at which to update the navigation (s)
-nav interval: 5
+nav interval: 0.25
 
 nav_config:
   return_home: True
   mark_width: 1
+
+tack_config:
+  max_tacks: 100

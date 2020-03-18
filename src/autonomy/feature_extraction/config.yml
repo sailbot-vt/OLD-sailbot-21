@@ -3,4 +3,5 @@ start_gate:
   width_variance: 1.5
 
 round_buoy:
-  margin: 1.5
+  rng_margin: 1
+  bearing_margin: 1

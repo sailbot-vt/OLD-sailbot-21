@@ -75,11 +75,11 @@ class MovementTests(unittest.TestCase):
 
         # check for correct behavior
         self.movement.set_rudder(1)     # positive angle
-        mock_send_msg.assert_called_with("set rudder", self.rudder_angle)
+        mock_send_msg.assert_called_with("set rudder", degrees_starboard = self.rudder_angle)
 
         mock_send_msg.reset_mock()
         self.movement.set_rudder(-1)     # negative angle
-        mock_send_msg.assert_called_with("set rudder", -1 * self.rudder_angle)
+        mock_send_msg.assert_called_with("set rudder", degrees_starboard = -1 * self.rudder_angle)
 
     def test_set_sail(self):
         """Tests set sail method of movement thread"""

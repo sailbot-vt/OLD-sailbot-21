@@ -24,7 +24,7 @@ class ObstacleAvoidance(Thread):
         self.boat = boat
 
         self.waypoint = (0, 0)                              # range, bearing
-        pub.subscribe(self.update_waypoint, 'waypoint')
+        pub.subscribe(self.update_waypoint, 'update waypoint')
 
         self.is_active = True
 
@@ -44,10 +44,12 @@ class ObstacleAvoidance(Thread):
         while self.is_active:
             # get objects in near field
             self.get_objects()
+
             # find optimal avoiding path
             adjusted_heading = self.find_path()
+
             # initiate movement using pubsub
-            pub.sendMessage('set heading', heading = adjusted_heading)
+            pub.sendMessage('set heading', adjusted_heading = adjusted_heading)
 
             sleep(self.update_interval)
 

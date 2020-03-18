@@ -1,117 +1,91 @@
-import math
+import numpy as np
 
-from collections import deque
-
-from numpy import sign
-
-from src.gps_point import GPSPoint
-from src.waypoint import Waypoint
 from src.autonomy.nav.strategy import favored_side
 
+from src.utils.coord_conv import polar_to_cartesian, cartesian_to_polar
+from src.utils.polar_distance import polar_distance
 
-def place_tacks(start, end, boat, wind):
-    """Places tacks between two waypoints.
-
-    Algorithm description:
-    If no tacks are required, add the last point and return.
-    Otherwise
-        Get favored side and confidence on [-1, 1]
-        Set lateral boundaries on the beat (r_bound, l_bound)
-
-        Set current_tack
-
-        Set alpha to be the upwind angle of the boat
-        Initialize r as upwind distance from start to end
-        Initialize d as rhumbline distance
-
-        Loop:
-            If current_tack is port:
-                If r_bound > current_pos.long:
-                    Set x to r_bound
-                    Set y to current_pos.lat + |x - current_pos.long| * tan(alpha)
-
-                Else
-                    Set x to l_bound
-                    Set y to current_pos.lat - |x - current_pos.long| * tan(alpha)
-                    Switch tacks
-            If current_tack is starboard:
-                If l_bound > current_pos.long:
-                    Set x to l_bound
-                    Set y to current_pos.lat - |x - current_pos.long| * tan(alpha)
-                Else
-                    Set x to r_bound
-                    Set y to current_pos.lat + |x - current_pos.long| * tan(alpha)
-                    Switch tacks
-
-            Add (x, y) to tack points
-            Set current_pos to (x, y)
-
-            Set r to upwind distance to mark
-            Set d to Cartesian distance to mark
-
-            If arcsin(r/d) > alpha:
-                break
-
-
-    Keyword arguments:
-    start -- The start of the leg
-    end -- The end of the leg
-    boat -- The boat sailing the course
-
+def place_tacks(waypoint, boat, wind, config):
+    """
+    Places tacks between current position and waypoint
+    Inputs:
+        waypoint -- range and bearing (relative to boat position) of desired endpoint
+        boat -- boat state object
+        wind -- wind state object
+        config -- tack configuration
     Returns:
-    A list of waypoints.
+        tacks -- list of tack waypoints (rng and bearing)
+    """
+    # get configuration params
+    max_tacks = config['max_tacks']
 
-    The first waypoint will be `start`, the second will be `end`."""
-    tacks = deque()
+    # initialize tacks
+    tacks = []
+    if must_tack(waypoint, boat, wind):
+        # get favored side
+        strategy = favored_side(boat, wind)
 
-    if start.must_tack_to_get_to(end, boat, wind):
-        upwind_dist = wind.distance_upwind(start, end)
-        bang_dist = upwind_dist * 0.5 * math.tan(math.radians(boat.upwind_angle))
+        # create tack channel (place l/r boundaries)
+        upwind_dist = wind.distance_upwind((0, 0), waypoint)
+        l_bound, r_bound = find_beating_bounds(upwind_dist, boat.upwind_angle, strategy)
 
-        strategy = favored_side(wind)
+        # find current tack
+        current_tack = np.sign(wind.angle_relative_to_wind(boat.current_heading))
 
-        # The boat will tack between these two lines
-        r_bound = bang_dist * 0.25 + 0.75 * strategy * bang_dist
-        l_bound = bang_dist * -0.25 + 0.75 * strategy * bang_dist
+        # find upwind angle, absolute distance
+        upwind_rad = np.radians(np.fabs(boat.upwind_angle))
+        d_abs = waypoint[0]
 
-        # 1 if on port tack, -1 if on starboard tack
-        current_tack = sign(wind.angle_relative_to_wind(boat.current_heading))
+        # set up loop
+        tacks_cart = [0] * max_tacks
+        ii = 0
+        cur_pos_cart = (0, 0)
+        d_up = upwind_dist
 
-        r = GPSPoint.distance(start, end)
-        d = upwind_dist
-        alpha = math.radians(math.fabs(boat.upwind_angle))
-        current_pos = start
+        # loop until possible to get to waypoint without tacking again
+        while (np.arcsin(d_up/ d_abs) > (upwind_rad+0.0001)) and (ii < max_tacks):      # allow slight undershoot
+            if current_tack == 1:        # starboard tack
+                tacks_cart[ii] = (cur_pos_cart[0] + (np.tan(upwind_rad) * (r_bound - cur_pos_cart[1])), r_bound)
+                current_tack *= -1
+            elif current_tack == -1:       # port tack
+                tacks_cart[ii] = (cur_pos_cart[0] + (np.tan(upwind_rad) * (cur_pos_cart[1] - l_bound)), l_bound)
+                current_tack *= -1
 
-        while math.asin(r / d) > alpha:
-            if current_tack is 1:
-                if r_bound > current_pos.long:
-                    x = r_bound
-                    y = current_pos.lat + math.fabs(x - current_pos.long) * math.tan(alpha)
-                else:
-                    x = l_bound
-                    y = current_pos.lat - math.fabs(x - current_pos.long) * math.tan(alpha)
-                    current_tack *= -1
-            elif current_tack is -1:
-                if l_bound > current_pos.long:
-                    x = l_bound
-                    y = current_pos.lat - math.fabs(x - current_pos.long) * math.tan(alpha)
-                else:
-                    x = r_bound
-                    y = current_pos.lat + math.fabs(x - current_pos.long) * math.tan(alpha)
-                    current_tack *= -1
-            else:
-                break
+            # prepare for next loop
+            cur_pos_cart = tacks_cart[ii]
+            cur_pos = cartesian_to_polar(cur_pos_cart[0], cur_pos_cart[1])
 
-            tacks.append(Waypoint(y, x))
-            current_pos = Waypoint(y, x)
-            r = wind.distance_upwind(current_pos, end)
-            d = GPSPoint.distance(current_pos, end)
+            # calculate marginal absolute and upwind distance
+            d_abs = polar_distance((cur_pos, (upwind_dist, 0)))
+            d_up = wind.distance_upwind(cur_pos, (upwind_dist, 0))
 
-    tacks.append(end)
-    return tacks
+            ii += 1
 
+        # convert coordinates to cartesian and rotate based on wind angle
+        tacks = [cartesian_to_polar(x, y) for (x, y) in tacks_cart[0:ii]]
+        tacks = [(rng, bearing + wind.angle_relative_to_wind(boat.current_heading)) for (rng, bearing) in tacks]
 
-def must_tack_to_get_to(self, other, boat, wind):
-    """Checks if tacks will be necessary to get to the other point from self"""
-    bearing = wind.angle_relative_to_wind(other.bearing_from(self))
-    return math.fabs(bearing) < boat.upwind_angle
+    return tacks + [waypoint,]
+
+def find_beating_bounds(upwind_dist, upwind_ang, strategy):
+    """
+    Finds bounds for beating using upwind distance and strategy
+    Inputs:
+        upwind_dist -- distance upwind of object
+        upwind_ang -- angle upwind of object
+        strategy -- strategy of beating (from -1 to 1 for favoring port / starboard side)
+    Returns:
+        l_bound, r_bound -- left and right bounds of beating
+    """
+    bang_dist = upwind_dist * 0.5 * np.tan(np.radians(upwind_ang))
+
+    r_bound = (bang_dist * 0.25) + (0.75 * strategy * bang_dist)
+    l_bound = (bang_dist * -0.25) + (0.75 * strategy * bang_dist)
+
+    return l_bound, r_bound
+    
+
+def must_tack(end, boat, wind):
+    """Checks if tacks will be necessary to get to the other point from origin"""
+    bearing = wind.angle_relative_to_wind(end[1])
+    return np.fabs(bearing) < boat.upwind_angle

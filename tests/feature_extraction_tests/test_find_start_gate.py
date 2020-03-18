@@ -9,7 +9,7 @@ from statistics import mean
 
 from src.utils.coord_conv import cartesian_to_polar
 
-from src.autonomy.feature_extraction.find_start_gate import find_start_gate, _find_centerpoint, _polar_distance
+from src.autonomy.feature_extraction.find_start_gate import find_start_gate, _find_centerpoint
 
 class FindStartGateTests(unittest.TestCase):
     """Tests the methods in find start gate"""
@@ -65,20 +65,3 @@ class FindStartGateTests(unittest.TestCase):
         # check for correct behavior
         for gate, truth_center in zip(test_buoys, truth_centerpoints):
             np.testing.assert_almost_equal(truth_center, _find_centerpoint(gate))
-
-    def test_polar_distance(self):
-        """Tests polar distance method"""
-        # generate test pairs
-        test_pairs_cart = [[(5, 2.5), (5, -2.5)],
-                           [(5, 2.5), (10, 2.5)],
-                           [(5, 12.5), (5, 7.5)],
-                           [(80, 57), (82.5, 59.5)]]
-
-        test_pairs = [[cartesian_to_polar(x, y) for x, y in coord_pair] for coord_pair in test_pairs_cart]
-
-        # generate truth distances
-        truth_dists = [5, 5, 5, 3.535533906]
-
-        # check for correct behavior
-        for pair, dist in zip(test_pairs, truth_dists):
-            self.assertAlmostEqual(dist, _polar_distance(pair))

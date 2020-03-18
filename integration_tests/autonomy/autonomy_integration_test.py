@@ -17,7 +17,11 @@ from matplotlib.patches import Arrow
 from pubsub import pub
 from random import randint
 from time import sleep
+
 from src.utils.vec import Vec2
+from src.utils.time_in_millis import time_in_millis
+
+from src.world.wind import Wind
 
 from src.autonomy.events.fleet_race import FleetRace
 """
@@ -35,7 +39,7 @@ class AutonomyTest(Thread):
         """Initializes autonomy test"""
         super().__init__()
 
-        self.update_interval = 0.1
+        self.update_interval = 0.25
 
         # set up mock tracker
         self.tracker = MagicMock(name='map')
@@ -45,13 +49,13 @@ class AutonomyTest(Thread):
         self.boat = MagicMock(name='boat')
         self.boat_speed = 0.5   # m/s
         self.boat_bearing_rate = 5        # deg/s
-        self.rel_heading = 0
+        self.boat.current_heading = 0
+        self.boat.upwind_angle = 35
         self.boat.current_speed.return_value = self.boat_speed
 
-        # st up mock wind
-        self.wind = MagicMock(name = 'wind')
-        self.apparent_wind = Vec2(0, 0)
-        self.wind.apparent_wind.return_value = self.apparent_wind
+        # set up wind
+        self.wind = Wind()
+        self.wind.update_true_wind_angle(90)        # due North wind
 
         # initialize event thread
         event = 0
@@ -89,14 +93,14 @@ class AutonomyTest(Thread):
         # set up buoy scatter plot
         self.buoy_rng_data = [0]
         self.buoy_bearing_data = [0]
-        self.buoys = self.polar.scatter(self.buoy_rng_data, self.buoy_bearing_data, c='#ffa500', \
+        self.buoys = self.polar.scatter(self.buoy_bearing_data, self.buoy_rng_data, c='#ffa500', \
                                             label='Buoys', s=5)
 
-        # set up waypoint scatter plot
+        # set up waypoint data
         self.waypoint_rng_data = [0]
         self.waypoint_bearing_data = [0]
-        self.waypoints = self.polar.scatter(self.waypoint_rng_data, self.waypoint_bearing_data, c='#000000', \
-                                            label='Waypoints', s=4)
+#        self.waypoints = self.polar.scatter(self.waypoint_bearing_data, self.waypoint_rng_data, c='#00ff00', \
+#                                            label='Waypoints', s=4)
 
         # set up legend
         box = self.polar.get_position()
@@ -119,6 +123,8 @@ class AutonomyTest(Thread):
         self.spawn_buoys(event)
 
         # subscribe to set rudder
+        self.last_updated = time_in_millis()
+        self.prev_heading = 0
         pub.subscribe(self.update_heading, 'set rudder')
 
     def run(self):
@@ -164,14 +170,17 @@ class AutonomyTest(Thread):
         # init object field
         object_field = [0] * self.num_buoys
 
+        # account for ownship rotation
+        rotate_dtheta = self.prev_heading - self.boat.current_heading
+
         for ii, (buoy_rng, buoy_bearing) in \
             enumerate(zip(self.buoy_rng_data, self.buoy_bearing_data)):
             # account for ownship movement
             ownship_dr, ownship_dtheta = self._ownship_delta(buoy_rng, buoy_bearing, \
-                                                             self.boat_speed, self.rel_heading)
+                                                             self.boat_speed, self.boat.current_heading)
 
             new_r = buoy_rng + ownship_dr
-            new_theta = buoy_bearing + ownship_dtheta
+            new_theta = buoy_bearing + ownship_dtheta + rotate_dtheta
 
             object_field[ii] = (new_r, new_theta)
 
@@ -182,17 +191,18 @@ class AutonomyTest(Thread):
         self.buoy_rng_data = [rng for rng, _,  in object_field]
         self.buoy_bearing_data = [bearing for _, bearing in object_field]
 
-    def update_heading(self, heading):
+    def update_heading(self, degrees_starboard):
         """Updates heading from obstacle avoidance"""
-        self.desired_rel_heading = heading
-        print("setting course towards {}".format(heading))
-
-        self.rel_heading += np.sign(heading - self.rel_heading) * (self.boat_bearing_rate * self.update_interval)
-        print("new rel heading {}".format(self.rel_heading))
+        updated = time_in_millis()
+        self.prev_heading = self.boat.current_heading
+        self.boat.current_heading += (degrees_starboard / 15.) \
+                                     * (self.boat_bearing_rate * (updated - self.last_updated)/1000.)
+#        print("new rel heading {}".format(self.boat.current_heading))
+        self.last_updated = updated
 
     def get_waypoints(self):
         """Gets waypoints from captain"""
-        marks = self.event.captain.course.marks.copy()
+        marks = self.event.captain.path.marks.copy()
 
         self.waypoint_rng_data = [rng for rng, _ in marks]
         self.waypoint_bearing_data = [bearing for _, bearing in marks]
@@ -205,7 +215,7 @@ class AutonomyTest(Thread):
         # plot boat movement arrow
         if self.boat_arrow:
             self.boat_arrow.remove()
-        self.boat_arrow = Arrow(0, 0, np.radians(self.rel_heading), 50 * self.boat_speed,
+        self.boat_arrow = Arrow(0, 0, np.radians(self.boat.current_heading), 50 * self.boat_speed,
                                 width=0.5, color='blue', alpha=0.5)
         self.polar.add_artist(self.boat_arrow)
         self.polar.draw_artist(self.boat_arrow)
@@ -215,11 +225,14 @@ class AutonomyTest(Thread):
         self.polar.draw_artist(self.buoys)
 
         # update waypoints
-        self.waypoints.set_offsets([*zip(self._deg_2_rad(self.waypoint_bearing_data), self.waypoint_rng_data)])
+#        self.waypoints.set_offsets([*zip(self._deg_2_rad(self.waypoint_bearing_data), self.waypoint_rng_data)])
         if len(self.waypoint_rng_data) > 0:
-            self.polar.draw_artist(self.waypoints)
+#            self.polar.draw_artist(self.waypoints)
             for ii, (bearing, rng) in enumerate(zip(self._deg_2_rad(self.waypoint_bearing_data), self.waypoint_rng_data)):
-                self.polar.annotate(ii, (bearing, rng), xycoords='polar')
+                annotation = self.polar.annotate(str(ii), xy=(bearing, rng), size=6, \
+                                                 textcoords='offset points', xytext=(-0.05, -0.05), \
+                                                 ha='center', va='center')
+                self.polar.draw_artist(annotation)
 
         self.fig.canvas.blit(self.polar.bbox)
         self.fig.canvas.flush_events()

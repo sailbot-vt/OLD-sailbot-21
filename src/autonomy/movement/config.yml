@@ -1,7 +1,9 @@
 rudder_angles:
+  very_fast_turn: 25
   fast_turn: 15
   medium_turn: 10
   slow_turn: 5
+  very_slow_turn: 2
 
 jib_angles:
   q1:

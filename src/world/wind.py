@@ -1,10 +1,9 @@
-import math
+import numpy as np
 
 from pubsub import pub
 
 from src.utils.vec import Vec2
-from src.gps_point import GPSPoint
-
+from src.utils.polar_distance import polar_distance
 
 class Wind:
     """A unified API for all wind data"""
@@ -70,11 +69,19 @@ class Wind:
         angle = self.true_wind_angle - bearing
         return 360 + angle if angle <= -180 else angle
 
-    def distance_upwind(self, a, b):
-        """Gives the upwind distance from a to b.
+    def distance_upwind(self, start, end):
+        """Gives the upwind distance to end.
 
-        If a is upwind of b, the result if negative."""
-        path_dist = GPSPoint.distance(a, b)
-        path_bearing = b.bearing_from(a)
+        If boat is upwind of end, the result if negative."""
+        path_dist = polar_distance((start, end))
+        # account for undefined behavior of bearing when range is 0
+        if start[0] == 0 and end[0] == 0:
+            path_bearing = 0
+        elif start[0] == 0 and end[0] != 0:
+            path_bearing = end[1]
+        elif start[0] != 0 and end[0] == 0:
+            path_bearing = (start[1] - 180) % 360
+        else:
+            path_bearing = end[1] - start[1]
         angle_difference = self.angle_relative_to_wind(path_bearing)
-        return path_dist * math.cos(math.radians(angle_difference))
+        return path_dist * np.cos(np.radians(angle_difference))

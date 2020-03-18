@@ -41,7 +41,7 @@ class ObstacleAvoidanceTests(unittest.TestCase):
         # check that methods are called (and with correct args)
         mock_get_objects.assert_any_call()
         mock_find_path.assert_any_call()
-        mock_pub.assert_called_with('set heading', heading = adjusted_heading)
+        mock_pub.assert_called_with('set heading', adjusted_heading = adjusted_heading)
         mock_sleep.assert_called_with(self.obstacle_avoidance.update_interval)
 
         self.obstacle_avoidance.is_active = False
@@ -54,7 +54,7 @@ class ObstacleAvoidanceTests(unittest.TestCase):
         # loop through values
         for waypoint in waypoints:
             # publish to waypoint channel
-            pub.sendMessage('waypoint', new_waypoint=waypoint)
+            pub.sendMessage('update waypoint', new_waypoint=waypoint)
 
             # check for correct behavior
             self.assertTupleEqual(waypoint, self.obstacle_avoidance.waypoint)

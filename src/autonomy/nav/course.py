@@ -25,15 +25,23 @@ class Path:
     def __iter__(self):
         return CourseIterator(self)
 
+    def prepend_mark(self, mark):
+        """Prepends mark to the course"""
+        self.marks = [mark,] + self.marks[:]
+
     def add_mark(self, mark):
         """Adds a mark to the path"""
-        next_to_last_mark = mark
+        self.marks.append(mark)
+
+    def next_mark(self):
+        """Returns next mark in path"""
         if len(self.marks) > 0:
-            next_to_last_mark = self.marks[len(self.marks) - 1][1]
-        last_mark = mark
+            return self.marks[0]
+        else:
+            return None
 
-        self.marks.append((next_to_last_mark, last_mark))
-
+    def clear(self):
+        self.marks = []
 
 class CourseIterator:
     def __init__(self, course):

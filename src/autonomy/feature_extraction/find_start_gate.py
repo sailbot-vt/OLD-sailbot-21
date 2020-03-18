@@ -3,6 +3,7 @@ from statistics import mean
 from itertools import combinations as combs
 
 from src.utils.coord_conv import polar_to_cartesian, cartesian_to_polar
+from src.utils.polar_distance import polar_distance
 
 def find_start_gate(buoy_array, config):
     """
@@ -22,7 +23,7 @@ def find_start_gate(buoy_array, config):
         buoy_combs = [comb for comb in combs(buoy_array, 2)]
 
         # find distance for each combination
-        dists = np.array([_polar_distance(buoy_comb) for buoy_comb in buoy_combs])
+        dists = np.array([polar_distance(buoy_comb) for buoy_comb in buoy_combs])
 
         # find combination with closest fit to width
         closest_fit_idx = np.abs(dists - width).argmin()
@@ -48,17 +49,3 @@ def _find_centerpoint(buoy_array):
 
     # convert centerpoint to polar and return
     return cartesian_to_polar(*centerpoint)
-
-def _polar_distance(buoy_array):
-    """
-    Finds distance between pair of buoys (with position given in polar coordinates)
-    Inputs:
-        buoy_array -- array of range and bearing data of buoys
-    Returns:
-        distance -- distance between points
-    """
-    r1 = buoy_array[0][0]
-    r2 = buoy_array[1][0]
-    theta1 = buoy_array[0][1] * np.pi / 180
-    theta2 = buoy_array[1][1] * np.pi / 180
-    return np.sqrt(r1**2 + r2**2 - 2*r1*r2*np.cos(theta2 - theta1))
