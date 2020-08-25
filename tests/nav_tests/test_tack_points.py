@@ -79,7 +79,7 @@ class TackPointsTests(unittest.TestCase):
         # -------------------------
         mock_must_tack.return_value = False
 
-        self.assertListEqual([waypoint,], place_tacks(waypoint, mock_boat, mock_wind, config))
+        self.assertListEqual([], place_tacks(waypoint, mock_boat, mock_wind, config))
 
         # -------------------------------------------
         # Test 2 -- one tack needed (starboard first)
@@ -95,7 +95,7 @@ class TackPointsTests(unittest.TestCase):
 
         tacks_cart = [(r_bound, r_bound),]
         tacks = [cartesian_to_polar(x, y) for (x, y) in tacks_cart]
-        tacks = [(rng, bearing + rel_wind_ang) for (rng, bearing) in tacks] + [waypoint,]
+        tacks = [(rng, bearing + waypoint[1]) for (rng, bearing) in tacks]
 
         np.testing.assert_almost_equal(tacks,  place_tacks(waypoint, mock_boat, mock_wind, config))
 
@@ -113,7 +113,7 @@ class TackPointsTests(unittest.TestCase):
 
         tacks_cart = [(np.fabs(l_bound), l_bound),]
         tacks = [cartesian_to_polar(x, y) for (x, y) in tacks_cart]
-        tacks = [(rng, bearing + rel_wind_ang) for (rng, bearing) in tacks] + [waypoint,]
+        tacks = [(rng, bearing + waypoint[1]) for (rng, bearing) in tacks]
 
         np.testing.assert_almost_equal(tacks,  place_tacks(waypoint, mock_boat, mock_wind, config))
 
@@ -131,7 +131,7 @@ class TackPointsTests(unittest.TestCase):
 
         tacks_cart = [(r_bound, r_bound),]
         tacks = [cartesian_to_polar(x, y) for (x, y) in tacks_cart]
-        tacks = [(rng, bearing + rel_wind_ang) for (rng, bearing) in tacks] + [waypoint,]
+        tacks = [(rng, bearing + waypoint[1]) for (rng, bearing) in tacks]
 
         np.testing.assert_almost_equal(tacks,  place_tacks(waypoint, mock_boat, mock_wind, config))
         
@@ -154,6 +154,6 @@ class TackPointsTests(unittest.TestCase):
                       (95/6., l_bound), (105/6., r_bound), (115/6., l_bound)]
 
         tacks = [cartesian_to_polar(x, y) for (x, y) in tacks_cart]
-        tacks = [(rng, bearing + rel_wind_ang) for (rng, bearing) in tacks] + [waypoint,]
+        tacks = [(rng, bearing + waypoint[1]) for (rng, bearing) in tacks]
 
         np.testing.assert_almost_equal(tacks,  place_tacks(waypoint, mock_boat, mock_wind, config))

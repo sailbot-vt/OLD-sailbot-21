@@ -13,8 +13,9 @@ class Event(ABC):
         pub.subscribe(self.switch_mode, "set nav mode")
 
         self.create_objectives()
+        self.create_event_config()
 
-        self.captain = Captain(self.objectives, tracker, boat, wind)
+        self.captain = Captain(self.objectives, tracker, boat, wind, self.event_config)
         self.captain.start()
 
     @abstractmethod
@@ -25,7 +26,14 @@ class Event(ABC):
     @abstractmethod
     def create_objectives(self):
         """
-        Creates objectives based on enumerations
+        Sets list of objectives for Fleet Race
+        """
+        pass
+
+    @abstractmethod
+    def create_event_config(self):
+        """
+        Sets event configuration for fleet race
         """
         pass
 

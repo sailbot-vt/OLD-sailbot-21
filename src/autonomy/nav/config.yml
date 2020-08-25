@@ -11,3 +11,4 @@ nav_config:
 
 tack_config:
   max_tacks: 100
+  tack_point_width: 0.5

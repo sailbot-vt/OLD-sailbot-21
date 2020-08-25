@@ -1,9 +1,5 @@
 rudder_angles:
-  very_fast_turn: 25
-  fast_turn: 15
-  medium_turn: 10
-  slow_turn: 5
-  very_slow_turn: 2
+  max_rudder_ang: 20
 
 jib_angles:
   q1:
@@ -14,7 +10,5 @@ jib_angles:
     p0: 14
   q4:
     p0: 14
-
-default_turn_rate: 'medium_turn'
 
 update_interval: 0.1

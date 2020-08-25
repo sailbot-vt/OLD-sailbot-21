@@ -5,7 +5,7 @@ from src.autonomy.nav.strategy import favored_side
 from src.utils.coord_conv import polar_to_cartesian, cartesian_to_polar
 from src.utils.polar_distance import polar_distance
 
-def place_tacks(waypoint, boat, wind, config):
+def place_tacks(waypoint, boat, wind, config, switch_tack):
     """
     Places tacks between current position and waypoint
     Inputs:
@@ -13,6 +13,7 @@ def place_tacks(waypoint, boat, wind, config):
         boat -- boat state object
         wind -- wind state object
         config -- tack configuration
+        switch_tack -- flag to switch tack side
     Returns:
         tacks -- list of tack waypoints (rng and bearing)
     """
@@ -23,14 +24,16 @@ def place_tacks(waypoint, boat, wind, config):
     tacks = []
     if must_tack(waypoint, boat, wind):
         # get favored side
-        strategy = favored_side(boat, wind)
+        strategy = favored_side(waypoint, boat, wind)
 
         # create tack channel (place l/r boundaries)
         upwind_dist = wind.distance_upwind((0, 0), waypoint)
         l_bound, r_bound = find_beating_bounds(upwind_dist, boat.upwind_angle, strategy)
 
         # find current tack
-        current_tack = np.sign(wind.angle_relative_to_wind(boat.current_heading))
+        tack_side = np.sign(wind.angle_relative_to_wind(boat.current_heading))
+        if switch_tack:
+            tack_side *= -1
 
         # find upwind angle, absolute distance
         upwind_rad = np.radians(np.fabs(boat.upwind_angle))
@@ -44,28 +47,28 @@ def place_tacks(waypoint, boat, wind, config):
 
         # loop until possible to get to waypoint without tacking again
         while (np.arcsin(d_up/ d_abs) > (upwind_rad+0.0001)) and (ii < max_tacks):      # allow slight undershoot
-            if current_tack == 1:        # starboard tack
-                tacks_cart[ii] = (cur_pos_cart[0] + (np.tan(upwind_rad) * (r_bound - cur_pos_cart[1])), r_bound)
-                current_tack *= -1
-            elif current_tack == -1:       # port tack
-                tacks_cart[ii] = (cur_pos_cart[0] + (np.tan(upwind_rad) * (cur_pos_cart[1] - l_bound)), l_bound)
-                current_tack *= -1
+            if tack_side == 1:        # starboard tack
+                tacks_cart[ii] = (cur_pos_cart[0] + (np.tan(upwind_rad) * np.fabs(r_bound - cur_pos_cart[1])), r_bound)
+                tack_side *= -1
+            elif tack_side == -1:       # port tack
+                tacks_cart[ii] = (cur_pos_cart[0] + (np.tan(upwind_rad) * np.fabs(l_bound - cur_pos_cart[1])), l_bound)
+                tack_side *= -1
 
             # prepare for next loop
             cur_pos_cart = tacks_cart[ii]
             cur_pos = cartesian_to_polar(cur_pos_cart[0], cur_pos_cart[1])
 
             # calculate marginal absolute and upwind distance
-            d_abs = polar_distance((cur_pos, (upwind_dist, 0)))
-            d_up = wind.distance_upwind(cur_pos, (upwind_dist, 0))
+            d_abs = polar_distance((_bearing_offset(cur_pos, waypoint[1]), waypoint))
+            d_up = wind.distance_upwind(_bearing_offset(cur_pos, waypoint[1]), waypoint)
 
             ii += 1
 
-        # convert coordinates to cartesian and rotate based on wind angle
+        # convert cartesian to polar and rotate based on waypoint bearing
         tacks = [cartesian_to_polar(x, y) for (x, y) in tacks_cart[0:ii]]
-        tacks = [(rng, bearing + wind.angle_relative_to_wind(boat.current_heading)) for (rng, bearing) in tacks]
+        tacks = [_bearing_offset(tack, waypoint[1]) for tack in tacks]
 
-    return tacks + [waypoint,]
+    return tacks
 
 def find_beating_bounds(upwind_dist, upwind_ang, strategy):
     """
@@ -89,3 +92,14 @@ def must_tack(end, boat, wind):
     """Checks if tacks will be necessary to get to the other point from origin"""
     bearing = wind.angle_relative_to_wind(end[1])
     return np.fabs(bearing) < boat.upwind_angle
+
+def _bearing_offset(coord, offset):
+    """
+    Applies bearing offset to polar coordinate
+    Inputs:
+        coord -- polar coordinate
+        offset -- bearing offset
+    Returns:
+        offset_coord -- bearing offseted coordinate
+    """
+    return (coord[0], coord[1] + offset)

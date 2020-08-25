@@ -10,7 +10,6 @@ from src.autonomy.nav.course import Path
 
 from src.autonomy.obstacle_avoidance.obstacle_avoidance import ObstacleAvoidance
 from src.autonomy.movement.movement import Movement
-from src.autonomy.movement.turn_speed_enum import TurnSpeed
 
 from src.autonomy.nav.config_reader import read_nav_config, read_interval, read_tack_config
 from src.autonomy.feature_extraction.config_reader import read_start_gate_config, read_round_buoy_config
@@ -24,7 +23,7 @@ mutex = Lock()
 class Captain(Thread):
     """Thread to manage autonomous navigation"""
 
-    def __init__(self, objectives, tracker, boat, wind):
+    def __init__(self, objectives, tracker, boat, wind, event_config):
         """Builds a new captain thread."""
         super().__init__()
 
@@ -33,13 +32,22 @@ class Captain(Thread):
         self.boat = boat
         self.wind = wind
 
-        self.is_active = True
+        # read configs
         self.nav_interval = read_interval()
         self.start_gate_config = read_start_gate_config()
         self.round_buoy_config = read_round_buoy_config()
         self.nav_config = read_nav_config()
         self.tack_config = read_tack_config()
+        self.event_config = event_config
 
+        # initialize objectives
+        self.init_objectives()
+
+        # set state vars
+        self.is_active = True
+        self.tacking = False
+
+        # subscribe to nav mode and return home channels
         pub.subscribe(self.switch_mode, "set nav mode")
         pub.subscribe(self.return_home, "return home")
 
@@ -51,11 +59,15 @@ class Captain(Thread):
         self.move = Movement(wind)
         self.move.start()
 
-        self.path = Path()
+        self.path = Path()          # contains all waypoints and tack points
+        self.waypoints = Path()     # only contains waypoints (no tack points) 
 
     def run(self):
         """Runs the captain thread"""
         while self.is_active:
+            # update objectives
+            self.update_objectives()
+
             # update course
             self.update_course()
 
@@ -68,9 +80,6 @@ class Captain(Thread):
             # set heading
             self.set_heading()
 
-            # update objectives
-            self.update_objectives()
-
             # sleep
             sleep(self.nav_interval)
 
@@ -82,21 +91,11 @@ class Captain(Thread):
         # generate turn speed weight (higher weights for more urgent turns (closer objs, further in bearing))
         if mark is not None:
             if mark[0] < 200:
-                weight = (np.fabs(mark[1]) / 200.) + ((200 -mark[0]) / 2000.)  # 9x weight on bearing vs range -- linear scale
+                weight = (np.fabs(mark[1]) / 190.) + ((200 - mark[0]) / 3800.)
             else:
                 weight = 0
 
-            print(weight, mark)
-            if weight < 0.15:
-                pub.sendMessage('set turn speed', turn_speed=TurnSpeed.VERYSLOW)
-            elif 0.15 <= weight < 0.35:
-                pub.sendMessage('set turn speed', turn_speed=TurnSpeed.SLOW)
-            elif 0.35 <= weight < 0.65:
-                pub.sendMessage('set turn speed', turn_speed=TurnSpeed.MEDIUM)
-            elif 0.65 <= weight < 0.85:
-                pub.sendMessage('set turn speed', turn_speed=TurnSpeed.FAST)
-            else:
-                pub.sendMessage('set turn speed', turn_speed=TurnSpeed.VERYFAST)
+            pub.sendMessage('set turn speed', turn_speed_factor = weight)
 
     def set_heading(self):
         """
@@ -112,24 +111,50 @@ class Captain(Thread):
         Places tacks for current leg
         Side Effects:
             self.path -- inserts tacks into course
+            self.tacking -- updates to reflect if tacking is occurring or not
         """
-        # prepend tacks to course
-        mark = self.path.next_mark()
-        if mark is not None:
-            tacks = place_tacks(mark, self.boat, self.wind, self.tack_config)
+        # check if necessary to tack, if necessary to switch tacks
+        tack_flag, switch_tack_flag = self.tack_in_progress()
 
-            for tack in tacks[::-1]:
-                self.path.prepend_mark(tack)
+        if not tack_flag:
+            # prepend tacks to course
+            mark = self.path.next_mark()
+            if mark is not None:
+                tacks = place_tacks(mark, self.boat, self.wind, self.tack_config, switch_tack_flag)
+
+                for tack in tacks[::-1]:
+                    self.path.prepend_mark(tack)
+
+                if len(tacks) > 1:
+                    self.tacking = True
+                else:
+                    self.tacking = False
+
+    def tack_in_progress(self):
+        """
+        Finds if a tack leg is in progress and if switching tacks is necessary
+        Returns:
+            tack_in_progress -- bool that returns True if tack point is not yet reached
+            switch_tack -- bool that returns true if necessary to switch tacks
+        """
+        tack_point = self.path.next_mark()
+        if self.tacking == True and tack_point is not None:
+            if tack_point[0] < self.tack_config['tack_point_width']:
+                return False, True
+            else:
+                return True, False
+
+        return False, False
 
     def update_course(self):
         """
         Updates course based on new buoy positions, new/updated objectives
         Side Effects:
-            self.path -- updates course
+            self.path -- updates path 
+            self.waypoints -- adds waypoints
         """
         # get buoys from tracker
         buoys = self.tracker.get_buoys()
-        self.gate_buoys = [0] * len(buoys)
 
         # reset course
         self.clear_path()
@@ -148,12 +173,10 @@ class Captain(Thread):
             buoys -- array of buoy locations
         Side Effects:
             self.path -- updates course
-            self.gate_buoys -- updates to reflect buoys used as gates
         """
         if objective == Objectives.ENTER_STARTING_GATE:
             # find start gate
-            centerpoint, buoys_used = find_start_gate(buoys, self.start_gate_config)
-            self.gate_buoys = [True if buoy in buoys_used else False for buoy in buoys]
+            centerpoint, _ = find_start_gate(buoys, self.start_gate_config)
 
             # add mark for gate
             if centerpoint is not None:
@@ -162,10 +185,10 @@ class Captain(Thread):
         elif objective == Objectives.ROUND_BUOYS_CCW:
             # find gate buoys
             _ , buoys_used = find_start_gate(buoys, self.start_gate_config)
-            self.gate_buoys = [True if buoy in buoys_used else False for buoy in buoys]
+            gate_buoys = [True if buoy in buoys_used else False for buoy in buoys]
 
             # trim buoy array to non-gate buoys
-            buoy_array = [buoy for buoy, gate_buoy in zip(buoys, self.gate_buoys) if gate_buoy is False]
+            buoy_array = [buoy for buoy, gate_buoy in zip(buoys, gate_buoys) if gate_buoy is False]
 
             # sort buoys CCW
             sorted_buoys = get_course_from_buoys(buoy_array, 'CCW')
@@ -174,7 +197,8 @@ class Captain(Thread):
                 # generate marks (using margin from config)
                 rng_margin = self.round_buoy_config['rng_margin']
                 bearing_margin = self.round_buoy_config['bearing_margin']
-                marks = [(rng + rng_margin, bearing + bearing_margin) for (rng, bearing) in sorted_buoys]
+                marks = [(rng + rng_margin, bearing + bearing_margin) for (rng, bearing) \
+                                                                      in sorted_buoys[0:self.buoys_left_in_loop]]
 
                 # add marks for buoys
                 self.add_marks(marks)
@@ -200,17 +224,31 @@ class Captain(Thread):
         Side Effects:
             self.objectives -- updates objectives
         """
+        objective_attained = False
+
         mutex.acquire()
+
+        # get objective and waypoint
         objective = self.objectives[0]
+        waypoint = self.waypoints.next_mark()
+
         if objective == Objectives.ENTER_STARTING_GATE:
-            mark  = self.path.next_mark()
-            if mark is not None:
-                if mark[0] < self.nav_config['mark_width']:         # delete start gate objective if start gate within margin
+            if waypoint is not None:
+                if waypoint[0] < self.nav_config['mark_width']:   # delete start gate objective if start gate within margin
                     del self.objectives[0]
-                    print(self.objectives)
+
+                    objective_attained = True
 
         elif objective == Objectives.ROUND_BUOYS_CCW:
-            pass
+            if waypoint is not None:
+                if waypoint[0] < self.nav_config['mark_width']:
+                    self.buoys_left_in_loop -= 1
+
+                    if self.buoys_left_in_loop == 0:
+                        del self.objectives[0]
+
+                        objective_attained = True
+            
         elif objective == Objectives.ROUND_BUOYS_CCW_LOOPING:
             pass
         elif objective == Objectives.ENTER_SK_BOX:
@@ -225,7 +263,35 @@ class Captain(Thread):
             pass
         elif objective == Objectives.TOUCH_BUOY:
             pass
-        
+
+        mutex.release()
+
+    def init_objectives(self):
+        """
+        Initializes state for objectives
+        """
+        mutex.acquire()
+
+        for objective in self.objectives:
+            if objective == Objectives.ENTER_STARTING_GATE:
+                pass
+            elif objective == Objectives.ROUND_BUOYS_CCW:
+                self.buoys_left_in_loop = self.event_config['num_loop_buoys']
+            elif objective == Objectives.ROUND_BUOYS_CCW_LOOPING:
+                pass
+            elif objective == Objectives.ENTER_SK_BOX:
+                pass
+            elif objective == Objectives.STAY_IN_BOX:
+                pass
+            elif objective == Objectives.LEAVE_BOX:
+                pass
+            elif objective == Objectives.ENTER_SEARCH_AREA:
+                pass
+            elif objective == Objectives.START_SEARCH_PATTERN:
+                pass
+            elif objective == Objectives.TOUCH_BUOY:
+                pass
+
         mutex.release()
 
     def return_home(self):
@@ -254,7 +320,14 @@ class Captain(Thread):
         self.is_active = True
 
     def clear_path(self):
-        self.path = Path()
+        """
+        Clears path and waypoints
+        Side Effects:
+            self.path -- clears all waypoints
+            self.waypoints -- clears all waypoints
+        """
+        self.path.clear()
+        self.waypoints.clear()
 
     def add_marks(self, marks):
         """
@@ -267,5 +340,7 @@ class Captain(Thread):
         if isinstance(marks, list):
             for mark in marks:
                 self.path.add_mark(mark)
+                self.waypoints.add_mark(mark)
         else:
             self.path.add_mark(marks)
+            self.waypoints.add_mark(marks)

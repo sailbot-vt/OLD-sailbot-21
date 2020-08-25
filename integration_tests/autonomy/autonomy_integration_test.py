@@ -47,7 +47,7 @@ class AutonomyTest(Thread):
 
         # set up mock boat and set boat movement parameters
         self.boat = MagicMock(name='boat')
-        self.boat_speed = 0.5   # m/s
+        self.boat_speed = 1.5   # m/s
         self.boat_bearing_rate = 5        # deg/s
         self.boat.current_heading = 0
         self.boat.upwind_angle = 35
@@ -78,7 +78,7 @@ class AutonomyTest(Thread):
         # create polar plot
         self.fig = plt.figure()
         self.polar = self.fig.add_subplot(111, projection='polar')
-        self.plot_rng_range = (0, 100)
+        self.plot_rng_range = (0, 150)
         self.polar.set_ylim(self.plot_rng_range[0], self.plot_rng_range[1])
         self.polar.grid(True)
         self.polar.set_title('Dynamic Course Map')
@@ -150,8 +150,8 @@ class AutonomyTest(Thread):
             self.buoy_rng_data -- range data for buoys
             self.buoy_bearing_data -- bearing data for buoys
         """
-        x_shift = randint(5, 40)
-        y_shift = randint(5, 30)
+        x_shift = randint(5, 30)
+        y_shift = randint(30, 50)
         if event == 0:      # fleet race
             self.num_buoys = 4
             self.buoy_rng_data = [0] * self.num_buoys
@@ -197,7 +197,7 @@ class AutonomyTest(Thread):
         self.prev_heading = self.boat.current_heading
         self.boat.current_heading += (degrees_starboard / 15.) \
                                      * (self.boat_bearing_rate * (updated - self.last_updated)/1000.)
-#        print("new rel heading {}".format(self.boat.current_heading))
+        print("new rel heading {}".format(self.boat.current_heading))
         self.last_updated = updated
 
     def get_waypoints(self):

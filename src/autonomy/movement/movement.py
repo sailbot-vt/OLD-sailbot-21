@@ -2,10 +2,9 @@ from threading import Thread
 
 from pubsub import pub
 from time import sleep
-from numpy import sign
+from numpy import sign, exp
 
 from src.autonomy.movement.config_reader import read_movement_config
-from src.autonomy.movement.turn_speed_enum import TurnSpeed
 
 class Movement(Thread):
     """Movement control thread"""
@@ -20,7 +19,8 @@ class Movement(Thread):
 
         self.config = read_movement_config()
         self.update_interval = self.config['update_interval']
-        self.rudder_angle = self.config['rudder_angles'][self.config['default_turn_rate']]
+        self.max_rudder_ang = self.config['rudder_angles']['max_rudder_ang']
+        self.rudder_angle = 0.5 * self.max_rudder_ang
 
         pub.subscribe(self.set_heading, "set heading")
         pub.subscribe(self.set_turn_speed, "set turn speed")
@@ -44,28 +44,15 @@ class Movement(Thread):
         """
         self.is_active = False
 
-    def set_turn_speed(self, turn_speed):
+    def set_turn_speed(self, turn_speed_factor):
         """
         Sets turn speed
         Inputs:
-            turn_speed -- turn speed to achieve (affects rudder angle)
+            turn_speed_factor -- turn speed factor to achieve (affects rudder angle)
         Side Effects:
             self.rudder_angle -- updates rudder angle
         """
-        if turn_speed == TurnSpeed.VERYSLOW:
-            self.rudder_angle = self.config['rudder_angles']['very_slow_turn']
-
-        elif turn_speed == TurnSpeed.SLOW:
-            self.rudder_angle = self.config['rudder_angles']['slow_turn']
-
-        elif turn_speed == TurnSpeed.MEDIUM:
-            self.rudder_angle = self.config['rudder_angles']['medium_turn']
-
-        elif turn_speed == TurnSpeed.FAST:
-            self.rudder_angle = self.config['rudder_angles']['fast_turn']
-
-        elif turn_speed == TurnSpeed.VERYFAST:
-            self.rudder_angle = self.config['rudder_angles']['very_fast_turn']
+        self.rudder_angle = self.max_rudder_ang * exp(turn_speed_factor**2 - 1)
 
     def set_heading(self, adjusted_heading):
         """

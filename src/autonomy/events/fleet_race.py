@@ -20,6 +20,12 @@ class FleetRace(Event):
 
     def create_objectives(self):
         """
-        Returns objectives based on enumeration file
+        Sets list of objectives for Fleet Race
         """
         self.objectives = [Objectives.ENTER_STARTING_GATE, Objectives.ROUND_BUOYS_CCW, Objectives.ENTER_STARTING_GATE]
+
+    def create_event_config(self):
+        """
+        Sets event configuration for fleet race
+        """
+        self.event_config = {'num_loop_buoys': 2}
