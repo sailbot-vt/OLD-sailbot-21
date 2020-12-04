@@ -1,3 +1,4 @@
+import math
 from threading import Thread, Lock
 from time import sleep
 import numpy as np
@@ -19,6 +20,7 @@ from src.autonomy.feature_extraction.find_start_gate import find_start_gate
 from src.autonomy.feature_extraction.get_course_from_buoys import get_course_from_buoys
 
 mutex = Lock()
+
 
 class Captain(Thread):
     """Thread to manage autonomous navigation"""
@@ -60,7 +62,7 @@ class Captain(Thread):
         self.move.start()
 
         self.path = Path()          # contains all waypoints and tack points
-        self.waypoints = Path()     # only contains waypoints (no tack points) 
+        self.waypoints = Path()     # only contains waypoints (no tack points)
 
     def run(self):
         """Runs the captain thread"""
@@ -174,6 +176,7 @@ class Captain(Thread):
         Side Effects:
             self.path -- updates course
         """
+        skboxmark = [0,0]
         if objective == Objectives.ENTER_STARTING_GATE:
             # find start gate
             centerpoint, _ = find_start_gate(buoys, self.start_gate_config)
@@ -181,7 +184,7 @@ class Captain(Thread):
             # add mark for gate
             if centerpoint is not None:
                 self.add_marks(centerpoint)
-            
+
         elif objective == Objectives.ROUND_BUOYS_CCW:
             # find gate buoys
             _ , buoys_used = find_start_gate(buoys, self.start_gate_config)
@@ -202,15 +205,42 @@ class Captain(Thread):
 
                 # add marks for buoys
                 self.add_marks(marks)
-            
+
         elif objective == Objectives.ROUND_BUOYS_CCW_LOOPING:
             pass
         elif objective == Objectives.ENTER_SK_BOX:
-            pass
+
+
+            positionx = 0
+            for i in buoys:
+                positionx += buoys(i)[0] * math.cos(buoys[i][1])  # position x is the range times the cos of the angle (the x component of the "triangle" if range is the hypotenuse
+            positionx = positionx/len(buoys)
+
+            positiony = 0
+            for i in buoys:
+                positiony += buoys(i)[0] * math.sin(buoys[i][1])  # position y is the range times the cos of the angle (the y component of the "triangle" if range is the hypotenuse
+            positiony = positiony/len(buoys)
+
+            range = math.sqrt(pow(positionx,2) + pow(positiony,2))  # get the hypotenuse, the distance from boat to center point
+            angle = math.atan(positiony/positionx)  # get the bearing, or the angle from the boat
+
+            mark = [range, angle]  # put it into a mark, the location
+
+            skboxmark = mark
+            self.add_marks(mark)
+
         elif objective == Objectives.STAY_IN_BOX:
-            pass
+            self.add_marks(skboxmark) #takes the mark location from previous objective and continuously sets that as the mark
+
         elif objective == Objectives.LEAVE_BOX:
-            pass
+            buoy1 = buoys[0] #set 2 buoys as variable
+            buoy2 = buoys[1]
+            dist = (buoy1[0] + buoy2[0])/2 + 4 #find range/distance to center of two buoys. Then add about 4 to go past the centerpoint and out of the box
+            angle = (buoy1[1] + buoy2[1])/2 #find angle between the two buoys from the boat.
+            mark = [dist, angle] #set mark
+            
+            self.add_marks(mark)
+
         elif objective == Objectives.ENTER_SEARCH_AREA:
             pass
         elif objective == Objectives.START_SEARCH_PATTERN:
@@ -248,7 +278,7 @@ class Captain(Thread):
                         del self.objectives[0]
 
                         objective_attained = True
-            
+
         elif objective == Objectives.ROUND_BUOYS_CCW_LOOPING:
             pass
         elif objective == Objectives.ENTER_SK_BOX:
