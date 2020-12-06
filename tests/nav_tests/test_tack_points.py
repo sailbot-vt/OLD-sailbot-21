@@ -79,7 +79,7 @@ class TackPointsTests(unittest.TestCase):
         # -------------------------
         mock_must_tack.return_value = False
 
-        self.assertListEqual([], place_tacks(waypoint, mock_boat, mock_wind, config))
+        self.assertListEqual([], place_tacks(waypoint, mock_boat, mock_wind, config, False))
 
         # -------------------------------------------
         # Test 2 -- one tack needed (starboard first)
@@ -97,7 +97,7 @@ class TackPointsTests(unittest.TestCase):
         tacks = [cartesian_to_polar(x, y) for (x, y) in tacks_cart]
         tacks = [(rng, bearing + waypoint[1]) for (rng, bearing) in tacks]
 
-        np.testing.assert_almost_equal(tacks,  place_tacks(waypoint, mock_boat, mock_wind, config))
+        np.testing.assert_almost_equal(tacks,  place_tacks(waypoint, mock_boat, mock_wind, config, False))
 
         # -------------------------------------------
         # Test 3 -- one tack needed (port first)
@@ -115,7 +115,7 @@ class TackPointsTests(unittest.TestCase):
         tacks = [cartesian_to_polar(x, y) for (x, y) in tacks_cart]
         tacks = [(rng, bearing + waypoint[1]) for (rng, bearing) in tacks]
 
-        np.testing.assert_almost_equal(tacks,  place_tacks(waypoint, mock_boat, mock_wind, config))
+        np.testing.assert_almost_equal(tacks,  place_tacks(waypoint, mock_boat, mock_wind, config, False))
 
         # -----------------------------------------------------------------------------------
         # Test 4 -- one tack needed (first tacking to starboard) (starboard favored strategy)
@@ -133,7 +133,7 @@ class TackPointsTests(unittest.TestCase):
         tacks = [cartesian_to_polar(x, y) for (x, y) in tacks_cart]
         tacks = [(rng, bearing + waypoint[1]) for (rng, bearing) in tacks]
 
-        np.testing.assert_almost_equal(tacks,  place_tacks(waypoint, mock_boat, mock_wind, config))
+        np.testing.assert_almost_equal(tacks,  place_tacks(waypoint, mock_boat, mock_wind, config, False))
         
         # ----------------------------------------------------------------
         # Test 5: twelve tacks needed (first tacking to starboard) (even strategy)
@@ -156,4 +156,4 @@ class TackPointsTests(unittest.TestCase):
         tacks = [cartesian_to_polar(x, y) for (x, y) in tacks_cart]
         tacks = [(rng, bearing + waypoint[1]) for (rng, bearing) in tacks]
 
-        np.testing.assert_almost_equal(tacks,  place_tacks(waypoint, mock_boat, mock_wind, config))
+        np.testing.assert_almost_equal(tacks,  place_tacks(waypoint, mock_boat, mock_wind, config, False))
