@@ -24,7 +24,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         python3=3.5.3-1 \
         python3-wheel=0.29.0-2 \
         python3-setuptools=33.1.1-1 \
-        python3-pip=9.0.1-2+deb9u1 \ 
+        python3-pip=9.0.1-2+deb9u2 \ 
         python3-dev=3.5.3-1 \
     && rm -rf /var/lib/apt/lists/*
 
