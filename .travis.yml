@@ -2,10 +2,11 @@ language: python
 python:
   - "3.5"
 
-install: make init
+# Assumes latest beaglebone-base image is pushed onto docker.
 script: make test
+# Temporarily test only on dev, while base image is building
+# scipt: make test_dev
 after_success:
-  - . ./p3_5env/bin/activate
   - coveralls
 
 notifications:

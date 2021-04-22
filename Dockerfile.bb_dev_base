@@ -1,0 +1,50 @@
+# Dockerfile.bb_dev_base
+# Defines base dev environment for Beaglebone.
+# Adapted from Dockerfile.bb_dev_base.
+
+FROM sailbotvt/sailbot-20:beaglebone-black-debian-stretch-python
+
+# Allow for running ARM images in x86/x86_64 machines
+# Triggers resin-xbuild and QEMU
+RUN [ "cross-build-start" ]
+
+WORKDIR /sailbot
+
+# Installing development requirements
+COPY requirements.bb_dev.txt ./
+RUN pip3 install -r requirements.bb_dev.txt --no-cache-dir --compile
+
+# Installing useful development packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+	make \
+	wget \
+	git \
+	cmake \
+	vim \
+	build-essential \
+	man-db \
+	ssh \
+   	&& rm -rf /var/lib/apt/lists/*
+
+# Installing python development tools to production version
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        python3=3.5.3-1 \
+        python3-wheel=0.29.0-2 \
+        python3-setuptools=33.1.1-1 \
+        python3-pip=9.0.1-2+deb9u2 \ 
+        python3-dev=3.5.3-1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Updating pip to production version
+RUN pip3 install --upgrade pip==20.0.2
+
+# set PYTHONPATH to point to site-packages
+ENV PYTHONPATH /usr/local/lib/3.5/site-packages
+
+# Checks for UDEV=1 to run container as privileged
+ENV UDEV=1
+
+# TODO: What does this do?
+ENTRYPOINT [ "/usr/bin/entry.sh" ]
+
+RUN [ "cross-build-end" ]

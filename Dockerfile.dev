@@ -1,0 +1,15 @@
+FROM sailbotvt/sailbot-20:sailbot-development-base
+
+RUN mkdir -p /sailbot/logs
+WORKDIR /sailbot
+
+# Installing development requirements
+COPY requirements.dev.txt ./
+
+RUN pip3 install -r requirements.dev.txt
+
+# Copying source files to image
+COPY scripts ./scripts
+COPY tests ./tests
+COPY Makefile main.py ./
+COPY src ./src

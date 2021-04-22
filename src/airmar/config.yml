@@ -51,7 +51,7 @@ sentences:
 
 # Settings to configure for port communication
 port:
-  port_name: "/dev/tty01"
+  port_name: "/dev/ttyO1"
   port_type: "SERIAL"
   frequency: 1  # seconds
   baudrate: 4800

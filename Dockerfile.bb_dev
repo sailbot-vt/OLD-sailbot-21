@@ -1,0 +1,11 @@
+# Dockerfile.bb_dev
+# Run after Dockerfile.bb_dev_base
+# Copies over actual source files.
+
+FROM sailbotvt/sailbot-20:sailbot-bb-development-base
+
+# RUN mkdir -p /sailbot/logs
+WORKDIR /sailbot
+
+# Copy source files to image.
+COPY * ./

@@ -1,0 +1,69 @@
+ARG FLAVOR=stretch
+
+FROM debian:$FLAVOR
+
+# Settings env variables
+ENV HOSTNAME debian-$FLAVOR
+
+# http://bugs.python.org/issue19846
+# > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
+ENV LANG C.UTF-8
+
+# Installing useful development packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        make \
+        wget \
+        git \
+        cmake \
+        vim \
+        build-essential \
+	man-db \
+	ssh \
+    && rm -rf /var/lib/apt/lists/*
+
+# Installing python development tools to production version
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        python3=3.5.3-1 \
+        python3-wheel=0.29.0-2 \
+        python3-setuptools=33.1.1-1 \
+        python3-pip=9.0.1-2+deb9u2 \ 
+        python3-dev=3.5.3-1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Updating pip to production version
+RUN pip3 install --upgrade pip==20.0.2
+
+# set PYTHONPATH to point to site-packages
+ENV PYTHONPATH /usr/local/lib/3.5/site-packages
+
+# Caching these layers to improve build time for larger packages.
+# -----------------------------------------------------
+# > Add additional packages here on separate RUN lines
+# > to cache larger installation steps into docker daemon
+
+# Installing numpy, scipy, and opencv
+RUN pip3 install opencv-python
+RUN pip3 install numpy
+RUN pip3 install scipy
+
+# Installing filterpy
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        pkg-config \
+        libfreetype6-dev \
+    && rm -rf /var/lib/apt/lists/*
+RUN pip3 install filterpy
+
+# Installing base requirements
+COPY requirements.base.txt /sailbot/
+RUN pip3 install -r /sailbot/requirements.base.txt
+
+# Installing Adafruit_BBIO
+RUN wget https://files.pythonhosted.org/packages/53/2b/b0e3dce6113225aae9beb886b2addd4fd5c140ba93c9503d7e4a97021bcc/Adafruit_BBIO-1.1.1.tar.gz \
+    && tar -xf Adafruit_BBIO-1.1.1.tar.gz \
+    && cd Adafruit_BBIO-1.1.1 \
+    && python3.5 setup.py install \
+    && cd .. \
+    && rm -rf Adafruit_BBIO-1.1.1*
+
+# Cleanup unused dependencies
+RUN apt-get autoremove 

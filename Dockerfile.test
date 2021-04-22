@@ -1,0 +1,22 @@
+FROM sailbotvt/sailbot-20:beaglebone-black-debian-stretch-python
+
+# Allow for running ARM images in x86/x86_64 machines
+# Triggers resin-xbuild and QEMU
+RUN [ "cross-build-start" ]
+
+WORKDIR /sailbot
+
+# Installing test requirements
+COPY requirements.test.txt ./
+RUN pip3 install -r requirements.test.txt --no-cache-dir --compile
+
+# Copying source files
+COPY tests ./tests
+COPY scripts ./scripts
+COPY Makefile main.py ./
+COPY src ./src
+
+# Checks for UDEV=1 to run as privileged
+ENTRYPOINT [ "/usr/bin/entry.sh" ]
+
+RUN [ "cross-build-end" ]

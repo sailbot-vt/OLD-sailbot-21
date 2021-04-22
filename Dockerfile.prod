@@ -1,0 +1,38 @@
+FROM sailbotvt/sailbot-20:beaglebone-black-debian-stretch-python
+
+# Allow for running ARM images in x86/x86_64 machines
+# Triggers resin-xbuild and QEMU
+RUN [ "cross-build-start" ]
+
+WORKDIR /sailbot
+
+# Installing production requirements
+COPY requirements.prod.txt ./
+RUN pip3 install -r requirements.prod.txt --no-cache-dir --compile
+
+# Deleting packages to trim image
+# > This may be a problem, but tests ran well
+RUN pip3 uninstall -y pybind11 \
+        && pip3 uninstall -y cython
+
+RUN apt-get autoremove && apt-get remove --purge \
+        curl \
+        wget \
+        build-essential \
+        python3-wheel \
+        python3-setuptools \
+        python3-pip \
+        python3-dev \
+        gcc \
+        gfortran
+
+# Copying source files
+COPY scripts ./scripts
+COPY Makefile main.py ./
+COPY src ./src
+
+# Checks for UDEV=1 to run container as privileged
+ENV UDEV=1
+ENTRYPOINT [ "/usr/bin/entry.sh" ]
+
+RUN [ "cross-build-end" ]
