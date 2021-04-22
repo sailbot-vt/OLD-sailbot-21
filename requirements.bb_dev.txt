@@ -1,0 +1,8 @@
+pypubsub
+pyyaml
+numpy
+parse
+pyserial
+scipy
+filterpy
+matplotlib

@@ -17,6 +17,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         cmake \
         vim \
         build-essential \
+	man-db \
+	ssh \
     && rm -rf /var/lib/apt/lists/*
 
 # Installing python development tools to production version
